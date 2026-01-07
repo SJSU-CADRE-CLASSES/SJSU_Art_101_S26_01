@@ -104,38 +104,36 @@ Schedule
 
 | Class_Date          |                                                                                                                                                                        |
 | ------------------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| *Week 1* TBD        | Thursday - First day of class |
-| *Week 2* TBD        | Tuesday |
-| *Week 2* TBD        | Thursday |
-| *Week 3* TBD        | Tuesday |
-| *Week 3* TBD        | Thursday |
-| *Week 4* TBD        | Tuesday |
-| *Week 4* TBD        | Thursday |
-| *Week 5* TBD        | Tuesday |
-| *Week 5* TBD        | Thursday |
-| *Week 6* TBD        | Tuesday |
-| *Week 6* TBD        | Thursday |
-| *Week 7* TBD        | Tuesday |
-| *Week 7* TBD        | Thursday |
-| *Week 8* TBD        | Tuesday |
-| *Week 8* TBD        | Thursday |
-| *Week 9* TBD        | Tuesday |
-| *Week 9* TBD        | Thursday |
-| *Week 10* TBD       | Tuesday |
-| *Week 10* TBD       | Thursday |
-| *Week 11* TBD       | Tuesday |
-| *Week 11* TBD       | Thursday |
-| *Week 12* TBD       | Tuesday |
-| *Week 12* TBD       | Thursday |
-| *Week 13* TBD       | Tuesday |
-| *Week 13* TBD       | Thursday |
-| *Week 14* TBD       | Tuesday |
-| *Week 14* TBD       | Thursday |
-| *Week 15* TBD       | Tuesday |
-| *Week 15* TBD       | Thursday |
-| *Week 16* TBD       | Tuesday |
-| *Week 16* TBD       | Thursday |
-| *Final* TBD         | Tuesday - Last day of instruction |
+| *Week 1* 01/20      | Tuesday - First day of class - Introduction Slides! |
+| *Week 1* 01/22      | Thursday |
+| *Week 2* 01/27      | Tuesday - **1.0 - Build and interactive web narrative** due by 12pm |
+| *Week 2* 01/29      | Thursday |
+| *Week 3* 02/03      | Tuesday |
+| *Week 3* 02/05      | Thursday |
+| *Week 4* 02/10      | Tuesday |
+| *Week 4* 02/12      | Thursday |
+| *Week 5* 02/17      | Tuesday - **Project 1 - Avatar/Data Self Portrait** due by 12pm |
+| *Week 5* 02/19      | Thursday |
+| *Week 6* 02/24      | Tuesday |
+| *Week 6* 02/26      | Thursday |
+| *Week 7* 03/03      | Tuesday |
+| *Week 7* 03/05      | Thursday |
+| *Week 8* 03/10      | Tuesday |
+| *Week 8* 03/12      | Thursday |
+| *Week 9* 03/17      | Tuesday |
+| *Week 9* 03/19      | Thursday - **Project 2 - Portfolio** due by 11:59pm |
+| *Week 10* 03/24     | Tuesday |
+| *Week 10* 03/26     | Thursday |
+| *Week 11* 04/07     | Tuesday |
+| *Week 11* 04/09     | Thursday |
+| *Week 12* 04/14     | Tuesday |
+| *Week 12* 04/16     | Thursday - **Project 3 - Fun With Websockets!!** due by 12pm |
+| *Week 13* 04/21     | Tuesday |
+| *Week 13* 04/23     | Thursday |
+| *Week 14* 04/28     | Tuesday |
+| *Week 14* 04/30     | Thursday |
+| *Week 15* 05/05     | Tuesday |
+| *Week 15* 05/07     | Thursday - **Final Project** due by 12pm - Last day of instruction |
 |                  |  |
 
 **University Policies**
