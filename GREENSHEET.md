@@ -3,7 +3,7 @@
 Department of Art and Art History
 Art 101, Spring 2026
 
-![gif](https://i.imgur.com/pS5lIDd.gif)
+![gif](stars.gif)
 
 Instructor: Andrew Blanton
 Office: Art 311
