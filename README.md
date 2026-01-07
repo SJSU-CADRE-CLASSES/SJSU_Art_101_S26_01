@@ -14,5 +14,6 @@ Class Website: https://github.com/SJSU-CADRE-CLASSES/SJSU_Art_101_S26_01
 
 [GreenSheet](https://github.com/SJSU-CADRE-CLASSES/SJSU_Art_101_S26_01/blob/master/GREENSHEET.md)
 | [Resources](https://github.com/SJSU-CADRE-CLASSES/SJSU_Art_101_S26_01/blob/master/RESOURCES.md)
+| [Teams](https://github.com/SJSU-CADRE-CLASSES/SJSU_Art_101_S26_01/tree/master/teams)
 | [Class Website](https://github.com/SJSU-CADRE-CLASSES/SJSU_Art_101_S26_01)
 
