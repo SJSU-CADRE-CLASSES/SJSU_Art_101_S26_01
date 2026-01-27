@@ -79,6 +79,23 @@
         .scroll-bubble::before {
             content: "↓ ";
         }
+        .yt-audio {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 9998;
+            width: 200px;
+            height: 112px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 2px solid #e94560;
+        }
+        .yt-audio iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
         @keyframes bubbleBounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-8px); }
@@ -163,7 +180,7 @@
     <div id="warning">
         <h2>⚠️ Flash &amp; strobing lights warning</h2>
         <p>This page contains rapidly flashing and strobing effects that may cause discomfort or seizures in people with photosensitivity or epilepsy.</p>
-        <button type="button" onclick="document.getElementById('warning').classList.add('hidden'); document.getElementById('main').classList.add('visible');">I understand, enter</button>
+        <button type="button" onclick="enterMain();">I understand, enter</button>
     </div>
     <div id="main">
     <div class="top-section">
@@ -187,87 +204,24 @@
     </div>
     </div>
     <script>
-        // Create boo sound using Web Speech API (text-to-speech)
-        let isPlaying = false;
+        const YT_VIDEO_ID = 'PS_cV18z67Y';
+        const YT_EMBED = 'https://www.youtube.com/embed/' + YT_VIDEO_ID +
+            '?autoplay=1&loop=1&playlist=' + YT_VIDEO_ID;
 
-        function playBoo() {
-            if (!('speechSynthesis' in window)) {
-                console.error('Speech synthesis not supported');
-                return;
-            }
-
-            try {
-                const utterance = new SpeechSynthesisUtterance('BOOOOOOOOO!!!!!');
-                
-                // Make it sound like yelling - higher pitch, faster rate, louder
-                utterance.volume = 1.0; // Maximum volume
-                utterance.rate = 0.7; // Slower for emphasis
-                utterance.pitch = 0.5; // Lower pitch for yelling
-                
-                // Try to use a deeper/more aggressive voice if available
-                const voices = speechSynthesis.getVoices();
-                const maleVoice = voices.find(voice => 
-                    voice.name.toLowerCase().includes('male') || 
-                    voice.name.toLowerCase().includes('david') ||
-                    voice.name.toLowerCase().includes('daniel') ||
-                    voice.name.toLowerCase().includes('james')
-                );
-                if (maleVoice) {
-                    utterance.voice = maleVoice;
-                }
-                
-                speechSynthesis.speak(utterance);
-            } catch (e) {
-                console.error('Boo sound error:', e);
-            }
+        function enterMain() {
+            document.getElementById('warning').classList.add('hidden');
+            document.getElementById('main').classList.add('visible');
+            if (document.getElementById('yt-audio')) return;
+            const wrap = document.createElement('div');
+            wrap.id = 'yt-audio';
+            wrap.className = 'yt-audio';
+            const iframe = document.createElement('iframe');
+            iframe.src = YT_EMBED;
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+            iframe.allowFullscreen = true;
+            wrap.appendChild(iframe);
+            document.body.appendChild(wrap);
         }
-
-        function startBooLoop() {
-            if (isPlaying) return;
-            isPlaying = true;
-            
-            // Wait for voices to load
-            if (speechSynthesis.onvoiceschanged !== undefined) {
-                speechSynthesis.onvoiceschanged = () => {
-                    playBoo();
-                    startBooInterval();
-                };
-            } else {
-                // Play boo immediately
-                playBoo();
-                startBooInterval();
-            }
-        }
-
-        function startBooInterval() {
-            // Play boo repeatedly at intervals
-            function booLoop() {
-                if (!isPlaying) return;
-                playBoo();
-                // Random interval between 1 and 2.5 seconds for variety
-                setTimeout(booLoop, 1000 + Math.random() * 1500);
-            }
-            
-            // Start the loop after first boo
-            setTimeout(booLoop, 1500);
-        }
-
-        // Start boo sounds when page loads
-        window.addEventListener('load', () => {
-            // User interaction required for audio
-            document.addEventListener('click', () => {
-                if (!isPlaying) {
-                    startBooLoop();
-                }
-            }, { once: true });
-            
-            // Also try to start automatically after a short delay
-            setTimeout(() => {
-                if (!isPlaying) {
-                    startBooLoop();
-                }
-            }, 100);
-        });
     </script>
 </body>
 </html>
