@@ -72,7 +72,7 @@
             cursor: pointer;
             transition: transform 0.2s ease, opacity 0.3s ease;
             user-select: none;
-            animation: float 3s ease-in-out infinite;
+            animation: float 1s ease-in-out infinite;
             will-change: transform;
             transform: translateZ(0); /* Force GPU acceleration */
         }
@@ -134,8 +134,14 @@
             0%, 100% {
                 transform: translateY(0px);
             }
+            25% {
+                transform: translateY(-30px);
+            }
             50% {
-                transform: translateY(-10px);
+                transform: translateY(0px);
+            }
+            75% {
+                transform: translateY(-20px);
             }
         }
 

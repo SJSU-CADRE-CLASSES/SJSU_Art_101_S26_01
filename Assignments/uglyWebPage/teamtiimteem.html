@@ -164,9 +164,9 @@
         function readAllText() {
             const allText = document.body.innerText || document.body.textContent;
             const utterance = new SpeechSynthesisUtterance(allText);
-            utterance.volume = 1.0; // Max volume
+            utterance.volume = 1.0; // Max volume (1.0 is the maximum allowed)
             utterance.rate = 0.9; // Slower, more relaxed like Jennifer Coolidge
-            utterance.pitch = 0.4; // Lower pitch - deeper voice
+            utterance.pitch = 0.7; // Slightly higher pitch
             
             // Try to select a female voice similar to Jennifer Coolidge
             const voices = window.speechSynthesis.getVoices();
