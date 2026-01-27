@@ -1,5 +1,5 @@
 # Coordination Team
 
-.
-ashleigh
+Ashleigh
+
 Amara Carrier :3
