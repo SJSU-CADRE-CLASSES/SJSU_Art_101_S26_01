@@ -28,7 +28,8 @@
             pointer-events: none;
             z-index: 9999;
             box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
-            animation: cursorMove 3s linear infinite reverse;
+            transition: transform 0.1s ease-out;
+            transform: translate(-50%, -50%);
         }
 
         .cursor-dot {
@@ -40,25 +41,8 @@
             pointer-events: none;
             z-index: 10000;
             box-shadow: 0 0 10px #00ffff;
-            animation: cursorMove 3s linear infinite reverse;
-        }
-
-        @keyframes cursorMove {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(calc(100vw - 30px), 0) rotate(90deg);
-            }
-            50% {
-                transform: translate(calc(100vw - 30px), calc(100vh - 30px)) rotate(180deg);
-            }
-            75% {
-                transform: translate(0, calc(100vh - 30px)) rotate(270deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(360deg);
-            }
+            transition: transform 0.1s ease-out;
+            transform: translate(-50%, -50%);
         }
 
         .content {
@@ -82,8 +66,26 @@
     <div class="custom-cursor"></div>
     <div class="cursor-dot"></div>
     <div class="content">
-        <h1>DUC & ANDREA</h1>
-        <p>THE UGLIEST WEBPAGE EVER!</p>
+        <h1>10/10</h1>
+        <p>Really Good Web Page</p>
     </div>
+
+    <script>
+        const customCursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        document.addEventListener('mousemove', (e) => {
+            // Calculate opposite position
+            // If mouse is at (x, y), cursor goes to (windowWidth - x, windowHeight - y)
+            const oppositeX = window.innerWidth - e.clientX;
+            const oppositeY = window.innerHeight - e.clientY;
+
+            // Update cursor positions
+            customCursor.style.left = oppositeX + 'px';
+            customCursor.style.top = oppositeY + 'px';
+            cursorDot.style.left = oppositeX + 'px';
+            cursorDot.style.top = oppositeY + 'px';
+        });
+    </script>
 </body>
 </html>
