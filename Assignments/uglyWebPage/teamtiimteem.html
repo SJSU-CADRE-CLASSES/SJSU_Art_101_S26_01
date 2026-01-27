@@ -135,16 +135,37 @@
         // Show first popup immediately
         setTimeout(showScamPopup, 500);
         
-        // Text-to-speech at max volume
+        // Text-to-speech at max volume with annoying voice
         function readAllText() {
             const allText = document.body.innerText || document.body.textContent;
             const utterance = new SpeechSynthesisUtterance(allText);
             utterance.volume = 1.0; // Max volume
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
+            utterance.rate = 1.8; // Faster, more annoying
+            utterance.pitch = 2.5; // Very high pitch - squeaky and annoying
+            
+            // Try to select a more annoying voice if available
+            const voices = window.speechSynthesis.getVoices();
+            // Prefer higher-pitched or child-like voices
+            const annoyingVoices = voices.filter(v => 
+                v.name.toLowerCase().includes('child') || 
+                v.name.toLowerCase().includes('zira') ||
+                v.name.toLowerCase().includes('samantha') ||
+                v.lang.startsWith('en')
+            );
+            if (annoyingVoices.length > 0) {
+                utterance.voice = annoyingVoices[0];
+            }
+            
             // Cancel any existing speech
             window.speechSynthesis.cancel();
             window.speechSynthesis.speak(utterance);
+        }
+        
+        // Load voices when available
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = function() {
+                // Voices loaded, can now use them
+            };
         }
         
         // Try to start immediately and on multiple events
