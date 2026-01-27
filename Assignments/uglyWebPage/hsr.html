@@ -10,11 +10,22 @@
             margin: 0;
             background: linear-gradient(to bottom, #36d61a, #ff26e9, #9e4403);
         }
+        .free-money-text {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            z-index: 10;
+        }
         .moving-gif-wrapper {
             position: fixed;
             width: 120px;
             height: 135px;
-            animation: moveAround 2s ease-in-out infinite;
+            animation: moveAround 4s ease-in-out infinite;
         }
         .moving-gif-wrapper .tenor-gif-embed {
             width: 100% !important;
@@ -115,7 +126,7 @@
     </style>
 </head>
 <body>
-    <h1>hsr</h1>
+    <p class="free-money-text">click hte button for free money</p>
     <div class="moving-gif-wrapper">
         <button type="button" class="chase-button" id="funny-btn">👆 Click!</button>
         <div class="tenor-gif-embed" data-postid="15446523835156691751" data-share-method="host" data-aspect-ratio="0.887097" data-width="100%"><a href="https://tenor.com/view/gaster-w-d-gaster-deltarune-undertale-eating-gif-15446523835156691751">Gaster W D Gaster GIF</a>from <a href="https://tenor.com/search/gaster-gifs">Gaster GIFs</a></div>
