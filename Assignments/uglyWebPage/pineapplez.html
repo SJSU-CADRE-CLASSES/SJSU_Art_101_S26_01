@@ -46,12 +46,61 @@
         #warning button:hover { background: #ff6b6b; }
         #main {
             display: none;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             min-height: 100vh;
             background: #000;
             animation: bgStrobe 0.15s linear infinite;
         }
         #main.visible { display: block; }
+        .top-section {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+        }
+        .scroll-bubble {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: system-ui, sans-serif;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 2px solid #e94560;
+            animation: bubbleBounce 1.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .scroll-bubble::before {
+            content: "↓ ";
+        }
+        @keyframes bubbleBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
+        }
+        .bottom-section {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .suck-more {
+            font-size: clamp(3rem, 18vw, 12rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            animation: rainbow 0.15s linear infinite, flash 0.06s steps(1) infinite;
+            text-shadow: 0 0 40px currentColor, 0 0 80px currentColor;
+            line-height: 1.1;
+        }
         @keyframes bgStrobe {
             0%, 25% { background: #ff00ff; }
             25.01%, 50% { background: #00ffff; }
@@ -98,7 +147,7 @@
         .s8 { top: 25%; left: 40%; font-size: 2vw; transform: rotate(-45deg); }
         .s9 { top: 70%; right: 25%; font-size: 5vw; transform: rotate(180deg); }
         .s10 { top: 8%; left: 50%; font-size: 3vw; }
-        .wall { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; padding: 20px; }
+        .wall { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; padding: 20px; pointer-events: none; }
         .wall span { font-size: clamp(10px, 2vw, 24px); font-weight: 900; animation: rainbow 0.2s linear infinite; }
         .blur { filter: blur(2px); }
         .strobe { animation: flash 0.08s steps(1) infinite; }
@@ -117,6 +166,7 @@
         <button type="button" onclick="document.getElementById('warning').classList.add('hidden'); document.getElementById('main').classList.add('visible');">I understand, enter</button>
     </div>
     <div id="main">
+    <div class="top-section">
     <div class="suck s1 strobe">u suck u suck u suck</div>
     <div class="suck s2">U SUCK</div>
     <div class="suck s3 rot-rev">u suck u suck u suck u suck u suck</div>
@@ -131,47 +181,42 @@
         <span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span><span>u suck</span>
     </div>
     </div>
+    <div class="scroll-bubble">Scroll down</div>
+    <div class="bottom-section">
+        <div class="suck-more">U SUCK EVEN MORE</div>
+    </div>
+    </div>
     <script>
-        // Create boo sound using Web Audio API
-        let audioContext;
+        // Create boo sound using Web Speech API (text-to-speech)
         let isPlaying = false;
 
         function playBoo() {
-            if (!audioContext) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) {
-                    console.error('Audio context error:', e);
-                    return;
-                }
+            if (!('speechSynthesis' in window)) {
+                console.error('Speech synthesis not supported');
+                return;
             }
 
             try {
-                // Create oscillator for the "boo" sound
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+                const utterance = new SpeechSynthesisUtterance('BOOOOOOOOO!!!!!');
                 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                // Make it sound like yelling - higher pitch, faster rate, louder
+                utterance.volume = 1.0; // Maximum volume
+                utterance.rate = 0.7; // Slower for emphasis
+                utterance.pitch = 0.5; // Lower pitch for yelling
                 
-                // Use a lower frequency for "boo" sound (around 150-200Hz)
-                oscillator.type = 'sawtooth'; // Sawtooth gives a more vocal-like quality
-                const baseFreq = 150;
+                // Try to use a deeper/more aggressive voice if available
+                const voices = speechSynthesis.getVoices();
+                const maleVoice = voices.find(voice => 
+                    voice.name.toLowerCase().includes('male') || 
+                    voice.name.toLowerCase().includes('david') ||
+                    voice.name.toLowerCase().includes('daniel') ||
+                    voice.name.toLowerCase().includes('james')
+                );
+                if (maleVoice) {
+                    utterance.voice = maleVoice;
+                }
                 
-                const now = audioContext.currentTime;
-                
-                // Create "boo" effect: start low, go slightly higher, then fade down
-                oscillator.frequency.setValueAtTime(baseFreq, now);
-                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 1.3, now + 0.1);
-                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.8, now + 0.3);
-                
-                // Volume envelope: quick attack, longer decay
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(0.4, now + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                
-                oscillator.start(now);
-                oscillator.stop(now + 0.4);
+                speechSynthesis.speak(utterance);
             } catch (e) {
                 console.error('Boo sound error:', e);
             }
@@ -181,19 +226,30 @@
             if (isPlaying) return;
             isPlaying = true;
             
-            // Play boo immediately
-            playBoo();
-            
-            // Then play boo repeatedly at intervals
+            // Wait for voices to load
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = () => {
+                    playBoo();
+                    startBooInterval();
+                };
+            } else {
+                // Play boo immediately
+                playBoo();
+                startBooInterval();
+            }
+        }
+
+        function startBooInterval() {
+            // Play boo repeatedly at intervals
             function booLoop() {
                 if (!isPlaying) return;
                 playBoo();
-                // Random interval between 0.5 and 1.5 seconds for variety
-                setTimeout(booLoop, 500 + Math.random() * 1000);
+                // Random interval between 1 and 2.5 seconds for variety
+                setTimeout(booLoop, 1000 + Math.random() * 1500);
             }
             
             // Start the loop after first boo
-            setTimeout(booLoop, 500);
+            setTimeout(booLoop, 1500);
         }
 
         // Start boo sounds when page loads
