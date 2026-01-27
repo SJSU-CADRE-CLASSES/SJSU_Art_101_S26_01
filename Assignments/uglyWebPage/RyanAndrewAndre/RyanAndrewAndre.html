@@ -1,266 +1,838 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Portal</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>RYAN ANDREW ANDRE - THE BEST TEAM EVER!!!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 400% 400%;
+            animation: bgFlash 0.1s linear infinite, rainbow 2s linear infinite;
+            font-family: 'Comic Sans MS', 'Papyrus', 'Times New Roman', cursive, serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        @keyframes bgFlash {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg) scale(1); }
+            to { transform: rotate(360deg) scale(1.5); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-20px) rotate(-5deg); }
+            75% { transform: translateX(20px) rotate(5deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(2); }
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 120px;
+            color: #00ff00;
+            text-shadow: 
+                10px 10px 0px #ff00ff,
+                -10px -10px 0px #00ffff,
+                0px 0px 50px #ffff00,
+                20px 20px 20px #ff0000;
+            animation: spin 1s linear infinite, blink 0.3s linear infinite;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 30px;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .name1 {
+            font-size: 80px;
+            color: #ff00ff;
+            background: #00ffff;
+            padding: 30px 60px;
+            border: 20px dashed #ffff00;
+            border-radius: 50px;
+            animation: bounce 0.5s ease-in-out infinite, shake 0.2s linear infinite;
+            transform: rotate(-15deg);
+            text-shadow: 5px 5px 10px #000;
+            box-shadow: 0 0 100px #ff00ff, inset 0 0 50px #00ff00;
+            z-index: 5;
+            position: absolute;
+            top: 10%;
+            left: 5%;
+        }
+        
+        .name2 {
+            font-size: 90px;
+            color: #ffff00;
+            background: #ff00ff;
+            padding: 40px 80px;
+            border: 25px dotted #00ffff;
+            border-radius: 0;
+            animation: pulse 0.3s ease-in-out infinite, spin 2s linear infinite reverse;
+            transform: rotate(25deg);
+            text-shadow: -5px -5px 10px #000, 10px 10px 20px #ff0000;
+            box-shadow: 0 0 150px #ffff00, inset 0 0 80px #ff00ff;
+            z-index: 6;
+            position: absolute;
+            top: 30%;
+            right: 10%;
+        }
+        
+        .name3 {
+            font-size: 100px;
+            color: #00ffff;
+            background: #ffff00;
+            padding: 50px 100px;
+            border: 30px double #ff00ff;
+            border-radius: 200px;
+            animation: shake 0.1s linear infinite, bounce 0.4s ease-in-out infinite;
+            transform: rotate(45deg);
+            text-shadow: 0 0 30px #ff00ff, 0 0 60px #00ff00;
+            box-shadow: 0 0 200px #00ffff, inset 0 0 100px #ff00ff;
+            z-index: 7;
+            position: absolute;
+            bottom: 20%;
+            left: 15%;
+        }
+        
+        .marquee {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ff0000;
+            color: #00ff00;
+            font-size: 60px;
+            padding: 20px;
+            animation: marquee 3s linear infinite;
+            z-index: 1000;
+            font-weight: 900;
+            text-transform: uppercase;
+            border: 10px solid #ffff00;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .marquee2 {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #00ff00;
+            color: #ff00ff;
+            font-size: 50px;
+            padding: 15px;
+            animation: marquee 4s linear infinite reverse;
+            z-index: 1000;
+            font-weight: 900;
+            border: 8px dashed #ff0000;
+        }
+        
+        .spinning-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 150px;
+            color: #ff0000;
+            animation: spin 0.5s linear infinite;
+            z-index: 1;
+            text-shadow: 0 0 50px #00ff00;
+            opacity: 0.7;
+        }
+        
+        .blinking-stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        
+        .star {
+            position: absolute;
+            font-size: 80px;
+            color: #ffff00;
+            animation: blink 0.2s linear infinite, spin 3s linear infinite;
+        }
+        
+        .star:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+        .star:nth-child(2) { top: 20%; right: 15%; animation-delay: 0.1s; }
+        .star:nth-child(3) { bottom: 30%; left: 25%; animation-delay: 0.2s; }
+        .star:nth-child(4) { bottom: 15%; right: 30%; animation-delay: 0.3s; }
+        .star:nth-child(5) { top: 50%; left: 10%; animation-delay: 0.4s; }
+        .star:nth-child(6) { top: 60%; right: 20%; animation-delay: 0.5s; }
+        
+        .rainbow-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            border: 50px solid;
+            border-image: linear-gradient(45deg, #ff0000, #ff00ff, #00ffff, #00ff00, #ffff00, #ff0000) 1;
+            animation: spin 1s linear infinite, pulse 0.5s ease-in-out infinite;
+            z-index: 0;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff00ff;
+            animation: fall 3s linear infinite;
+        }
+        
+        @keyframes fall {
+            0% {
+                top: -20px;
+                transform: translateX(0) rotate(0deg);
+            }
+            100% {
+                top: 100vh;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+        
+        .confetti:nth-child(1) { left: 10%; animation-delay: 0s; background: #ff0000; }
+        .confetti:nth-child(2) { left: 20%; animation-delay: 0.5s; background: #00ff00; }
+        .confetti:nth-child(3) { left: 30%; animation-delay: 1s; background: #0000ff; }
+        .confetti:nth-child(4) { left: 40%; animation-delay: 1.5s; background: #ffff00; }
+        .confetti:nth-child(5) { left: 50%; animation-delay: 2s; background: #ff00ff; }
+        .confetti:nth-child(6) { left: 60%; animation-delay: 2.5s; background: #00ffff; }
+        .confetti:nth-child(7) { left: 70%; animation-delay: 0.3s; background: #ff0000; }
+        .confetti:nth-child(8) { left: 80%; animation-delay: 0.8s; background: #00ff00; }
+        .confetti:nth-child(9) { left: 90%; animation-delay: 1.2s; background: #0000ff; }
+        
+        /* Brightness overlay - darkens the page */
+        .brightness-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            z-index: 9998;
+            transition: background 0.15s ease-out;
+        }
+        
+        /* Brightness meter panel */
+        .brightness-panel {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+        
+        .brightness-label {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            margin-bottom: 8px;
+        }
+        
+        /* Pump handle at top */
+        .pump-container {
+            width: 70px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+        
+        .pump-handle {
+            width: 50px;
+            height: 24px;
+            background: linear-gradient(180deg, #444 0%, #222 100%);
+            border: 3px solid #666;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: transform 0.08s ease-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        
+        .pump-handle:active {
+            transform: translateY(12px) scale(0.95);
+        }
+        
+        .pump-handle.pumped {
+            animation: pumpPush 0.2s ease-out;
+        }
+        
+        @keyframes pumpPush {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(14px) scale(0.92); }
+            100% { transform: translateY(0); }
+        }
+        
+        .pump-cylinder {
+            width: 40px;
+            height: 12px;
+            background: linear-gradient(180deg, #555 0%, #333 100%);
+            border: 3px solid #666;
+            border-radius: 4px;
+        }
+        
+        .pump-label {
+            font-size: 11px;
+            color: #fff;
+            text-shadow: 1px 1px 1px #000;
+            margin-top: 4px;
+        }
+        
+        /* Vertical meter */
+        .brightness-meter {
+            width: 36px;
+            height: 220px;
+            background: linear-gradient(180deg, #222 0%, #111 100%);
+            border: 4px solid #444;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        .meter-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, #8f8 0%, #4a4 50%, #2a2 100%);
+            border-radius: 4px;
+            transition: height 0.2s ease-out;
+            box-shadow: 0 0 15px rgba(100, 255, 100, 0.5);
+        }
+        
+        .meter-markings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .meter-markings::before,
+        .meter-markings::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .meter-markings::before { top: 25%; }
+        .meter-markings::after { top: 75%; }
+        
+        .brightness-percent {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 8px;
+        }
+        
+        /* Small Rubik's cube above meter */
+        .rubiks-trigger {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(30deg);
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, margin 0.3s ease;
+        }
+        
+        .rubiks-trigger:hover {
+            transform: rotateX(-20deg) rotateY(30deg) scale(1.15);
+        }
+        
+        .rubiks-trigger .mini-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            padding: 2px;
+            background: #111;
+            border: 2px solid #333;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .rubiks-trigger .mini-face span {
+            border-radius: 2px;
+        }
+        
+        .rubiks-trigger .mini-face.front { transform: translateZ(18px); }
+        .rubiks-trigger .mini-face.top  { transform: rotateX(90deg) translateZ(18px); }
+        .rubiks-trigger .mini-face.right { transform: rotateY(90deg) translateZ(18px); }
+        
+        /* Expanded cube overlay */
+        .rubiks-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        
+        .rubiks-overlay.visible {
+            display: flex;
+        }
+        
+        .rubiks-modal {
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 5px solid #ff00ff;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 360px;
+            box-shadow: 0 0 60px rgba(255,0,255,0.4), inset 0 0 30px rgba(0,0,0,0.5);
+        }
+        
+        .rubiks-modal h3 {
+            color: #ffff00;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 10px #ff0;
+        }
+        
+        .rubiks-cube-display {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .rubiks-face-block {
+            text-align: center;
+        }
+        
+        .rubiks-face-block span.face-label {
+            display: block;
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        
+        .rubiks-face-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 3px;
+            width: 64px;
+            height: 64px;
+            padding: 4px;
+            background: #111;
+            border-radius: 6px;
+            border: 2px solid #444;
+        }
+        
+        .rubiks-face-grid .cell {
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .rubiks-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        
+        .rubiks-controls button {
+            padding: 8px 12px;
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #666;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #555 0%, #333 100%);
+            color: #fff;
+            transition: transform 0.1s, background 0.1s;
+        }
+        
+        .rubiks-controls button:hover {
+            background: linear-gradient(180deg, #666 0%, #444 100%);
+            transform: scale(1.05);
+        }
+        
+        .rubiks-controls button:active {
+            transform: scale(0.98);
+        }
+        
+        .rubiks-close {
+            display: block;
+            margin: 0 auto 8px;
+            padding: 8px 20px;
+            font-family: 'Comic Sans MS', cursive;
+            cursor: pointer;
+            background: #444;
+            color: #fff;
+            border: 2px solid #666;
+            border-radius: 8px;
+        }
+        
+        .rubiks-solved-msg {
+            display: none;
+            color: #0f0;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 12px;
+            animation: blink 0.5s ease-in-out infinite;
+        }
+        
+        .rubiks-solved-msg.visible {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="screen">
-        <h1 class="login-title">WELCOME PLEASE LOGIN</h1>
-        
-        <p class="login-hint">(Create an account first, then log in with it to win)</p>
-        
-        <!-- Hidden "Create account" link - very hard to find -->
-        <a href="#" id="createAccountLink" class="hidden-create-link">create account</a>
-        
-        <!-- Fake login form (doesn't work) -->
-        <div class="fake-form">
-            <input type="text" placeholder="Username" class="fake-input">
-            <input type="password" placeholder="Password" class="fake-input">
-            <button class="fake-submit">LOGIN</button>
+    <!-- Brightness overlay: more opacity = darker screen -->
+    <div class="brightness-overlay" id="brightnessOverlay"></div>
+    
+    <!-- Brightness meter with pump -->
+    <div class="brightness-panel">
+        <div class="rubiks-trigger" id="rubiksTrigger" title="Click to solve for brightness control">
+            <div class="mini-face front" id="miniFront"></div>
+            <div class="mini-face top" id="miniTop"></div>
+            <div class="mini-face right" id="miniRight"></div>
         </div>
-        
-        <!-- Real login form (hard to see and use) -->
-        <div class="real-form">
-            <label class="hidden-label">Username:</label>
-            <input type="text" id="username" class="moving-input" placeholder=" " autocomplete="off">
-            <label class="hidden-label">Password:</label>
-            <input type="password" id="password" class="moving-input" placeholder=" " autocomplete="off">
+        <span class="brightness-label">BRIGHTNESS</span>
+        <div class="pump-container" id="pumpBtn" title="Pump to add brightness!">
+            <div class="pump-handle" id="pumpHandle">🔦</div>
+            <div class="pump-cylinder"></div>
+            <span class="pump-label">PUMP</span>
         </div>
-        
-        <button id="submitButton" class="escape-button">SUBMIT</button>
-        
-        <button class="decoy-button" style="top: 10%; left: 5%;">CLICK HERE</button>
-        <button class="decoy-button" style="top: 80%; right: 10%;">LOGIN NOW</button>
-        <button class="decoy-button" style="bottom: 15%; left: 20%;">ENTER</button>
-        
-        <div class="hidden-clue">Hint: The real form is invisible. You must create an account first.</div>
-        
-        <div id="loginError" class="error-message"></div>
-        
-        <div id="successMessage" class="success-message">
-            <h2>YOU BEAT THE GAME!</h2>
-            <p>You created an account, remembered your login, and survived the worst UI ever.</p>
-            <p>Username: <span id="displayUsername"></span></p>
-            <p>Password: <span id="displayPassword"></span></p>
+        <div class="brightness-meter">
+            <div class="meter-markings"></div>
+            <div class="meter-fill" id="meterFill"></div>
+        </div>
+        <span class="brightness-percent" id="brightnessPercent">100%</span>
+    </div>
+    
+    <!-- Expanded Rubik's cube modal -->
+    <div class="rubiks-overlay" id="rubiksOverlay">
+        <div class="rubiks-modal">
+            <h3>🧩 SOLVE FOR BRIGHTNESS CONTROL 🧩</h3>
+            <p style="color:#aaa; font-size:12px; text-align:center; margin-bottom:12px;">Solve the 2×2 cube to lock brightness at the current level!</p>
+            <div class="rubiks-cube-display">
+                <div class="rubiks-face-block"><span class="face-label">Front</span><div class="rubiks-face-grid" id="faceFront"></div></div>
+                <div class="rubiks-face-block"><span class="face-label">Top</span><div class="rubiks-face-grid" id="faceTop"></div></div>
+                <div class="rubiks-face-block"><span class="face-label">Right</span><div class="rubiks-face-grid" id="faceRight"></div></div>
+            </div>
+            <div class="rubiks-controls">
+                <button type="button" data-move="F">F</button>
+                <button type="button" data-move="F'">F'</button>
+                <button type="button" data-move="R">R</button>
+                <button type="button" data-move="R'">R'</button>
+                <button type="button" data-move="U">U</button>
+                <button type="button" data-move="U'">U'</button>
+            </div>
+            <button type="button" class="rubiks-close" id="rubiksClose">Close</button>
+            <div class="rubiks-solved-msg" id="rubiksSolvedMsg">✓ SOLVED! Brightness is now locked.</div>
         </div>
     </div>
     
-    <!-- CREATE ACCOUNT SCREEN (hidden initially) -->
-    <div id="createAccountScreen" class="screen" style="display: none;">
-        <h1 class="login-title">CREATE ACCOUNT</h1>
+    <div class="marquee">🌟 WELCOME TO THE BEST TEAM PAGE EVER!!! 🌟 RYAN ANDREW ANDRE ROCK!!! 🌟</div>
+    <div class="marquee2">⭐ CLICK HERE FOR FREE PRIZES!!! ⭐ BEST TEAM 2026!!! ⭐</div>
+    
+    <div class="container">
+        <div class="rainbow-box"></div>
+        <div class="spinning-text">TEAM</div>
         
-        <!-- Hidden "Back to login" link - different corner so they have to hunt again -->
-        <a href="#" id="backToLoginLink" class="hidden-create-link back-link">back to login</a>
-        
-        <!-- Fake create form -->
-        <div class="fake-form">
-            <input type="text" placeholder="Choose Username" class="fake-input">
-            <input type="password" placeholder="Choose Password" class="fake-input">
-            <button class="fake-submit fake-create-submit">CREATE ACCOUNT</button>
+        <div class="blinking-stars">
+            <div class="star">⭐</div>
+            <div class="star">🌟</div>
+            <div class="star">✨</div>
+            <div class="star">💫</div>
+            <div class="star">⭐</div>
+            <div class="star">🌟</div>
         </div>
         
-        <!-- Real create form (nearly invisible, moving inputs) -->
-        <div class="real-form create-real-form">
-            <label class="hidden-label">Choose Username:</label>
-            <input type="text" id="newUsername" class="moving-input create-input" placeholder=" " autocomplete="off">
-            <label class="hidden-label">Choose Password:</label>
-            <input type="password" id="newPassword" class="moving-input create-input" placeholder=" " autocomplete="off">
-        </div>
+        <h1>RYAN<br>ANDREW<br>ANDRE</h1>
         
-        <button id="createSubmitButton" class="escape-button">CREATE</button>
+        <div class="name1">RYAN</div>
+        <div class="name2">ANDREW</div>
+        <div class="name3">ANDRE</div>
         
-        <button class="decoy-button decoy-create" style="top: 15%; right: 8%;">SIGN UP</button>
-        <button class="decoy-button decoy-create" style="bottom: 20%; left: 15%;">REGISTER</button>
-        
-        <div class="hidden-clue">Remember your username and password. You'll need them to log in.</div>
-        
-        <div id="createSuccess" class="create-success-msg">Account created! Now find the hidden link back to login...</div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
     </div>
+    
+    <blink style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 200px; color: #ff00ff; z-index: 999; text-shadow: 0 0 100px #00ffff;">WE ARE AWESOME!!!</blink>
     
     <script>
-        const STORAGE_KEY = 'uglyLogin_game_account';
-        
-        // ----- LOGIN SCREEN -----
-        const loginScreen = document.getElementById('loginScreen');
-        const createAccountScreen = document.getElementById('createAccountScreen');
-        const createAccountLink = document.getElementById('createAccountLink');
-        const backToLoginLink = document.getElementById('backToLoginLink');
-        const submitButton = document.getElementById('submitButton');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const successMessage = document.getElementById('successMessage');
-        const loginError = document.getElementById('loginError');
-        
-        function moveButton(btn) {
-            const maxX = window.innerWidth - btn.offsetWidth;
-            const maxY = window.innerHeight - btn.offsetHeight;
-            btn.style.position = 'absolute';
-            btn.style.left = Math.random() * maxX + 'px';
-            btn.style.top = Math.random() * maxY + 'px';
-        }
-        
-        function moveInput(input) {
-            const maxX = window.innerWidth - input.offsetWidth - 100;
-            const maxY = window.innerHeight - input.offsetHeight - 100;
-            input.style.position = 'absolute';
-            input.style.left = (Math.random() * maxX + 50) + 'px';
-            input.style.top = (Math.random() * maxY + 50) + 'px';
-        }
-        
-        function setupMovingInputs(inputs, moveFn) {
-            inputs.forEach(input => {
-                input.addEventListener('mousedown', function(e) {
-                    e.preventDefault();
-                    setTimeout(() => moveFn(input), 50);
-                });
-                input.addEventListener('focus', function() {
-                    setTimeout(() => moveFn(input), 100);
-                });
-            });
-        }
-        
-        // Show create account screen
-        createAccountLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            loginScreen.style.display = 'none';
-            createAccountScreen.style.display = 'flex';
-            initCreateScreen();
-        });
-        
-        // ----- CREATE ACCOUNT SCREEN -----
-        const newUsername = document.getElementById('newUsername');
-        const newPassword = document.getElementById('newPassword');
-        const createSubmitButton = document.getElementById('createSubmitButton');
-        const createSuccess = document.getElementById('createSuccess');
-        
-        function initCreateScreen() {
-            createSuccess.style.display = 'none';
-            newUsername.value = '';
-            newPassword.value = '';
-            moveButton(createSubmitButton);
-            setTimeout(() => {
-                moveInput(newUsername);
-                moveInput(newPassword);
-            }, 300);
-        }
-        
-        setupMovingInputs([newUsername, newPassword], moveInput);
-        
-        createSubmitButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const user = newUsername.value.trim();
-            const pass = newPassword.value.trim();
-            if (user && pass) {
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({ username: user, password: pass }));
-                } catch (err) {
-                    // fallback in-memory if localStorage blocked
-                    window._uglyGameAccount = { username: user, password: pass };
-                }
-                createSuccess.style.display = 'block';
-                createSuccess.textContent = 'Account created! Remember: ' + user + ' / ****. Find "back to login" to continue.';
-            } else {
-                moveButton(createSubmitButton);
-            }
-        });
-        
-        createSubmitButton.addEventListener('mouseenter', function() {
-            if (Math.random() > 0.7) moveButton(createSubmitButton);
-        });
-        
-        document.querySelectorAll('.decoy-create').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.style.display = 'none';
-                setTimeout(() => {
-                    this.style.display = 'block';
-                    this.style.left = (Math.random() * (window.innerWidth - this.offsetWidth)) + 'px';
-                    this.style.top = (Math.random() * (window.innerHeight - this.offsetHeight)) + 'px';
-                }, 800);
-            });
-        });
-        
-        document.querySelector('.fake-create-submit') && document.querySelector('.fake-create-submit').addEventListener('click', function() {
-            alert('That is not the real form!');
-        });
-        
-        // Back to login
-        backToLoginLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            createAccountScreen.style.display = 'none';
-            loginScreen.style.display = 'flex';
-            loginError.textContent = '';
-            initLoginScreen();
-        });
-        
-        // ----- LOGIN SCREEN (continued) -----
-        function initLoginScreen() {
-            usernameInput.value = '';
-            passwordInput.value = '';
-            successMessage.style.display = 'none';
-            moveButton(submitButton);
-            setTimeout(() => {
-                moveInput(usernameInput);
-                moveInput(passwordInput);
-            }, 300);
-        }
-        
-        setupMovingInputs([usernameInput, passwordInput], moveInput);
-        
-        submitButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const user = usernameInput.value.trim();
-            const pass = passwordInput.value;
-            let stored = null;
-            try {
-                const s = localStorage.getItem(STORAGE_KEY);
-                if (s) stored = JSON.parse(s);
-            } catch (err) {}
-            if (!stored && window._uglyGameAccount) stored = window._uglyGameAccount;
+        (function() {
+            var brightness = 100;
+            var PUMP_AMOUNT = 18;
+            var DECAY_INTERVAL_MS = 200;
+            var DECAY_AMOUNT = 1.5;
+            var MIN_BRIGHTNESS = 2;
             
-            if (!stored) {
-                loginError.textContent = 'No account found. Create one first (find "create account").';
-                loginError.style.display = 'block';
-                moveButton(submitButton);
-                return;
+            var overlay = document.getElementById('brightnessOverlay');
+            var meterFill = document.getElementById('meterFill');
+            var brightnessPercent = document.getElementById('brightnessPercent');
+            var pumpBtn = document.getElementById('pumpBtn');
+            var pumpHandle = document.getElementById('pumpHandle');
+            
+            function applyBrightness() {
+                var opacity = 1 - (brightness / 100);
+                overlay.style.background = 'rgba(0, 0, 0, ' + opacity + ')';
+                meterFill.style.height = brightness + '%';
+                brightnessPercent.textContent = Math.round(brightness) + '%';
             }
-            if (user !== stored.username || pass !== stored.password) {
-                loginError.textContent = 'Wrong username or password. Use the account you created.';
-                loginError.style.display = 'block';
-                moveButton(submitButton);
-                return;
+            
+            function pump() {
+                brightness = Math.min(100, brightness + PUMP_AMOUNT);
+                pumpHandle.classList.add('pumped');
+                setTimeout(function() { pumpHandle.classList.remove('pumped'); }, 220);
+                applyBrightness();
             }
-            loginError.style.display = 'none';
-            document.getElementById('displayUsername').textContent = user;
-            document.getElementById('displayPassword').textContent = pass;
-            successMessage.style.display = 'block';
-            loginScreen.style.opacity = '0.3';
-        });
-        
-        submitButton.addEventListener('mouseenter', function() {
-            if (Math.random() > 0.7) moveButton(submitButton);
-        });
-        
-        document.querySelectorAll('#loginScreen .decoy-button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.style.display = 'none';
-                setTimeout(() => {
-                    this.style.display = 'block';
-                    this.style.left = (Math.random() * (window.innerWidth - this.offsetWidth)) + 'px';
-                    this.style.top = (Math.random() * (window.innerHeight - this.offsetHeight)) + 'px';
-                }, 1000);
+            
+            pumpBtn.addEventListener('click', pump);
+            
+            setInterval(function() {
+                if (window.brightnessDecayLocked) return;
+                if (brightness <= MIN_BRIGHTNESS) return;
+                brightness = Math.max(MIN_BRIGHTNESS, brightness - DECAY_AMOUNT);
+                applyBrightness();
+            }, DECAY_INTERVAL_MS);
+            
+            applyBrightness();
+        })();
+    </script>
+    
+    <script>
+        (function() {
+            window.brightnessDecayLocked = false;
+            var COLORS = ['#fff', '#ff0', '#f80', '#f00', '#0f0', '#00f'];
+            var FACE_NAMES = ['U', 'D', 'F', 'B', 'L', 'R'];
+            var state = [];  // 24 facelets: U0-3, D4-7, F8-11, B12-15, L16-19, R20-23
+            
+            function initState() {
+                for (var f = 0; f < 6; f++) {
+                    for (var i = 0; i < 4; i++) state[f * 4 + i] = f;
+                }
+            }
+            
+            function faceIdx(face, row, col) { return face * 4 + row * 2 + col; }
+            
+            function moveF() {
+                var s = state.slice();
+                state[faceIdx(2,0,0)] = s[faceIdx(2,1,0)]; state[faceIdx(2,0,1)] = s[faceIdx(2,0,0)];
+                state[faceIdx(2,1,0)] = s[faceIdx(2,1,1)]; state[faceIdx(2,1,1)] = s[faceIdx(2,0,1)];
+                state[faceIdx(0,1,0)] = s[faceIdx(4,1,1)]; state[faceIdx(0,1,1)] = s[faceIdx(4,0,1)];
+                state[faceIdx(4,0,1)] = s[faceIdx(1,0,0)]; state[faceIdx(4,1,1)] = s[faceIdx(1,0,1)];
+                state[faceIdx(1,0,0)] = s[faceIdx(5,1,0)]; state[faceIdx(1,0,1)] = s[faceIdx(5,0,0)];
+                state[faceIdx(5,0,0)] = s[faceIdx(0,1,0)]; state[faceIdx(5,1,0)] = s[faceIdx(0,1,1)];
+            }
+            
+            function moveFPrime() { moveF(); moveF(); moveF(); }
+            
+            function moveR() {
+                var s = state.slice();
+                state[faceIdx(5,0,0)] = s[faceIdx(5,1,0)]; state[faceIdx(5,0,1)] = s[faceIdx(5,0,0)];
+                state[faceIdx(5,1,0)] = s[faceIdx(5,1,1)]; state[faceIdx(5,1,1)] = s[faceIdx(5,0,1)];
+                state[faceIdx(2,0,1)] = s[faceIdx(0,0,1)]; state[faceIdx(2,1,1)] = s[faceIdx(0,1,1)];
+                state[faceIdx(1,0,1)] = s[faceIdx(2,0,1)]; state[faceIdx(1,1,1)] = s[faceIdx(2,1,1)];
+                state[faceIdx(3,0,0)] = s[faceIdx(1,0,1)]; state[faceIdx(3,1,0)] = s[faceIdx(1,1,1)];
+                state[faceIdx(0,0,1)] = s[faceIdx(3,0,0)]; state[faceIdx(0,1,1)] = s[faceIdx(3,1,0)];
+            }
+            
+            function moveRPrime() { moveR(); moveR(); moveR(); }
+            
+            function moveU() {
+                var s = state.slice();
+                state[faceIdx(0,0,0)] = s[faceIdx(0,1,0)]; state[faceIdx(0,0,1)] = s[faceIdx(0,0,0)];
+                state[faceIdx(0,1,0)] = s[faceIdx(0,1,1)]; state[faceIdx(0,1,1)] = s[faceIdx(0,0,1)];
+                state[faceIdx(4,0,0)] = s[faceIdx(2,0,0)]; state[faceIdx(4,0,1)] = s[faceIdx(2,0,1)];
+                state[faceIdx(2,0,0)] = s[faceIdx(5,0,0)]; state[faceIdx(2,0,1)] = s[faceIdx(5,0,1)];
+                state[faceIdx(5,0,0)] = s[faceIdx(3,0,0)]; state[faceIdx(5,0,1)] = s[faceIdx(3,0,1)];
+                state[faceIdx(3,0,0)] = s[faceIdx(4,0,0)]; state[faceIdx(3,0,1)] = s[faceIdx(4,0,1)];
+            }
+            
+            function moveUPrime() { moveU(); moveU(); moveU(); }
+            
+            function doMove(name) {
+                if (name === 'F') moveF();
+                else if (name === "F'") moveFPrime();
+                else if (name === 'R') moveR();
+                else if (name === "R'") moveRPrime();
+                else if (name === 'U') moveU();
+                else if (name === "U'") moveUPrime();
+            }
+            
+            function scramble() {
+                var moves = ['F', "F'", 'R', "R'", 'U', "U'"];
+                for (var i = 0; i < 12; i++) doMove(moves[Math.floor(Math.random() * 6)]);
+            }
+            
+            function isSolved() {
+                for (var f = 0; f < 6; f++) {
+                    var c = state[f * 4];
+                    for (var i = 1; i < 4; i++) if (state[f * 4 + i] !== c) return false;
+                }
+                return true;
+            }
+            
+            function renderFaces() {
+                var faces = [
+                    { id: 'faceFront', base: 2 },
+                    { id: 'faceTop', base: 0 },
+                    { id: 'faceRight', base: 5 }
+                ];
+                faces.forEach(function(f) {
+                    var el = document.getElementById(f.id);
+                    el.innerHTML = '';
+                    for (var r = 0; r < 2; r++)
+                        for (var c = 0; c < 2; c++) {
+                            var cell = document.createElement('div');
+                            cell.className = 'cell';
+                            cell.style.background = COLORS[state[f.base * 4 + r * 2 + c]];
+                            el.appendChild(cell);
+                        }
+                });
+            }
+            
+            function renderMini() {
+                var maps = [
+                    { el: 'miniFront', base: 2 },
+                    { el: 'miniTop', base: 0 },
+                    { el: 'miniRight', base: 5 }
+                ];
+                maps.forEach(function(m) {
+                    var container = document.getElementById(m.el);
+                    container.innerHTML = '';
+                    for (var r = 0; r < 2; r++)
+                        for (var c = 0; c < 2; c++) {
+                            var cell = document.createElement('span');
+                            cell.style.background = COLORS[state[m.base * 4 + r * 2 + c]];
+                            container.appendChild(cell);
+                        }
+                });
+            }
+            
+            function openModal() {
+                initState();
+                scramble();
+                renderFaces();
+                renderMini();
+                window.brightnessDecayLocked = false;
+                document.getElementById('rubiksSolvedMsg').classList.remove('visible');
+                document.getElementById('rubiksOverlay').classList.add('visible');
+            }
+            
+            function closeModal() {
+                document.getElementById('rubiksOverlay').classList.remove('visible');
+                renderMini();
+            }
+            
+            document.getElementById('rubiksTrigger').addEventListener('click', function(e) {
+                e.stopPropagation();
+                openModal();
             });
-        });
-        
-        document.querySelector('.fake-submit') && document.querySelector('.fake-submit').addEventListener('click', function() {
-            alert('ERROR: This is not the real login form!');
-        });
-        
-        // Initial setup
-        initLoginScreen();
+            
+            document.getElementById('rubiksClose').addEventListener('click', closeModal);
+            
+            document.getElementById('rubiksOverlay').addEventListener('click', function(e) {
+                if (e.target.id === 'rubiksOverlay') closeModal();
+            });
+            
+            document.querySelectorAll('.rubiks-controls button[data-move]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    doMove(this.getAttribute('data-move'));
+                    renderFaces();
+                    renderMini();
+                    if (isSolved()) {
+                        window.brightnessDecayLocked = true;
+                        document.getElementById('rubiksSolvedMsg').classList.add('visible');
+                    }
+                });
+            });
+            
+            initState();
+            renderMini();
+        })();
     </script>
 </body>
 </html>
