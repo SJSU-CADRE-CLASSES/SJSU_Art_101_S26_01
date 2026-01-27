@@ -204,7 +204,7 @@
             cursor: pointer;
             filter: none !important;
             image-rendering: auto !important;
-            transition: top 0.3s ease-out, left 0.3s ease-out, transform 0.3s ease-out;
+            transition: top 0.1s linear, left 0.1s linear, transform 0.1s linear;
         }
         @keyframes popupGradient {
             0%, 100% { background-position: 0% 50%; }
@@ -434,7 +434,8 @@
 
         // Make popup button avoid cursor
         const popupButton = document.querySelector('.popup-notification');
-        const avoidanceDistance = 150; // Distance in pixels to start moving away
+        const avoidanceDistance = 200; // Distance in pixels to start moving away (increased for earlier reaction)
+        const escapeSpeed = 3; // Multiplier for escape speed (increased for faster movement)
         
         document.addEventListener('mousemove', (e) => {
             const buttonRect = popupButton.getBoundingClientRect();
@@ -449,17 +450,17 @@
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             
             if (distance < avoidanceDistance) {
-                // Calculate escape direction (opposite of mouse position)
-                const escapeX = -distanceX / distance * (avoidanceDistance - distance);
-                const escapeY = -distanceY / distance * (avoidanceDistance - distance);
+                // Calculate escape direction (opposite of mouse position) with increased speed
+                const escapeX = -distanceX / distance * (avoidanceDistance - distance) * escapeSpeed;
+                const escapeY = -distanceY / distance * (avoidanceDistance - distance) * escapeSpeed;
                 
                 // Get current position
                 const currentTop = parseFloat(popupButton.style.top) || 50;
                 const currentLeft = parseFloat(popupButton.style.left) || 75;
                 
-                // Calculate new position (in percentage)
-                const newTop = Math.max(10, Math.min(90, currentTop + (escapeY / window.innerHeight) * 100));
-                const newLeft = Math.max(10, Math.min(90, currentLeft + (escapeX / window.innerWidth) * 100));
+                // Calculate new position (in percentage) with faster movement
+                const newTop = Math.max(5, Math.min(95, currentTop + (escapeY / window.innerHeight) * 100));
+                const newLeft = Math.max(5, Math.min(95, currentLeft + (escapeX / window.innerWidth) * 100));
                 
                 popupButton.style.top = newTop + '%';
                 popupButton.style.left = newLeft + '%';
