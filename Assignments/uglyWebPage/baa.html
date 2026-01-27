@@ -68,13 +68,19 @@
 
         .sheep {
             position: absolute;
-            font-size: 60px;
             cursor: pointer;
             transition: transform 0.2s ease, opacity 0.3s ease;
             user-select: none;
             animation: float 1s ease-in-out infinite;
             will-change: transform;
             transform: translateZ(0); /* Force GPU acceleration */
+        }
+
+        .sheep img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            display: block;
         }
 
         .sheep:hover {
@@ -249,6 +255,38 @@
             text-align: center;
             margin: 10px 0;
         }
+
+        .win-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+
+        .win-message.show {
+            display: block;
+            animation: winPulse 0.5s ease-out;
+        }
+
+        @keyframes winPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -264,8 +302,10 @@
 
     <script>
         let score = 0;
+        const MAX_SCORE = 50;
         const scoreElement = document.getElementById('score');
         const celebrationElement = document.getElementById('celebration');
+        const winMessageElement = document.getElementById('winMessage');
         const body = document.body;
 
         // Number of sheep to scatter
@@ -277,9 +317,11 @@
                 const sheep = document.createElement('div');
                 sheep.className = 'sheep';
                 
-                // Randomly make some sheep bald (30% chance)
-                const isBald = Math.random() < 0.3;
-                sheep.textContent = isBald ? '🐏' : '🐑';
+                // Create image element
+                const img = document.createElement('img');
+                img.src = 'assets/sheep.png';
+                img.alt = 'Sheep';
+                sheep.appendChild(img);
                 
                 // Random position using transform for better performance
                 const x = Math.random() * (window.innerWidth - 100);
@@ -353,6 +395,13 @@
             setTimeout(() => {
                 sheep.remove();
             }, 3000);
+            
+            // Check for win condition
+            if (score >= MAX_SCORE) {
+                setTimeout(() => {
+                    winMessageElement.classList.add('show');
+                }, 500);
+            }
         }
 
         function generateRandomPath(startX, startY) {
