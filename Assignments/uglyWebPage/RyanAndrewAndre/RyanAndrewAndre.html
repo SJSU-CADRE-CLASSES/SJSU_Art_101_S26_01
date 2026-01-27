@@ -3,32 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Press Me</title>
+    <title>Login Portal</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <button id="escapeButton" class="escape-button">press me</button>
-    <script>
-        const button = document.getElementById('escapeButton');
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="screen">
+        <h1 class="login-title">WELCOME PLEASE LOGIN</h1>
         
-        function moveButton() {
-            const maxX = window.innerWidth - button.offsetWidth;
-            const maxY = window.innerHeight - button.offsetHeight;
-            
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
-            
-            button.style.position = 'absolute';
-            button.style.left = randomX + 'px';
-            button.style.top = randomY + 'px';
+        <p class="login-hint">(Create an account first, then log in with it to win)</p>
+        
+        <!-- Hidden "Create account" link - very hard to find -->
+        <a href="#" id="createAccountLink" class="hidden-create-link">create account</a>
+        
+        <!-- Fake login form (doesn't work) -->
+        <div class="fake-form">
+            <input type="text" placeholder="Username" class="fake-input">
+            <input type="password" placeholder="Password" class="fake-input">
+            <button class="fake-submit">LOGIN</button>
+        </div>
+        
+        <!-- Real login form (hard to see and use) -->
+        <div class="real-form">
+            <label class="hidden-label">Username:</label>
+            <input type="text" id="username" class="moving-input" placeholder=" " autocomplete="off">
+            <label class="hidden-label">Password:</label>
+            <input type="password" id="password" class="moving-input" placeholder=" " autocomplete="off">
+        </div>
+        
+        <button id="submitButton" class="escape-button">SUBMIT</button>
+        
+        <button class="decoy-button" style="top: 10%; left: 5%;">CLICK HERE</button>
+        <button class="decoy-button" style="top: 80%; right: 10%;">LOGIN NOW</button>
+        <button class="decoy-button" style="bottom: 15%; left: 20%;">ENTER</button>
+        
+        <div class="hidden-clue">Hint: The real form is invisible. You must create an account first.</div>
+        
+        <div id="loginError" class="error-message"></div>
+        
+        <div id="successMessage" class="success-message">
+            <h2>YOU BEAT THE GAME!</h2>
+            <p>You created an account, remembered your login, and survived the worst UI ever.</p>
+            <p>Username: <span id="displayUsername"></span></p>
+            <p>Password: <span id="displayPassword"></span></p>
+        </div>
+    </div>
+    
+    <!-- CREATE ACCOUNT SCREEN (hidden initially) -->
+    <div id="createAccountScreen" class="screen" style="display: none;">
+        <h1 class="login-title">CREATE ACCOUNT</h1>
+        
+        <!-- Hidden "Back to login" link - different corner so they have to hunt again -->
+        <a href="#" id="backToLoginLink" class="hidden-create-link back-link">back to login</a>
+        
+        <!-- Fake create form -->
+        <div class="fake-form">
+            <input type="text" placeholder="Choose Username" class="fake-input">
+            <input type="password" placeholder="Choose Password" class="fake-input">
+            <button class="fake-submit fake-create-submit">CREATE ACCOUNT</button>
+        </div>
+        
+        <!-- Real create form (nearly invisible, moving inputs) -->
+        <div class="real-form create-real-form">
+            <label class="hidden-label">Choose Username:</label>
+            <input type="text" id="newUsername" class="moving-input create-input" placeholder=" " autocomplete="off">
+            <label class="hidden-label">Choose Password:</label>
+            <input type="password" id="newPassword" class="moving-input create-input" placeholder=" " autocomplete="off">
+        </div>
+        
+        <button id="createSubmitButton" class="escape-button">CREATE</button>
+        
+        <button class="decoy-button decoy-create" style="top: 15%; right: 8%;">SIGN UP</button>
+        <button class="decoy-button decoy-create" style="bottom: 20%; left: 15%;">REGISTER</button>
+        
+        <div class="hidden-clue">Remember your username and password. You'll need them to log in.</div>
+        
+        <div id="createSuccess" class="create-success-msg">Account created! Now find the hidden link back to login...</div>
+    </div>
+    
+    <script>
+        const STORAGE_KEY = 'uglyLogin_game_account';
+        
+        // ----- LOGIN SCREEN -----
+        const loginScreen = document.getElementById('loginScreen');
+        const createAccountScreen = document.getElementById('createAccountScreen');
+        const createAccountLink = document.getElementById('createAccountLink');
+        const backToLoginLink = document.getElementById('backToLoginLink');
+        const submitButton = document.getElementById('submitButton');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const successMessage = document.getElementById('successMessage');
+        const loginError = document.getElementById('loginError');
+        
+        function moveButton(btn) {
+            const maxX = window.innerWidth - btn.offsetWidth;
+            const maxY = window.innerHeight - btn.offsetHeight;
+            btn.style.position = 'absolute';
+            btn.style.left = Math.random() * maxX + 'px';
+            btn.style.top = Math.random() * maxY + 'px';
         }
         
-        button.addEventListener('click', function() {
-            moveButton();
+        function moveInput(input) {
+            const maxX = window.innerWidth - input.offsetWidth - 100;
+            const maxY = window.innerHeight - input.offsetHeight - 100;
+            input.style.position = 'absolute';
+            input.style.left = (Math.random() * maxX + 50) + 'px';
+            input.style.top = (Math.random() * maxY + 50) + 'px';
+        }
+        
+        function setupMovingInputs(inputs, moveFn) {
+            inputs.forEach(input => {
+                input.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    setTimeout(() => moveFn(input), 50);
+                });
+                input.addEventListener('focus', function() {
+                    setTimeout(() => moveFn(input), 100);
+                });
+            });
+        }
+        
+        // Show create account screen
+        createAccountLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginScreen.style.display = 'none';
+            createAccountScreen.style.display = 'flex';
+            initCreateScreen();
         });
         
-        // Initial position
-        moveButton();
+        // ----- CREATE ACCOUNT SCREEN -----
+        const newUsername = document.getElementById('newUsername');
+        const newPassword = document.getElementById('newPassword');
+        const createSubmitButton = document.getElementById('createSubmitButton');
+        const createSuccess = document.getElementById('createSuccess');
+        
+        function initCreateScreen() {
+            createSuccess.style.display = 'none';
+            newUsername.value = '';
+            newPassword.value = '';
+            moveButton(createSubmitButton);
+            setTimeout(() => {
+                moveInput(newUsername);
+                moveInput(newPassword);
+            }, 300);
+        }
+        
+        setupMovingInputs([newUsername, newPassword], moveInput);
+        
+        createSubmitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const user = newUsername.value.trim();
+            const pass = newPassword.value.trim();
+            if (user && pass) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({ username: user, password: pass }));
+                } catch (err) {
+                    // fallback in-memory if localStorage blocked
+                    window._uglyGameAccount = { username: user, password: pass };
+                }
+                createSuccess.style.display = 'block';
+                createSuccess.textContent = 'Account created! Remember: ' + user + ' / ****. Find "back to login" to continue.';
+            } else {
+                moveButton(createSubmitButton);
+            }
+        });
+        
+        createSubmitButton.addEventListener('mouseenter', function() {
+            if (Math.random() > 0.7) moveButton(createSubmitButton);
+        });
+        
+        document.querySelectorAll('.decoy-create').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.display = 'none';
+                setTimeout(() => {
+                    this.style.display = 'block';
+                    this.style.left = (Math.random() * (window.innerWidth - this.offsetWidth)) + 'px';
+                    this.style.top = (Math.random() * (window.innerHeight - this.offsetHeight)) + 'px';
+                }, 800);
+            });
+        });
+        
+        document.querySelector('.fake-create-submit') && document.querySelector('.fake-create-submit').addEventListener('click', function() {
+            alert('That is not the real form!');
+        });
+        
+        // Back to login
+        backToLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            createAccountScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            loginError.textContent = '';
+            initLoginScreen();
+        });
+        
+        // ----- LOGIN SCREEN (continued) -----
+        function initLoginScreen() {
+            usernameInput.value = '';
+            passwordInput.value = '';
+            successMessage.style.display = 'none';
+            moveButton(submitButton);
+            setTimeout(() => {
+                moveInput(usernameInput);
+                moveInput(passwordInput);
+            }, 300);
+        }
+        
+        setupMovingInputs([usernameInput, passwordInput], moveInput);
+        
+        submitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value;
+            let stored = null;
+            try {
+                const s = localStorage.getItem(STORAGE_KEY);
+                if (s) stored = JSON.parse(s);
+            } catch (err) {}
+            if (!stored && window._uglyGameAccount) stored = window._uglyGameAccount;
+            
+            if (!stored) {
+                loginError.textContent = 'No account found. Create one first (find "create account").';
+                loginError.style.display = 'block';
+                moveButton(submitButton);
+                return;
+            }
+            if (user !== stored.username || pass !== stored.password) {
+                loginError.textContent = 'Wrong username or password. Use the account you created.';
+                loginError.style.display = 'block';
+                moveButton(submitButton);
+                return;
+            }
+            loginError.style.display = 'none';
+            document.getElementById('displayUsername').textContent = user;
+            document.getElementById('displayPassword').textContent = pass;
+            successMessage.style.display = 'block';
+            loginScreen.style.opacity = '0.3';
+        });
+        
+        submitButton.addEventListener('mouseenter', function() {
+            if (Math.random() > 0.7) moveButton(submitButton);
+        });
+        
+        document.querySelectorAll('#loginScreen .decoy-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.display = 'none';
+                setTimeout(() => {
+                    this.style.display = 'block';
+                    this.style.left = (Math.random() * (window.innerWidth - this.offsetWidth)) + 'px';
+                    this.style.top = (Math.random() * (window.innerHeight - this.offsetHeight)) + 'px';
+                }, 1000);
+            });
+        });
+        
+        document.querySelector('.fake-submit') && document.querySelector('.fake-submit').addEventListener('click', function() {
+            alert('ERROR: This is not the real login form!');
+        });
+        
+        // Initial setup
+        initLoginScreen();
     </script>
 </body>
 </html>

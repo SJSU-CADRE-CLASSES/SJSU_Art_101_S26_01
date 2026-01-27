@@ -5,61 +5,259 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Comic Sans MS', 'Courier New', monospace;
     background: #000000;
     min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.screen {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     padding: 20px;
+    background: #000000;
+    z-index: 1;
+}
+
+.login-screen {
     position: relative;
 }
 
-.container {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    padding: 40px;
-    max-width: 600px;
-    width: 100%;
-}
-
-h1 {
+.login-title {
     color: #1a1a1a;
     text-align: center;
+    margin-bottom: 50px;
+    font-size: 3em;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.1; }
+}
+
+/* Fake form (visible but doesn't work) */
+.fake-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     margin-bottom: 30px;
-    font-size: 2.5em;
-    font-weight: 600;
+    z-index: 1;
 }
 
-.group-list {
-    list-style: none;
-}
-
-.group-list li {
-    background: #f8f9fa;
-    margin: 15px 0;
-    padding: 20px;
-    border-radius: 10px;
-    font-size: 1.2em;
+.fake-input {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #2a2a2a;
     color: #1a1a1a;
-    border-left: 4px solid #667eea;
-    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid #1a1a1a;
+    border-radius: 3px;
+    width: 300px;
 }
 
-.group-list li:hover {
-    transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+.fake-submit {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #2a2a2a;
+    color: #1a1a1a;
+    border: 2px solid #1a1a1a;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
 }
 
+/* Real form (nearly invisible) */
+.real-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 2;
+}
+
+.hidden-label {
+    color: #0a0a0a;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.moving-input {
+    padding: 10px;
+    font-size: 14px;
+    background-color: #1a1a1a;
+    color: #0f0f0f;
+    border: 1px solid #0a0a0a;
+    border-radius: 2px;
+    width: 250px;
+    position: absolute;
+    transition: none;
+}
+
+.moving-input:focus {
+    outline: none;
+    border-color: #1a1a1a;
+    background-color: #1a1a1a;
+}
+
+.moving-input::placeholder {
+    color: #0a0a0a;
+}
+
+/* Submit button */
 .escape-button {
     position: absolute;
-    padding: 15px 30px;
-    font-size: 16px;
+    padding: 12px 25px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #1a1a1a;
+    color: #0f0f0f;
+    border: 1px solid #0a0a0a;
+    border-radius: 3px;
+    z-index: 1000;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.escape-button:hover {
+    background-color: #2a2a2a;
+}
+
+/* Decoy buttons */
+.decoy-button {
+    position: absolute;
+    padding: 10px 20px;
+    font-size: 12px;
     cursor: pointer;
     background-color: #2a2a2a;
     color: #1a1a1a;
     border: 2px solid #1a1a1a;
     border-radius: 5px;
-    z-index: 1000;
+    z-index: 999;
+    text-transform: uppercase;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Hidden "create account" / "back to login" link - very hard to find */
+.hidden-create-link {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    color: #0c0c0c;
+    font-size: 9px;
+    text-decoration: none;
+    opacity: 0.25;
+    z-index: 500;
+    cursor: pointer;
+}
+
+.hidden-create-link:hover {
+    opacity: 0.5;
+    color: #1a1a1a;
+}
+
+.back-link {
+    bottom: auto;
+    right: auto;
+    top: 8px;
+    left: 10px;
+}
+
+.login-hint {
+    color: #0a0a0a;
+    font-size: 10px;
+    margin-bottom: 20px;
+    opacity: 0.2;
+}
+
+.error-message {
+    display: none;
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #2a2a2a;
+    font-size: 12px;
+    background: #1a1a1a;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 100;
+}
+
+.create-success-msg {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #1a1a1a;
+    font-size: 11px;
+    background: #0f0f0f;
+    padding: 10px 20px;
+    border: 1px solid #0a0a0a;
+    border-radius: 4px;
+    z-index: 100;
+    max-width: 90%;
+}
+
+/* Hidden clue */
+.hidden-clue {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: #0a0a0a;
+    font-size: 10px;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+/* Success message */
+.success-message {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    color: #0f0f0f;
+    padding: 40px;
+    border: 2px solid #0a0a0a;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 10000;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+.success-message h2 {
+    color: #0f0f0f;
+    margin-bottom: 20px;
+    font-size: 2em;
+    text-transform: uppercase;
+}
+
+.success-message p {
+    color: #0f0f0f;
+    margin: 10px 0;
+    font-size: 1.2em;
 }

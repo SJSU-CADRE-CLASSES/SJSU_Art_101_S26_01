@@ -74,6 +74,103 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: popupAppear 0.5s ease-out;
+        }
+
+        .popup {
+            background: linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #ffff00 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 50px #ff00ff, 0 0 100px #00ffff;
+            border: 5px solid #fff;
+            animation: popupShake 0.5s infinite, popupPulse 2s infinite;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .popup h2 {
+            color: #fff;
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0px #000, 0 0 20px #fff;
+            animation: textBounce 1s infinite;
+        }
+
+        .popup p {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .claim-button {
+            background: #00ff00;
+            color: #000;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 20px 40px;
+            border: 4px solid #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00;
+            animation: buttonPulse 1s infinite;
+            transition: transform 0.1s;
+        }
+
+        .claim-button:hover {
+            transform: scale(1.1);
+            background: #ffff00;
+        }
+
+        .claim-button:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes popupAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes popupShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-1deg); }
+            75% { transform: translateX(5px) rotate(1deg); }
+        }
+
+        @keyframes popupPulse {
+            0%, 100% { box-shadow: 0 0 50px #ff00ff, 0 0 100px #00ffff; }
+            50% { box-shadow: 0 0 80px #ff00ff, 0 0 150px #00ffff; }
+        }
+
+        @keyframes textBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00; }
+            50% { box-shadow: 0 0 50px #00ff00, 0 0 100px #00ff00; }
+        }
     </style>
 </head>
 <body>
@@ -82,6 +179,16 @@
         <!-- Fallback: You can also add a local music file -->
         <!-- <source src="music.mp3" type="audio/mpeg"> -->
     </audio>
+
+    <!-- Popup Modal -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <h2>🎉 CONGRATULATIONS! 🎉</h2>
+            <p>You've won a FREE iPad!</p>
+            <p style="font-size: 18px;">Click the button below to claim your reward!</p>
+            <button class="claim-button" onclick="claimReward()">CLAIM REWARD</button>
+        </div>
+    </div>
 
     <div class="custom-cursor"></div>
     <div class="cursor-dot"></div>
@@ -144,6 +251,32 @@
         // Start random movement after page loads
         window.addEventListener('load', () => {
             startRandomMovement();
+        });
+
+        // Popup functionality
+        function claimReward() {
+            alert('Thank you for claiming! Please enter your credit card information to receive your FREE iPad!');
+            // Make popup reappear after a delay (annoying!)
+            setTimeout(() => {
+                document.getElementById('popupOverlay').style.display = 'flex';
+            }, 2000);
+        }
+
+        // Show popup immediately when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('popupOverlay').style.display = 'flex';
+            }, 500);
+        });
+
+        // Make popup reappear if user tries to click outside (very annoying!)
+        document.getElementById('popupOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('popupOverlay')) {
+                // Popup reappears after a short delay
+                setTimeout(() => {
+                    document.getElementById('popupOverlay').style.display = 'flex';
+                }, 1000);
+            }
         });
     </script>
 </body>

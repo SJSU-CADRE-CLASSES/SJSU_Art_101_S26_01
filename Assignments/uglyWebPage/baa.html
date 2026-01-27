@@ -42,6 +42,7 @@
             background-clip: text;
             animation: rainbow 3s linear infinite;
             letter-spacing: 0.3em;
+            will-change: background-position;
         }
 
         .score-value {
@@ -53,6 +54,7 @@
             background-clip: text;
             animation: rainbow 3s linear infinite;
             letter-spacing: 0.1em;
+            will-change: background-position;
         }
 
         @keyframes rainbow {
@@ -71,6 +73,8 @@
             transition: transform 0.2s ease, opacity 0.3s ease;
             user-select: none;
             animation: float 3s ease-in-out infinite;
+            will-change: transform;
+            transform: translateZ(0); /* Force GPU acceleration */
         }
 
         .sheep:hover {
@@ -78,9 +82,52 @@
         }
 
         .sheep.collected {
-            opacity: 0;
-            transform: scale(0) rotate(360deg);
             pointer-events: none;
+        }
+
+        .sheep.running {
+            animation: runAround 3s ease-in-out forwards;
+        }
+
+        @keyframes runAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(200px, -150px) rotate(90deg);
+            }
+            50% {
+                transform: translate(-150px, 200px) rotate(180deg);
+            }
+            75% {
+                transform: translate(250px, 100px) rotate(270deg);
+            }
+            100% {
+                transform: translate(-200px, -250px) rotate(360deg);
+            }
+        }
+
+        .poop {
+            position: absolute;
+            font-size: 40px;
+            pointer-events: none;
+            z-index: 100;
+            animation: poopDrop 0.5s ease-out forwards;
+        }
+
+        @keyframes poopDrop {
+            0% {
+                transform: translateY(-20px) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(10px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(30px) scale(1);
+                opacity: 0.8;
+            }
         }
 
         @keyframes float {
@@ -94,38 +141,26 @@
 
         .celebration {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
+            font-size: 120px;
             font-weight: bold;
+            color: #000000;
             opacity: 0;
             pointer-events: none;
             z-index: 2000;
-            transition: opacity 0.3s ease;
-            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbow 3s linear infinite;
-            letter-spacing: 0.2em;
+            white-space: nowrap;
         }
 
         .celebration.show {
             opacity: 1;
-            animation: pop 0.5s ease;
+            animation: spinAndMove 2s ease-out forwards;
         }
 
-        @keyframes pop {
+        @keyframes spinAndMove {
             0% {
-                transform: translate(-50%, -50%) scale(0);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
+                transform: translate(-50%, -50%) rotate(0deg) scale(0.5);
             }
             100% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translate(calc(-50% + 400px), calc(-50% - 200px)) rotate(720deg) scale(1.5);
             }
         }
 
@@ -141,23 +176,85 @@
             animation: rainbow 3s linear infinite;
             letter-spacing: 0.5em;
             font-weight: bold;
+            will-change: background-position;
         }
 
         h1 .char {
             display: inline-block;
             letter-spacing: normal;
         }
+
+        .virus-popup {
+            position: fixed;
+            background: #ff0000;
+            border: 5px solid #000000;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 10000;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            animation: popupShake 0.5s ease-in-out;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        @keyframes popupShake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-10px, -10px) rotate(-2deg); }
+            50% { transform: translate(10px, 10px) rotate(2deg); }
+            75% { transform: translate(-5px, 5px) rotate(-1deg); }
+        }
+
+        .virus-popup h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin: 0 0 15px 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        .virus-popup p {
+            color: #ffffff;
+            font-size: 16px;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+
+        .virus-popup .close-btn {
+            background: #ffff00;
+            color: #000000;
+            border: 3px solid #000000;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+        }
+
+        .virus-popup .close-btn:hover {
+            background: #ffaa00;
+            transform: scale(1.05);
+        }
+
+        .virus-popup .warning-icon {
+            font-size: 48px;
+            text-align: center;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <div class="score-board">
         <div class="score-label">Sheep Collected</div>
-        <div class="score-value" id="score">0</div>
+        <div class="score-value" id="score">0 / 50</div>
     </div>
 
-    <h1 id="title">🐑 Collect the Sheep! 🐑</h1>
+    <h1 id="title">Collect the Sheep!</h1>
 
     <div class="celebration" id="celebration">+1 🤮</div>
+    <div class="win-message" id="winMessage">🎉 You Win! 🎉</div>
 
     <script>
         let score = 0;
@@ -166,16 +263,19 @@
         const body = document.body;
 
         // Number of sheep to scatter
-        const numSheep = 15;
+        const numSheep = 30;
 
         // Create and scatter sheep
         function createSheep() {
             for (let i = 0; i < numSheep; i++) {
                 const sheep = document.createElement('div');
                 sheep.className = 'sheep';
-                sheep.textContent = '🐑';
                 
-                // Random position
+                // Randomly make some sheep bald (30% chance)
+                const isBald = Math.random() < 0.3;
+                sheep.textContent = isBald ? '🐏' : '🐑';
+                
+                // Random position using transform for better performance
                 const x = Math.random() * (window.innerWidth - 100);
                 const y = Math.random() * (window.innerHeight - 100) + 100; // Start below header
                 
@@ -199,30 +299,105 @@
             
             sheep.classList.add('collected');
             score++;
-            scoreElement.textContent = score;
+            scoreElement.textContent = score + ' / 50';
             
-            // Show celebration
+            // Get sheep position
+            const rect = sheep.getBoundingClientRect();
+            const sheepX = rect.left + rect.width / 2;
+            const sheepY = rect.top + rect.height;
+            
+            // Create poop emoji
+            const poop = document.createElement('div');
+            poop.className = 'poop';
+            poop.textContent = '💩';
+            poop.style.left = sheepX + 'px';
+            poop.style.top = sheepY + 'px';
+            body.appendChild(poop);
+            
+            // Remove poop after animation
+            setTimeout(() => {
+                poop.remove();
+            }, 2000);
+            
+            // Position celebration at sheep location
+            celebrationElement.style.left = sheepX + 'px';
+            celebrationElement.style.top = sheepY - 30 + 'px';
+            
+            // Show celebration with spin and move animation
+            celebrationElement.classList.remove('show');
+            void celebrationElement.offsetWidth; // Force reflow
             celebrationElement.classList.add('show');
+            
             setTimeout(() => {
                 celebrationElement.classList.remove('show');
-            }, 500);
+            }, 2000);
             
-            // Remove sheep from DOM after animation
+            // Make sheep run around the screen
+            sheep.style.animation = 'none'; // Stop floating animation
+            void sheep.offsetWidth; // Force reflow
+            sheep.classList.add('running');
+            
+            // Create random running path
+            const startX = parseFloat(sheep.style.left) || rect.left;
+            const startY = parseFloat(sheep.style.top) || rect.top;
+            const path = generateRandomPath(startX, startY);
+            animateSheepRun(sheep, path);
+            
+            // Remove sheep after running animation
             setTimeout(() => {
                 sheep.remove();
-            }, 300);
+            }, 3000);
         }
 
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            // Reposition sheep if needed
-            const sheepElements = document.querySelectorAll('.sheep:not(.collected)');
-            sheepElements.forEach(sheep => {
-                const x = Math.random() * (window.innerWidth - 100);
-                const y = Math.random() * (window.innerHeight - 100) + 100;
-                sheep.style.left = x + 'px';
-                sheep.style.top = y + 'px';
+        function generateRandomPath(startX, startY) {
+            const path = [];
+            let currentX = startX;
+            let currentY = startY;
+            
+            for (let i = 0; i < 8; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 100;
+                currentX += Math.cos(angle) * distance;
+                currentY += Math.sin(angle) * distance;
+                
+                // Keep within screen bounds
+                currentX = Math.max(0, Math.min(window.innerWidth - 100, currentX));
+                currentY = Math.max(100, Math.min(window.innerHeight - 100, currentY));
+                
+                path.push({ x: currentX, y: currentY });
+            }
+            
+            return path;
+        }
+
+        function animateSheepRun(sheep, path) {
+            const duration = 3000;
+            const steps = path.length;
+            const stepDuration = duration / steps;
+            
+            path.forEach((point, index) => {
+                setTimeout(() => {
+                    sheep.style.left = point.x + 'px';
+                    sheep.style.top = point.y + 'px';
+                    sheep.style.transform = `rotate(${index * 45}deg)`;
+                }, index * stepDuration);
             });
+        }
+
+        // Handle window resize with debouncing for better performance
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Reposition sheep if needed (only if not collected)
+                const sheepElements = document.querySelectorAll('.sheep:not(.collected)');
+                sheepElements.forEach(sheep => {
+                    const x = Math.random() * (window.innerWidth - 100);
+                    const y = Math.random() * (window.innerHeight - 100) + 100;
+                    sheep.style.left = x + 'px';
+                    sheep.style.top = y + 'px';
+                });
+            }, 150); // Debounce resize events
         });
 
         // Make title text have uneven spacing
@@ -242,9 +417,72 @@
             }
         }
 
+        // Virus pop-up messages
+        const virusMessages = [
+            {
+                icon: '⚠️',
+                title: 'VIRUS DETECTED!',
+                message: 'Your computer has been infected with 127 viruses! Click OK to remove them now!'
+            },
+            {
+                icon: '🚨',
+                title: 'CRITICAL ERROR!',
+                message: 'System compromised! Your files are being deleted. Act fast!'
+            },
+            {
+                icon: '💀',
+                title: 'DANGER!',
+                message: 'Malware detected! Your personal information is at risk. Immediate action required!'
+            },
+            {
+                icon: '🔥',
+                title: 'WARNING!',
+                message: 'Trojan horse detected! Your computer will explode in 10 seconds!'
+            },
+            {
+                icon: '☠️',
+                title: 'ALERT!',
+                message: 'Ransomware attack in progress! Pay $5000 or lose all your data!'
+            }
+        ];
+
+        function createVirusPopup() {
+            const message = virusMessages[Math.floor(Math.random() * virusMessages.length)];
+            
+            const popup = document.createElement('div');
+            popup.className = 'virus-popup';
+            
+            // Random position on screen
+            const x = Math.random() * (window.innerWidth - 400);
+            const y = Math.random() * (window.innerHeight - 300) + 50;
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            
+            popup.innerHTML = `
+                <div class="warning-icon">${message.icon}</div>
+                <h2>${message.title}</h2>
+                <p>${message.message}</p>
+                <button class="close-btn" onclick="this.parentElement.remove()">CLOSE</button>
+            `;
+            
+            body.appendChild(popup);
+        }
+
+        // Show virus pop-ups randomly (every 5-15 seconds)
+        function startVirusPopups() {
+            function showNextPopup() {
+                createVirusPopup();
+                const nextDelay = 5000 + Math.random() * 10000; // 5-15 seconds
+                setTimeout(showNextPopup, nextDelay);
+            }
+            // First popup after 3-8 seconds
+            setTimeout(showNextPopup, 3000 + Math.random() * 5000);
+        }
+
         // Initialize game
         createSheep();
         makeUnevenSpacing();
+        startVirusPopups();
     </script>
 </body>
 </html>
