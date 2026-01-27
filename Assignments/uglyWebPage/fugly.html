@@ -334,6 +334,28 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
+
+        /* ——— EXPLOSION OVERLAY ——— */
+        .explosion-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .explosion-overlay.active {
+            opacity: 1;
+        }
+        .explosion-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(1.2) contrast(1.3);
+        }
     </style>
 </head>
 <body>
@@ -388,5 +410,33 @@
             <div>⏭ NEXT: CHAOS CLUB BANGER</div>
         </div>
     </div>
+
+    <!-- Explosion Overlay -->
+    <div class="explosion-overlay" id="explosionOverlay">
+        <img src="https://media.giphy.com/media/3o7aCTPPm4OHfRLSH6/giphy.gif" alt="Explosion">
+    </div>
+
+    <script>
+        const explosionOverlay = document.getElementById('explosionOverlay');
+        
+        function showExplosion() {
+            explosionOverlay.classList.add('active');
+            setTimeout(() => {
+                explosionOverlay.classList.remove('active');
+            }, 1000); // Show for 1 second
+        }
+        
+        function scheduleNextExplosion() {
+            // Random time between 20-35 seconds (20000-35000 milliseconds)
+            const randomTime = Math.floor(Math.random() * 15000) + 20000;
+            setTimeout(() => {
+                showExplosion();
+                scheduleNextExplosion(); // Schedule the next one
+            }, randomTime);
+        }
+        
+        // Start the explosion cycle
+        scheduleNextExplosion();
+    </script>
 </body>
 </html>
