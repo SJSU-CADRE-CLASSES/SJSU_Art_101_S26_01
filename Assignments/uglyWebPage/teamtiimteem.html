@@ -133,7 +133,7 @@
         <!-- Or use an online source -->
         <source src="" type="audio/mpeg">
     </audio>
-    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=600&fit=crop" alt="Scary old man following you" class="zooming-man" id="zoomingMan">
+    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&q=80" alt="Person pointing at you with stern expression" class="zooming-man" id="zoomingMan">
     <h1>Team Tiim Teem</h1>
     <p>The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.</p>
     
@@ -363,15 +363,23 @@
         // Play explosion sound on every click anywhere on the page
         document.addEventListener('click', playExplosionSound);
         
-        // Make the scary man follow the mouse cursor
-        const scaryMan = document.getElementById('zoomingMan');
+        // Make the pointing person follow the mouse cursor and slowly zoom in
+        const pointingPerson = document.getElementById('zoomingMan');
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
+        let currentScale = 0.5; // Start small
+        const zoomSpeed = 0.001; // How fast to zoom in per frame
+        const maxScale = 3; // Maximum zoom level
         
-        function updateScaryManPosition() {
-            if (scaryMan) {
-                scaryMan.style.left = mouseX + 'px';
-                scaryMan.style.top = mouseY + 'px';
+        function updatePointingPersonPosition() {
+            if (pointingPerson) {
+                // Continuously increase scale to make it slowly get closer
+                currentScale = Math.min(currentScale + zoomSpeed, maxScale);
+                
+                // Update position and scale
+                pointingPerson.style.left = mouseX + 'px';
+                pointingPerson.style.top = mouseY + 'px';
+                pointingPerson.style.transform = `translate(-50%, -50%) scale(${currentScale})`;
             }
         }
         
@@ -379,7 +387,6 @@
         document.addEventListener('mousemove', function(e) {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            updateScaryManPosition();
         });
         
         // Also follow on touch devices
@@ -387,12 +394,17 @@
             if (e.touches.length > 0) {
                 mouseX = e.touches[0].clientX;
                 mouseY = e.touches[0].clientY;
-                updateScaryManPosition();
             }
         });
         
-        // Initialize position
-        updateScaryManPosition();
+        // Continuously update position and zoom
+        function animatePointingPerson() {
+            updatePointingPersonPosition();
+            requestAnimationFrame(animatePointingPerson);
+        }
+        
+        // Start animation
+        animatePointingPerson();
     </script>
 </body>
 </html>

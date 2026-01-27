@@ -94,38 +94,26 @@
 
         .celebration {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
+            font-size: 120px;
             font-weight: bold;
+            color: #000000;
             opacity: 0;
             pointer-events: none;
             z-index: 2000;
-            transition: opacity 0.3s ease;
-            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbow 3s linear infinite;
-            letter-spacing: 0.2em;
+            white-space: nowrap;
         }
 
         .celebration.show {
             opacity: 1;
-            animation: pop 0.5s ease;
+            animation: spinAndMove 2s ease-out forwards;
         }
 
-        @keyframes pop {
+        @keyframes spinAndMove {
             0% {
-                transform: translate(-50%, -50%) scale(0);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
+                transform: translate(-50%, -50%) rotate(0deg) scale(0.5);
             }
             100% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translate(calc(-50% + 400px), calc(-50% - 200px)) rotate(720deg) scale(1.5);
             }
         }
 
@@ -155,7 +143,7 @@
         <div class="score-value" id="score">0</div>
     </div>
 
-    <h1 id="title">🐑 Collect the Sheep! 🐑</h1>
+    <h1 id="title">Collect the Sheep!</h1>
 
     <div class="celebration" id="celebration">+1 🤮</div>
 
@@ -173,7 +161,10 @@
             for (let i = 0; i < numSheep; i++) {
                 const sheep = document.createElement('div');
                 sheep.className = 'sheep';
-                sheep.textContent = '🐑';
+                
+                // Randomly make some sheep bald (30% chance)
+                const isBald = Math.random() < 0.3;
+                sheep.textContent = isBald ? '🐏' : '🐑';
                 
                 // Random position
                 const x = Math.random() * (window.innerWidth - 100);
@@ -201,11 +192,19 @@
             score++;
             scoreElement.textContent = score;
             
-            // Show celebration
+            // Position celebration at sheep location
+            const rect = sheep.getBoundingClientRect();
+            celebrationElement.style.left = rect.left + rect.width / 2 + 'px';
+            celebrationElement.style.top = rect.top + rect.height / 2 + 'px';
+            
+            // Show celebration with spin and move animation
+            celebrationElement.classList.remove('show');
+            void celebrationElement.offsetWidth; // Force reflow
             celebrationElement.classList.add('show');
+            
             setTimeout(() => {
                 celebrationElement.classList.remove('show');
-            }, 500);
+            }, 2000);
             
             // Remove sheep from DOM after animation
             setTimeout(() => {
