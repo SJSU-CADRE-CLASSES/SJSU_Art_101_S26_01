@@ -186,24 +186,38 @@
             window.speechSynthesis.speak(utterance);
         }
         
-        // Load voices when available
+        // Function to start TTS when ready
+        function startTTS() {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                readAllText();
+            } else {
+                // If voices not loaded yet, try again shortly
+                setTimeout(startTTS, 100);
+            }
+        }
+        
+        // Load voices when available and start TTS
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = function() {
-                // Voices loaded, can now use them
+                startTTS();
             };
         }
         
         // Try to start immediately and on multiple events
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', readAllText);
+            document.addEventListener('DOMContentLoaded', startTTS);
         } else {
-            readAllText();
+            startTTS();
         }
         
-        window.addEventListener('load', readAllText);
+        window.addEventListener('load', startTTS);
         
-        // Also try after a very short delay
-        setTimeout(readAllText, 50);
+        // Try multiple times with increasing delays to ensure it starts
+        setTimeout(startTTS, 50);
+        setTimeout(startTTS, 200);
+        setTimeout(startTTS, 500);
+        setTimeout(startTTS, 1000);
         
         // Make each line centered differently
         function applyDifferentAlignments() {
