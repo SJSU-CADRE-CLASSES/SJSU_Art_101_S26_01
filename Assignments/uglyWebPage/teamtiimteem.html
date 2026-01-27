@@ -106,9 +106,53 @@
             letter-spacing: 5px;
             text-shadow: 3px 3px 0px #FF0000, -3px -3px 0px #00FF00;
         }
+        
+        .zooming-man {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 300px;
+            object-fit: cover;
+            z-index: 5000;
+            border: 5px solid #FF0000;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+            animation: zoomIn 30s linear infinite;
+        }
+        
+        @keyframes zoomIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0.3);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
+    <audio id="recorderMusic" autoplay loop>
+        <!-- Add your bad recorder audio file here -->
+        <!-- Example: <source src="bad-recorder.mp3" type="audio/mpeg"> -->
+        <!-- Or use an online source like: -->
+        <!-- <source src="https://example.com/bad-recorder.mp3" type="audio/mpeg"> -->
+        <!-- For now using a placeholder - replace with your audio file -->
+        <source src="" type="audio/mpeg">
+    </audio>
+    <audio id="explosionSound" preload="auto">
+        <!-- Add your explosion sound effect here -->
+        <!-- Example: <source src="explosion.mp3" type="audio/mpeg"> -->
+        <!-- Or use an online source -->
+        <source src="" type="audio/mpeg">
+    </audio>
+    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop" alt="Man getting closer" class="zooming-man" id="zoomingMan">
     <h1>Team Tiim Teem</h1>
     <p>The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.</p>
     
@@ -261,6 +305,43 @@
         
         // Create first popup after 1 second
         setTimeout(createVideoPopup, 1000);
+        
+        // Bad recorder background music
+        function playRecorderMusic() {
+            const audio = document.getElementById('recorderMusic');
+            if (audio) {
+                audio.volume = 1.0; // Max volume
+                audio.play().catch(e => {
+                    // Autoplay might be blocked, try again on user interaction
+                    console.log('Autoplay blocked, will try on interaction');
+                });
+            }
+        }
+        
+        // Try to play music on load
+        window.addEventListener('load', function() {
+            setTimeout(playRecorderMusic, 100);
+        });
+        
+        // Also try on any user interaction (click, keypress, etc.)
+        document.addEventListener('click', playRecorderMusic, { once: true });
+        document.addEventListener('keydown', playRecorderMusic, { once: true });
+        document.addEventListener('touchstart', playRecorderMusic, { once: true });
+        
+        // Explosion sound on every click
+        function playExplosionSound() {
+            const explosion = document.getElementById('explosionSound');
+            if (explosion) {
+                explosion.volume = 1.0; // Max volume
+                explosion.currentTime = 0; // Reset to start
+                explosion.play().catch(e => {
+                    // If autoplay is blocked, that's okay - it will work on subsequent clicks
+                });
+            }
+        }
+        
+        // Play explosion sound on every click anywhere on the page
+        document.addEventListener('click', playExplosionSound);
     </script>
 </body>
 </html>
