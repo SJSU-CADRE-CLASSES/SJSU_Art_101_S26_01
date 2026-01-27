@@ -44,6 +44,23 @@
             0%, 50%   { opacity: 1; }
             50.01%, 100% { opacity: 0; }
         }
+        .spin-gif-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            opacity: 0.3;
+            animation: spinClockwise 0.6s linear infinite;
+        }
+        .spin-gif-wrapper .tenor-gif-embed {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        @keyframes spinClockwise {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -53,6 +70,9 @@
     </div>
     <div class="center-flash-wrapper">
         <div class="tenor-gif-embed" data-postid="104275393464880095" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/danci-dancing-cat-dacning-cat-and-dog-dancing-dog-dancing-cat-and-dog-twitch-gif-104275393464880095">Danci Dancing Cat Sticker</a>from <a href="https://tenor.com/search/danci-stickers">Danci Stickers</a></div>
+    </div>
+    <div class="spin-gif-wrapper">
+        <div class="tenor-gif-embed" data-postid="12517189236470321464" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/tm-opera-o-lebron-james-sunshine-uma-musume-gif-12517189236470321464">Tm Opera O Lebron James GIF</a>from <a href="https://tenor.com/search/tm+opera+o-gifs">Tm Opera O GIFs</a></div>
     </div>
     <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 </body>

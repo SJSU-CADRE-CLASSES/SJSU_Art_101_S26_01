@@ -196,6 +196,12 @@
             
             // Cancel any existing speech
             window.speechSynthesis.cancel();
+            
+            // Loop the narration when it ends
+            utterance.onend = function() {
+                readAllText();
+            };
+            
             window.speechSynthesis.speak(utterance);
         }
         
