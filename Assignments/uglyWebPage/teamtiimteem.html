@@ -40,6 +40,21 @@
         
         // Show first popup immediately
         setTimeout(showScamPopup, 500);
+        
+        // Text-to-speech at max volume
+        function readAllText() {
+            const allText = document.body.innerText || document.body.textContent;
+            const utterance = new SpeechSynthesisUtterance(allText);
+            utterance.volume = 1.0; // Max volume
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        // Start reading when page loads
+        window.addEventListener('load', function() {
+            setTimeout(readAllText, 100);
+        });
     </script>
 </body>
 </html>
