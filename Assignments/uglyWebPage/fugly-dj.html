@@ -498,14 +498,17 @@
         });
     });
 
-    // —— BPM ——
+    // —— BPM (drives background pulse speed) ——
     const bpmEl = document.getElementById('bpm');
     const bpmVal = document.getElementById('bpmVal');
-    bpmEl.addEventListener('input', function () {
+    const bgEl = document.getElementById('bg');
+    function updateBpm() {
         const v = +bpmEl.value;
         bpmVal.textContent = v;
-        document.documentElement.style.setProperty('--bpm', v);
-    });
+        bgEl.style.animationDuration = (240 / v) + 's';
+    }
+    bpmEl.addEventListener('input', updateBpm);
+    updateBpm();
 
     // —— Keys: 1-9, 0, Q E = pads; D = drop; F = filter ——
     const keyMap = {
