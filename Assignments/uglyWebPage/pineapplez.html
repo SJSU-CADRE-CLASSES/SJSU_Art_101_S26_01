@@ -132,46 +132,36 @@
     </div>
     </div>
     <script>
-        // Create boo sound using Web Audio API
-        let audioContext;
+        // Create boo sound using Web Speech API (text-to-speech)
         let isPlaying = false;
 
         function playBoo() {
-            if (!audioContext) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) {
-                    console.error('Audio context error:', e);
-                    return;
-                }
+            if (!('speechSynthesis' in window)) {
+                console.error('Speech synthesis not supported');
+                return;
             }
 
             try {
-                // Create oscillator for the "boo" sound
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+                const utterance = new SpeechSynthesisUtterance('BOOOOOOOOO!!!!!');
                 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                // Make it sound like yelling - higher pitch, faster rate, louder
+                utterance.volume = 1.0; // Maximum volume
+                utterance.rate = 0.7; // Slower for emphasis
+                utterance.pitch = 0.5; // Lower pitch for yelling
                 
-                // Use a lower frequency for "boo" sound (around 150-200Hz)
-                oscillator.type = 'sawtooth'; // Sawtooth gives a more vocal-like quality
-                const baseFreq = 150;
+                // Try to use a deeper/more aggressive voice if available
+                const voices = speechSynthesis.getVoices();
+                const maleVoice = voices.find(voice => 
+                    voice.name.toLowerCase().includes('male') || 
+                    voice.name.toLowerCase().includes('david') ||
+                    voice.name.toLowerCase().includes('daniel') ||
+                    voice.name.toLowerCase().includes('james')
+                );
+                if (maleVoice) {
+                    utterance.voice = maleVoice;
+                }
                 
-                const now = audioContext.currentTime;
-                
-                // Create "boo" effect: start low, go slightly higher, then fade down
-                oscillator.frequency.setValueAtTime(baseFreq, now);
-                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 1.3, now + 0.1);
-                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.8, now + 0.3);
-                
-                // Volume envelope: quick attack, longer decay
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(0.4, now + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-                
-                oscillator.start(now);
-                oscillator.stop(now + 0.4);
+                speechSynthesis.speak(utterance);
             } catch (e) {
                 console.error('Boo sound error:', e);
             }
@@ -181,19 +171,30 @@
             if (isPlaying) return;
             isPlaying = true;
             
-            // Play boo immediately
-            playBoo();
-            
-            // Then play boo repeatedly at intervals
+            // Wait for voices to load
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = () => {
+                    playBoo();
+                    startBooInterval();
+                };
+            } else {
+                // Play boo immediately
+                playBoo();
+                startBooInterval();
+            }
+        }
+
+        function startBooInterval() {
+            // Play boo repeatedly at intervals
             function booLoop() {
                 if (!isPlaying) return;
                 playBoo();
-                // Random interval between 0.5 and 1.5 seconds for variety
-                setTimeout(booLoop, 500 + Math.random() * 1000);
+                // Random interval between 1 and 2.5 seconds for variety
+                setTimeout(booLoop, 1000 + Math.random() * 1500);
             }
             
             // Start the loop after first boo
-            setTimeout(booLoop, 500);
+            setTimeout(booLoop, 1500);
         }
 
         // Start boo sounds when page loads
