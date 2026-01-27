@@ -12,9 +12,9 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
             min-height: 100vh;
-            background: linear-gradient(135deg, #87CEEB 0%, #98D8C8 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #8B4513 50%, #ADFF2F 100%);
             position: relative;
             overflow-x: hidden;
         }
@@ -33,14 +33,35 @@
         }
 
         .score-label {
-            color: #666;
             font-size: 16px;
             margin-bottom: 5px;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s linear infinite;
+            letter-spacing: 0.3em;
         }
 
         .score-value {
-            color: #2c3e50;
             font-size: 32px;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s linear infinite;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
         }
 
         .sheep {
@@ -77,12 +98,18 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 48px;
-            color: #ff6b6b;
             font-weight: bold;
             opacity: 0;
             pointer-events: none;
             z-index: 2000;
             transition: opacity 0.3s ease;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s linear infinite;
+            letter-spacing: 0.2em;
         }
 
         .celebration.show {
@@ -105,8 +132,20 @@
         h1 {
             text-align: center;
             padding: 20px;
-            color: #2c3e50;
             margin-top: 80px;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s linear infinite;
+            letter-spacing: 0.5em;
+            font-weight: bold;
+        }
+
+        h1 .char {
+            display: inline-block;
+            letter-spacing: normal;
         }
     </style>
 </head>
@@ -116,7 +155,7 @@
         <div class="score-value" id="score">0</div>
     </div>
 
-    <h1>🐑 Collect the Sheep! 🐑</h1>
+    <h1 id="title">🐑 Collect the Sheep! 🐑</h1>
 
     <div class="celebration" id="celebration">+1 🎉</div>
 
@@ -186,8 +225,26 @@
             });
         });
 
+        // Make title text have uneven spacing
+        function makeUnevenSpacing() {
+            const title = document.getElementById('title');
+            const text = title.textContent;
+            title.innerHTML = '';
+            
+            for (let i = 0; i < text.length; i++) {
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = text[i];
+                // Random letter spacing for uneven effect
+                const spacing = (Math.random() * 0.3 + 0.1) + 'em';
+                span.style.letterSpacing = spacing;
+                title.appendChild(span);
+            }
+        }
+
         // Initialize game
         createSheep();
+        makeUnevenSpacing();
     </script>
 </body>
 </html>
