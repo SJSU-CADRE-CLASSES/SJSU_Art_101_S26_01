@@ -10,7 +10,71 @@
             margin-left: 3%;
             padding-top: 5%;
             color: #573a54;
-            font-size: 1px;
+            font-size: 100px;
+            animation: shake 0.1s infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(2px, -1px); }
+            50% { transform: translate(-1px, 2px); }
+            75% { transform: translate(-2px, 1px); }
+        }
+        
+        .video-popup {
+            position: fixed;
+            width: 400px;
+            height: 300px;
+            background: #000;
+            border: 5px solid #FF0000;
+            border-radius: 10px;
+            z-index: 10000;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+            overflow: hidden;
+        }
+        
+        .video-header {
+            background: #FF0000;
+            color: #FFF;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-btn {
+            background: #FFF;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+        
+        .video-content {
+            width: 100%;
+            height: calc(100% - 50px);
+            background: linear-gradient(45deg, #FF0000, #0000FF, #00FF00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFF;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            animation: flash 0.5s infinite;
+        }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .ad-text {
+            padding: 20px;
         }
     </style>
 </head>
@@ -40,6 +104,71 @@
         
         // Show first popup immediately
         setTimeout(showScamPopup, 500);
+        
+        // Text-to-speech at max volume
+        function readAllText() {
+            const allText = document.body.innerText || document.body.textContent;
+            const utterance = new SpeechSynthesisUtterance(allText);
+            utterance.volume = 1.0; // Max volume
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        // Start reading when page loads
+        window.addEventListener('load', function() {
+            setTimeout(readAllText, 100);
+        });
+        
+        // Fake video advertisement popups
+        const fakeAds = [
+            "CLICK HERE FOR FREE MONEY!",
+            "YOU'VE WON A PRIZE!",
+            "DOWNLOAD NOW - 100% FREE!",
+            "LIMITED TIME OFFER!",
+            "CLICK TO CLAIM YOUR REWARD!",
+            "SPECIAL DEAL JUST FOR YOU!",
+            "URGENT: ACTION REQUIRED!",
+            "CONGRATULATIONS! YOU WON!"
+        ];
+        
+        function createVideoPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'video-popup';
+            
+            // Random position
+            const x = Math.random() * (window.innerWidth - 400);
+            const y = Math.random() * (window.innerHeight - 300);
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            
+            const adText = fakeAds[Math.floor(Math.random() * fakeAds.length)];
+            
+            popup.innerHTML = `
+                <div class="video-header">
+                    <span>ADVERTISEMENT</span>
+                    <button class="close-btn" onclick="this.parentElement.parentElement.remove()">X</button>
+                </div>
+                <div class="video-content">
+                    <div class="ad-text">${adText}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (popup.parentElement) {
+                    popup.remove();
+                }
+            }, 10000);
+        }
+        
+        // Create popup every 3 seconds
+        setInterval(createVideoPopup, 3000);
+        
+        // Create first popup after 1 second
+        setTimeout(createVideoPopup, 1000);
     </script>
 </body>
 </html>
