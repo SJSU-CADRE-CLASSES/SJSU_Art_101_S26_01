@@ -1,4 +1,5 @@
 # Coordination Team
 
-Placeholder file - team content coming soon.
-.
+Ashleigh
+
+Amara Carrier :3
