@@ -1,9 +1,7 @@
 # Dev Team 2
-
+Cole Louie
 Andrew Blanton
-<<<<<<< HEAD
-- John Camacho
-- Yisi Ai
+John Camacho
+Yisi Ai
 Audrey Wai
-=======
->>>>>>> c1dc0cc0b414503f9a658f807fb68eec6b34dcd6
+Swadhistha Koneti
