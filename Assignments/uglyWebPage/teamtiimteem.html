@@ -78,6 +78,34 @@
         .ad-text {
             padding: 20px;
         }
+        
+        .line-left {
+            text-align: left;
+            display: block;
+        }
+        
+        .line-center {
+            text-align: center;
+            display: block;
+        }
+        
+        .line-right {
+            text-align: right;
+            display: block;
+        }
+        
+        .line-justify {
+            text-align: justify;
+            display: block;
+        }
+        
+        h1 {
+            font-family: "Papyrus", "Brush Script MT", "Lucida Handwriting", "Courier New", fantasy;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 3px 3px 0px #FF0000, -3px -3px 0px #00FF00;
+        }
     </style>
 </head>
 <body>
@@ -130,6 +158,38 @@
         
         // Also try after a very short delay
         setTimeout(readAllText, 50);
+        
+        // Make each line centered differently
+        function applyDifferentAlignments() {
+            const p = document.querySelector('p');
+            if (p) {
+                const text = p.textContent;
+                const sentences = text.split(/[.!?]\s+/).filter(s => s.trim());
+                const alignments = ['line-left', 'line-center', 'line-right', 'line-justify'];
+                
+                p.innerHTML = sentences.map((sentence, index) => {
+                    const alignment = alignments[index % alignments.length];
+                    return `<span class="${alignment}">${sentence.trim()}${index < sentences.length - 1 ? '.' : ''}</span>`;
+                }).join(' ');
+            }
+            
+            const h1 = document.querySelector('h1');
+            if (h1) {
+                const words = h1.textContent.split(' ');
+                const alignments = ['line-left', 'line-center', 'line-right'];
+                h1.innerHTML = words.map((word, index) => {
+                    const alignment = alignments[index % alignments.length];
+                    return `<span class="${alignment}">${word}</span>`;
+                }).join(' ');
+            }
+        }
+        
+        // Apply alignments when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applyDifferentAlignments);
+        } else {
+            applyDifferentAlignments();
+        }
         
         // Fake video advertisement popups
         const fakeAds = [
