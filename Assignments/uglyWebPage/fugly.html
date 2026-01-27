@@ -183,7 +183,9 @@
             transform: translate(-50%, -50%);
             background: linear-gradient(135deg, #ff0066, #ff00ff, #00ffff, #ffff00);
             background-size: 400% 400%;
-            animation: popupGradient 3s ease infinite, popupShake 0.5s ease infinite;
+            animation: popupGradient 3s ease infinite, 
+                       popupShake 0.5s ease infinite,
+                       popupFade 4s ease-in-out infinite;
             padding: 30px 50px;
             border: 5px solid #fff;
             border-radius: 20px;
@@ -213,8 +215,12 @@
             25% { transform: translate(-50%, -50%) rotate(-2deg); }
             75% { transform: translate(-50%, -50%) rotate(2deg); }
         }
+        @keyframes popupFade {
+            0%, 100% { opacity: 1; visibility: visible; }
+            50% { opacity: 0; visibility: hidden; }
+        }
         .popup-notification:hover {
-            animation: popupGradient 3s ease infinite, popupShake 0.2s ease infinite;
+            animation: popupGradient 3s ease infinite, popupShake 0.2s ease infinite, popupFade 4s ease-in-out infinite;
             transform: translate(-50%, -50%) scale(1.1);
         }
     </style>
