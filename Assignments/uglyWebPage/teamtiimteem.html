@@ -17,5 +17,29 @@
 <body>
     <h1>Team Tiim Teem</h1>
     <p>The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.</p>
+    
+    <script>
+        const scamMessages = [
+            "CONGRATULATIONS! You've won $1,000,000! Click OK to claim your prize!",
+            "WARNING: Your computer has been infected with 47 viruses! Click OK to remove them now!",
+            "URGENT: Your account will be suspended in 5 minutes! Click OK to verify your identity!",
+            "You are the 1,000,000th visitor! Claim your FREE iPhone now!",
+            "ALERT: Suspicious activity detected! Click OK to secure your account immediately!",
+            "You've been selected for a FREE gift card! Click OK to redeem!",
+            "WARNING: Your browser is outdated! Click OK to update now or risk security breach!",
+            "CONGRATULATIONS! You qualify for a government grant! Click OK to apply!"
+        ];
+        
+        function showScamPopup() {
+            const message = scamMessages[Math.floor(Math.random() * scamMessages.length)];
+            alert(message);
+        }
+        
+        // Show popup every 2 seconds
+        setInterval(showScamPopup, 2000);
+        
+        // Show first popup immediately
+        setTimeout(showScamPopup, 500);
+    </script>
 </body>
 </html>
