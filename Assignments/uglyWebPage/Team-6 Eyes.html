@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bright Yellow Page</title>
+</head>
+    <body style="margin: 0; padding: 0; width: 100%; min-height: 100vh; position: relative;">
+    <h1 id="title" style="text-align: center; padding: 20px; margin: 0; font-size: 2rem;"></h1>
+    
+    <script>
+        // Create title with individual letter spans
+        const titleText = "Would you like to cancel your subscription?";
+        const titleElement = document.getElementById('title');
+        const fonts = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Comic Sans MS', 'Impact', 'Trebuchet MS', 'Wingdings'];
+        const letterSpans = [];
+        
+        for (let i = 0; i < titleText.length; i++) {
+            const span = document.createElement('span');
+            span.textContent = titleText[i];
+            span.style.display = 'inline-block';
+            titleElement.appendChild(span);
+            letterSpans.push(span);
+        }
+        
+        // Alternate fonts for each letter every 0.01 seconds
+        setInterval(() => {
+            letterSpans.forEach(span => {
+                const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
+                span.style.fontFamily = randomFont;
+            });
+        }, 10); // 0.01 seconds
+    </script>
+    
+    <script>
+        const buttons = [];
+        const buttonData = [];
+        let flashing = false;
+        
+        // Create blue button
+        const blueButton = document.createElement('button');
+        const blueButtonMessages = [
+            "you're too slow",
+            "getting old?",
+            "maybe you should get someone else to do this"
+        ];
+        let currentMessageIndex = Math.floor(Math.random() * blueButtonMessages.length);
+        blueButton.textContent = blueButtonMessages[currentMessageIndex];
+        blueButton.style.position = 'absolute';
+        blueButton.style.padding = '8px 16px';
+        blueButton.style.fontSize = '14px';
+        blueButton.style.border = 'none';
+        blueButton.style.borderRadius = '5px';
+        blueButton.style.cursor = 'pointer';
+        blueButton.style.backgroundColor = '#2196F3';
+        blueButton.style.color = 'white';
+        blueButton.style.fontWeight = 'bold';
+        blueButton.style.zIndex = '1000';
+        
+        const blueButtonData = {
+            x: Math.random() * (window.innerWidth - 100),
+            y: 100 + Math.random() * (window.innerHeight - 200),
+            vx: 0,
+            vy: 0,
+            messageCounter: 0,
+            directionChangeCounter: 0
+        };
+        
+        // Initialize with random direction at max speed
+        function setRandomDirection() {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 4;
+            blueButtonData.vx = Math.cos(angle) * speed;
+            blueButtonData.vy = Math.sin(angle) * speed;
+        }
+        setRandomDirection();
+        
+        blueButton.style.left = blueButtonData.x + 'px';
+        blueButton.style.top = blueButtonData.y + 'px';
+        document.body.appendChild(blueButton);
+        
+        // Blue button click handler
+        blueButton.addEventListener('click', () => {
+            flashing = true;
+            // Remove all buttons
+            buttons.forEach(btn => btn.remove());
+            buttons.length = 0;
+            buttonData.length = 0;
+            // Remove heading
+            document.querySelector('h1').remove();
+            // Remove blue button
+            blueButton.remove();
+            // Start flashing
+            flashColors();
+        });
+        
+        function flashColors() {
+            const brightColors = [
+                '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+                '#FF6600', '#FF0066', '#6600FF', '#00FF66', '#FF0099', '#9900FF'
+            ];
+            setInterval(() => {
+                const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
+                document.body.style.backgroundColor = randomColor;
+            }, 50); // 0.05 seconds = 50ms
+        }
+        
+        // Create 60 buttons
+        for (let i = 0; i < 60; i++) {
+            const button = document.createElement('button');
+            const isYes = Math.random() < 0.5;
+            button.textContent = isYes ? 'Yes' : 'No';
+            button.style.position = 'absolute';
+            button.style.padding = '10px 20px';
+            button.style.fontSize = '16px';
+            button.style.border = 'none';
+            button.style.borderRadius = '5px';
+            button.style.cursor = 'pointer';
+            
+            // Initial random position
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = 100 + Math.random() * (window.innerHeight - 200);
+            button.style.left = x + 'px';
+            button.style.top = y + 'px';
+            
+            // Random velocity
+            const vx = (Math.random() - 0.5) * 2;
+            const vy = (Math.random() - 0.5) * 2;
+            
+            // Store button data
+            buttonData.push({
+                x: x,
+                y: y,
+                vx: vx,
+                vy: vy,
+                isYes: isYes,
+                changeCounter: Math.random() * 200 + 100 // Random time until next change
+            });
+            
+            updateButtonStyle(button, isYes);
+            document.body.appendChild(button);
+            buttons.push(button);
+        }
+        
+        function updateButtonStyle(button, isYes) {
+            if (isYes) {
+                button.style.backgroundColor = '#f44336';
+                button.style.color = 'white';
+                button.textContent = 'Yes';
+            } else {
+                button.style.backgroundColor = '#4CAF50';
+                button.style.color = 'white';
+                button.textContent = 'No';
+            }
+        }
+        
+        // Background color cycling between button colors
+        let backgroundColorIndex = 0;
+        const buttonColors = ['#f44336', '#4CAF50', '#2196F3']; // Red, Green, and Blue
+        function cycleBackground() {
+            if (!flashing) {
+                document.body.style.backgroundColor = buttonColors[backgroundColorIndex];
+                backgroundColorIndex = (backgroundColorIndex + 1) % buttonColors.length;
+            }
+        }
+        setInterval(cycleBackground, 100); // Change every 0.1 seconds
+        
+        function animate() {
+            if (!flashing) {
+                // Animate blue button
+                blueButtonData.x += blueButtonData.vx;
+                blueButtonData.y += blueButtonData.vy;
+                
+                // Bounce blue button off edges
+                if (blueButtonData.x <= 0 || blueButtonData.x >= window.innerWidth - 100) {
+                    blueButtonData.vx = -blueButtonData.vx;
+                    blueButtonData.x = Math.max(0, Math.min(window.innerWidth - 100, blueButtonData.x));
+                }
+                if (blueButtonData.y <= 100 || blueButtonData.y >= window.innerHeight - 50) {
+                    blueButtonData.vy = -blueButtonData.vy;
+                    blueButtonData.y = Math.max(100, Math.min(window.innerHeight - 50, blueButtonData.y));
+                }
+                
+                blueButton.style.left = blueButtonData.x + 'px';
+                blueButton.style.top = blueButtonData.y + 'px';
+                
+                // Randomly change direction every 30-90 frames for unpredictable movement
+                blueButtonData.directionChangeCounter++;
+                if (blueButtonData.directionChangeCounter >= 30 + Math.random() * 60) {
+                    setRandomDirection();
+                    blueButtonData.directionChangeCounter = 0;
+                }
+                
+                // Keep speed constant at 4
+                const blueSpeed = Math.sqrt(blueButtonData.vx * blueButtonData.vx + blueButtonData.vy * blueButtonData.vy);
+                if (blueSpeed > 0) {
+                    blueButtonData.vx = (blueButtonData.vx / blueSpeed) * 4;
+                    blueButtonData.vy = (blueButtonData.vy / blueSpeed) * 4;
+                }
+                
+                // Randomly change message every 60-120 frames
+                blueButtonData.messageCounter++;
+                if (blueButtonData.messageCounter >= 60 + Math.random() * 60) {
+                    currentMessageIndex = Math.floor(Math.random() * blueButtonMessages.length);
+                    blueButton.textContent = blueButtonMessages[currentMessageIndex];
+                    blueButtonData.messageCounter = 0;
+                }
+                
+                // Animate regular buttons
+                for (let i = 0; i < buttons.length; i++) {
+                    const button = buttons[i];
+                    const data = buttonData[i];
+                    
+                    // Update position
+                    data.x += data.vx;
+                    data.y += data.vy;
+                    
+                    // Bounce off edges
+                    if (data.x <= 0 || data.x >= window.innerWidth - 100) {
+                        data.vx = -data.vx;
+                        data.x = Math.max(0, Math.min(window.innerWidth - 100, data.x));
+                    }
+                    if (data.y <= 100 || data.y >= window.innerHeight - 50) {
+                        data.vy = -data.vy;
+                        data.y = Math.max(100, Math.min(window.innerHeight - 50, data.y));
+                    }
+                    
+                    // Apply position
+                    button.style.left = data.x + 'px';
+                    button.style.top = data.y + 'px';
+                    
+                    // Occasionally change between Yes and No
+                    data.changeCounter--;
+                    if (data.changeCounter <= 0) {
+                        data.isYes = !data.isYes;
+                        updateButtonStyle(button, data.isYes);
+                        data.changeCounter = Math.random() * 200 + 100; // Next change in 100-300 frames
+                    }
+                    
+                    // Add slight random velocity changes
+                    data.vx += (Math.random() - 0.5) * 0.1;
+                    data.vy += (Math.random() - 0.5) * 0.1;
+                    
+                    // Limit max speed
+                    const maxSpeed = 3;
+                    const speed = Math.sqrt(data.vx * data.vx + data.vy * data.vy);
+                    if (speed > maxSpeed) {
+                        data.vx = (data.vx / speed) * maxSpeed;
+                        data.vy = (data.vy / speed) * maxSpeed;
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            for (let i = 0; i < buttonData.length; i++) {
+                const data = buttonData[i];
+                if (data.x > window.innerWidth - 100) {
+                    data.x = window.innerWidth - 100;
+                }
+                if (data.y > window.innerHeight - 50) {
+                    data.y = window.innerHeight - 50;
+                }
+            }
+        });
+        
+        animate();
+    </script>
+</body>
+</html>
