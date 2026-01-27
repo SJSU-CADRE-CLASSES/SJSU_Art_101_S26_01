@@ -133,7 +133,7 @@
         <!-- Or use an online source -->
         <source src="" type="audio/mpeg">
     </audio>
-    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop&q=80" alt="Person pointing at you with stern expression" class="zooming-man" id="zoomingMan">
+    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=600&fit=crop&q=80" alt="Elderly Filipino man" class="zooming-man" id="zoomingMan">
     <h1>Team Tiim Teem</h1>
     <p>The FitnessGram™ Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.</p>
     
@@ -166,7 +166,7 @@
             const utterance = new SpeechSynthesisUtterance(allText);
             utterance.volume = 1.0; // Max volume
             utterance.rate = 0.9; // Slower, more relaxed like Jennifer Coolidge
-            utterance.pitch = 0.7; // Lower pitch - more husky/raspy like Jennifer Coolidge
+            utterance.pitch = 0.4; // Lower pitch - deeper voice
             
             // Try to select a female voice similar to Jennifer Coolidge
             const voices = window.speechSynthesis.getVoices();
@@ -196,6 +196,12 @@
             
             // Cancel any existing speech
             window.speechSynthesis.cancel();
+            
+            // Loop the narration when it ends
+            utterance.onend = function() {
+                readAllText();
+            };
+            
             window.speechSynthesis.speak(utterance);
         }
         
@@ -368,7 +374,7 @@
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
         let currentScale = 0.5; // Start small
-        const zoomSpeed = 0.001; // How fast to zoom in per frame
+        const zoomSpeed = 0.005; // How fast to zoom in per frame (increased from 0.001 to 0.005 for 5x faster)
         const maxScale = 3; // Maximum zoom level
         
         function updatePointingPersonPosition() {
