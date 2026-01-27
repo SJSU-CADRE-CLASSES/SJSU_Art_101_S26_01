@@ -171,6 +171,75 @@
             0%, 100% { box-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00; }
             50% { box-shadow: 0 0 50px #00ff00, 0 0 100px #00ff00; }
         }
+
+        .popup-ad {
+            position: fixed;
+            width: 300px;
+            height: 250px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 400% 400%;
+            animation: gradientShift 2s ease infinite, shake 0.5s infinite;
+            border: 5px solid #ff0000;
+            border-radius: 10px;
+            z-index: 10000;
+            padding: 20px;
+            box-shadow: 0 0 50px #ff00ff, 0 0 100px #00ffff;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+            text-align: center;
+            text-shadow: 2px 2px 4px #fff;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-5px, -5px) rotate(-2deg); }
+            50% { transform: translate(5px, 5px) rotate(2deg); }
+            75% { transform: translate(-5px, 5px) rotate(-2deg); }
+        }
+
+        .popup-ad h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            animation: blink 0.5s infinite;
+        }
+
+        .popup-ad p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10001;
+        }
+
+        .close-btn:hover {
+            background: #ff6666;
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body>
@@ -253,7 +322,7 @@
             startRandomMovement();
         });
 
-        // Popup functionality
+        // Popup modal functionality
         function claimReward() {
             alert('Thank you for claiming! Please enter your credit card information to receive your FREE iPad!');
             // Make popup reappear after a delay (annoying!)
@@ -276,6 +345,71 @@
                 setTimeout(() => {
                     document.getElementById('popupOverlay').style.display = 'flex';
                 }, 1000);
+            }
+        });
+
+        // Function to create popup ads
+        function createPopupAd(x, y) {
+            const ad = document.createElement('div');
+            ad.className = 'popup-ad';
+            
+            // Random ad messages
+            const adMessages = [
+                'CLICK HERE NOW!',
+                'FREE MONEY!!!',
+                'YOU WON!',
+                'URGENT: CLICK ME!',
+                'SPECIAL OFFER!',
+                'DON\'T MISS OUT!',
+                'LIMITED TIME!',
+                'ACT NOW!'
+            ];
+            
+            const randomMessage = adMessages[Math.floor(Math.random() * adMessages.length)];
+            
+            ad.innerHTML = `
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+                <h2>${randomMessage}</h2>
+                <p>Click for more!</p>
+                <p>🎉 SPECIAL DEAL 🎉</p>
+            `;
+            
+            // Position the ad near the click location
+            const offsetX = (Math.random() - 0.5) * 200;
+            const offsetY = (Math.random() - 0.5) * 200;
+            ad.style.left = (x + offsetX) + 'px';
+            ad.style.top = (y + offsetY) + 'px';
+            
+            // Make clicking the ad create more ads
+            ad.addEventListener('click', (e) => {
+                if (e.target.className !== 'close-btn') {
+                    // Create 2-3 more ads when clicking an ad
+                    const numAds = 2 + Math.floor(Math.random() * 2);
+                    for (let i = 0; i < numAds; i++) {
+                        setTimeout(() => {
+                            createPopupAd(
+                                e.clientX + (Math.random() - 0.5) * 300,
+                                e.clientY + (Math.random() - 0.5) * 300
+                            );
+                        }, i * 100);
+                    }
+                }
+            });
+            
+            document.body.appendChild(ad);
+        }
+
+        // Add click handler to the entire page
+        document.addEventListener('click', (e) => {
+            // Don't create ads when clicking on the modal overlay or its children
+            if (!e.target.closest('.popup-overlay') && !e.target.closest('.popup')) {
+                // Create 1-2 popup ads on each click
+                const numAds = 1 + Math.floor(Math.random() * 2);
+                for (let i = 0; i < numAds; i++) {
+                    setTimeout(() => {
+                        createPopupAd(e.clientX, e.clientY);
+                    }, i * 100);
+                }
             }
         });
     </script>
