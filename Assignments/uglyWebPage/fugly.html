@@ -350,6 +350,26 @@
             object-fit: cover;
             filter: brightness(1.2) contrast(1.3);
         }
+
+        /* ——— FLOATING CURSORS ——— */
+        .floating-cursor {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 99998;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" fill="%23fff" stroke="%23000" stroke-width="1"/></svg>') no-repeat center;
+            background-size: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8)) drop-shadow(0 0 8px rgba(255,255,255,0.6));
+            transform: translate(-50%, -50%);
+            animation: cursorFloat 3s ease-in-out infinite;
+        }
+        @keyframes cursorFloat {
+            0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) translate(15px, -20px) rotate(5deg); }
+            50% { transform: translate(-50%, -50%) translate(-10px, 15px) rotate(-5deg); }
+            75% { transform: translate(-50%, -50%) translate(20px, 10px) rotate(3deg); }
+        }
     </style>
 </head>
 <body>
@@ -465,6 +485,61 @@
                 popupButton.style.top = newTop + '%';
                 popupButton.style.left = newLeft + '%';
             }
+        });
+
+        // Floating cursors that spawn on click
+        const floatingCursors = [];
+        let currentMouseX = 0;
+        let currentMouseY = 0;
+
+        // Track real cursor position
+        document.addEventListener('mousemove', (e) => {
+            currentMouseX = e.clientX;
+            currentMouseY = e.clientY;
+            
+            // Update all floating cursors to orbit around real cursor
+            floatingCursors.forEach((cursor, index) => {
+                const angle = (Date.now() / 1000 + index * 0.5) % (Math.PI * 2);
+                const radius = 50 + index * 15; // Staggered orbits
+                const offsetX = Math.cos(angle) * radius;
+                const offsetY = Math.sin(angle) * radius;
+                
+                cursor.style.left = (currentMouseX + offsetX) + 'px';
+                cursor.style.top = (currentMouseY + offsetY) + 'px';
+            });
+        });
+
+        // Create new floating cursor on click
+        document.addEventListener('click', (e) => {
+            const cursor = document.createElement('div');
+            cursor.className = 'floating-cursor';
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Random animation delay for variety
+            cursor.style.animationDelay = (Math.random() * 3) + 's';
+            
+            document.body.appendChild(cursor);
+            floatingCursors.push(cursor);
+            
+            // Keep cursors on screen by constraining position
+            const updateCursorPosition = () => {
+                const rect = cursor.getBoundingClientRect();
+                let x = parseFloat(cursor.style.left);
+                let y = parseFloat(cursor.style.top);
+                
+                // Constrain to viewport
+                if (x < 0) x = 0;
+                if (x > window.innerWidth) x = window.innerWidth;
+                if (y < 0) y = 0;
+                if (y > window.innerHeight) y = window.innerHeight;
+                
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+            };
+            
+            // Update position periodically to keep on screen
+            setInterval(updateCursorPosition, 100);
         });
     </script>
 </body>
