@@ -223,6 +223,117 @@
             animation: popupGradient 3s ease infinite, popupShake 0.2s ease infinite, popupFade 4s ease-in-out infinite;
             transform: translate(-50%, -50%) scale(1.1);
         }
+
+        /* ——— DJ SET ——— */
+        .dj-set {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 520px;
+            background: linear-gradient(180deg, #1a0033 0%, #330066 30%, #6600cc 60%, #ff00ff 100%);
+            border: 6px solid #ffff00;
+            border-radius: 12px;
+            box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, inset 0 0 30px rgba(255,0,255,0.4);
+            padding: 16px 20px;
+            z-index: 9999;
+            font-family: "Comic Sans MS", "Papyrus", Impact, sans-serif;
+        }
+        .dj-set h2 {
+            font-size: 1.6rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px #ff00ff, 2px 2px 0 #000;
+            text-align: center;
+            margin-bottom: 12px;
+            animation: djTitlePulse 1.5s ease-in-out infinite;
+        }
+        @keyframes djTitlePulse {
+            0%, 100% { transform: scale(1); color: #00ffff; }
+            50% { transform: scale(1.05); color: #ff00ff; }
+        }
+        .dj-decks {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 14px;
+        }
+        .dj-turntable {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 5px solid #ff0066;
+            background: repeating-radial-gradient(circle at center, #111 0px, #222 2px, #111 4px);
+            box-shadow: inset 0 0 20px #000, 0 0 15px #ff00ff;
+            animation: djSpin 4s linear infinite;
+            position: relative;
+        }
+        .dj-turntable::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff0 30%, #f80 100%);
+            border: 3px solid #fff;
+            box-shadow: 0 0 10px #ff0;
+            z-index: 2;
+        }
+        .dj-turntable.two { animation-direction: reverse; animation-duration: 3s; border-color: #00ff88; }
+        @keyframes djSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .dj-mixer {
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(180deg, #333 0%, #111 100%);
+            border: 4px solid #ffff00;
+            border-radius: 6px;
+            box-shadow: 0 0 10px #ff0, inset 0 2px 4px #666;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding-bottom: 8px;
+        }
+        .dj-fader {
+            width: 8px;
+            height: 24px;
+            background: linear-gradient(90deg, #666, #ccc);
+            border-radius: 2px;
+            animation: djFader 2s ease-in-out infinite;
+        }
+        .dj-fader:nth-child(2) { animation-delay: 0.3s; }
+        .dj-fader:nth-child(3) { animation-delay: 0.6s; }
+        @keyframes djFader {
+            0%, 100% { transform: scaleY(0.6); transform-origin: bottom; }
+            50% { transform: scaleY(1); transform-origin: bottom; }
+        }
+        .dj-tracklist {
+            background: rgba(0,0,0,0.6);
+            border: 3px dashed #00ffff;
+            border-radius: 6px;
+            padding: 10px 14px;
+        }
+        .dj-tracklist div {
+            font-size: 0.9rem;
+            padding: 4px 0;
+            color: #fff;
+            text-shadow: 0 0 6px #ff00ff;
+        }
+        .dj-now {
+            color: #ffff00 !important;
+            font-weight: bold;
+            animation: djNowBlink 0.8s ease-in-out infinite;
+        }
+        @keyframes djNowBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
@@ -257,5 +368,25 @@
 
     <!-- Pop-up Notification -->
     <div class="popup-notification">DONT CLICK HERE</div>
+
+    <!-- DJ Set -->
+    <div class="dj-set">
+        <h2>🎧 LIVE DJ SET 🎧</h2>
+        <div class="dj-decks">
+            <div class="dj-turntable"></div>
+            <div class="dj-mixer">
+                <div class="dj-fader"></div>
+                <div class="dj-fader"></div>
+                <div class="dj-fader"></div>
+            </div>
+            <div class="dj-turntable two"></div>
+        </div>
+        <div class="dj-tracklist">
+            <div class="dj-now">▶ NOW: BASS DROP MEGAMIX 3000</div>
+            <div>⏭ NEXT: NEON RAINBOW BEATS</div>
+            <div>⏭ NEXT: FUGLY HOUSE ANTHEM</div>
+            <div>⏭ NEXT: CHAOS CLUB BANGER</div>
+        </div>
+    </div>
 </body>
 </html>
