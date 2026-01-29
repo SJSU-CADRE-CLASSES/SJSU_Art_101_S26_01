@@ -4,4 +4,5 @@ Andrew Blanton
 John Camacho
 Yisi Ai
 Audrey Wai
+Cassidy Singman
 Swadhistha Koneti
