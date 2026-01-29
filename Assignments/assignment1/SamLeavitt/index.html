@@ -9,6 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: url('meat-cursor.png'), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='18' rx='12' ry='10' fill='%238B4513'/%3E%3Cellipse cx='16' cy='16' rx='10' ry='8' fill='%23A0522D'/%3E%3C/svg%3E") 16 16, pointer !important;
         }
         html, body {
             width: 100%;
@@ -16,7 +17,37 @@
             background: #000;
             overflow: hidden;
             position: relative;
-            cursor: url('meat-cursor.png'), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='18' rx='12' ry='10' fill='%238B4513'/%3E%3Cellipse cx='16' cy='16' rx='10' ry='8' fill='%23A0522D'/%3E%3C/svg%3E") 16 16, pointer;
+        }
+        #blood-trail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .blood-drop {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle at 30% 30%, #8b0000, #4a0000);
+            border-radius: 50%;
+            animation: blood-fade 2s ease-out forwards;
+        }
+        .blood-drop::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 3px;
+            height: 3px;
+            background: rgba(139, 0, 0, 0.6);
+            border-radius: 50%;
+        }
+        @keyframes blood-fade {
+            0% { opacity: 0.9; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
         }
         .mouth-wrapper {
             position: absolute;
@@ -27,7 +58,6 @@
             width: 150px;
             height: auto;
             display: block;
-            cursor: pointer;
         }
         .mouth-wrapper .tooltip {
             position: absolute;
@@ -63,9 +93,39 @@
     </style>
 </head>
 <body>
+    <div id="blood-trail"></div>
     <div class="mouth-wrapper">
         <span class="tooltip">feed the mouth?</span>
-        <img src="mouth.jpg" alt="Mouth" class="mouth-image" />
+        <img src="mouth.png" alt="Mouth" class="mouth-image" />
     </div>
+    <script>
+        (function () {
+            var trail = document.getElementById('blood-trail');
+            var lastX = 0, lastY = 0;
+            var lastDrop = 0;
+            var minDist = 12;
+
+            document.addEventListener('mousemove', function (e) {
+                var now = Date.now();
+                var dx = e.clientX - lastX;
+                var dy = e.clientY - lastY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < minDist && now - lastDrop < 80) return;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                lastDrop = now;
+
+                var drop = document.createElement('div');
+                drop.className = 'blood-drop';
+                var size = 5 + Math.random() * 6;
+                drop.style.width = size + 'px';
+                drop.style.height = size + 'px';
+                drop.style.left = (e.clientX - size / 2) + 'px';
+                drop.style.top = (e.clientY - size / 2) + 'px';
+                trail.appendChild(drop);
+                setTimeout(function () { drop.remove(); }, 2100);
+            });
+        })();
+    </script>
 </body>
 </html>
