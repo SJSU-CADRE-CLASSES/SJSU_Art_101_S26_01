@@ -5,10 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amara Carrier</title>
     <style>
-        body { background-color: black; color: white; }
+        body { background-color: black; color: white; margin: 0; min-height: 100vh; }
+
+        .eyes-container {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            padding: 60px 0;
+        }
+
+        .eye {
+            width: 120px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lid {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 0;
+            background: black;
+            z-index: 2;
+            animation: lid-blink 3s ease-in-out infinite;
+        }
+
+        @keyframes lid-blink {
+            0%, 96%, 100% { height: 0; }
+            98% { height: 100%; }
+        }
+
+        .pupil {
+            width: 35px;
+            height: 35px;
+            background: black;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
     <h1>Amara Carrier</h1>
+    <div class="eyes-container">
+        <div class="eye" id="eye1">
+            <div class="lid"></div>
+            <div class="pupil" id="pupil1"></div>
+        </div>
+        <div class="eye" id="eye2">
+            <div class="lid"></div>
+            <div class="pupil" id="pupil2"></div>
+        </div>
+    </div>
+
+    <script>
+        const maxMove = 15;
+        const pupils = [document.getElementById('pupil1'), document.getElementById('pupil2')];
+        const eyes = [document.getElementById('eye1'), document.getElementById('eye2')];
+
+        document.addEventListener('mousemove', (e) => {
+            pupils.forEach((pupil, i) => {
+                const eye = eyes[i];
+                const rect = eye.getBoundingClientRect();
+                const eyeCenterX = rect.left + rect.width / 2;
+                const eyeCenterY = rect.top + rect.height / 2;
+
+                let dx = e.clientX - eyeCenterX;
+                let dy = e.clientY - eyeCenterY;
+
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance > maxMove) {
+                    const scale = maxMove / distance;
+                    dx *= scale;
+                    dy *= scale;
+                }
+
+                pupil.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+            });
+        });
+    </script>
 </body>
 </html>
