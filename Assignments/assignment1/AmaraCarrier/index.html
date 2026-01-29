@@ -344,7 +344,24 @@
     </div>
 
     <script>
+        const centerText = document.querySelector('.center-text');
+        let mouseX = 0, mouseY = 0;
+
+        function getShakeIntensity() {
+            if (!centerText) return 0;
+            const rect = centerText.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+            const triggerRadius = 280;
+            if (dist >= triggerRadius) return 0;
+            return 1 - dist / triggerRadius;
+        }
+
         document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
             document.querySelectorAll('.eye').forEach((eye) => {
                 const pupil = eye.querySelector('.pupil');
                 if (!pupil) return;
@@ -364,6 +381,26 @@
                 pupil.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
             });
         });
+
+        const maxShake = 8;
+        const needsTranslateY = (el) => /eye--(ml|mr|l2|l3|r2|r3)\b/.test(el.className);
+
+        function shakeEyes() {
+            const intensity = getShakeIntensity();
+            document.querySelectorAll('.eye').forEach((eye) => {
+                if (intensity <= 0) {
+                    eye.style.transform = needsTranslateY(eye) ? 'translateY(-50%)' : '';
+                    return;
+                }
+                const amount = maxShake * intensity;
+                const shakeX = (Math.random() - 0.5) * 2 * amount;
+                const shakeY = (Math.random() - 0.5) * 2 * amount;
+                const base = needsTranslateY(eye) ? ' translateY(-50%)' : '';
+                eye.style.transform = `translate(${shakeX}px, ${shakeY}px)${base}`;
+            });
+            requestAnimationFrame(shakeEyes);
+        }
+        requestAnimationFrame(shakeEyes);
     </script>
 </body>
 </html>
