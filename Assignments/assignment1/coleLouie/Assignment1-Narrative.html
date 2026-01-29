@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Press Start</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .press-start {
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 2.5rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .go-btn {
+      background: #c00;
+      color: #fff;
+      border: none;
+      padding: 1rem 3rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 4px 0 #900, 0 6px 12px rgba(0,0,0,0.5);
+    }
+    .go-btn:hover {
+      background: #e00;
+      transform: translateY(-1px);
+    }
+    .go-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #900, 0 2px 8px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <p class="press-start">Press Start</p>
+  <button class="go-btn" type="button">Go</button>
+</body>
+</html>
