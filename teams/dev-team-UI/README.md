@@ -2,5 +2,6 @@
 Cole Louie
 Andrew Blanton
 John Camacho
+Yisi Ai
+Audrey Wai
 Swadhistha Koneti
-yisi ai

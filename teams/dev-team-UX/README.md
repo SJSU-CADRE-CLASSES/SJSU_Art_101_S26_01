@@ -1,8 +1,6 @@
 # Dev Team 3
 
-Andre Duong
-Sam Leavitt
-Dwayne Moraes
+Placeholder file - team content coming soon.
 
-Andrew Tarin
+Sam Leavitt
 
