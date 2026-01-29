@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ugly Web Page Assignment</title>
+    <style>
+        @keyframes flash {
+            0%, 50% {
+                background-color: white;
+                color: black;
+            }
+            51%, 100% {
+                background-color: black;
+                color: white;
+            }
+        }
+        body {
+            animation: flash 0.1s infinite;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
     <h1>Ugly Web Page Assignment</h1>
