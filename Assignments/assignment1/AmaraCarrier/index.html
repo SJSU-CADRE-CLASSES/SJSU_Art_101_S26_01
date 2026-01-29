@@ -13,7 +13,10 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Courier New', monospace;
-            font-size: 40pt;
+            font-size: clamp(14px, 2.8vw, 26px);
+            max-width: 85vw;
+            padding: 0 1em;
+            box-sizing: border-box;
             font-weight: bold;
             color: #ff0000;
             text-align: center;
@@ -38,10 +41,21 @@
             position: fixed;
             border-radius: 50% 50% 48% 48% / 60% 60% 40% 40%;
             background: linear-gradient(180deg, #f8f6f0 0%, #ebe8e0 50%, #e0ddd5 100%);
+            background-size: cover;
+            background-position: center;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.3);
             overflow: hidden;
             z-index: 0;
         }
+
+        /* Eyes using real photos */
+        .eye.eye--photo {
+            background-repeat: no-repeat;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .eye.eye--photo::before { display: none; }
+        .eye.eye--photo .iris { display: none; }
+        .eye.eye--photo .pupil { display: none; }
 
         .eye::before {
             content: '';
