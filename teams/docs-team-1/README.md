@@ -4,8 +4,7 @@
 Michelle Duong
 Tracy Kyaw
 Andrea Arellano
-erin koga
-
+Erin Koga
 =======
 Placeholder file - team content coming soon.
 
