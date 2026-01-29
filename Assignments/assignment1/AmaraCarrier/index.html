@@ -13,7 +13,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Courier New', monospace;
-            font-size: 400pt;
+            font-size: 500pt;
             font-weight: bold;
             color: #ff0000;
             text-align: center;
@@ -346,6 +346,38 @@
     <script>
         const centerText = document.querySelector('.center-text');
         let mouseX = 0, mouseY = 0;
+        let textOffsetX = 0, textOffsetY = 0;
+
+        const FLEE_RADIUS = 320;
+        const FLEE_STRENGTH = 18;
+        const MAX_OFFSET = 0.42;
+
+        function updateTextPosition() {
+            if (!centerText) return;
+            const rect = centerText.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+
+            if (dist < FLEE_RADIUS && dist > 2) {
+                const intensity = 1 - dist / FLEE_RADIUS;
+                const push = FLEE_STRENGTH * intensity;
+                const dx = (centerX - mouseX) / dist;
+                const dy = (centerY - mouseY) / dist;
+                textOffsetX += dx * push;
+                textOffsetY += dy * push;
+            } else if (dist >= FLEE_RADIUS) {
+                textOffsetX *= 0.97;
+                textOffsetY *= 0.97;
+            }
+
+            const maxX = window.innerWidth * MAX_OFFSET;
+            const maxY = window.innerHeight * MAX_OFFSET;
+            textOffsetX = Math.max(-maxX, Math.min(maxX, textOffsetX));
+            textOffsetY = Math.max(-maxY, Math.min(maxY, textOffsetY));
+
+            centerText.style.transform = `translate(calc(-50% + ${textOffsetX}px), calc(-50% + ${textOffsetY}px))`;
+        }
 
         function getShakeIntensity() {
             if (!centerText) return 0;
@@ -361,6 +393,7 @@
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+            updateTextPosition();
 
             document.querySelectorAll('.eye').forEach((eye) => {
                 const pupil = eye.querySelector('.pupil');
@@ -386,6 +419,7 @@
         const needsTranslateY = (el) => /eye--(ml|mr|l2|l3|r2|r3)\b/.test(el.className);
 
         function shakeEyes() {
+            updateTextPosition();
             const intensity = getShakeIntensity();
             document.querySelectorAll('.eye').forEach((eye) => {
                 if (intensity <= 0) {
