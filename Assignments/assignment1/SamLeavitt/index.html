@@ -16,17 +16,56 @@
             background: #000;
             overflow: hidden;
             position: relative;
+            cursor: url('meat-cursor.png'), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='18' rx='12' ry='10' fill='%238B4513'/%3E%3Cellipse cx='16' cy='16' rx='10' ry='8' fill='%23A0522D'/%3E%3C/svg%3E") 16 16, pointer;
         }
-        .mouth-image {
+        .mouth-wrapper {
             position: absolute;
             bottom: 20px;
             right: 20px;
+        }
+        .mouth-image {
             width: 150px;
             height: auto;
+            display: block;
+            cursor: pointer;
+        }
+        .mouth-wrapper .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #333;
+            color: #fff;
+            font-family: sans-serif;
+            font-size: 14px;
+            white-space: nowrap;
+            border-radius: 6px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            pointer-events: none;
+        }
+        .mouth-wrapper .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+        .mouth-wrapper:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
 <body>
-    <img src="mouth.jpg" alt="Mouth" class="mouth-image" />
+    <div class="mouth-wrapper">
+        <span class="tooltip">feed the mouth?</span>
+        <img src="mouth.jpg" alt="Mouth" class="mouth-image" />
+    </div>
 </body>
 </html>
