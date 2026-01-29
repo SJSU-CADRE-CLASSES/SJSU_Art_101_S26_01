@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amara Carrier</title>
     <style>
-        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; }
+        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; cursor: none; }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            border-left: 2px solid #fff;
+            border-top: 2px solid #fff;
+            box-sizing: border-box;
+        }
 
         .center-text {
             position: fixed;
@@ -13,7 +25,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Courier New', monospace;
-            font-size: 48px;
+            font-size: 300pt;
             font-weight: bold;
             color: #ff0000;
             text-align: center;
@@ -223,6 +235,116 @@
                 radial-gradient(circle at 35% 35%, #7a9a6a 0%, #6b7c5a 20%, #5a6c4a 40%, #4a5c3a 55%, #3d4d2e 70%, #2d3d1e 85%, #252d1a 100%);
         }
 
+        /* Eye design variants */
+        .eye.design--slit .iris {
+            background: radial-gradient(circle at 35% 35%, #c9a227 0%, #a08020 40%, #6b5320 70%, #3d3010 100%);
+        }
+        .eye.design--slit .iris::before,
+        .eye.design--slit .iris::after { display: none; }
+        .eye.design--slit .pupil {
+            width: 22%;
+            height: 85%;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: none;
+        }
+        .eye.design--slit .pupil::after { display: none; }
+
+        .eye.design--alien .iris {
+            background: radial-gradient(circle at 35% 35%, #7fff7f 0%, #4ade4a 30%, #2d8b2d 60%, #1a521a 100%);
+            box-shadow: inset 0 0 20px rgba(0,255,100,0.4), 0 0 25px rgba(0,255,128,0.5);
+        }
+        .eye.design--alien .pupil {
+            background: radial-gradient(circle at 30% 30%, #2d2d2d, #000);
+            box-shadow: 0 0 15px rgba(0,255,100,0.6);
+        }
+        .eye.design--alien .pupil::after {
+            background: rgba(200,255,200,0.9);
+            width: 28%;
+            height: 28%;
+        }
+
+        .eye.design--cartoon {
+            border: 3px solid #111;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .eye.design--cartoon::before { display: none; }
+        .eye.design--cartoon .iris {
+            background: #fff;
+            border: 2px solid #111;
+            box-shadow: none;
+        }
+        .eye.design--cartoon .iris::before,
+        .eye.design--cartoon .iris::after { display: none; }
+        .eye.design--cartoon .pupil {
+            background: #111;
+            box-shadow: none;
+        }
+        .eye.design--cartoon .pupil::after {
+            width: 30%;
+            height: 30%;
+            top: 15%;
+            left: 20%;
+        }
+
+        .eye.design--droopy {
+            border-radius: 50% 50% 42% 42% / 48% 48% 52% 52%;
+            transform-origin: center;
+        }
+        .eye.design--droopy .lid {
+            background: linear-gradient(180deg, #2a2520 0%, #1a1512 100%);
+        }
+
+        .eye.design--goat .pupil {
+            width: 85%;
+            height: 22%;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: none;
+        }
+        .eye.design--goat .pupil::after { display: none; }
+        .eye.design--goat .iris::before,
+        .eye.design--goat .iris::after { opacity: 0.6; }
+
+        .eye.design--bloodshot {
+            background: linear-gradient(180deg, #fff0f0 0%, #f8e8e8 30%, #f0d8d8 60%, #e8c8c8 100%);
+        }
+        .eye.design--bloodshot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                95deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(180, 40, 40, 0.15) 2px,
+                rgba(180, 40, 40, 0.15) 3px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .eye.design--cat {
+            border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
+        }
+        .eye.design--cat .pupil {
+            width: 45%;
+            height: 90%;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: none;
+        }
+        .eye.design--cat .pupil::after { display: none; }
+        .eye.design--cat .iris {
+            background: radial-gradient(circle at 35% 35%, #e6b800 0%, #c49b00 50%, #8b6914 100%);
+        }
+        .eye.design--cat .iris::before,
+        .eye.design--cat .iris::after { display: none; }
+
         /* Positions – border around the page */
         .eye--tl { top: 4%; left: 4%; }
         .eye--t2 { top: 4%; left: 15%; }
@@ -249,102 +371,153 @@
     </style>
 </head>
 <body>
+    <div class="custom-cursor" id="customCursor"></div>
     <div class="center-text">Don't Look At Me</div>
     <!-- Top border -->
-    <div class="eye eye--sm eye--tl">
+    <div class="eye eye--sm eye--tl design--slit">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t2">
+    <div class="eye eye--lg eye--t2 design--alien">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--t3">
+    <div class="eye eye--md eye--t3 design--cartoon">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--t4">
+    <div class="eye eye--xl eye--t4 design--droopy">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--t5">
+    <div class="eye eye--sm eye--t5 design--goat">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--t6">
+    <div class="eye eye--md eye--t6 design--bloodshot">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t7">
+    <div class="eye eye--lg eye--t7 design--cat">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--tr">
+    <div class="eye eye--sm eye--tr design--slit">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
     <!-- Bottom border -->
-    <div class="eye eye--md eye--bl">
+    <div class="eye eye--md eye--bl design--alien">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--b2">
+    <div class="eye eye--sm eye--b2 design--cartoon">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--b3">
+    <div class="eye eye--xl eye--b3 design--goat">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--b4">
+    <div class="eye eye--lg eye--b4 design--bloodshot">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--b5">
+    <div class="eye eye--sm eye--b5 design--cat">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--b6">
+    <div class="eye eye--md eye--b6 design--slit">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--b7">
+    <div class="eye eye--lg eye--b7 design--droopy">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--br">
+    <div class="eye eye--sm eye--br design--alien">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
     <!-- Left border -->
-    <div class="eye eye--lg eye--ml">
+    <div class="eye eye--lg eye--ml design--cartoon">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--l2">
+    <div class="eye eye--sm eye--l2 design--cat">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--l3">
+    <div class="eye eye--md eye--l3 design--bloodshot">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
     <!-- Right border -->
-    <div class="eye eye--md eye--mr">
+    <div class="eye eye--md eye--mr design--goat">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--r2">
+    <div class="eye eye--xl eye--r2 design--droopy">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--r3">
+    <div class="eye eye--sm eye--r3 design--slit">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
 
     <script>
+        const centerText = document.querySelector('.center-text');
+        let mouseX = 0, mouseY = 0;
+        let textOffsetX = 0, textOffsetY = 0;
+
+        const FLEE_RADIUS = 320;
+        const FLEE_STRENGTH = 18;
+        const MAX_OFFSET = 0.42;
+
+        function updateTextPosition() {
+            if (!centerText) return;
+            const rect = centerText.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+
+            if (dist < FLEE_RADIUS && dist > 2) {
+                const intensity = 1 - dist / FLEE_RADIUS;
+                const push = FLEE_STRENGTH * intensity;
+                const dx = (centerX - mouseX) / dist;
+                const dy = (centerY - mouseY) / dist;
+                textOffsetX += dx * push;
+                textOffsetY += dy * push;
+            } else if (dist >= FLEE_RADIUS) {
+                textOffsetX *= 0.97;
+                textOffsetY *= 0.97;
+            }
+
+            const maxX = window.innerWidth * MAX_OFFSET;
+            const maxY = window.innerHeight * MAX_OFFSET;
+            textOffsetX = Math.max(-maxX, Math.min(maxX, textOffsetX));
+            textOffsetY = Math.max(-maxY, Math.min(maxY, textOffsetY));
+
+            centerText.style.transform = `translate(calc(-50% + ${textOffsetX}px), calc(-50% + ${textOffsetY}px))`;
+        }
+
+        function getShakeIntensity() {
+            if (!centerText) return 0;
+            const rect = centerText.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+            const triggerRadius = 280;
+            if (dist >= triggerRadius) return 0;
+            return 1 - dist / triggerRadius;
+        }
+
         document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            updateTextPosition();
+
             document.querySelectorAll('.eye').forEach((eye) => {
                 const pupil = eye.querySelector('.pupil');
                 if (!pupil) return;
@@ -364,6 +537,27 @@
                 pupil.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
             });
         });
+
+        const maxShake = 8;
+        const needsTranslateY = (el) => /eye--(ml|mr|l2|l3|r2|r3)\b/.test(el.className);
+
+        function shakeEyes() {
+            updateTextPosition();
+            const intensity = getShakeIntensity();
+            document.querySelectorAll('.eye').forEach((eye) => {
+                if (intensity <= 0) {
+                    eye.style.transform = needsTranslateY(eye) ? 'translateY(-50%)' : '';
+                    return;
+                }
+                const amount = maxShake * intensity;
+                const shakeX = (Math.random() - 0.5) * 2 * amount;
+                const shakeY = (Math.random() - 0.5) * 2 * amount;
+                const base = needsTranslateY(eye) ? ' translateY(-50%)' : '';
+                eye.style.transform = `translate(${shakeX}px, ${shakeY}px)${base}`;
+            });
+            requestAnimationFrame(shakeEyes);
+        }
+        requestAnimationFrame(shakeEyes);
     </script>
 </body>
 </html>
