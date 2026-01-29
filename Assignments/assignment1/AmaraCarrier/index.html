@@ -5,19 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amara Carrier</title>
     <style>
-        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; cursor: none; }
-
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            border-left: 2px solid #fff;
-            border-top: 2px solid #fff;
-            box-sizing: border-box;
-        }
+        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; }
 
         .center-text {
             position: fixed;
@@ -25,17 +13,22 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Courier New', monospace;
-            font-size: 300pt;
+            font-size: clamp(14px, 2.8vw, 26px);
+            max-width: 85vw;
+            padding: 0 1em;
+            box-sizing: border-box;
             font-weight: bold;
             color: #ff0000;
             text-align: center;
             z-index: 10;
             text-shadow: 
-                2px 2px 0px #000,
-                -2px -2px 0px #000,
-                2px -2px 0px #000,
-                -2px 2px 0px #000,
-                0 0 8px rgba(255, 0, 0, 0.8);
+                1px 1px 0px #000,
+                -1px -1px 0px #000,
+                1px -1px 0px #000,
+                -1px 1px 0px #000,
+                0 0 10px rgba(255, 60, 60, 0.9),
+                0 0 20px rgba(255, 0, 0, 0.5),
+                0 0 30px rgba(255, 0, 0, 0.3);
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
@@ -48,10 +41,21 @@
             position: fixed;
             border-radius: 50% 50% 48% 48% / 60% 60% 40% 40%;
             background: linear-gradient(180deg, #f8f6f0 0%, #ebe8e0 50%, #e0ddd5 100%);
+            background-size: cover;
+            background-position: center;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.3);
             overflow: hidden;
             z-index: 0;
         }
+
+        /* Eyes using real photos */
+        .eye.eye--photo {
+            background-repeat: no-repeat;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .eye.eye--photo::before { display: none; }
+        .eye.eye--photo .iris { display: none; }
+        .eye.eye--photo .pupil { display: none; }
 
         .eye::before {
             content: '';
@@ -371,124 +375,108 @@
     </style>
 </head>
 <body>
-    <div class="custom-cursor" id="customCursor"></div>
     <div class="center-text">Don't Look At Me</div>
-    <!-- Top border -->
-    <div class="eye eye--sm eye--tl design--slit">
+    <!-- Top border - real eye photos from Unsplash -->
+    <div class="eye eye--photo eye--sm eye--tl" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t2 design--alien">
+    <div class="eye eye--photo eye--lg eye--t2" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--t3 design--cartoon">
+    <div class="eye eye--photo eye--md eye--t3" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--t4 design--droopy">
+    <div class="eye eye--photo eye--xl eye--t4" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--t5 design--goat">
+    <div class="eye eye--photo eye--sm eye--t5" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--t6 design--bloodshot">
+    <div class="eye eye--photo eye--md eye--t6" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t7 design--cat">
+    <div class="eye eye--photo eye--lg eye--t7" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--tr design--slit">
+    <div class="eye eye--photo eye--sm eye--tr" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
     <!-- Bottom border -->
-    <div class="eye eye--md eye--bl design--alien">
+    <div class="eye eye--photo eye--md eye--bl" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--b2 design--cartoon">
+    <div class="eye eye--photo eye--sm eye--b2" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--b3 design--goat">
+    <div class="eye eye--photo eye--xl eye--b3" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--b4 design--bloodshot">
+    <div class="eye eye--photo eye--lg eye--b4" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--b5 design--cat">
+    <div class="eye eye--photo eye--sm eye--b5" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--b6 design--slit">
+    <div class="eye eye--photo eye--md eye--b6" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--b7 design--droopy">
+    <div class="eye eye--photo eye--lg eye--b7" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--br design--alien">
+    <div class="eye eye--photo eye--sm eye--br" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
     <!-- Left border -->
-    <div class="eye eye--lg eye--ml design--cartoon">
+    <div class="eye eye--photo eye--lg eye--ml" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--l2 design--cat">
+    <div class="eye eye--photo eye--sm eye--l2" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--l3 design--bloodshot">
+    <div class="eye eye--photo eye--md eye--l3" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
     <!-- Right border -->
-    <div class="eye eye--md eye--mr design--goat">
+    <div class="eye eye--photo eye--md eye--mr" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--r2 design--droopy">
+    <div class="eye eye--photo eye--xl eye--r2" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--r3 design--slit">
+    <div class="eye eye--photo eye--sm eye--r3" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
 
     <script>
         const centerText = document.querySelector('.center-text');
-        const customCursor = document.getElementById('customCursor');
         let mouseX = 0, mouseY = 0;
-
-        const REPEL_RADIUS = 220;
 
         function getTextCenter() {
             const rect = centerText ? centerText.getBoundingClientRect() : null;
             if (!rect) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
             return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-        }
-
-        function getCursorDisplayPosition() {
-            const center = getTextCenter();
-            const dx = mouseX - center.x;
-            const dy = mouseY - center.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < REPEL_RADIUS && dist > 1) {
-                const scale = REPEL_RADIUS / dist;
-                return { x: center.x + dx * scale, y: center.y + dy * scale };
-            }
-            return { x: mouseX, y: mouseY };
         }
 
         function getShakeIntensity() {
@@ -502,10 +490,6 @@
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-
-            const pos = getCursorDisplayPosition();
-            customCursor.style.left = pos.x + 'px';
-            customCursor.style.top = pos.y + 'px';
 
             document.querySelectorAll('.eye').forEach((eye) => {
                 const pupil = eye.querySelector('.pupil');
