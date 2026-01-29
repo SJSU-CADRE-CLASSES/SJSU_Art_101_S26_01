@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amara Carrier</title>
     <style>
-        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; }
+        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; cursor: none; }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            border-left: 2px solid #fff;
+            border-top: 2px solid #fff;
+            box-sizing: border-box;
+        }
 
         .center-text {
             position: fixed;
@@ -13,7 +25,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Courier New', monospace;
-            font-size: 500pt;
+            font-size: 300pt;
             font-weight: bold;
             color: #ff0000;
             text-align: center;
@@ -359,6 +371,7 @@
     </style>
 </head>
 <body>
+    <div class="custom-cursor" id="customCursor"></div>
     <div class="center-text">Don't Look At Me</div>
     <!-- Top border -->
     <div class="eye eye--sm eye--tl design--slit">
