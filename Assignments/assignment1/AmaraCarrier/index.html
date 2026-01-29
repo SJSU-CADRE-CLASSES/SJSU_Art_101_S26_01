@@ -7,14 +7,6 @@
     <style>
         body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; }
 
-        h1 {
-            text-align: center;
-            padding: 2rem 0;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-        }
-
         /* Realistic eye – almond shape, sclera, iris, pupil, highlight */
         .eye {
             position: fixed;
@@ -110,59 +102,121 @@
         .iris--hazel { background: radial-gradient(circle at 35% 35%, #9a7b4f, #6b5320 55%, #3d2f14); }
         .iris--green { background: radial-gradient(circle at 35% 35%, #6b7c5a, #3d4d2e 60%, #252d1a); }
 
-        /* Positions – around the page, not center */
-        .eye--tl { top: 5%; left: 6%; }
-        .eye--tr { top: 5%; right: 6%; left: auto; }
-        .eye--bl { bottom: 5%; left: 8%; top: auto; }
-        .eye--br { bottom: 5%; right: 8%; left: auto; top: auto; }
+        /* Positions – border around the page */
+        .eye--tl { top: 4%; left: 4%; }
+        .eye--t2 { top: 4%; left: 15%; }
+        .eye--t3 { top: 4%; left: 28%; }
+        .eye--t4 { top: 4%; left: 42%; }
+        .eye--t5 { top: 4%; left: 56%; }
+        .eye--t6 { top: 4%; left: 70%; }
+        .eye--t7 { top: 4%; left: 84%; }
+        .eye--tr { top: 4%; right: 4%; left: auto; }
+        .eye--bl { bottom: 4%; left: 4%; top: auto; }
+        .eye--b2 { bottom: 4%; left: 14%; top: auto; }
+        .eye--b3 { bottom: 4%; left: 26%; top: auto; }
+        .eye--b4 { bottom: 4%; left: 40%; top: auto; }
+        .eye--b5 { bottom: 4%; left: 54%; top: auto; }
+        .eye--b6 { bottom: 4%; left: 68%; top: auto; }
+        .eye--b7 { bottom: 4%; left: 82%; top: auto; }
+        .eye--br { bottom: 4%; right: 4%; left: auto; top: auto; }
         .eye--ml { top: 50%; left: 3%; transform: translateY(-50%); }
+        .eye--l2 { top: 35%; left: 3%; transform: translateY(-50%); }
+        .eye--l3 { top: 65%; left: 3%; transform: translateY(-50%); }
         .eye--mr { top: 50%; right: 3%; left: auto; transform: translateY(-50%); }
-        .eye--t2 { top: 12%; left: 22%; }
-        .eye--t3 { top: 14%; right: 20%; left: auto; }
-        .eye--b2 { bottom: 10%; left: 25%; top: auto; }
-        .eye--b3 { bottom: 8%; right: 22%; left: auto; top: auto; }
+        .eye--r2 { top: 32%; right: 3%; left: auto; transform: translateY(-50%); }
+        .eye--r3 { top: 68%; right: 3%; left: auto; transform: translateY(-50%); }
     </style>
 </head>
 <body>
-    <h1>Amara Carrier</h1>
-
+    <!-- Top border -->
     <div class="eye eye--sm eye--tl">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--tr">
+    <div class="eye eye--lg eye--t2">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--bl">
+    <div class="eye eye--md eye--t3">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--br">
-        <div class="lid"></div>
-        <div class="iris iris--brown"><div class="pupil"></div></div>
-    </div>
-    <div class="eye eye--md eye--ml">
+    <div class="eye eye--xl eye--t4">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--mr">
+    <div class="eye eye--sm eye--t5">
+        <div class="lid"></div>
+        <div class="iris iris--brown"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--md eye--t6">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t2">
+    <div class="eye eye--lg eye--t7">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--t3">
+    <div class="eye eye--sm eye--tr">
+        <div class="lid"></div>
+        <div class="iris iris--green"><div class="pupil"></div></div>
+    </div>
+    <!-- Bottom border -->
+    <div class="eye eye--md eye--bl">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
     <div class="eye eye--sm eye--b2">
         <div class="lid"></div>
+        <div class="iris iris--blue"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--xl eye--b3">
+        <div class="lid"></div>
+        <div class="iris iris--hazel"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--lg eye--b4">
+        <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--b3">
+    <div class="eye eye--sm eye--b5">
+        <div class="lid"></div>
+        <div class="iris iris--brown"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--md eye--b6">
+        <div class="lid"></div>
+        <div class="iris iris--blue"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--lg eye--b7">
+        <div class="lid"></div>
+        <div class="iris iris--green"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--sm eye--br">
+        <div class="lid"></div>
+        <div class="iris iris--hazel"><div class="pupil"></div></div>
+    </div>
+    <!-- Left border -->
+    <div class="eye eye--lg eye--ml">
+        <div class="lid"></div>
+        <div class="iris iris--brown"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--sm eye--l2">
+        <div class="lid"></div>
+        <div class="iris iris--blue"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--md eye--l3">
+        <div class="lid"></div>
+        <div class="iris iris--green"><div class="pupil"></div></div>
+    </div>
+    <!-- Right border -->
+    <div class="eye eye--md eye--mr">
+        <div class="lid"></div>
+        <div class="iris iris--hazel"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--xl eye--r2">
+        <div class="lid"></div>
+        <div class="iris iris--brown"><div class="pupil"></div></div>
+    </div>
+    <div class="eye eye--sm eye--r3">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
