@@ -7,6 +7,30 @@
     <style>
         body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; }
 
+        .center-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Courier New', monospace;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff0000;
+            text-align: center;
+            z-index: 10;
+            text-shadow: 
+                2px 2px 0px #000,
+                -2px -2px 0px #000,
+                2px -2px 0px #000,
+                -2px 2px 0px #000,
+                0 0 8px rgba(255, 0, 0, 0.8);
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
         /* Realistic eye – almond shape, sclera, iris, pupil, highlight */
         .eye {
             position: fixed;
@@ -225,6 +249,7 @@
     </style>
 </head>
 <body>
+    <div class="center-text">Don't Look At Me</div>
     <!-- Top border -->
     <div class="eye eye--sm eye--tl">
         <div class="lid"></div>
