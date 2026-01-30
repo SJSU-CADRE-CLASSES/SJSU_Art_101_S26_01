@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Letter</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .content {
+      color: #fff;
+      font-size: 3rem;
+      padding: 2rem;
+    }
+    @keyframes appearZoomOut {
+      0%, 24% {
+        opacity: 0;
+        transform: scale(0.88);
+      }
+      25% {
+        opacity: 1;
+        transform: scale(0.88);
+      }
+      87.5% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1);
+      }
+    }
+    .letter-text {
+      animation: appearZoomOut 8s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <main class="content">
+    <h1 class="letter-text">The Letter</h1>
+  </main>
+</body>
+</html>
