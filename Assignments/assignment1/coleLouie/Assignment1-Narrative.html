@@ -20,15 +20,32 @@
       gap: 2rem;
       font-family: system-ui, -apple-system, sans-serif;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .title-text {
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 5rem;
+      font-weight: 600;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 5s ease-out forwards;
+    }
     .press-start {
       color: #fff;
       font-family: 'Courier New', Courier, monospace;
-      font-size: 2.5rem;
+      font-size: 3rem;
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
+      opacity: 0;
+      animation: fadeIn 5s ease-out 5s forwards;
+      margin-top: -0.75rem;
     }
     .go-btn {
+      display: inline-block;
       background: #c00;
       color: #fff;
       border: none;
@@ -41,10 +58,14 @@
       cursor: pointer;
       border-radius: 4px;
       box-shadow: 0 4px 0 #900, 0 6px 12px rgba(0,0,0,0.5);
+      text-decoration: none;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 10s forwards;
     }
     .go-btn:hover {
       background: #e00;
       transform: translateY(-1px);
+      color: #fff;
     }
     .go-btn:active {
       transform: translateY(2px);
@@ -53,7 +74,8 @@
   </style>
 </head>
 <body>
+  <h1 class="title-text">Don't Worry Darling! I'll Be Home!</h1>
   <p class="press-start">Press Start</p>
-  <button class="go-btn" type="button">Go</button>
+  <a class="go-btn" href="narrative.html">Go</a>
 </body>
 </html>
