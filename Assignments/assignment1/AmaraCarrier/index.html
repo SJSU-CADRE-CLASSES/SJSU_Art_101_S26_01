@@ -13,17 +13,22 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Courier New', monospace;
-            font-size: 400pt;
+            font-size: clamp(14px, 2.8vw, 26px);
+            max-width: 85vw;
+            padding: 0 1em;
+            box-sizing: border-box;
             font-weight: bold;
             color: #ff0000;
             text-align: center;
             z-index: 10;
             text-shadow: 
-                2px 2px 0px #000,
-                -2px -2px 0px #000,
-                2px -2px 0px #000,
-                -2px 2px 0px #000,
-                0 0 8px rgba(255, 0, 0, 0.8);
+                1px 1px 0px #000,
+                -1px -1px 0px #000,
+                1px -1px 0px #000,
+                -1px 1px 0px #000,
+                0 0 10px rgba(255, 60, 60, 0.9),
+                0 0 20px rgba(255, 0, 0, 0.5),
+                0 0 30px rgba(255, 0, 0, 0.3);
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
@@ -36,10 +41,21 @@
             position: fixed;
             border-radius: 50% 50% 48% 48% / 60% 60% 40% 40%;
             background: linear-gradient(180deg, #f8f6f0 0%, #ebe8e0 50%, #e0ddd5 100%);
+            background-size: cover;
+            background-position: center;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.3);
             overflow: hidden;
             z-index: 0;
         }
+
+        /* Eyes using real photos */
+        .eye.eye--photo {
+            background-repeat: no-repeat;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .eye.eye--photo::before { display: none; }
+        .eye.eye--photo .iris { display: none; }
+        .eye.eye--photo .pupil { display: none; }
 
         .eye::before {
             content: '';
@@ -223,6 +239,116 @@
                 radial-gradient(circle at 35% 35%, #7a9a6a 0%, #6b7c5a 20%, #5a6c4a 40%, #4a5c3a 55%, #3d4d2e 70%, #2d3d1e 85%, #252d1a 100%);
         }
 
+        /* Eye design variants */
+        .eye.design--slit .iris {
+            background: radial-gradient(circle at 35% 35%, #c9a227 0%, #a08020 40%, #6b5320 70%, #3d3010 100%);
+        }
+        .eye.design--slit .iris::before,
+        .eye.design--slit .iris::after { display: none; }
+        .eye.design--slit .pupil {
+            width: 22%;
+            height: 85%;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: none;
+        }
+        .eye.design--slit .pupil::after { display: none; }
+
+        .eye.design--alien .iris {
+            background: radial-gradient(circle at 35% 35%, #7fff7f 0%, #4ade4a 30%, #2d8b2d 60%, #1a521a 100%);
+            box-shadow: inset 0 0 20px rgba(0,255,100,0.4), 0 0 25px rgba(0,255,128,0.5);
+        }
+        .eye.design--alien .pupil {
+            background: radial-gradient(circle at 30% 30%, #2d2d2d, #000);
+            box-shadow: 0 0 15px rgba(0,255,100,0.6);
+        }
+        .eye.design--alien .pupil::after {
+            background: rgba(200,255,200,0.9);
+            width: 28%;
+            height: 28%;
+        }
+
+        .eye.design--cartoon {
+            border: 3px solid #111;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .eye.design--cartoon::before { display: none; }
+        .eye.design--cartoon .iris {
+            background: #fff;
+            border: 2px solid #111;
+            box-shadow: none;
+        }
+        .eye.design--cartoon .iris::before,
+        .eye.design--cartoon .iris::after { display: none; }
+        .eye.design--cartoon .pupil {
+            background: #111;
+            box-shadow: none;
+        }
+        .eye.design--cartoon .pupil::after {
+            width: 30%;
+            height: 30%;
+            top: 15%;
+            left: 20%;
+        }
+
+        .eye.design--droopy {
+            border-radius: 50% 50% 42% 42% / 48% 48% 52% 52%;
+            transform-origin: center;
+        }
+        .eye.design--droopy .lid {
+            background: linear-gradient(180deg, #2a2520 0%, #1a1512 100%);
+        }
+
+        .eye.design--goat .pupil {
+            width: 85%;
+            height: 22%;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: none;
+        }
+        .eye.design--goat .pupil::after { display: none; }
+        .eye.design--goat .iris::before,
+        .eye.design--goat .iris::after { opacity: 0.6; }
+
+        .eye.design--bloodshot {
+            background: linear-gradient(180deg, #fff0f0 0%, #f8e8e8 30%, #f0d8d8 60%, #e8c8c8 100%);
+        }
+        .eye.design--bloodshot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                95deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(180, 40, 40, 0.15) 2px,
+                rgba(180, 40, 40, 0.15) 3px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .eye.design--cat {
+            border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
+        }
+        .eye.design--cat .pupil {
+            width: 45%;
+            height: 90%;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: none;
+        }
+        .eye.design--cat .pupil::after { display: none; }
+        .eye.design--cat .iris {
+            background: radial-gradient(circle at 35% 35%, #e6b800 0%, #c49b00 50%, #8b6914 100%);
+        }
+        .eye.design--cat .iris::before,
+        .eye.design--cat .iris::after { display: none; }
+
         /* Positions – border around the page */
         .eye--tl { top: 4%; left: 4%; }
         .eye--t2 { top: 4%; left: 15%; }
@@ -250,95 +376,95 @@
 </head>
 <body>
     <div class="center-text">Don't Look At Me</div>
-    <!-- Top border -->
-    <div class="eye eye--sm eye--tl">
+    <!-- Top border - real eye photos from Unsplash -->
+    <div class="eye eye--photo eye--sm eye--tl" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t2">
+    <div class="eye eye--photo eye--lg eye--t2" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--t3">
+    <div class="eye eye--photo eye--md eye--t3" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--t4">
+    <div class="eye eye--photo eye--xl eye--t4" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--t5">
+    <div class="eye eye--photo eye--sm eye--t5" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--t6">
+    <div class="eye eye--photo eye--md eye--t6" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--t7">
+    <div class="eye eye--photo eye--lg eye--t7" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--tr">
+    <div class="eye eye--photo eye--sm eye--tr" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
     <!-- Bottom border -->
-    <div class="eye eye--md eye--bl">
+    <div class="eye eye--photo eye--md eye--bl" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--b2">
+    <div class="eye eye--photo eye--sm eye--b2" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--b3">
+    <div class="eye eye--photo eye--xl eye--b3" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--b4">
+    <div class="eye eye--photo eye--lg eye--b4" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--b5">
+    <div class="eye eye--photo eye--sm eye--b5" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--b6">
+    <div class="eye eye--photo eye--md eye--b6" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--lg eye--b7">
+    <div class="eye eye--photo eye--lg eye--b7" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--br">
+    <div class="eye eye--photo eye--sm eye--br" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
     <!-- Left border -->
-    <div class="eye eye--lg eye--ml">
+    <div class="eye eye--photo eye--lg eye--ml" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--l2">
+    <div class="eye eye--photo eye--sm eye--l2" style="background-image: url('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--md eye--l3">
+    <div class="eye eye--photo eye--md eye--l3" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--green"><div class="pupil"></div></div>
     </div>
     <!-- Right border -->
-    <div class="eye eye--md eye--mr">
+    <div class="eye eye--photo eye--md eye--mr" style="background-image: url('https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--hazel"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--xl eye--r2">
+    <div class="eye eye--photo eye--xl eye--r2" style="background-image: url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--brown"><div class="pupil"></div></div>
     </div>
-    <div class="eye eye--sm eye--r3">
+    <div class="eye eye--photo eye--sm eye--r3" style="background-image: url('https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&amp;q=80')">
         <div class="lid"></div>
         <div class="iris iris--blue"><div class="pupil"></div></div>
     </div>
@@ -347,12 +473,15 @@
         const centerText = document.querySelector('.center-text');
         let mouseX = 0, mouseY = 0;
 
+        function getTextCenter() {
+            const rect = centerText ? centerText.getBoundingClientRect() : null;
+            if (!rect) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        }
+
         function getShakeIntensity() {
-            if (!centerText) return 0;
-            const rect = centerText.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+            const center = getTextCenter();
+            const dist = Math.hypot(mouseX - center.x, mouseY - center.y);
             const triggerRadius = 280;
             if (dist >= triggerRadius) return 0;
             return 1 - dist / triggerRadius;

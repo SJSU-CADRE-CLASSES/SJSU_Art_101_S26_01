@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cat Day</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #2a2940;
+      font-family: monospace;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      font-size: 64px;
+      opacity: 0.22;
+      z-index: 0;
+    }
+
+    .bg span {
+      position: absolute;
+    }
+
+
+    .container {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 80px;
+      z-index: 1;
+    }
+
+
+    .left {
+      width: 40%;
+      text-align: center;
+    }
+
+    .cat {
+      width: 220px;
+      image-rendering: pixelated;
+      transition: transform 0.2s;
+    }
+
+
+    .idle {
+      animation: breathe 1.6s ease-in-out infinite;
+    }
+
+    .run {
+      animation: run 0.4s linear infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes run {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(18px); }
+      100% { transform: translateX(0); }
+    }
+
+    .clock {
+      margin-top: 24px;
+      font-size: 56px;
+      letter-spacing: 6px;
+      border: 3px solid rgba(255,255,255,0.4);
+      display: inline-block;
+      padding: 10px 20px;
+    }
+
+
+    .right {
+      width: 60%;
+      padding-left: 60px;
+    }
+
+    .time {
+      font-size: 26px;
+      margin: 16px 0;
+      padding: 14px 18px;
+      border: 2px dashed rgba(255,255,255,0.3);
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .time:hover {
+      opacity: 1;
+      border-style: solid;
+    }
+
+
+    .rain {
+      position: fixed;
+      top: -40px;
+      font-size: 42px;
+      pointer-events: none;
+      animation: fall 2.5s linear forwards;
+      z-index: 2;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .home-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  font-size: 16px;
+  padding: 8px 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.6;
+  z-index: 10;
+  background: transparent;
+}
+
+.home-btn:hover {
+  opacity: 1;
+  border-color: #ffffff;
+}
+
+  </style>
+</head>
+
+<body>
+<a href="index.html" class="home-btn">🌍 Back to Earth</a>
+
+
+  <div class="bg">
+    <span style="top:10%; left:15%;">🌙</span>
+    <span style="top:20%; left:75%;">⭐</span>
+    <span style="top:35%; left:60%;">🐾</span>
+    <span style="top:55%; left:85%;">🧶</span>
+    <span style="top:70%; left:20%;">🌙</span>
+    <span style="top:45%; left:35%;">🐟</span>
+  </div>
+
+  <div class="container">
+
+
+    <div class="left">
+      <img
+        id="cat"
+        class="cat idle"
+        src="WhiteCat/White-Idle.png"
+        alt="cat"
+      >
+      <div class="clock">Any time</div>
+    </div>
+
+
+    <div class="right">
+      <div class="time" data-action="eat">Eat</div>
+      <div class="time" data-action="play">Play</div>
+      <div class="time" data-action="patrol">Patrol</div>
+      <div class="time" data-action="sleep">Sleep</div>
+    </div>
+
+  </div>
+
+  <script>
+    const cat = document.getElementById("cat");
+    const actions = document.querySelectorAll(".time");
+
+    function emojiRain(emojis) {
+      for (let i = 0; i < 26; i++) {
+        const span = document.createElement("span");
+        span.className = "rain";
+        span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        span.style.left = Math.random() * window.innerWidth + "px";
+        span.style.animationDelay = Math.random() * 0.5 + "s";
+        document.body.appendChild(span);
+        setTimeout(() => span.remove(), 3000);
+      }
+    }
+
+    actions.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.action;
+
+        if (action === "eat") {
+          cat.src = "WhiteCat/White-Run.png";
+          cat.className = "cat run";
+          emojiRain(["🐟", "🐠", "🐡"]);
+        }
+
+        if (action === "play") {
+          cat.src = "WhiteCat/White-Run.png";
+          cat.className = "cat run";
+          emojiRain(["🧶", "🐾", "✨"]);
+        }
+
+        if (action === "patrol") {
+          cat.src = "WhiteCat/White-Run.png";
+          cat.className = "cat run";
+          emojiRain(["🐾", "👀", "✨"]);
+        }
+
+        if (action === "sleep") {
+          cat.src = "WhiteCat/White-Idle.png";
+          cat.className = "cat idle";
+          emojiRain(["😴", "💤", "🌙"]);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

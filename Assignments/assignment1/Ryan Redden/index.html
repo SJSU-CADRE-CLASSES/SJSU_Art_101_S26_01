@@ -3,10 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ryan Redden - Assignment 1</title>
+    <title>Memory Ocean — Ryan Redden</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background: #0a0a0a;
+            font-family: 'Courier New', 'Consolas', monospace;
+            color: #00ff88;
+            -webkit-font-smoothing: none;
+            font-smoothing: none;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #canvas-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain;
+        }
+        /* AsciiEffect renders into a div with pre - style it like a terminal */
+        #ascii-container {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            pointer-events: none;
+        }
+        #ascii-container pre {
+            margin: 0 !important;
+            font-size: clamp(4px, 1.2vw, 8px) !important;
+            line-height: 1.1 !important;
+            letter-spacing: 0.02em !important;
+            color: #00ff88 !important;
+            text-shadow: 0 0 4px rgba(0, 255, 136, 0.4) !important;
+            white-space: pre !important;
+            font-family: 'Courier New', Consolas, monospace !important;
+        }
+        /* Flicker on hover - dying monitor */
+        #ascii-container pre:hover {
+            animation: flicker 0.15s ease-in-out infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.92; }
+        }
+        .terminal-box {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            max-width: min(360px, 90vw);
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #00ff8844;
+            color: #00ff88;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            pointer-events: auto;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.08);
+        }
+        .terminal-box .cursor {
+            display: inline-block;
+            width: 0.5em;
+            height: 1em;
+            background: #00ff88;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+        }
+        .terminal-box #terminal-input {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            color: #00ff88;
+            font: inherit;
+            font-size: inherit;
+            outline: none;
+        }
+        .terminal-box .input-line {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .terminal-box .prompt-line {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        /* Initial state: hide experience until Enter */
+        body.waiting #ocean,
+        body.waiting #canvas-container,
+        body.waiting #ascii-container {
+            opacity: 0;
+            pointer-events: none;
+        }
+        body.waiting #ocean { transition: opacity 1.2s ease; }
+        body.waiting #canvas-container,
+        body.waiting #ascii-container { transition: opacity 1s ease; }
+        /* Ocean: protoplasmic ASCII noise */
+        #ocean {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+        #ocean pre {
+            margin: 0;
+            font-size: clamp(3px, 0.9vw, 6px);
+            line-height: 1.05;
+            color: #001a0d;
+            opacity: 0.5;
+            font-family: 'Courier New', Consolas, monospace;
+            white-space: pre;
+        }
+        #canvas-container { z-index: 1; }
+        #ascii-container { z-index: 2; }
+        @media (max-width: 600px) {
+            #ascii-container pre { font-size: 3px !important; }
+            .terminal-box { font-size: 0.65rem; padding: 0.5rem; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Ryan Redden</h1>
-    <p>Assignment 1</p>
+    <!-- The Ocean: slowly shifting ASCII noise background -->
+    <div id="ocean" aria-hidden="true"></div>
+    <div id="canvas-container"></div>
+    <div id="ascii-container"></div>
+    <div class="terminal-box" id="terminal">
+        <div id="terminal-prompt">
+            <span class="prompt-line">tell me what you are thinking</span>
+            <div class="input-line">
+                <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" maxlength="200" placeholder=" " />
+                <span class="cursor"></span>
+            </div>
+        </div>
+        <div id="terminal-messages" style="display: none;">
+            <span id="terminal-text"></span><span class="cursor"></span>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
+
+        const terminalEl = document.getElementById('terminal-text');
+        const terminalPrompt = document.getElementById('terminal-prompt');
+        const terminalMessages = document.getElementById('terminal-messages');
+        const terminalInput = document.getElementById('terminal-input');
+        const asciiContainer = document.getElementById('ascii-container');
+        const oceanEl = document.getElementById('ocean');
+
+        let processStarted = false;
+        document.body.classList.add('waiting');
+        setTimeout(() => terminalInput.focus(), 100);
+
+        function beginProcess() {
+            if (processStarted) return;
+            processStarted = true;
+            document.body.classList.remove('waiting');
+            terminalPrompt.style.display = 'none';
+            terminalMessages.style.display = 'block';
+            setTerminalMessage('idle');
+        }
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                beginProcess();
+            }
+        });
+        window.addEventListener('click', () => terminalInput.focus(), { once: false });
+
+        // ----- The Ocean: generative ASCII noise (runs always; visible only after Enter) -----
+        const oceanChars = ' .\'`^",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
+        const oceanCols = 120;
+        const oceanRows = 60;
+        let oceanGrid = Array.from({ length: oceanRows }, () => Array(oceanCols).fill(' '));
+        let oceanTime = 0;
+        function updateOcean() {
+            oceanTime += 0.012;
+            const pre = document.createElement('pre');
+            let s = '';
+            for (let r = 0; r < oceanRows; r++) {
+                for (let c = 0; c < oceanCols; c++) {
+                    const n = Math.sin(oceanTime + r * 0.3) * Math.cos(oceanTime * 0.7 + c * 0.2) + Math.sin((r + c) * 0.1 + oceanTime * 2);
+                    const i = Math.floor(((n + 2) / 4) * (oceanChars.length - 1));
+                    oceanGrid[r][c] = oceanChars[Math.max(0, i)];
+                    s += oceanGrid[r][c];
+                }
+                s += '\n';
+            }
+            pre.textContent = s;
+            oceanEl.innerHTML = '';
+            oceanEl.appendChild(pre);
+        }
+        setInterval(updateOcean, 80);
+        updateOcean();
+
+        const messages = {
+            idle: [
+                'The ocean is probing your subconscious...',
+                'Memory detected: Reconstruction in progress.',
+                'Signal strength: fluctuating.',
+                'Do you remember?',
+            ],
+            calm: [
+                'Calm state. Interface stable.',
+                'The visitor is at rest.',
+            ],
+            active: [
+                'Disturbance detected. Character set shifting.',
+                'The ocean responds to movement.',
+                'Velocity threshold exceeded.',
+            ],
+            hover: [
+                'Prolonged contact. Morphology engaged.',
+                'The sphere remembers your presence.',
+                'Organic reconstruction initiated.',
+            ],
+        };
+        let messageIndex = 0;
+        let lastMessageTime = 0;
+        const MESSAGE_INTERVAL = 6000;
+
+        function setTerminalMessage(key = 'idle') {
+            const list = messages[key];
+            if (!list || list.length === 0) return;
+            const msg = list[messageIndex % list.length];
+            messageIndex++;
+            terminalEl.textContent = msg;
+            lastMessageTime = performance.now();
+        }
+
+        function typeTerminal(char) {
+            terminalEl.textContent += char;
+        }
+
+        // ----- Scene -----
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+        const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 1000);
+        camera.position.z = 5;
+        const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // ----- Sphere (The Planet) -----
+        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x00ff88,
+            emissive: 0x002211,
+            shininess: 8,
+            specular: 0x00ff88,
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        // ----- Lighting -----
+        const ambient = new THREE.AmbientLight(0x111111);
+        scene.add(ambient);
+        const point = new THREE.PointLight(0x00ff88, 1.2, 100);
+        point.position.set(3, 2, 4);
+        scene.add(point);
+        const point2 = new THREE.PointLight(0x004422, 0.4, 50);
+        point2.position.set(-2, -1, 2);
+        scene.add(point2);
+
+        // ----- AsciiEffect -----
+        const calmChars = ' .:-+*=';
+        const activeChars = ' .:-+*=%@#W$8';
+        let currentChars = calmChars;
+        const effectOptions = { resolution: 0.18, scale: 1, color: true, invert: false };
+        let effect = new AsciiEffect(renderer, calmChars, effectOptions);
+        effect.setSize(window.innerWidth, window.innerHeight);
+        effect.domElement.style.pointerEvents = 'auto';
+        asciiContainer.appendChild(effect.domElement);
+
+        function setEffectChars(chars) {
+            if (chars === currentChars) return;
+            currentChars = chars;
+            asciiContainer.removeChild(effect.domElement);
+            effect = new AsciiEffect(renderer, currentChars, effectOptions);
+            effect.setSize(window.innerWidth, window.innerHeight);
+            effect.domElement.style.pointerEvents = 'auto';
+            asciiContainer.appendChild(effect.domElement);
+        }
+
+        // ----- Mouse / interaction state -----
+        let mouseX = 0, mouseY = 0, prevX = 0, prevY = 0;
+        let velocity = 0;
+        let hoverSphereTime = 0;
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        const velocityDecay = 0.92;
+        const velocityScale = 0.002;
+        let morphTime = 0;
+        const originalPositions = geometry.attributes.position.clone();
+
+        window.addEventListener('mousemove', (e) => {
+            prevX = mouseX;
+            prevY = mouseY;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            const dx = mouseX - prevX;
+            const dy = mouseY - prevY;
+            velocity = Math.min(1, velocity * velocityDecay + Math.hypot(dx, dy) * velocityScale);
+
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            effect.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ----- Animation loop -----
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = clock.getElapsedTime();
+            const dt = clock.getDelta();
+
+            sphere.rotation.y += 0.008;
+
+            // CharSet: calm vs active by mouse velocity
+            const targetChars = velocity > 0.25 ? activeChars : calmChars;
+            setEffectChars(targetChars);
+
+            // Hover over sphere > 3s → morph (noise displacement)
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObject(sphere);
+            if (hits.length > 0) {
+                hoverSphereTime += dt;
+                if (hoverSphereTime >= 3 && hoverSphereTime - dt < 3) setTerminalMessage('hover');
+            } else {
+                hoverSphereTime = 0;
+            }
+            if (hoverSphereTime >= 3) {
+                morphTime += dt;
+                const pos = geometry.attributes.position;
+                const n = (pos.count || 0);
+                for (let i = 0; i < n; i++) {
+                    const x = originalPositions.getX(i);
+                    const y = originalPositions.getY(i);
+                    const z = originalPositions.getZ(i);
+                    const noise = 0.06 * Math.sin(morphTime + x * 3) * Math.cos(morphTime * 0.7 + y * 3);
+                    pos.setXYZ(i, x + noise, y + noise * 0.8, z + noise * 0.6);
+                }
+                pos.needsUpdate = true;
+                geometry.computeVertexNormals();
+            } else {
+                morphTime *= 0.95;
+                const pos = geometry.attributes.position;
+                const orig = originalPositions;
+                const n = (pos.count || 0);
+                for (let i = 0; i < n; i++) {
+                    const x = orig.getX(i);
+                    const y = orig.getY(i);
+                    const z = orig.getZ(i);
+                    const cx = pos.getX(i);
+                    const cy = pos.getY(i);
+                    const cz = pos.getZ(i);
+                    pos.setXYZ(i, cx + (x - cx) * 0.1, cy + (y - cy) * 0.1, cz + (z - cz) * 0.1);
+                }
+                pos.needsUpdate = true;
+                geometry.computeVertexNormals();
+            }
+
+            if (processStarted && t - lastMessageTime > MESSAGE_INTERVAL) {
+                if (hoverSphereTime >= 3) setTerminalMessage('hover');
+                else if (velocity > 0.25) setTerminalMessage('active');
+                else setTerminalMessage('idle');
+            }
+
+            effect.render(scene, camera);
+        }
+        animate();
+    </script>
 </body>
 </html>
