@@ -57,24 +57,50 @@
             max-width: 42rem;
             text-align: center;
         }
-        .sound-toggle {
+        .season-nav {
             position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 100;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            color: #fff;
-            font-size: 1.25rem;
-            cursor: pointer;
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        }
+        .season-nav a {
+            display: block;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 2rem;
             transition: all 0.3s var(--ease-smooth);
         }
-        .sound-toggle:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.05); }
-        .sound-toggle.active { background: rgba(255, 255, 255, 0.4); }
+        .season-nav a:hover {
+            transform: scale(1.05);
+            color: #fff;
+        }
+        .season-nav a.spring:hover { background: rgba(129, 199, 132, 0.4); color: #c8e6c9; }
+        .season-nav a.summer:hover { background: rgba(255, 193, 7, 0.4); color: #fff8e1; }
+        .season-nav a.autumn:hover { background: rgba(191, 54, 12, 0.4); color: #ffe0b2; }
+        .season-nav a.winter:hover { background: rgba(33, 150, 243, 0.4); color: #e3f2fd; }
+        @media (max-width: 768px) {
+            .season-nav {
+                bottom: 1rem;
+                padding: 0.4rem 0.75rem;
+                gap: 0.25rem;
+            }
+            .season-nav a {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
         .intro-chapter {
             background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
             color: #e8e8e8;
@@ -326,7 +352,6 @@
         .closing-chapter.in-view .restart-link { animation: fadeInUp 1s var(--ease-smooth) 1.2s both; }
         @media (max-width: 768px) {
             .chapter { padding: 2rem 1.25rem; }
-            .sound-toggle { top: 1rem; right: 1rem; width: 2.5rem; height: 2.5rem; font-size: 1rem; }
             .narrative { margin: 1.5rem 0; }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -341,7 +366,13 @@
 </head>
 <body>
     <a href="#intro" class="skip-link">Skip to content</a>
-    <button id="sound-toggle" class="sound-toggle" aria-label="Toggle ambient sound"><span>♪</span></button>
+
+    <nav class="season-nav" aria-label="Jump to season">
+        <a href="#spring" class="spring">Spring</a>
+        <a href="#summer" class="summer">Summer</a>
+        <a href="#autumn" class="autumn">Autumn</a>
+        <a href="#winter" class="winter">Winter</a>
+    </nav>
 
     <section id="intro" class="chapter intro-chapter">
         <div class="parallax-layer layer-back" data-speed="0.3"></div>
@@ -507,126 +538,6 @@
             });
             updateParallax();
 
-            /* ========== SEASONAL AMBIENT MUSIC ========== */
-            var soundToggle = document.getElementById('sound-toggle');
-            var audioContext = null;
-            var currentSeason = null;
-            var seasonGains = {};
-            var masterGain = null;
-
-            function initAudio() {
-                if (audioContext) return;
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                masterGain = audioContext.createGain();
-                masterGain.gain.value = 0.15;
-                masterGain.connect(audioContext.destination);
-
-                var seasons = ['intro', 'spring', 'summer', 'autumn', 'winter', 'closing'];
-                seasons.forEach(function(season, i) {
-                    var gain = audioContext.createGain();
-                    gain.gain.value = 0;
-                    gain.connect(masterGain);
-                    seasonGains[season] = gain;
-                    createSeasonSound(season, gain);
-                });
-            }
-
-            function createSeasonSound(season, gainNode) {
-                var osc1 = audioContext.createOscillator();
-                var osc2 = audioContext.createOscillator();
-                var osc3 = audioContext.createOscillator();
-                var filter = audioContext.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.Q.value = 2;
-                filter.frequency.value = 1000;
-
-                var configs = {
-                    intro: { f1: 82, f2: 110, f3: 164, t: 'sine', filterFreq: 350 },
-                    spring: { f1: 392, f2: 523, f3: 659, t: 'sine', filterFreq: 1400 },
-                    summer: { f1: 330, f2: 440, f3: 554, t: 'triangle', filterFreq: 1800 },
-                    autumn: { f1: 196, f2: 247, f3: 294, t: 'sine', filterFreq: 800 },
-                    winter: { f1: 262, f2: 330, f3: 392, t: 'sine', filterFreq: 600 },
-                    closing: { f1: 82, f2: 110, f3: 164, t: 'sine', filterFreq: 400 }
-                };
-                var c = configs[season];
-                osc1.type = osc2.type = osc3.type = c.t;
-                osc1.frequency.value = c.f1;
-                osc2.frequency.value = c.f2;
-                osc3.frequency.value = c.f3;
-                filter.frequency.value = c.filterFreq;
-
-                osc1.connect(filter);
-                osc2.connect(filter);
-                osc3.connect(filter);
-                filter.connect(gainNode);
-                osc1.start(0);
-                osc2.start(0);
-                osc3.start(0);
-            }
-
-            function fadeToSeason(season) {
-                if (currentSeason === season) return;
-                var fadeTime = 1.5;
-                var now = audioContext ? audioContext.currentTime : 0;
-
-                Object.keys(seasonGains).forEach(function(s) {
-                    var g = seasonGains[s];
-                    g.gain.cancelScheduledValues(now);
-                    g.gain.setValueAtTime(g.gain.value, now);
-                    g.gain.linearRampToValueAtTime(s === season ? 1 : 0, now + fadeTime);
-                });
-                currentSeason = season;
-            }
-
-            function stopAllSound() {
-                var now = audioContext ? audioContext.currentTime : 0;
-                Object.keys(seasonGains).forEach(function(s) {
-                    seasonGains[s].gain.cancelScheduledValues(now);
-                    seasonGains[s].gain.setValueAtTime(0, now);
-                });
-                currentSeason = null;
-            }
-
-            function getVisibleSeason() {
-                var sections = document.querySelectorAll('#intro, #spring, #summer, #autumn, #winter, #closing');
-                var vh = window.innerHeight;
-                var center = vh * 0.5;
-                var best = 'intro';
-                var bestDist = Infinity;
-                sections.forEach(function(s) {
-                    var rect = s.getBoundingClientRect();
-                    var sectionCenter = rect.top + rect.height / 2;
-                    var dist = Math.abs(sectionCenter - center);
-                    if (dist < bestDist) {
-                        bestDist = dist;
-                        best = s.id;
-                    }
-                });
-                return best;
-            }
-
-            if (soundToggle) {
-                soundToggle.addEventListener('click', function() {
-                    var isActive = soundToggle.classList.toggle('active');
-                    if (isActive) {
-                        initAudio();
-                        if (audioContext.state === 'suspended') audioContext.resume();
-                        fadeToSeason(getVisibleSeason());
-                    } else {
-                        stopAllSound();
-                    }
-                });
-            }
-
-            var scrollTimeout;
-            window.addEventListener('scroll', function() {
-                if (!soundToggle || !soundToggle.classList.contains('active') || !audioContext) return;
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(function() {
-                    fadeToSeason(getVisibleSeason());
-                }, 100);
-            });
-
             var chapterLabels = document.querySelectorAll('.chapter-label');
             chapterLabels.forEach(function(label) {
                 label.addEventListener('mouseenter', function() {
@@ -658,13 +569,11 @@
                     if (section < chapters.length - 1) {
                         e.preventDefault();
                         document.querySelector(chapters[section + 1]).scrollIntoView({ behavior: 'smooth' });
-                        setTimeout(function() { if (audioContext) fadeToSeason(chapters[section + 1].slice(1)); }, 500);
                     }
                 } else if (e.key === 'ArrowUp') {
                     if (section > 0) {
                         e.preventDefault();
                         document.querySelector(chapters[section - 1]).scrollIntoView({ behavior: 'smooth' });
-                        setTimeout(function() { if (audioContext) fadeToSeason(chapters[section - 1].slice(1)); }, 500);
                     }
                 }
             });
