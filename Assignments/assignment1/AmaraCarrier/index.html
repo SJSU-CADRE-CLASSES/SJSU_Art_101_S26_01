@@ -39,22 +39,27 @@
         /* Realistic eye – human almond shape (wider than tall, asymmetric lids) */
         .eye {
             position: fixed;
-            /* Horizontal almond: flatter top lid, rounder bottom, tapered inner/outer corners */
-            border-radius: 52% 48% 48% 52% / 38% 38% 62% 62%;
+            /* Sharp pixelated edges - less rounded for analog horror look */
+            border-radius: 45% 40% 40% 45% / 32% 32% 68% 68%;
             background: linear-gradient(180deg, #f8f6f0 0%, #ebe8e0 50%, #e0ddd5 100%);
             background-size: cover;
             background-position: center;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.3);
             overflow: hidden;
             z-index: 0;
+            /* Force sharp pixelated rendering on edges */
+            transform: scale(1);
+            transform-style: preserve-3d;
         }
 
-        /* Analog horror: pixelated, crunchy rendering */
+        /* Analog horror: pixelated, crunchy rendering with sharp edges */
         .eye {
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             filter: contrast(1.12) brightness(0.97);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         .eye::after {
             content: '';
@@ -69,6 +74,7 @@
             );
             pointer-events: none;
             z-index: 4;
+            border-radius: inherit;
         }
 
         .eye::before {
@@ -128,7 +134,7 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            border-radius: 50%;
+            border-radius: 45%;
             z-index: 1;
             box-shadow: inset 0 -4px 12px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.15);
             overflow: hidden;
@@ -194,7 +200,7 @@
             top: 50%;
             transform: translate(-50%, -50%);
             background: radial-gradient(circle at 30% 30%, #1a1a1a, #000);
-            border-radius: 50%;
+            border-radius: 45%;
             transition: transform 0.12s ease-out;
             z-index: 2;
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
