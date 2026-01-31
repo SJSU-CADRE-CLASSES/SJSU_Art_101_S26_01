@@ -3,9 +3,581 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duc Tran - Assignment 1</title>
+    <title>Seasons — A Story of Time and Change</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --spring-bg: linear-gradient(135deg, #e8f5e9 0%, #f3e5f5 30%, #e1f5fe 70%, #fff8e1 100%);
+            --summer-bg: linear-gradient(180deg, #fff8e1 0%, #ffe0b2 25%, #ffcc80 50%, #ffb74d 100%);
+            --autumn-bg: linear-gradient(180deg, #fff3e0 0%, #ffe0b2 20%, #ffcc80 40%, #d7ccc8 70%, #bcaaa4 100%);
+            --winter-bg: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 30%, #90caf9 60%, #ffffff 100%);
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Libre Baskerville', Georgia, serif;
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            line-height: 1.7;
+            color: #333;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 1rem;
+            z-index: 1000;
+            padding: 0.75rem 1rem;
+            background: #1a1a2e;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: 4px;
+            transition: top 0.2s ease;
+        }
+        .skip-link:focus { top: 1rem; outline: 2px solid #fff; outline-offset: 2px; }
+        .chapter {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 3rem 2rem;
+        }
+        .content-wrap {
+            position: relative;
+            z-index: 2;
+            max-width: 42rem;
+            text-align: center;
+        }
+        .season-nav {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        }
+        .season-nav a {
+            display: block;
+            padding: 0.5rem 1rem;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 2rem;
+            transition: all 0.3s var(--ease-smooth);
+        }
+        .season-nav a:hover {
+            transform: scale(1.05);
+            color: #fff;
+        }
+        .season-nav a.spring:hover { background: rgba(129, 199, 132, 0.4); color: #c8e6c9; }
+        .season-nav a.summer:hover { background: rgba(255, 193, 7, 0.4); color: #fff8e1; }
+        .season-nav a.autumn:hover { background: rgba(191, 54, 12, 0.4); color: #ffe0b2; }
+        .season-nav a.winter:hover { background: rgba(33, 150, 243, 0.4); color: #e3f2fd; }
+        @media (max-width: 768px) {
+            .season-nav {
+                bottom: 1rem;
+                padding: 0.4rem 0.75rem;
+                gap: 0.25rem;
+            }
+            .season-nav a {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+        .intro-chapter {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+            color: #e8e8e8;
+        }
+        .intro-chapter .parallax-layer {
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+        }
+        .intro-chapter .layer-back { background: radial-gradient(ellipse at 30% 70%, #4a5568 0%, transparent 60%); }
+        .intro-chapter .layer-mid { background: radial-gradient(ellipse at 70% 30%, #2d3748 0%, transparent 50%); }
+        .intro-line {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.05em;
+            margin: 0.5rem 0;
+            opacity: 0;
+        }
+        .intro-line.fade-in { animation: fadeInUp 1.2s var(--ease-smooth) forwards; }
+        .intro-line.delay-1 { animation-delay: 0.5s; }
+        .intro-line.delay-2 { animation-delay: 1s; }
+        .intro-line.delay-3 { animation-delay: 1.5s; }
+        .intro-line.delay-4 { animation-delay: 2s; }
+        .intro-line.delay-5 { animation-delay: 2.5s; }
+        .scroll-hint {
+            display: block;
+            margin-top: 3rem;
+            font-size: 0.875rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInUp 1s var(--ease-smooth) 3s forwards, pulse 2s ease-in-out 4s infinite;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(1.5rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+        .spring-chapter { background: var(--spring-bg); color: #2e7d32; }
+        .spring-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(200, 230, 201, 0.6) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, rgba(243, 229, 245, 0.5) 0%, transparent 50%),
+                radial-gradient(ellipse 100% 60% at 50% 100%, rgba(255, 248, 225, 0.4) 0%, transparent 60%);
+        }
+        .rain-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+        .raindrop {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 30px;
+            background: linear-gradient(transparent, rgba(129, 199, 132, 0.4));
+            animation: rain 2.5s linear infinite;
+        }
+        .raindrop:nth-child(1) { left: 10%; }
+        .raindrop:nth-child(2) { left: 30%; animation-delay: -0.5s; }
+        .raindrop:nth-child(3) { left: 50%; animation-delay: -1s; }
+        .raindrop:nth-child(4) { left: 70%; animation-delay: -1.5s; }
+        .raindrop:nth-child(5) { left: 90%; animation-delay: -2s; }
+        @keyframes rain {
+            0% { transform: translateY(-10vh) translateX(0); }
+            100% { transform: translateY(110vh) translateX(15px); }
+        }
+        .bloom {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #c8e6c9, #a5d6a7);
+            opacity: 0.6;
+            animation: bloom 6s var(--ease-smooth) infinite;
+        }
+        .bloom-1 { top: 20%; left: 15%; }
+        .bloom-2 { top: 60%; right: 20%; width: 6px; height: 6px; animation-delay: 2s; }
+        .bloom-3 { bottom: 25%; left: 25%; width: 10px; height: 10px; animation-delay: 4s; }
+        @keyframes bloom {
+            0%, 100% { transform: scale(0.5); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        .wind-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(129, 199, 132, 0.2), transparent);
+            animation: wind 8s ease-in-out infinite;
+        }
+        .wind-1 { top: 30%; width: 60%; left: -20%; }
+        .wind-2 { top: 70%; width: 50%; right: -20%; animation-delay: 3s; }
+        @keyframes wind {
+            0%, 100% { transform: translateX(0); opacity: 0.3; }
+            50% { transform: translateX(100px); opacity: 0.6; }
+        }
+        .summer-chapter { background: var(--summer-bg); color: #e65100; }
+        .summer-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 100% 80% at 50% 0%, rgba(255, 235, 59, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 50% at 30% 80%, rgba(255, 183, 77, 0.3) 0%, transparent 50%);
+        }
+        .sun {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            width: clamp(80px, 15vw, 140px);
+            height: clamp(80px, 15vw, 140px);
+            background: radial-gradient(circle, #fff9c4 0%, #ffeb3b 40%, #ffc107 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 235, 59, 0.8), 0 0 120px rgba(255, 193, 7, 0.4);
+            animation: sunPulse 4s ease-in-out infinite;
+            transform: translateX(-50%);
+        }
+        @keyframes sunPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.05); opacity: 0.95; }
+        }
+        .clouds { position: absolute; inset: 0; overflow: hidden; }
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 100px;
+            animation: cloudDrift 25s linear infinite;
+        }
+        .cloud-1 { width: 120px; height: 40px; top: 20%; left: -15%; animation-duration: 30s; }
+        .cloud-2 { width: 80px; height: 30px; top: 40%; left: -20%; animation-duration: 35s; animation-delay: -10s; }
+        .cloud-3 { width: 100px; height: 35px; top: 65%; left: -12%; animation-duration: 28s; animation-delay: -5s; }
+        @keyframes cloudDrift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100vw + 200px)); }
+        }
+        .autumn-chapter { background: var(--autumn-bg); color: #5d4037; }
+        .autumn-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 90% 60% at 50% 100%, rgba(188, 170, 164, 0.5) 0%, transparent 50%),
+                radial-gradient(ellipse 70% 50% at 10% 30%, rgba(255, 183, 77, 0.2) 0%, transparent 50%);
+        }
+        .leaves-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+        .leaf {
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(135deg, #8d6e63 0%, #a1887f 50%, #5d4037 100%);
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.7;
+            animation: leafFall 12s ease-in-out infinite;
+        }
+        .leaf-1 { left: 10%; }
+        .leaf-2 { left: 25%; animation-delay: 2s; animation-duration: 11s; }
+        .leaf-3 { left: 45%; animation-delay: 4s; animation-duration: 13s; background: linear-gradient(135deg, #bf360c, #e64a19); }
+        .leaf-4 { left: 65%; animation-delay: 1s; animation-duration: 15s; }
+        .leaf-5 { left: 80%; animation-delay: 3s; animation-duration: 12s; background: linear-gradient(135deg, #5d4037, #8d6e63); }
+        .leaf-6 { left: 90%; animation-delay: 5s; animation-duration: 10s; }
+        @keyframes leafFall {
+            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(110vh) rotate(720deg) translateX(50px); opacity: 0; }
+        }
+        .winter-chapter { background: var(--winter-bg); color: #1565c0; }
+        .winter-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(187, 222, 251, 0.5) 0%, transparent 50%);
+        }
+        .snow-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+        .snowflake {
+            position: absolute;
+            top: 0;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.85;
+            animation: snowFall 12s linear infinite;
+        }
+        .snowflake:nth-child(1) { left: 5%; animation-duration: 11s; }
+        .snowflake:nth-child(2) { left: 25%; animation-delay: -2s; animation-duration: 14s; }
+        .snowflake:nth-child(3) { left: 45%; animation-delay: -4s; animation-duration: 10s; }
+        .snowflake:nth-child(4) { left: 65%; animation-delay: -6s; animation-duration: 13s; }
+        .snowflake:nth-child(5) { left: 85%; animation-delay: -3s; animation-duration: 11s; }
+        .snowflake:nth-child(6) { left: 15%; top: -5%; animation-delay: -5s; animation-duration: 15s; }
+        @keyframes snowFall {
+            0% { transform: translateY(-10vh) translateX(0); }
+            100% { transform: translateY(110vh) translateX(40px); }
+        }
+        .chapter-label {
+            display: block;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        .narrative {
+            margin: 2rem 0;
+            font-family: var(--font-display);
+            font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.9;
+        }
+        .narrative p {
+            margin: 0.5rem 0;
+            opacity: 0;
+            transform: translateY(1rem);
+            transition: opacity 0.8s var(--ease-smooth), transform 0.8s var(--ease-smooth);
+        }
+        .narrative p.revealed { opacity: 1; transform: translateY(0); }
+        .closing-chapter {
+            background: linear-gradient(180deg, #e3f2fd 0%, #1a1a2e 100%);
+            color: #e8e8e8;
+        }
+        .closing-line {
+            font-family: var(--font-display);
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            font-weight: 300;
+            margin: 0.75rem 0;
+            opacity: 0;
+            transform: translateY(1rem);
+        }
+        .closing-chapter:not(.in-view) .closing-line { animation: none; }
+        .closing-chapter.in-view .closing-line.fade-in { animation: fadeInUp 1s var(--ease-smooth) forwards; }
+        .closing-chapter.in-view .closing-line:nth-child(1) { animation-delay: 0.3s; }
+        .closing-chapter.in-view .closing-line:nth-child(2) { animation-delay: 0.6s; }
+        .closing-chapter.in-view .closing-line:nth-child(3) { animation-delay: 0.9s; }
+        .restart-link {
+            display: inline-block;
+            margin-top: 2.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+            transition: all 0.3s var(--ease-smooth);
+        }
+        .restart-link:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.8); }
+        .closing-chapter:not(.in-view) .restart-link { opacity: 0; pointer-events: none; }
+        .closing-chapter.in-view .restart-link { animation: fadeInUp 1s var(--ease-smooth) 1.2s both; }
+        @media (max-width: 768px) {
+            .chapter { padding: 2rem 1.25rem; }
+            .narrative { margin: 1.5rem 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Duc Tran</h1>
+    <a href="#intro" class="skip-link">Skip to content</a>
+
+    <nav class="season-nav" aria-label="Jump to season">
+        <a href="#spring" class="spring">Spring</a>
+        <a href="#summer" class="summer">Summer</a>
+        <a href="#autumn" class="autumn">Autumn</a>
+        <a href="#winter" class="winter">Winter</a>
+    </nav>
+
+    <section id="intro" class="chapter intro-chapter">
+        <div class="parallax-layer layer-back" data-speed="0.3"></div>
+        <div class="parallax-layer layer-mid" data-speed="0.6"></div>
+        <div class="content-wrap">
+            <p class="intro-line fade-in">Time moves in circles...</p>
+            <p class="intro-line fade-in delay-1">yet we perceive it as a line.</p>
+            <p class="intro-line fade-in delay-2">Nature reminds us</p>
+            <p class="intro-line fade-in delay-3">that change is not an ending</p>
+            <p class="intro-line fade-in delay-4">but a return.</p>
+            <p class="scroll-hint fade-in delay-5">scroll to begin</p>
+        </div>
+    </section>
+
+    <section id="spring" class="chapter spring-chapter">
+        <div class="season-bg spring-bg"></div>
+        <div class="rain-container" aria-hidden="true">
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+        </div>
+        <div class="bloom bloom-1"></div>
+        <div class="bloom bloom-2"></div>
+        <div class="bloom bloom-3"></div>
+        <div class="wind-line wind-1"></div>
+        <div class="wind-line wind-2"></div>
+        <div class="content-wrap parallax-content" data-speed="0.5">
+            <span class="chapter-label">I. Spring</span>
+            <blockquote class="narrative">
+                <p class="reveal">Something stirs beneath the soil.</p>
+                <p class="reveal">A promise kept in cold darkness</p>
+                <p class="reveal">breaks into light.</p>
+            </blockquote>
+            <blockquote class="narrative narrative-2">
+                <p class="reveal">Petals unfurl like shy secrets.</p>
+                <p class="reveal">The world exhales—</p>
+                <p class="reveal">and begins again.</p>
+            </blockquote>
+        </div>
+    </section>
+
+    <section id="summer" class="chapter summer-chapter">
+        <div class="season-bg summer-bg"></div>
+        <div class="sun"></div>
+        <div class="clouds">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+        </div>
+        <div class="content-wrap parallax-content" data-speed="0.5">
+            <span class="chapter-label">II. Summer</span>
+            <blockquote class="narrative">
+                <p class="reveal">Light pours down like honey.</p>
+                <p class="reveal">Everything leans toward the sun—</p>
+                <p class="reveal">aching to be full.</p>
+            </blockquote>
+            <blockquote class="narrative narrative-2">
+                <p class="reveal">Time stretches, golden and slow.</p>
+                <p class="reveal">We are alive,</p>
+                <p class="reveal">and we are burning.</p>
+            </blockquote>
+        </div>
+    </section>
+
+    <section id="autumn" class="chapter autumn-chapter">
+        <div class="season-bg autumn-bg"></div>
+        <div class="leaves-container" aria-hidden="true">
+            <div class="leaf leaf-1"></div>
+            <div class="leaf leaf-2"></div>
+            <div class="leaf leaf-3"></div>
+            <div class="leaf leaf-4"></div>
+            <div class="leaf leaf-5"></div>
+            <div class="leaf leaf-6"></div>
+        </div>
+        <div class="content-wrap parallax-content" data-speed="0.5">
+            <span class="chapter-label">III. Autumn</span>
+            <blockquote class="narrative">
+                <p class="reveal">The world softens into amber.</p>
+                <p class="reveal">Leaves fall like letters</p>
+                <p class="reveal">written in a forgotten language.</p>
+            </blockquote>
+            <blockquote class="narrative narrative-2">
+                <p class="reveal">Decay is not defeat.</p>
+                <p class="reveal">It is a quiet release—</p>
+                <p class="reveal">letting go to make room.</p>
+            </blockquote>
+        </div>
+    </section>
+
+    <section id="winter" class="chapter winter-chapter">
+        <div class="season-bg winter-bg"></div>
+        <div class="snow-container" aria-hidden="true">
+            <span class="snowflake"></span>
+            <span class="snowflake"></span>
+            <span class="snowflake"></span>
+            <span class="snowflake"></span>
+            <span class="snowflake"></span>
+            <span class="snowflake"></span>
+        </div>
+        <div class="content-wrap parallax-content" data-speed="0.5">
+            <span class="chapter-label">IV. Winter</span>
+            <blockquote class="narrative">
+                <p class="reveal">The world holds its breath.</p>
+                <p class="reveal">White covers everything—</p>
+                <p class="reveal">a blank page waiting.</p>
+            </blockquote>
+            <blockquote class="narrative narrative-2">
+                <p class="reveal">In the stillness, we remember</p>
+                <p class="reveal">that beneath the ice</p>
+                <p class="reveal">the seed still dreams.</p>
+            </blockquote>
+        </div>
+    </section>
+
+    <section id="closing" class="chapter closing-chapter">
+        <div class="content-wrap">
+            <p class="closing-line fade-in">And so it turns.</p>
+            <p class="closing-line fade-in">Spring, Summer, Autumn, Winter.</p>
+            <p class="closing-line fade-in">Endless. Patient. True.</p>
+            <a href="#intro" class="restart-link">begin again ↑</a>
+        </div>
+    </section>
+
+    <script>
+        (function() {
+            'use strict';
+            var narrativeParagraphs = document.querySelectorAll('.narrative p');
+            var revealObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) entry.target.classList.add('revealed');
+                });
+            }, { threshold: 0.3, rootMargin: '0px 0px -15% 0px' });
+            narrativeParagraphs.forEach(function(para, index) {
+                para.style.transitionDelay = (index * 0.15) + 's';
+                revealObserver.observe(para);
+            });
+
+            var parallaxElements = document.querySelectorAll('[data-speed]');
+            function updateParallax() {
+                var windowHeight = window.innerHeight;
+                parallaxElements.forEach(function(el) {
+                    var chapter = el.closest('.chapter');
+                    if (!chapter) return;
+                    var rect = chapter.getBoundingClientRect();
+                    var speed = parseFloat(el.dataset.speed) || 0.5;
+                    var elementCenter = rect.top + rect.height / 2;
+                    var viewportCenter = windowHeight / 2;
+                    var moveAmount = (elementCenter - viewportCenter) * speed * 0.1;
+                    el.style.transform = 'translateY(' + moveAmount + 'px)';
+                });
+            }
+            var ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(function() {
+                        updateParallax();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+            updateParallax();
+
+            var chapterLabels = document.querySelectorAll('.chapter-label');
+            chapterLabels.forEach(function(label) {
+                label.addEventListener('mouseenter', function() {
+                    label.style.letterSpacing = '0.4em';
+                    label.style.opacity = '1';
+                });
+                label.addEventListener('mouseleave', function() {
+                    label.style.letterSpacing = '0.3em';
+                    label.style.opacity = '0.8';
+                });
+            });
+
+            var closingSection = document.getElementById('closing');
+            if (closingSection) {
+                var closingObserver = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) entry.target.classList.add('in-view');
+                    });
+                }, { threshold: 0.3 });
+                closingObserver.observe(closingSection);
+            }
+
+            var chapters = ['#intro', '#spring', '#summer', '#autumn', '#winter', '#closing'];
+            document.addEventListener('keydown', function(e) {
+                var currentScroll = window.scrollY;
+                var windowHeight = window.innerHeight;
+                var section = Math.floor(currentScroll / windowHeight);
+                if (e.key === 'ArrowDown' || e.key === ' ') {
+                    if (section < chapters.length - 1) {
+                        e.preventDefault();
+                        document.querySelector(chapters[section + 1]).scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    if (section > 0) {
+                        e.preventDefault();
+                        document.querySelector(chapters[section - 1]).scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
