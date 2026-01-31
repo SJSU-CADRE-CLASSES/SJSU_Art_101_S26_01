@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amara Carrier</title>
     <style>
-        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; }
+        body { background-color: black; color: white; margin: 0; min-height: 100vh; position: relative; cursor: pointer; }
 
         .center-text {
             position: fixed;
@@ -485,9 +485,10 @@
         function getShakeIntensity() {
             const center = getTextCenter();
             const dist = Math.hypot(mouseX - center.x, mouseY - center.y);
-            const triggerRadius = 280;
+            const triggerRadius = 320;
             if (dist >= triggerRadius) return 0;
-            return 1 - dist / triggerRadius;
+            const linear = 1 - dist / triggerRadius;
+            return Math.pow(linear, 2);
         }
 
         document.addEventListener('mousemove', (e) => {
