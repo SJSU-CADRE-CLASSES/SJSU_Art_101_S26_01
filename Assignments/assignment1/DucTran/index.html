@@ -3,9 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duc Tran - Assignment 1</title>
+    <title>Seasons — A Story of Time and Change</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Duc Tran</h1>
+    <a href="#content" class="skip-link">Skip to content</a>
+
+    <nav class="season-nav" aria-label="Navigate seasons">
+        <a href="index.html" class="home">Home</a>
+        <a href="spring.html" class="spring">Spring</a>
+        <a href="summer.html" class="summer">Summer</a>
+        <a href="autumn.html" class="autumn">Autumn</a>
+        <a href="winter.html" class="winter">Winter</a>
+    </nav>
+
+    <main id="content" class="page intro-page">
+        <div class="content-wrap">
+            <p class="intro-line">Time moves in circles...</p>
+            <p class="intro-line">yet we perceive it as a line.</p>
+            <p class="intro-line">Nature reminds us</p>
+            <p class="intro-line">that change is not an ending</p>
+            <p class="intro-line">but a return.</p>
+            <p class="pick-hint">Choose a season to enter the story</p>
+            <div class="season-links">
+                <a href="spring.html" class="season-link spring" aria-label="Go to Spring">
+                    <div class="season-icon bloom" aria-hidden="true"></div>
+                    <span>Spring</span>
+                </a>
+                <a href="summer.html" class="season-link summer" aria-label="Go to Summer">
+                    <div class="season-icon sun" aria-hidden="true"></div>
+                    <span>Summer</span>
+                </a>
+                <a href="autumn.html" class="season-link autumn" aria-label="Go to Autumn">
+                    <div class="season-icon leaf" aria-hidden="true"></div>
+                    <span>Autumn</span>
+                </a>
+                <a href="winter.html" class="season-link winter" aria-label="Go to Winter">
+                    <div class="season-icon snowflake" aria-hidden="true"></div>
+                    <span>Winter</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
 </body>
 </html>
