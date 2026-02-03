@@ -206,58 +206,55 @@
     <script>
         (function() {
             var ctx = null;
-            var gainNode = null;
             var started = false;
             var loopTimeout = null;
-
-            var melody = [
-                { f: 523.25, t: 0, d: 0.15 },
-                { f: 587.33, t: 0.2, d: 0.15 },
-                { f: 659.25, t: 0.4, d: 0.15 },
-                { f: 523.25, t: 0.6, d: 0.15 },
-                { f: 659.25, t: 0.8, d: 0.2 },
-                { f: 783.99, t: 1.05, d: 0.25 },
-                { f: 523.25, t: 1.4, d: 0.15 },
-                { f: 587.33, t: 1.6, d: 0.15 },
-                { f: 659.25, t: 1.8, d: 0.15 },
-                { f: 523.25, t: 2.0, d: 0.15 },
-                { f: 783.99, t: 2.2, d: 0.2 },
-                { f: 659.25, t: 2.5, d: 0.3 },
-                { f: 523.25, t: 2.9, d: 0.15 },
-                { f: 587.33, t: 3.1, d: 0.15 },
-                { f: 659.25, t: 3.3, d: 0.15 },
-                { f: 698.46, t: 3.5, d: 0.15 },
-                { f: 783.99, t: 3.7, d: 0.4 }
+            var chordIndex = 0;
+            /* Ambient pad: soft chords (root + fifth + octave), slow progression */
+            var chords = [
+                [130.81, 196.00, 261.63],
+                [146.83, 220.00, 293.66],
+                [164.81, 246.94, 329.63],
+                [146.83, 220.00, 293.66]
             ];
+            var chordDuration = 5;
+            var loopDuration = chordDuration * chords.length;
 
             function getCtx() {
                 if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
                 return ctx;
             }
 
-            function playNote(freq, startTime, duration) {
+            function playPadChord(freqs, startTime, duration) {
                 var c = getCtx();
                 if (c.state === 'suspended') return;
-                var osc = c.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                var g = c.createGain();
-                g.gain.setValueAtTime(0.12, startTime);
-                g.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-                osc.connect(g);
-                g.connect(c.destination);
-                osc.start(startTime);
-                osc.stop(startTime + duration);
+                var masterGain = c.createGain();
+                masterGain.gain.setValueAtTime(0, startTime);
+                masterGain.gain.linearRampToValueAtTime(0.06, startTime + 1.2);
+                masterGain.gain.setValueAtTime(0.06, startTime + duration - 1.5);
+                masterGain.gain.linearRampToValueAtTime(0.001, startTime + duration);
+                masterGain.connect(c.destination);
+                freqs.forEach(function(freq) {
+                    var osc = c.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    var g = c.createGain();
+                    g.gain.setValueAtTime(0.35, startTime);
+                    g.gain.linearRampToValueAtTime(0.001, startTime + duration);
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                });
             }
 
             function playLoop() {
                 if (!started || !ctx) return;
                 var c = ctx;
                 var base = c.currentTime;
-                melody.forEach(function(n) {
-                    playNote(n.f, base + n.t, n.d);
-                });
-                loopTimeout = setTimeout(playLoop, 4200);
+                var chord = chords[chordIndex];
+                playPadChord(chord, base, chordDuration);
+                chordIndex = (chordIndex + 1) % chords.length;
+                loopTimeout = setTimeout(playLoop, chordDuration * 1000);
             }
 
             function startMusic() {
@@ -292,7 +289,7 @@
             }
             document.body.addEventListener('click', function(e) {
                 var a = e.target.closest('a[href]');
-                if (a && a.getAttribute('href') && a.getAttribute('href') !== '#') playClickSound();
+                if (a) playClickSound();
             });
         })();
     </script>

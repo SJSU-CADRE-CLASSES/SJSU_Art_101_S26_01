@@ -3,300 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amara Carrier</title>
-    <link href="https://fonts.cdnfonts.com/css/perfect-dos-vga-437" rel="stylesheet">
+    <title>Amara – AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body {
-            background-color: #000;
-            color: #00ff00;
             margin: 0;
             min-height: 100vh;
-            position: relative;
-            cursor: pointer;
-            font-family: 'Perfect DOS VGA 437', monospace;
-            box-shadow: inset 0 0 0 3px #003300;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafbfc;
+            color: #1a1d21;
+            line-height: 1.5;
         }
-
-        .center-text {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Perfect DOS VGA 437', monospace;
-            font-size: clamp(14px, 2.8vw, 26px);
-            max-width: 85vw;
-            padding: 0 1em;
-            box-sizing: border-box;
-            font-weight: bold;
-            color: #00ff00;
-            text-align: center;
-            z-index: 10;
-            text-shadow: 0 0 1px #00ff00;
-            letter-spacing: 1px;
-            line-height: 1.2;
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
             text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo:hover { color: #2563eb; }
+        nav a {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-decoration: none;
+            margin-left: 1.5rem;
+        }
+        nav a:hover { color: #0f172a; }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+        }
+        .hero {
+            text-align: center;
+            max-width: 640px;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin: 0 0 1rem;
+            color: #0f172a;
+            line-height: 1.15;
+        }
+        .hero p {
+            font-size: 1.125rem;
+            color: #475569;
+            margin: 0 0 2rem;
+        }
+        .cta {
             display: inline-block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            padding: 0.75rem 1.5rem;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
-        .center-text:hover {
-            color: #55ff55;
+        .cta:hover { background: #1d4ed8; }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+            text-align: center;
         }
-
-        /* DOS CRT – scanlines only */
-        .crt-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 100;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent 0px,
-                transparent 2px,
-                rgba(0, 0, 0, 0.15) 2px,
-                rgba(0, 0, 0, 0.15) 3px
-            );
+        .features span {
+            display: block;
+            font-size: 0.875rem;
+            color: #64748b;
         }
-        .crt-overlay::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.03);
-            animation: crt-flicker 8s infinite;
+        .features strong { color: #334155; }
+        .ads-section {
+            padding: 2rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
-        @keyframes crt-flicker {
-            0%, 100% { opacity: 1; }
-            92% { opacity: 1; }
-            96% { opacity: 0.97; }
-            98% { opacity: 1; }
+        .ads-label {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin-bottom: 1rem;
         }
-
-        /* Eyes – detailed pixel art (multi-shade sclera, iris, pupil), above shadow mask, pupils follow mouse */
-        .eye {
-            position: fixed;
-            border-radius: 0;
-            overflow: hidden;
-            z-index: 9;
-            box-shadow: 0 0 0 2px #000;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
-            background-color: #b8b8b8;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12'%3E%3Crect x='0' y='0' width='20' height='12' fill='%23b0b0b0'/%3E%3Crect x='2' y='1' width='16' height='10' fill='%23d0d0d0'/%3E%3Crect x='4' y='2' width='12' height='8' fill='%23e8e8e8'/%3E%3Crect x='6' y='3' width='8' height='6' fill='%23f0f0f0'/%3E%3C/svg%3E");
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+        .ads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
         }
-        .eye .iris {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            border-radius: 0;
-            box-shadow: none;
-            transition: transform 0.08s ease-out;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            background-color: #2d5a2d;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='0' y='0' width='16' height='16' fill='%231a3d1a'/%3E%3Crect x='2' y='2' width='12' height='12' fill='%232d5a2d'/%3E%3Crect x='4' y='4' width='8' height='8' fill='%233a6b3a'/%3E%3Crect x='5' y='5' width='4' height='4' fill='%234a8a4a'/%3E%3Crect x='6' y='6' width='2' height='2' fill='%2360a060'/%3E%3C/svg%3E");
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+        .ad-card {
+            display: block;
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .eye .pupil {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            border-radius: 0;
-            transition: transform 0.08s ease-out;
-            background-color: #000;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect x='0' y='0' width='8' height='8' fill='%23000'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23444'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23fff'/%3E%3C/svg%3E");
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+        .ad-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
-        .eye::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 0;
-            background: #c0c0c0;
-            border-radius: 0;
-            pointer-events: none;
+        .ad-card .ad-name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
         }
-        .eye.eye-blink::after {
-            animation: eye-lid 0.18s ease-out forwards;
+        .ad-card .ad-tagline {
+            font-size: 0.8125rem;
+            color: #64748b;
+            line-height: 1.35;
         }
-        @keyframes eye-lid {
-            0%, 100% { height: 0; top: 0; }
-            50% { height: 100%; top: 0; }
+        footer {
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.8125rem;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
         }
-        .eye--sm { width: 40px; height: 24px; }
-        .eye--sm .iris { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
-        .eye--sm .pupil { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
-        .eye--md { width: 56px; height: 32px; }
-        .eye--md .iris { width: 32px; height: 32px; margin: -16px 0 0 -16px; }
-        .eye--md .pupil { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
-        .eye--lg { width: 72px; height: 40px; }
-        .eye--lg .iris { width: 44px; height: 44px; margin: -22px 0 0 -22px; }
-        .eye--lg .pupil { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
-        .eye--xl { width: 88px; height: 48px; }
-        .eye--xl .iris { width: 52px; height: 52px; margin: -26px 0 0 -26px; }
-        .eye--xl .pupil { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
-        .eye--tl { top: 6%; left: 8%; }
-        .eye--tr { top: 6%; right: 8%; left: auto; }
-        .eye--t2 { top: 5%; left: 22%; }
-        .eye--t3 { top: 7%; right: 22%; left: auto; }
-        .eye--bl { bottom: 6%; left: 8%; top: auto; }
-        .eye--br { bottom: 6%; right: 8%; left: auto; top: auto; }
-        .eye--b2 { bottom: 8%; left: 25%; top: auto; }
-        .eye--b3 { bottom: 7%; right: 24%; left: auto; top: auto; }
-        .eye--ml { top: 50%; left: 4%; transform: translateY(-50%); }
-        .eye--mr { top: 50%; right: 4%; left: auto; transform: translateY(-50%); }
-        .eye--m2 { top: 28%; left: 5%; }
-        .eye--m3 { top: 72%; left: 6%; }
-        .eye--m4 { top: 25%; right: 5%; left: auto; }
-        .eye--m5 { top: 70%; right: 6%; left: auto; }
-        .eye--x1 { top: 12%; left: 50%; transform: translateX(-50%); }
-        .eye--x2 { bottom: 12%; left: 50%; top: auto; transform: translateX(-50%); }
-        .eye--x3 { top: 38%; left: 18%; }
-        .eye--x4 { top: 38%; right: 18%; left: auto; }
-        .eye--x5 { top: 15%; left: 38%; }
-        .eye--x6 { top: 18%; right: 38%; left: auto; }
-        .eye--x7 { bottom: 18%; left: 38%; top: auto; }
-        .eye--x8 { bottom: 15%; right: 38%; left: auto; top: auto; }
-
-        /* Black shadow with two eyeholes – user looks through holes to find text (below eyes) */
-        .shadow-mask {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.94);
-            pointer-events: none;
-            z-index: 4;
-            -webkit-mask-image:
-                linear-gradient(black, black),
-                radial-gradient(circle at 35% 50%, black 10vmin, transparent 10vmin),
-                radial-gradient(circle at 65% 50%, black 10vmin, transparent 10vmin);
-            mask-image:
-                linear-gradient(black, black),
-                radial-gradient(circle at 35% 50%, black 10vmin, transparent 10vmin),
-                radial-gradient(circle at 65% 50%, black 10vmin, transparent 10vmin);
-            -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
-            mask-size: 100% 100%, 100% 100%, 100% 100%;
-            -webkit-mask-position: 0 0, 0 0, 0 0;
-            mask-position: 0 0, 0 0, 0 0;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-composite: destination-out;
-            mask-composite: subtract;
+        footer a {
+            color: #64748b;
+            text-decoration: none;
         }
+        footer a:hover { color: #0f172a; }
     </style>
 </head>
 <body>
-    <a href="dont-feed-me.html" class="center-text">Don't Look At Me</a>
-    <div class="eye eye--sm eye--tl"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--tr"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--t2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--t3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--bl"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--xl eye--br"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--b2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--b3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--ml"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--mr"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--m2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--m3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--m4"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--m5"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--x1"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--x2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--x3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--x4"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--xl eye--x5"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--x6"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--x7"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--x8"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="shadow-mask" aria-hidden="true"></div>
-    <div class="crt-overlay" aria-hidden="true"></div>
+    <div class="page">
+        <header>
+            <a href="index.html" class="logo">Amara</a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+            </nav>
+        </header>
+        <main>
+            <section class="hero">
+                <h1>AI that understands you</h1>
+                <p>Amara is a next-generation assistant designed to work the way you think. Natural conversation, clear answers, and support when you need it.</p>
+                <a href="dont-feed-me.html" class="cta">Try Amara</a>
+                <div class="features" id="features">
+                    <div><strong>Conversational</strong><span>Natural dialogue, not commands</span></div>
+                    <div><strong>Context-aware</strong><span>Remembers and adapts</span></div>
+                    <div><strong>Always on</strong><span>Ready when you are</span></div>
+                </div>
+            </section>
+        </main>
+        <section class="ads-section">
+            <p class="ads-label">Sponsored · AI assistants you might like</p>
+            <div class="ads-grid">
+                <a href="#" class="ad-card">
+                    <span class="ad-name">Nexus AI</span>
+                    <span class="ad-tagline">Enterprise-grade reasoning. Start free.</span>
+                </a>
+                <a href="#" class="ad-card">
+                    <span class="ad-name">SynthMind</span>
+                    <span class="ad-tagline">Write, code, and create with AI. Try now.</span>
+                </a>
+                <a href="#" class="ad-card">
+                    <span class="ad-name">LogicFlow</span>
+                    <span class="ad-tagline">Smarter workflows. Fewer steps. See how.</span>
+                </a>
+                <a href="#" class="ad-card">
+                    <span class="ad-name">Cortex Chat</span>
+                    <span class="ad-tagline">Conversational AI for teams. Get started.</span>
+                </a>
+            </div>
+        </section>
+        <footer id="about">
+            <a href="#">Privacy</a> · <a href="#">Terms</a> · © Amara
+        </footer>
+    </div>
 
-    <script>
-        (function() {
-            const link = document.querySelector('a.center-text');
-            let mouseX = 0, mouseY = 0;
-            const TRIGGER_RADIUS = 420;
-            const MAX_SHAKE = 6;
-            const needsTranslateY = (el) => /eye--(ml|mr)\b/.test(el.className);
-            const needsTranslateX = (el) => /eye--(x1|x2)\b/.test(el.className);
-
-            function getLinkCenter() {
-                const rect = link ? link.getBoundingClientRect() : null;
-                if (!rect) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-                return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-            }
-            function getShakeIntensity() {
-                const c = getLinkCenter();
-                const d = Math.hypot(mouseX - c.x, mouseY - c.y);
-                if (d >= TRIGGER_RADIUS) return 0;
-                return Math.pow(1 - d / TRIGGER_RADIUS, 2);
-            }
-
-            document.addEventListener('mousemove', function(e) {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                document.querySelectorAll('.eye').forEach(function(eye) {
-                    const iris = eye.querySelector('.iris');
-                    const pupil = eye.querySelector('.pupil');
-                    if (!iris || !pupil) return;
-                    const r = eye.getBoundingClientRect();
-                    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-                    const maxMove = Math.min(r.width, r.height) * 0.28;
-                    let dx = e.clientX - cx, dy = e.clientY - cy;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist > maxMove) { dx *= maxMove / dist; dy *= maxMove / dist; }
-                    iris.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
-                    pupil.style.transform = 'translate(0, 0)';
-                });
-            });
-
-            function shakeLoop() {
-                const intensity = getShakeIntensity();
-                document.querySelectorAll('.eye').forEach(function(eye) {
-                    let base = '';
-                    if (needsTranslateY(eye)) base += ' translateY(-50%)';
-                    if (needsTranslateX(eye)) base += ' translateX(-50%)';
-                    if (intensity <= 0) {
-                        eye.style.transform = base || '';
-                        return;
-                    }
-                    const a = MAX_SHAKE * intensity;
-                    const sx = (Math.random() - 0.5) * 2 * a, sy = (Math.random() - 0.5) * 2 * a;
-                    eye.style.transform = 'translate(' + sx + 'px,' + sy + 'px)' + base;
-                });
-                requestAnimationFrame(shakeLoop);
-            }
-            requestAnimationFrame(shakeLoop);
-        })();
-    </script>
-    <script>
-        (function() {
-            document.querySelectorAll('.eye').forEach(function(eye) {
-                const minMs = 2200, maxMs = 4800;
-                const scheduleBlink = () => {
-                    const delay = minMs + Math.random() * (maxMs - minMs);
-                    setTimeout(() => {
-                        eye.classList.add('eye-blink');
-                        eye.addEventListener('animationend', function done() {
-                            eye.removeEventListener('animationend', done);
-                            eye.classList.remove('eye-blink');
-                            scheduleBlink();
-                        }, { once: true });
-                    }, delay);
-                };
-                scheduleBlink();
-            });
-        })();
-    </script>
     <script>
         (function() {
             let ctx = null;
@@ -352,7 +254,7 @@
             }
             document.body.addEventListener('click', function(e) {
                 var a = e.target.closest('a[href]');
-                if (a && a.getAttribute('href') && a.getAttribute('href') !== '#') playClickSound();
+                if (a) playClickSound();
             });
         })();
     </script>
