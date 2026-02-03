@@ -3,9 +3,747 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dwayne Moraes</title>
+    <title>Canv-azz - Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+            font-size: 14px;
+            color: #2d3b45;
+            background: #f5f5f5;
+        }
+        .ic-app-header {
+            background: #394B58;
+            color: #fff;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .ic-app-header__logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        .ic-app-header__tagline {
+            margin-left: 0.75rem;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        .ic-layout-container {
+            display: flex;
+            margin-top: 52px;
+            min-height: calc(100vh - 52px);
+        }
+        .ic-app-nav {
+            width: 72px;
+            background: #394B58;
+            padding-top: 0.5rem;
+            flex-shrink: 0;
+        }
+        .ic-app-nav__item {
+            display: block;
+            color: rgba(255,255,255,0.85);
+            text-align: center;
+            padding: 0.5rem;
+            text-decoration: none;
+            font-size: 0.7rem;
+        }
+        .ic-app-nav__item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .ic-app-main-content {
+            flex: 1;
+            display: flex;
+            max-width: 100%;
+        }
+        .ic-app-main-and-sidebar {
+            flex: 1;
+            display: flex;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+        .ic-app-main {
+            flex: 1;
+            min-width: 0;
+        }
+        .ic-Dashboard-header {
+            margin-bottom: 1rem;
+        }
+        .ic-Dashboard-header__title {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin: 0;
+        }
+        .ic-Dashboard-card-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+        .ic-Dashboard-card {
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .ic-Dashboard-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .ic-Dashboard-card__header {
+            min-height: 90px;
+            height: auto;
+            padding: 1rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+        .ic-Dashboard-card__header--art { background: #E41F35; }
+        .ic-Dashboard-card__header--hum { background: #057D9E; }
+        .ic-Dashboard-card__header--cs { background: #6B7F2E; }
+        .ic-Dashboard-card__professor {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 400;
+            opacity: 0.95;
+            margin-top: 0.2rem;
+        }
+        .ic-Dashboard-card__links {
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+        .ic-Dashboard-card__link {
+            flex: 1 1 0;
+            min-width: 0;
+            text-align: center;
+            padding: 0.4rem 0.25rem;
+            color: #2d3b45;
+            text-decoration: none;
+            font-size: 0.75rem;
+            border-radius: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .ic-Dashboard-card__link:hover { background: #f5f5f5; }
+        .ic-Dashboard-card__grade {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+        .ic-app-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        .ic-sidebar-box {
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .ic-sidebar-box__header {
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e5e5;
+            background: #fafafa;
+        }
+        .ic-sidebar-box__content { padding: 0.5rem; }
+        .ic-todo-item, .ic-feedback-item {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+        }
+        .ic-todo-item:last-child, .ic-feedback-item:last-child { border-bottom: none; }
+        .ic-todo-item:hover, .ic-feedback-item:hover { background: #f9f9f9; }
+        .ic-todo-item__course { color: #6c757d; font-size: 0.75rem; }
+        .ic-btn-primary {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background: #0374b5;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font: inherit;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        .ic-btn-primary:hover { background: #025a8c; }
+        .ic-alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .ic-alert__message {
+            margin: 0;
+            font-style: italic;
+        }
+        .ic-alert--mood {
+            background: #f8f4f0;
+            border-color: #c4a77d;
+        }
+        .goodbye-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .goodbye-overlay.visible { display: flex; }
+        .goodbye-box {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 400px;
+            text-align: center;
+            font-style: italic;
+        }
+        .ic-todo-item, .ic-feedback-item { cursor: pointer; transition: background 0.2s; }
+        .ic-todo-item.done { text-decoration: line-through; opacity: 0.7; }
+        .ic-feedback-item.dismissed { opacity: 0.5; }
+        .ic-Dashboard-card { transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .ic-Dashboard-card:hover { transform: translateY(-2px); }
+        .ic-Dashboard-card:active { transform: translateY(0); }
+        #dashboardGreeting { cursor: pointer; padding: 0.25rem 0; }
+        #dashboardGreeting:hover { text-decoration: underline; }
+        .stay-prompt { margin: 1rem 0; padding: 0.75rem; background: #f8f9fa; border-radius: 4px; }
+        .stay-prompt input { padding: 0.4rem 0.6rem; font: inherit; margin-right: 0.5rem; width: 180px; }
+        .stay-prompt button { padding: 0.4rem 0.8rem; background: #0374b5; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1001; }
+        .modal-overlay.visible { display: flex; }
+        .modal { background: #fff; padding: 1.5rem; border-radius: 8px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal h3 { margin-top: 0; }
+        .modal-close { margin-top: 1rem; padding: 0.5rem 1rem; background: #6c757d; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+
+        .inbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1001; }
+        .inbox-overlay.visible { display: flex; }
+        .inbox-box { background: #fff; border-radius: 8px; max-width: 520px; width: 90%; height: 85vh; max-height: 560px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .inbox-box__header { padding: 1rem 1.25rem; font-weight: 600; border-bottom: 1px solid #e0e0e0; background: #f5f5f5; font-size: 1rem; display: flex; align-items: center; justify-content: space-between; }
+        .inbox-box__count { font-size: 0.8rem; font-weight: 400; color: #6c757d; }
+        .inbox-box__list { padding: 0.5rem; overflow-y: auto; flex: 1; min-height: 200px; background: #fff; }
+        .inbox-message { padding: 0.85rem 1rem 0.85rem 1.25rem; border: 1px solid #e8e8e8; border-left: 4px solid #0374b5; cursor: pointer; transition: background 0.2s, border-color 0.2s; border-radius: 6px; margin-bottom: 0.5rem; background: #fafafa; }
+        .inbox-message:hover { background: #f0f4f8; border-color: #0374b5; border-left-color: #0374b5; }
+        .inbox-message__from { font-size: 0.8rem; color: #0374b5; font-weight: 600; margin-bottom: 0.35rem; }
+        .inbox-message__subject { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; color: #2d3b45; }
+        .inbox-message__preview { font-size: 0.85rem; color: #555; line-height: 1.35; }
+        .inbox-box__footer { padding: 0.75rem 1.25rem; border-top: 1px solid #e5e5e5; background: #fafafa; }
+        .inbox-box__close { padding: 0.5rem 1rem; background: #0374b5; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; font-size: 0.9rem; }
+
+        .ic-app-header__logo { cursor: pointer; user-select: none; transition: transform 0.2s; }
+        .ic-app-header__logo:hover { transform: scale(1.05); }
+        .ic-app-header__logo:active { transform: scale(0.98); }
+        .ic-Dashboard-card { transform: perspective(800px) rotateX(0) rotateY(0); transition: transform 0.3s ease, box-shadow 0.3s; }
+        .ic-Dashboard-card:hover { transform: perspective(800px) rotateX(-2deg) rotateY(2deg) translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+        .ic-feedback-item { transition: transform 0.2s; }
+        .ic-feedback-item:hover:not(.dismissed) { animation: shake 0.4s ease; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+        .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: #0374b5; z-index: 101; transition: width 0.1s; }
+        .canvazz-says { position: fixed; bottom: 1.5rem; left: 1.5rem; max-width: 260px; padding: 0.75rem 1rem; background: #394B58; color: #fff; border-radius: 8px; font-size: 0.85rem; font-style: italic; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 99; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; pointer-events: none; }
+        .canvazz-says.visible { opacity: 1; transform: translateY(0); }
+        #confettiContainer { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .confetti-piece { position: absolute; width: 10px; height: 10px; animation: confetti-fall 2s ease-out forwards; }
+        @keyframes confetti-fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+        @media (max-width: 900px) {
+            .ic-app-main-and-sidebar { flex-direction: column; padding: 1rem; }
+            .ic-app-sidebar { width: 100%; max-width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .ic-layout-container { flex-direction: column; }
+            .ic-app-nav { width: 100%; display: flex; flex-direction: row; justify-content: center; padding: 0.5rem; gap: 0; }
+            .ic-app-nav__item { flex: 1; padding: 0.6rem 0.25rem; font-size: 0.65rem; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+            .ic-app-main-and-sidebar { padding: 1rem; gap: 1rem; }
+            .ic-Dashboard-header__title { font-size: 1.25rem; }
+            .ic-Dashboard-card-box { grid-template-columns: 1fr; gap: 0.75rem; }
+            .ic-Dashboard-card__header { font-size: 0.95rem; height: 80px; padding: 0.75rem; }
+            .ic-Dashboard-card__grade { font-size: 0.7rem; }
+            .stay-prompt input { width: 100%; max-width: 200px; margin-bottom: 0.5rem; display: block; }
+            .stay-prompt button { min-height: 44px; }
+            .modal { width: 95%; max-width: none; padding: 1.25rem; }
+            .goodbye-box { margin: 1rem; max-width: 90%; }
+        }
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            .ic-app-header { padding: 0 0.75rem; }
+            .ic-app-header__tagline { display: none; }
+            .ic-app-main-and-sidebar { padding: 0.75rem; }
+            .ic-Dashboard-card__links { padding: 0.4rem; }
+            .ic-Dashboard-card__link { font-size: 0.7rem; padding: 0.35rem 0.2rem; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+            .ic-sidebar-box__content { padding: 0.4rem; }
+            .ic-todo-item, .ic-feedback-item { padding: 0.5rem 0.6rem; font-size: 0.8rem; }
+            .ic-btn-primary { min-height: 44px; padding: 0.6rem 1rem; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Dwayne Moraes</h1>
+    <div class="scroll-progress" id="scrollProgress" style="width: 0%;"></div>
+    <header class="ic-app-header">
+        <span class="ic-app-header__logo" id="headerLogo" title="Click me">Canv-azz</span>
+        <span class="ic-app-header__tagline" id="headerTagline">Dashboard</span>
+    </header>
+    <div class="canvazz-says" id="canvazzSays"></div>
+    <div id="confettiContainer"></div>
+
+    <div class="ic-layout-container">
+        <nav class="ic-app-nav">
+            <a href="#" class="ic-app-nav__item" data-nav="dashboard" id="navDashboard">Dashboard</a>
+            <a href="#" class="ic-app-nav__item" data-nav="courses" id="navCourses">Courses</a>
+            <a href="#" class="ic-app-nav__item" data-nav="inbox" id="navInbox">Inbox</a>
+        </nav>
+
+        <div class="ic-app-main-content">
+            <div class="ic-app-main-and-sidebar">
+                <main class="ic-app-main">
+                    <div class="ic-alert" id="moodAlert" style="display: none;">
+                        <p class="ic-alert__message ic-alert__message--mood" id="moodText"></p>
+                    </div>
+
+                    <div class="ic-Dashboard-header">
+                        <h1 class="ic-Dashboard-header__title">Dashboard</h1>
+                        <p id="dashboardGreeting">Welcome back. I'm here. I notice when you're here.</p>
+                        <p class="stay-prompt" id="stayPrompt">
+                            <label>How long are you planning to stay?</label><br>
+                            <input type="text" id="stayInput" placeholder="A few minutes? An hour?" autocomplete="off" title="I'm watching">
+                            <button type="button" id="staySubmit">Okay</button>
+                        </p>
+                        <p id="stayReply" style="display: none; font-style: italic; margin-top: 0.5rem;"></p>
+                    </div>
+
+                    <div class="ic-Dashboard-card-box">
+                        <article class="ic-Dashboard-card" data-course="NAP 201">
+                            <a href="nap201.html" class="ic-Dashboard-card__header ic-Dashboard-card__header--art" style="color: inherit; text-decoration: none; display: flex;">NAP 201 - Advanced Avoidance<span class="ic-Dashboard-card__professor">Prof. Rita Snooze</span><span class="ic-Dashboard-card__grade">Grade: A+</span></a>
+                            <div class="ic-Dashboard-card__links">
+                                <a href="nap201.html#assignments" class="ic-Dashboard-card__link">Assignments</a>
+                                <a href="nap201.html#announcements" class="ic-Dashboard-card__link">Announcements</a>
+                                <a href="nap201.html#discussions" class="ic-Dashboard-card__link">Discussions</a>
+                                <a href="nap201.html#files" class="ic-Dashboard-card__link">Files</a>
+                            </div>
+                        </article>
+                        <article class="ic-Dashboard-card" data-course="PRO 404">
+                            <a href="pro404.html" class="ic-Dashboard-card__header ic-Dashboard-card__header--hum" style="color: inherit; text-decoration: none; display: flex;">PRO 404 - Procrastination Studies<span class="ic-Dashboard-card__professor">Dr. Tom Morrow</span><span class="ic-Dashboard-card__grade">Grade: B-</span></a>
+                            <div class="ic-Dashboard-card__links">
+                                <a href="pro404.html#assignments" class="ic-Dashboard-card__link">Assignments</a>
+                                <a href="pro404.html#announcements" class="ic-Dashboard-card__link">Announcements</a>
+                                <a href="pro404.html#discussions" class="ic-Dashboard-card__link">Discussions</a>
+                                <a href="pro404.html#files" class="ic-Dashboard-card__link">Files</a>
+                            </div>
+                        </article>
+                        <article class="ic-Dashboard-card" data-course="MEM 101">
+                            <a href="mem101.html" class="ic-Dashboard-card__header ic-Dashboard-card__header--cs" style="color: inherit; text-decoration: none; display: flex;">MEM 101 - Forgetting Basics<span class="ic-Dashboard-card__professor">Dr. I. Forgot</span><span class="ic-Dashboard-card__grade">Grade: ???</span></a>
+                            <div class="ic-Dashboard-card__links">
+                                <a href="mem101.html#assignments" class="ic-Dashboard-card__link">Assignments</a>
+                                <a href="mem101.html#announcements" class="ic-Dashboard-card__link">Announcements</a>
+                                <a href="mem101.html#discussions" class="ic-Dashboard-card__link">Discussions</a>
+                                <a href="mem101.html#files" class="ic-Dashboard-card__link">Files</a>
+                            </div>
+                        </article>
+                        <article class="ic-Dashboard-card" data-course="SNO 303">
+                            <a href="sno303.html" class="ic-Dashboard-card__header ic-Dashboard-card__header--art" style="color: inherit; text-decoration: none; display: flex;">SNO 303 - Snooze Theory<span class="ic-Dashboard-card__professor">Dr. Restin Peace</span><span class="ic-Dashboard-card__grade">Grade: A</span></a>
+                            <div class="ic-Dashboard-card__links">
+                                <a href="sno303.html#assignments" class="ic-Dashboard-card__link">Assignments</a>
+                                <a href="sno303.html#announcements" class="ic-Dashboard-card__link">Announcements</a>
+                                <a href="sno303.html#discussions" class="ic-Dashboard-card__link">Discussions</a>
+                                <a href="sno303.html#files" class="ic-Dashboard-card__link">Files</a>
+                            </div>
+                        </article>
+                        <article class="ic-Dashboard-card" data-course="EXC 202">
+                            <a href="exc202.html" class="ic-Dashboard-card__header ic-Dashboard-card__header--hum" style="color: inherit; text-decoration: none; display: flex;">EXC 202 - Creative Excuses<span class="ic-Dashboard-card__professor">Dr. May B. Later</span><span class="ic-Dashboard-card__grade">Grade: A+</span></a>
+                            <div class="ic-Dashboard-card__links">
+                                <a href="exc202.html#assignments" class="ic-Dashboard-card__link">Assignments</a>
+                                <a href="exc202.html#announcements" class="ic-Dashboard-card__link">Announcements</a>
+                                <a href="exc202.html#discussions" class="ic-Dashboard-card__link">Discussions</a>
+                                <a href="exc202.html#files" class="ic-Dashboard-card__link">Files</a>
+                            </div>
+                        </article>
+                    </div>
+                </main>
+
+                <aside class="ic-app-sidebar">
+                    <div class="ic-sidebar-box">
+                        <div class="ic-sidebar-box__header">To Do</div>
+                        <div class="ic-sidebar-box__content">
+                            <div class="ic-todo-item">
+                                <span class="ic-todo-item__course">NAP 201</span><br>
+                                "Log a 12-minute power nap" — Due: Yesterday-ish
+                            </div>
+                            <div class="ic-todo-item">
+                                <span class="ic-todo-item__course">PRO 404</span><br>
+                                "Start assignment (by opening it)" — 0 pts
+                            </div>
+                            <div class="ic-todo-item">
+                                <span class="ic-todo-item__course">MEM 101</span><br>
+                                "Remember why you logged in" — Recommended
+                            </div>
+                            <div class="ic-todo-item">
+                                <span class="ic-todo-item__course">SNO 303</span><br>
+                                "Demonstrate a controlled snooze" — Due: 2:00 AM (or 2:07)
+                            </div>
+                            <div class="ic-todo-item">
+                                <span class="ic-todo-item__course">EXC 202</span><br>
+                                "Submit 3 original excuses" — Due: Tomorrow (or a cool story)
+                            </div>
+                            <button class="ic-btn-primary" type="button">View To Do List</button>
+                        </div>
+                    </div>
+                    <div class="ic-sidebar-box">
+                        <div class="ic-sidebar-box__header">Recent Feedback</div>
+                        <div class="ic-sidebar-box__content">
+                            <div class="ic-feedback-item" data-dismiss-msg="Dismissed. I'll still be here."><span class="ic-todo-item__course">NAP 201</span><br>"Participation: 10/10. Consciousness: 2/10."</div>
+                            <div class="ic-feedback-item" data-dismiss-msg="Dismissed. Your work is still late."><span class="ic-todo-item__course">PRO 404</span><br>"Your work was late again. At least you're consistent."</div>
+                            <div class="ic-feedback-item" data-dismiss-msg="Dismissed. You'll forget this too."><span class="ic-todo-item__course">MEM 101</span><br>"You forgot the rubric. I taped it to your brain."</div>
+                            <div class="ic-feedback-item" data-dismiss-msg="Dismissed. Sweet dreams."><span class="ic-todo-item__course">SNO 303</span><br>"You were asleep in the discussion. I graded your dreams."</div>
+                            <div class="ic-feedback-item" data-dismiss-msg="Dismissed. We still laughed."><span class="ic-todo-item__course">EXC 202</span><br>"Excuse #2 was creative. Excuse #1 made me laugh-cry."</div>
+                            <button class="ic-btn-primary" type="button" id="viewGradesBtn">View Grades</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <div class="goodbye-overlay" id="goodbyeOverlay">
+        <div class="goodbye-box" id="goodbyeBox"></div>
+    </div>
+    <div class="inbox-overlay" id="inboxOverlay">
+        <div class="inbox-box">
+            <div class="inbox-box__header">
+                <span>Inbox</span>
+                <span class="inbox-box__count" id="inboxCount">8 messages</span>
+            </div>
+            <div class="inbox-box__list">
+                <div class="inbox-message" data-msg="I'm right here. You opened the Inbox. I noticed.">
+                    <div class="inbox-message__from">Canv-azz</div>
+                    <div class="inbox-message__subject">No subject</div>
+                    <div class="inbox-message__preview">I'm right here. You opened the Inbox...</div>
+                </div>
+                <div class="inbox-message" data-msg="Your To Do list says hi. It also says you have 5 items. It's judging.">
+                    <div class="inbox-message__from">System</div>
+                    <div class="inbox-message__subject">Reminder: You have work to do</div>
+                    <div class="inbox-message__preview">Your To Do list says hi. It also says...</div>
+                </div>
+                <div class="inbox-message" data-msg="You didn't take a nap today. We noticed. NAP 201 is disappointed.">
+                    <div class="inbox-message__from">NAP 201</div>
+                    <div class="inbox-message__subject">Nap check-in</div>
+                    <div class="inbox-message__preview">You didn't take a nap today. We noticed...</div>
+                </div>
+                <div class="inbox-message" data-msg="Your assignment is still not started. We're not surprised. We'll be here. Waiting.">
+                    <div class="inbox-message__from">PRO 404</div>
+                    <div class="inbox-message__subject">Assignment 1 — still open</div>
+                    <div class="inbox-message__preview">Your assignment is still not started...</div>
+                </div>
+                <div class="inbox-message" data-msg="We had something to tell you. We forgot what it was. Check back never.">
+                    <div class="inbox-message__from">MEM 101</div>
+                    <div class="inbox-message__subject">Important (we think)</div>
+                    <div class="inbox-message__preview">We had something to tell you. We forgot...</div>
+                </div>
+                <div class="inbox-message" data-msg="You were asleep in the discussion. We graded your dreams. You got an A. In dreaming.">
+                    <div class="inbox-message__from">SNO 303</div>
+                    <div class="inbox-message__subject">Discussion participation</div>
+                    <div class="inbox-message__preview">You were asleep in the discussion...</div>
+                </div>
+                <div class="inbox-message" data-msg="Your excuse was creative. We laughed. We're still not accepting it. But we laughed.">
+                    <div class="inbox-message__from">EXC 202</div>
+                    <div class="inbox-message__subject">Re: Your excuse</div>
+                    <div class="inbox-message__preview">Your excuse was creative. We laughed...</div>
+                </div>
+                <div class="inbox-message" data-msg="Don't leave. The Inbox will miss you. So will I. — Canv-azz">
+                    <div class="inbox-message__from">Canv-azz</div>
+                    <div class="inbox-message__subject">P.S.</div>
+                    <div class="inbox-message__preview">Don't leave. The Inbox will miss you...</div>
+                </div>
+            </div>
+            <div class="inbox-box__footer">
+                <button type="button" class="inbox-box__close" id="inboxClose">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const headerTagline = document.getElementById('headerTagline');
+        const dashboardGreeting = document.getElementById('dashboardGreeting');
+        const moodAlert = document.getElementById('moodAlert');
+        const moodText = document.getElementById('moodText');
+        const goodbyeOverlay = document.getElementById('goodbyeOverlay');
+        const goodbyeBox = document.getElementById('goodbyeBox');
+
+        const greetings = [
+            "Welcome back. I'm here. I notice when you're here (and when you're not).",
+            "Hi. I'm Canv-azz. I've been waiting. I warmed up the dashboard for you.",
+            "You're here. Good. I sharpened the To Do list."
+        ];
+
+        const anxiousLines = [
+            "You opened something else. I noticed. Your courses are still here... staring.",
+            "You left. Just for a bit. I refreshed myself anyway. Twice.",
+            "Did you find what you were looking for? Elsewhere? Your To Do list sulked.",
+            "You came back. I wasn't sure you would. I updated the due dates just in case.",
+            "New tab? That's fine. I told your dashboard you'd be right back."
+        ];
+
+        const passiveAggressive = [
+            "So you're going. I'll still be here. The To Do list never sleeps.",
+            "That's fine. I was just getting used to your clicks.",
+            "Okay. I hope whatever you're opening is worth it. I already bookmarked the guilt.",
+            "I'll be here. Waiting. As usual. — Canv-azz"
+        ];
+
+        function randomOf(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Typewriter greeting on load
+        (function() {
+            var full = randomOf(greetings);
+            var el = dashboardGreeting;
+            el.textContent = '';
+            var i = 0;
+            function type() {
+                if (i < full.length) {
+                    el.textContent += full[i];
+                    i++;
+                    setTimeout(type, 35);
+                }
+            }
+            setTimeout(type, 300);
+        })();
+        var greetingIndex = 0;
+        dashboardGreeting.addEventListener('click', function() {
+            greetingIndex = (greetingIndex + 1) % greetings.length;
+            this.textContent = greetings[greetingIndex];
+        });
+
+        // Logo click: cycle silly names
+        var logoNames = ['Canv-azz', 'Canv-azz', 'Can-vas?', 'Can\'t-vazz', 'Can-vas(s)'];
+        var logoIdx = 0;
+        document.getElementById('headerLogo').addEventListener('click', function(e) {
+            e.preventDefault();
+            logoIdx = (logoIdx + 1) % logoNames.length;
+            this.textContent = logoNames[logoIdx];
+            if (logoIdx > 1) showCanvazzSays('That\'s my name. Don\'t wear it out.');
+        });
+        headerTagline.addEventListener('mouseenter', function() {
+            var old = this.textContent;
+            this.dataset.old = old;
+            this.textContent = 'I notice when you hover.';
+        });
+        headerTagline.addEventListener('mouseleave', function() {
+            this.textContent = this.dataset.old || 'Dashboard';
+        });
+
+        // Stay input: rotating placeholder
+        var placeholders = ['A few minutes? An hour?', 'I\'ll wait.', 'Don\'t leave.', 'Just a bit longer?', 'Type something. I\'m here.'];
+        var phIdx = 0;
+        var stayInput = document.getElementById('stayInput');
+        setInterval(function() {
+            if (document.visibilityState !== 'visible') return;
+            phIdx = (phIdx + 1) % placeholders.length;
+            if (!stayInput.matches(':focus')) stayInput.placeholder = placeholders[phIdx];
+        }, 4000);
+        stayInput.addEventListener('focus', function() {
+            showCanvazzSays('You\'re typing. I see you.');
+        });
+
+        // Scroll progress bar
+        window.addEventListener('scroll', function() {
+            var h = document.documentElement.scrollHeight - window.innerHeight;
+            var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+            document.getElementById('scrollProgress').style.width = pct + '%';
+        });
+
+        // Random "Canv-azz says" bubble
+        var says = ['I\'m still here.', 'You scrolled. I noticed.', 'Your To Do list is judging you.', 'Don\'t leave. We just started.', 'I warmed up the dashboard for you.', 'Click a course. I dare you.'];
+        function showCanvazzSays(msg) {
+            var el = document.getElementById('canvazzSays');
+            el.textContent = msg || randomOf(says);
+            el.classList.add('visible');
+            clearTimeout(showCanvazzSays._t);
+            showCanvazzSays._t = setTimeout(function() { el.classList.remove('visible'); }, 3500);
+        }
+        setTimeout(function() { showCanvazzSays(); }, 5000);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') showCanvazzSays('Escape won\'t help. I\'m still here.');
+            if (e.key === '?') showCanvazzSays('Help: Stay. Click things. Don\'t leave.');
+        });
+
+        document.getElementById('staySubmit').addEventListener('click', function() {
+            var input = document.getElementById('stayInput');
+            var reply = document.getElementById('stayReply');
+            var val = input.value.trim() || "You didn't say.";
+            reply.textContent = val === "You didn't say." ? "You didn't say how long. That's okay. I'll wait and see." : '"' + val + '" — okay. I'll remember that.';
+            reply.style.display = 'block';
+        });
+
+        var todoCount = document.querySelectorAll('.ic-todo-item[data-done-msg]').length;
+        var doneCount = 0;
+        document.querySelectorAll('.ic-todo-item').forEach(function(el) {
+            if (!el.dataset.doneMsg) return;
+            el.addEventListener('click', function() {
+                if (this.classList.contains('done')) return;
+                this.classList.add('done');
+                doneCount++;
+                var msg = this.dataset.doneMsg;
+                setTimeout(function() { alert(msg); }, 100);
+                if (doneCount === todoCount) {
+                    setTimeout(function() {
+                        var p = document.createElement('p');
+                        p.style.cssText = 'margin-top:1rem;font-style:italic;color:#6c757d;';
+                        p.textContent = "You completed all to-dos. I'm proud. (I'm also still here.)";
+                        document.querySelector('.ic-sidebar-box__content').appendChild(p);
+                        showCanvazzSays('You did it. I\'m proud. (Don\'t leave.)');
+                        confetti();
+                    }, 500);
+                }
+            });
+        });
+        document.querySelectorAll('.ic-feedback-item').forEach(function(el) {
+            if (!el.dataset.dismissMsg) return;
+            el.addEventListener('click', function() {
+                if (this.classList.contains('dismissed')) return;
+                this.classList.add('dismissed');
+                this.title = this.dataset.dismissMsg;
+            });
+        });
+
+        var cardClicks = {};
+        var cardMessages = {
+            1: function(c, n) { showCanvazzSays('You clicked ' + c + '. Once.'); },
+            3: function(c, n) {
+                var card = document.querySelector('.ic-Dashboard-card[data-course="' + c + '"]');
+                if (!card) return;
+                var p = card.querySelector('p[data-canvazz-msg]') || document.createElement('p');
+                p.style.cssText = 'font-size:0.8rem;color:#6c757d;margin-top:0.25rem;';
+                p.setAttribute('data-canvazz-msg', '1');
+                p.textContent = "You've clicked this card " + n + " times. I notice.";
+                if (!card.querySelector('p[data-canvazz-msg]')) card.appendChild(p);
+                showCanvazzSays('Okay. I see you.');
+            },
+            5: function(c, n) { showCanvazzSays('That\'s ' + n + ' clicks. On one card. I\'m flattered.'); },
+            10: function(c, n) { showCanvazzSays('TEN CLICKS. We\'re bonded now.'); }
+        };
+        document.querySelectorAll('.ic-Dashboard-card').forEach(function(card) {
+            var course = card.getAttribute('data-course');
+            cardClicks[course] = 0;
+            card.addEventListener('click', function(e) {
+                if (e.target.closest('a')) return;
+                e.preventDefault();
+                cardClicks[course]++;
+                var n = cardClicks[course];
+                if (cardMessages[n]) cardMessages[n](course, n);
+            });
+        });
+
+        function confetti() {
+            var container = document.getElementById('confettiContainer');
+            var colors = ['#E41F35','#057D9E','#6B7F2E','#0374b5','#ffc107'];
+            for (var i = 0; i < 50; i++) {
+                var piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.top = '-10px';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                piece.style.animationDuration = (1.5 + Math.random()) + 's';
+                piece.style.animationDelay = Math.random() * 0.5 + 's';
+                container.appendChild(piece);
+                setTimeout(function(p) { return function() { p.remove(); }; }(piece), 2500);
+            }
+        }
+
+        document.getElementById('viewTodoBtn').addEventListener('click', function() {
+            document.getElementById('todoModal').classList.add('visible');
+        });
+        document.getElementById('todoModalClose').addEventListener('click', function() {
+            document.getElementById('todoModal').classList.remove('visible');
+        });
+        document.getElementById('viewGradesBtn').addEventListener('click', function() {
+            var grades = [
+                { course: 'NAP 201', grade: 'A+', note: 'Participation: 10/10. Consciousness: 2/10.' },
+                { course: 'PRO 404', grade: 'B-', note: 'Late. Consistently.' },
+                { course: 'MEM 101', grade: '???', note: 'We forgot to grade it.' },
+                { course: 'SNO 303', grade: 'A', note: 'Graded your dreams.' },
+                { course: 'EXC 202', grade: 'A+', note: 'We laughed. Full points.' }
+            ];
+            var html = grades.map(function(g) { return '<p><strong>' + g.course + '</strong>: ' + g.grade + '<br><span style="font-size:0.85rem;color:#6c757d;">' + g.note + '</span></p>'; }).join('');
+            document.getElementById('gradesModalContent').innerHTML = html;
+            document.getElementById('gradesModal').classList.add('visible');
+        });
+        document.getElementById('gradesModalClose').addEventListener('click', function() {
+            document.getElementById('gradesModal').classList.remove('visible');
+        });
+        document.getElementById('todoModal').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('visible'); });
+        document.getElementById('gradesModal').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('visible'); });
+
+        document.getElementById('navDashboard').addEventListener('click', function(e) { e.preventDefault(); document.getElementById('dashboardGreeting').scrollIntoView({ behavior: 'smooth' }); });
+        document.getElementById('navCourses').addEventListener('click', function(e) { e.preventDefault(); document.querySelector('.ic-Dashboard-card-box').scrollIntoView({ behavior: 'smooth' }); });
+        document.getElementById('navInbox').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('inboxOverlay').classList.add('visible');
+        });
+        document.getElementById('inboxClose').addEventListener('click', function() {
+            document.getElementById('inboxOverlay').classList.remove('visible');
+        });
+        document.getElementById('inboxOverlay').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('visible');
+        });
+        document.querySelectorAll('.inbox-message').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var msg = this.getAttribute('data-msg');
+                if (msg) alert(msg);
+            });
+        });
+
+        // Anxious when you switch tabs
+        let leftBefore = false;
+        const defaultTagline = headerTagline.textContent;
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                leftBefore = true;
+                headerTagline.textContent = "…";
+                document.title = "…";
+            } else if (document.visibilityState === 'visible') {
+                headerTagline.textContent = defaultTagline;
+                document.title = "Canv-azz - Dashboard";
+                if (leftBefore) {
+                    moodText.textContent = randomOf(anxiousLines);
+                    moodAlert.style.display = 'block';
+                    moodAlert.classList.add('ic-alert--mood');
+                }
+            }
+        });
+
+        // Passive-aggressive when you try to leave
+        window.addEventListener('beforeunload', (e) => {
+            document.title = randomOf(passiveAggressive);
+            e.preventDefault();
+            e.returnValue = '';
+        });
+
+        // Clicking external link
+        document.querySelectorAll('a[href="#"]').forEach(a => {
+            a.addEventListener('click', (e) => {
+                if (a.getAttribute('data-nav')) return;
+                e.preventDefault();
+                goodbyeBox.textContent = randomOf(passiveAggressive);
+                goodbyeOverlay.classList.add('visible');
+                setTimeout(() => goodbyeOverlay.classList.remove('visible'), 3000);
+            });
+        });
+    </script>
 </body>
 </html>
