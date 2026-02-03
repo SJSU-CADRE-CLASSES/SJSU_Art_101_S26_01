@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring — Seasons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#content" class="skip-link">Skip to content</a>
+
+    <nav class="season-nav" aria-label="Navigate seasons">
+        <a href="index.html" class="home">Home</a>
+        <a href="spring.html" class="spring">Spring</a>
+        <a href="summer.html" class="summer">Summer</a>
+        <a href="autumn.html" class="autumn">Autumn</a>
+        <a href="winter.html" class="winter">Winter</a>
+    </nav>
+
+    <main id="content" class="page spring-page">
+        <div class="season-bg spring-bg"></div>
+        <div class="rain-container" aria-hidden="true">
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+            <span class="raindrop"></span>
+        </div>
+        <a href="index.html" class="bloom bloom-1" aria-label="Return home" title="Click to return home"></a>
+        <a href="summer.html" class="bloom bloom-2" aria-label="Go to Summer" title="Next: Summer"></a>
+        <a href="index.html" class="bloom bloom-3" aria-label="Return home" title="Click to return home"></a>
+        <div class="content-wrap">
+            <span class="chapter-label">I. Spring</span>
+            <blockquote class="narrative" id="spring-narrative">
+                <p class="reveal">Something stirs beneath the soil.</p>
+                <p class="reveal">A promise kept in cold darkness</p>
+                <p class="reveal">breaks into light.</p>
+                <p class="reveal hidden-text">Petals unfurl like shy secrets.</p>
+                <p class="reveal hidden-text">The world exhales—</p>
+                <p class="reveal hidden-text">and begins again.</p>
+            </blockquote>
+            <p class="click-hint">Click anywhere to reveal more</p>
+            <div class="page-nav">
+                <a href="index.html">← Home</a>
+                <a href="summer.html">Summer →</a>
+                <a href="closing.html">End story</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            var hidden = document.querySelectorAll('.hidden-text');
+            var body = document.querySelector('main');
+            var count = 0;
+            body.addEventListener('click', function() {
+                if (count < hidden.length) {
+                    hidden[count].classList.add('revealed');
+                    count++;
+                }
+            });
+            document.querySelectorAll('.narrative p').forEach(function(p, i) {
+                if (i < 3) p.classList.add('revealed');
+            });
+        })();
+    </script>
+</body>
+</html>

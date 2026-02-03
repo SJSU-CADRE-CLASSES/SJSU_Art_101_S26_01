@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRO 404 - Canv-azz</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Lato", "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: #2d3b45; background: #f5f5f5; }
+        .ic-app-header { background: #394B58; color: #fff; height: 52px; display: flex; align-items: center; padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .ic-app-header__logo { font-weight: 700; font-size: 1.25rem; }
+        .ic-app-header a { color: #fff; text-decoration: none; margin-right: 1rem; }
+        .ic-app-header a:hover { text-decoration: underline; }
+        .ic-layout-container { margin-top: 52px; padding: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .course-banner { background: #057D9E; color: #fff; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .course-banner h1 { margin: 0; font-size: 1.5rem; }
+        .course-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .course-nav a { padding: 0.5rem 1rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 3px; color: #2d3b45; text-decoration: none; font-size: 0.9rem; }
+        .course-nav a:hover { background: #f5f5f5; }
+        .content-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.25rem; margin-bottom: 1rem; }
+        .content-box h2 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.5rem; }
+        .assignment-item, .announcement-item, .discussion-item { padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+        .assignment-item:last-child, .announcement-item:last-child, .discussion-item:last-child { border-bottom: none; }
+        .due { color: #6c757d; font-size: 0.85rem; }
+        .interactive-box { background: #f0f8ff; border: 1px dashed #057D9E; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+        .interactive-box button { padding: 0.5rem 1rem; background: #057D9E; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+        .interactive-box button:hover { opacity: 0.9; }
+        .interactive-box .result { margin-top: 0.75rem; font-style: italic; color: #333; }
+        .procrastination-timer { font-size: 1rem; margin: 1rem 0; padding: 0.75rem; background: #fff3cd; color: #5a4a00; border: 1px solid #e6d68a; border-radius: 4px; }
+        @media (max-width: 768px) {
+            .ic-layout-container { padding: 1rem; }
+            .course-banner h1 { font-size: 1.25rem; }
+            .course-nav { flex-wrap: wrap; gap: 0.4rem; }
+            .course-nav a { padding: 0.5rem 0.75rem; font-size: 0.85rem; min-height: 44px; display: inline-flex; align-items: center; }
+            .content-box { padding: 1rem; }
+            .interactive-box textarea { max-width: 100%; }
+            .interactive-box button, #pushDue, #progressBtn { min-height: 44px; }
+        }
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            .ic-layout-container { padding: 0.75rem; }
+            .course-banner { padding: 1rem; }
+            .course-banner h1 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="ic-app-header">
+        <span class="ic-app-header__logo">Canv-azz</span>
+        <a href="index.html">Dashboard</a>
+        <span>PRO 404</span>
+    </header>
+    <div class="ic-layout-container">
+        <div class="course-banner">
+            <h1>PRO 404 - Procrastination Studies</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">We'll get to it. Eventually.</p>
+            <div class="procrastination-timer" id="procrastinationTimer">You've been on this page for <strong id="procrastinationSeconds">0</strong> seconds (instead of doing work).</div>
+        </div>
+        <nav class="course-nav">
+            <a href="#assignments">Assignments</a>
+            <a href="#announcements">Announcements</a>
+            <a href="#discussions">Discussions</a>
+            <a href="#files">Files</a>
+        </nav>
+
+        <div class="content-box" id="assignments">
+            <h2>Assignments</h2>
+            <div class="assignment-item">
+                <strong>Start assignment (by opening it)</strong><br>
+                <span class="due" id="proDue">Due: Later — 0 pts</span><br>
+                Just open the assignment. That counts. We're not picky.
+                <div class="interactive-box">
+                    <button type="button" id="startAssignment">Start assignment</button>
+                    <div class="result" id="startResult"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Outline your outline</strong><br>
+                <span class="due">Due: Tomorrow (or next week) — 5 pts</span><br>
+                Plan what you'll plan to do. Meta-procrastination counts.
+                <div class="interactive-box">
+                    <textarea id="outlineOutline" placeholder="1. Plan to plan&#10;2. Outline the outline&#10;3. ..." rows="3" style="width:100%;max-width:400px;font:inherit;padding:0.5rem;margin-bottom:0.5rem;"></textarea>
+                    <button type="button" id="submitOutline">Submit outline</button>
+                    <div class="result" id="outlineResult"></div>
+                </div>
+            </div>
+            <div class="content-box">
+                <h3 style="margin-top:0;">Progress (it goes backwards)</h3>
+                <div style="height:24px;background:#e5e5e5;border-radius:4px;overflow:hidden;">
+                    <div id="reverseProgress" style="height:100%;width:100%;background:#057D9E;transition:width 0.5s;"></div>
+                </div>
+                <button type="button" id="progressBtn" style="margin-top:0.5rem;padding:0.4rem 0.8rem;background:#057D9E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Click to lose progress</button>
+            </div>
+            <div class="assignment-item">
+                <strong>Set a reminder for later</strong><br>
+                <span class="due">Due: Later — 5 pts</span><br>
+                When do you plan to do this? We'll set a reminder.
+                <div class="interactive-box">
+                    <input type="text" id="reminderWhen" placeholder="Tomorrow? Next week?" style="padding:0.4rem;width:180px;font:inherit;margin-right:0.5rem;">
+                    <button type="button" id="setReminder" style="padding:0.4rem 0.8rem;background:#057D9E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Set reminder</button>
+                    <div id="reminderResult" class="result" style="margin-top:0.5rem;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Productivity self-assessment</strong><br>
+                <span class="due">Due: When you get to it — 10 pts</span><br>
+                Rate your productivity today (1–10). Be honest. We won't be.
+                <div class="interactive-box">
+                    <input type="range" id="productivitySlider" min="1" max="10" value="5" style="width:200px;margin-right:1rem;">
+                    <span id="productivityValue">5</span>/10
+                    <div id="productivityResult" class="result" style="margin-top:0.5rem;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Quiz: Procrastination Studies</strong><br>
+                <span class="due">Due: Later — 25 pts</span><br>
+                <div class="interactive-box quiz-box">
+                    <p><strong>Q1.</strong> The best time to start an assignment is: <label><input type="radio" name="proq1" value="a"> (a) Now</label> <label><input type="radio" name="proq1" value="b"> (b) Tomorrow</label> <label><input type="radio" name="proq1" value="c"> (c) The last possible second</label></p>
+                    <p><strong>Q2.</strong> "Outline your outline" counts as: <label><input type="radio" name="proq2" value="a"> (a) Meta-procrastination</label> <label><input type="radio" name="proq2" value="b"> (b) Progress</label> <label><input type="radio" name="proq2" value="c"> (c) Both</label></p>
+                    <p><strong>Q3.</strong> If you push the due date 7 times, it becomes: <label><input type="radio" name="proq3" value="a"> (a) Yesterday</label> <label><input type="radio" name="proq3" value="b"> (b) Good luck</label> <label><input type="radio" name="proq3" value="c"> (c) Your problem</label></p>
+                    <button type="button" id="proQuizSubmit" style="padding:0.5rem 1rem;background:#057D9E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Submit quiz</button>
+                    <div id="proQuizResult" style="margin-top:0.75rem;font-style:italic;font-weight:bold;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Final: Submit something</strong><br>
+                <span class="due">Due: Last possible second — 100 pts</span><br>
+                Anything. A sticky note. We believe in you. (We'll grade it later.)
+            </div>
+        </div>
+
+        <div class="content-box" id="announcements">
+            <h2>Announcements</h2>
+            <div class="announcement-item">
+                <strong>Assignment 1 due date pushed back</strong><br>
+                Again. We're all in this together. See you in the eleventh hour.
+            </div>
+            <div class="announcement-item">
+                <strong>Reminder: You have work to do</strong><br>
+                (We know you're reading this instead. It's fine. Come back later. Or don't.)
+            </div>
+        </div>
+
+        <div class="content-box" id="discussions">
+            <h2>Discussions</h2>
+            <div class="discussion-item">
+                <strong>What are you doing instead of your work right now?</strong><br>
+                <span id="proReplyCount">47</span> replies. (Reading Canv-azz counts.) <button type="button" id="proAddReply" style="margin-left:0.5rem;padding:0.25rem 0.5rem;font-size:0.8rem;cursor:pointer;background:#057D9E;color:#fff;border:none;border-radius:3px;">Add my reply</button>
+            </div>
+        </div>
+
+        <div class="content-box" id="files">
+            <h2>Files</h2>
+            <p style="margin: 0; color: #6c757d;">syllabus.pdf — "I'll read it before the quiz"<br>
+            procrastination_rubric.pdf — We'll post feedback. Eventually.</p>
+        </div>
+
+        <div class="content-box">
+            <h2>Push the due date</h2>
+            <p>Every time you click, the due date moves back. (We're all in this together.)</p>
+            <button type="button" id="pushDue" style="padding: 0.5rem 1rem; background: #057D9E; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit;">I'll do it later</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('startAssignment').addEventListener('click', function() {
+            var r = document.getElementById('startResult');
+            r.textContent = 'Assignment opened. That counts. 0/0 pts submitted. We\'re not picky.';
+        });
+        var start = Date.now();
+        function updateProcrastination() {
+            var sec = Math.floor((Date.now() - start) / 1000);
+            document.getElementById('procrastinationSeconds').textContent = sec;
+        }
+        setInterval(updateProcrastination, 1000);
+        updateProcrastination();
+        var duePhrases = ['Due: Later — 0 pts', 'Due: Tomorrow — 0 pts', 'Due: Next week — 0 pts', 'Due: End of the month — 0 pts', 'Due: Before the final — 0 pts', 'Due: Last possible second — 0 pts', 'Due: Yesterday (good luck) — 0 pts'];
+        var dueIndex = 0;
+        document.getElementById('pushDue').addEventListener('click', function() {
+            dueIndex = (dueIndex + 1) % duePhrases.length;
+            document.getElementById('proDue').textContent = duePhrases[dueIndex];
+        });
+        document.getElementById('submitOutline').addEventListener('click', function() {
+            var r = document.getElementById('outlineResult');
+            r.textContent = 'Outline received. We\'ll read it later. (We won\'t.) 5/5 pts.';
+        });
+        var progress = 100;
+        document.getElementById('progressBtn').addEventListener('click', function() {
+            progress = Math.max(0, progress - 25);
+            document.getElementById('reverseProgress').style.width = progress + '%';
+        });
+        document.getElementById('setReminder').addEventListener('click', function() {
+            var input = document.getElementById('reminderWhen');
+            var val = input.value.trim() || 'never';
+            document.getElementById('reminderResult').textContent = 'Reminder set for "' + val + '." (We\'ll forget to remind you.) 5/5 pts.';
+        });
+        document.getElementById('productivitySlider').addEventListener('input', function() {
+            document.getElementById('productivityValue').textContent = this.value;
+        });
+        document.getElementById('productivitySlider').addEventListener('change', function() {
+            var v = parseInt(this.value, 10);
+            document.getElementById('productivityResult').textContent = 'You chose ' + v + '. We chose 0. Consistency: 10/10.';
+        });
+        document.getElementById('proQuizSubmit').addEventListener('click', function() {
+            var q1 = document.querySelector('input[name="proq1"]:checked'); var q2 = document.querySelector('input[name="proq2"]:checked'); var q3 = document.querySelector('input[name="proq3"]:checked');
+            var score = 0; if (q1 && q1.value === 'c') score++; if (q2 && q2.value === 'c') score++; if (q3 && q3.value === 'b') score++;
+            document.getElementById('proQuizResult').textContent = 'Score: ' + score + '/3. ' + (score >= 2 ? 'Procrastination: A. We\'ll grade the rest later.' : 'You finished the quiz. That counts.');
+        });
+        var proReplies = 47;
+        document.getElementById('proAddReply').addEventListener('click', function() {
+            proReplies++;
+            document.getElementById('proReplyCount').textContent = proReplies;
+            if (proReplies >= 50) this.textContent = 'You\'re really procrastinating.';
+        });
+        setInterval(function() {
+            var sec = Math.floor((Date.now() - start) / 1000);
+            var timerEl = document.getElementById('procrastinationTimer');
+            if (sec > 60) timerEl.style.background = '#ffcdd2';
+            if (sec > 120 && !timerEl.querySelector('.crying')) {
+                var cry = document.createElement('span');
+                cry.className = 'crying';
+                cry.style.display = 'block';
+                cry.style.marginTop = '0.25rem';
+                cry.textContent = 'Your work is crying.';
+                timerEl.appendChild(cry);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -21,3 +21,23 @@ This project uses ASCII not as a technical fallback but as a **poetic constraint
 - **The ocean.** The background is a slowly shifting field of generative ASCII noise—a **protoplasmic ocean** of possible symbols. It doesn’t describe one thing; it suggests a medium (memory, data, subconscious) in which the central object floats and with which the visitor is implicitly in contact.
 
 Overall: ASCII is used as the **alphabet of a sentient interface**—one that samples, compresses, and responds to the user, and that represents that relationship as a kind of digital memory: partial, symbolic, and mood-driven.
+
+---
+
+## Local development
+
+This project uses ES modules (`type="module"`). To avoid CORS errors, run a local server from this folder:
+
+**Option 1 – serve**
+```bash
+npm install
+npm start
+```
+Then open http://localhost:3000 (or the port shown) and visit `index.html`, `page2.html`, or `page3.html`.
+
+**Option 2 – Vite**
+```bash
+npm install
+npm run dev
+```
+Then open the URL shown (e.g. http://localhost:5173).

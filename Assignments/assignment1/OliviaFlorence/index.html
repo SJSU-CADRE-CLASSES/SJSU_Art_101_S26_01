@@ -9,11 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --cream: #f8f4ee;
-            --ink: #1a1612;
-            --accent: #7d5a3c;
-            --accent-hover: #5c4229;
-            --muted: #6b5d52;
+            --cream: #13756c;
+            --ink: #000000;
+            --accent: #4eeff7;
+            --accent-hover: #2c6be9;
+            --muted: #641af8;
         }
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -139,7 +139,7 @@
                 ]
             },
             melody: {
-                text: "The melody leads you to a clearing. A woman in a cloak sits by a small fire, playing a wooden flute. She looks up and smiles. <em>\"You've been listening.\"</em>",
+                text: "The melody leads you to a clearing in the forest. A short but stocky woman in a purple cloak sits by a small fire, playing an acoustic guitar. She looks up and smiles. <em>\"You've been listening.\"</em>",
                 choices: [
                     { text: "Ask who she is", target: "ask_who" },
                     { text: "Sit by the fire", target: "fire" }
@@ -153,15 +153,15 @@
                 ]
             },
             fire: {
-                text: "You sit. She plays a little longer, then stops. <em>\"The fire’s warm. Rest.\"</em> You close your eyes. When you open them, she’s gone—but you feel oddly at peace.",
+                text: "You sit. She plays a little longer, then stops. <em>\"The fire’s warm. Rest.\"</em> You close your eyes and drift off to sleep. When you open them, she’s gone—but you feel oddly at peace.",
                 choices: [
-                    { text: "…", target: "end_rest" }
+                    { text: "What now?", target: "end_rest" }
                 ]
             },
             path: {
                 text: "You keep to the path. The forest thins. Eventually you step out into open country, the mountains still ahead. Your journey continues.",
                 choices: [
-                    { text: "…", target: "end_journey" }
+                    { text: "Onward", target: "end_journey" }
                 ]
             },
             mountains: {
@@ -172,7 +172,7 @@
                 ]
             },
             cave: {
-                text: "Inside, candles line the walls. At the far end, an old map is pinned to the rock. It shows a place beyond the peaks—a valley no one you know has ever reached.",
+                text: "Inside, candles of all colors line the walls. At the far end, an old map is pinned to the rock, tattered and faded. It shows a place beyond the peaks—a valley no one you know has ever reached.",
                 choices: [
                     { text: "Take the map", target: "end_map" },
                     { text: "Leave it and go", target: "climb" }
@@ -185,7 +185,7 @@
                 ]
             },
             end_know: {
-                text: "<em>\"Then listen.\"</em> She plays one more tune. In it you hear echoes of choices not yet made, and paths not yet taken. You don’t understand it all—but you understand enough.",
+                text: "<em>\"Then listen.\"</em> She plays one more tune. In it you hear echoes of choices not yet made, and paths not yet taken. You don’t understand it all—but you understand enough. Perchance there will come a time when it all becomes clear.",
                 choices: []
             },
             end_wander: {
@@ -197,15 +197,15 @@
                 choices: []
             },
             end_journey: {
-                text: "You cross the grassland under a wide sky. The story isn’t over—it’s only changing. You keep going.",
+                text: "You cross the grassland under a wide open sky, illuminated with millions of stars. Your story isn’t over—it’s only changing. You keep going.",
                 choices: []
             },
             end_map: {
-                text: "You fold the map and slip it into your pack. The valley beyond the peaks is yours to find. You step back into the light and start to climb.",
+                text: "You fold the map and slip it into your bag. The valley beyond the peaks is yours to find. You step back into the light and continue your climb.",
                 choices: []
             },
             end_summit: {
-                text: "You carry the memory of that view—the vastness, the quiet—all the way home. Some stories don’t need an ending. They just need to be lived.",
+                text: "You carry the memory of that view—the vastness, the quiet, the vibrant colors—all the way home. Some stories don’t need an ending. They just need to be lived.",
                 choices: []
             }
         };
