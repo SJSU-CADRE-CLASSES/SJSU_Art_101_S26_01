@@ -17,19 +17,6 @@
             font-family: 'Courier New', monospace;
             position: relative;
         }
-        .page-title {
-            position: absolute;
-            top: 1.5rem;
-            left: 0;
-            right: 0;
-            margin: 0;
-            font-size: clamp(18px, 3.5vw, 32px);
-            font-weight: bold;
-            color: #ff0000;
-            text-align: center;
-            text-shadow: 1px 1px 0px #000, 0 0 10px rgba(255, 60, 60, 0.9);
-            letter-spacing: 2px;
-        }
         .page-text {
             font-size: clamp(20px, 4vw, 40px);
             font-weight: bold;
@@ -111,11 +98,10 @@
 </head>
 <body>
     <div class="crt-overlay" aria-hidden="true"></div>
-    <h1 class="page-title">Don't Feed Me</h1>
     <p class="page-text" id="message"></p>
 
     <script>
-        const TARGET = 'feed me';
+        const TARGET = "Don't feed me";
         let lettersFound = 0;
         const messageEl = document.getElementById('message');
 
@@ -132,7 +118,7 @@
         function updateMessage() {
             const soFar = TARGET.slice(0, lettersFound);
             if (lettersFound >= TARGET.length) {
-                messageEl.innerHTML = '<a href="dont-remember-me.html">feed me</a>';
+                messageEl.innerHTML = '<a href="dont-remember-me.html">Don\'t feed me</a>';
             } else {
                 messageEl.textContent = soFar;
             }
@@ -156,7 +142,7 @@
 
         updateMessage();
 
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < TARGET.length; i++) {
             setTimeout(() => spawnFood(i), 400 + i * 350);
         }
 
