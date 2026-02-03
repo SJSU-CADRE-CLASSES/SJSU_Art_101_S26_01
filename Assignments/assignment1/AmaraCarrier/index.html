@@ -88,6 +88,7 @@
             border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #4a8a4a 0%, #2d5a2d 50%, #1a3d1a 100%);
             box-shadow: inset 0 -2px 8px rgba(0,0,0,0.35);
+            transition: transform 0.08s ease-out;
         }
         .eye .pupil {
             position: absolute;
@@ -210,15 +211,17 @@
                 mouseX = e.clientX;
                 mouseY = e.clientY;
                 document.querySelectorAll('.eye').forEach(function(eye) {
+                    const iris = eye.querySelector('.iris');
                     const pupil = eye.querySelector('.pupil');
-                    if (!pupil) return;
+                    if (!iris || !pupil) return;
                     const r = eye.getBoundingClientRect();
                     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
                     const maxMove = Math.min(r.width, r.height) * 0.28;
                     let dx = e.clientX - cx, dy = e.clientY - cy;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist > maxMove) { dx *= maxMove / dist; dy *= maxMove / dist; }
-                    pupil.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+                    iris.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+                    pupil.style.transform = 'translate(0, 0)';
                 });
             });
 
