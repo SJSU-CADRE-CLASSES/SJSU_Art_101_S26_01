@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mouth Fed</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: url('empty-hand.png'), pointer; }
         html, body {
             width: 100%;
             height: 100%;
@@ -41,7 +41,7 @@
         .bg-column {
             position: fixed;
             top: 0;
-            width: 60px;
+            width: 95px;
             height: 100%;
             overflow: hidden;
             pointer-events: none;
@@ -56,20 +56,14 @@
             animation: column-descend 25s linear infinite;
         }
         .bg-column-inner .line {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 0.4em;
+            white-space: nowrap;
+            margin-bottom: 0.5em;
+            text-align: center;
         }
-        .bg-column-inner .char {
+        .bg-column-inner .word {
             font-family: monospace;
             font-size: 14px;
             color: rgba(139, 0, 0, 0.35);
-            opacity: 0;
-            animation: type-in 0.12s ease-out forwards;
-        }
-        @keyframes type-in {
-            to { opacity: 1; }
         }
         @keyframes column-descend {
             from { transform: translateY(-15%); }
@@ -130,22 +124,16 @@
         (function () {
             var text = 'tasty_meat';
             var copies = 35;
-            var msPerChar = 90;
             function buildColumn() {
                 var inner = document.createElement('div');
                 inner.className = 'bg-column-inner';
-                var charIndex = 0;
                 for (var c = 0; c < copies; c++) {
                     var line = document.createElement('div');
                     line.className = 'line';
-                    for (var i = 0; i < text.length; i++) {
-                        var span = document.createElement('span');
-                        span.className = 'char';
-                        span.textContent = text[i];
-                        span.style.animationDelay = (charIndex * msPerChar) + 'ms';
-                        line.appendChild(span);
-                        charIndex++;
-                    }
+                    var span = document.createElement('span');
+                    span.className = 'word';
+                    span.textContent = text;
+                    line.appendChild(span);
                     inner.appendChild(line);
                 }
                 return inner;
@@ -235,7 +223,7 @@
                 if (ctx && ctx.state === 'suspended') overlay.classList.add('visible');
                 setTimeout(function () {
                     document.getElementById('choice-links').classList.add('visible');
-                }, 5000);
+                }, 1500);
             });
         })();
     </script>

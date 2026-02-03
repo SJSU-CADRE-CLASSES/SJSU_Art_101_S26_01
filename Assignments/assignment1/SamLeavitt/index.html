@@ -126,12 +126,25 @@
 </head>
 <body>
     <div id="blood-trail"></div>
-    <a href="mouth-fed.html" class="mouth-wrapper">
+    <a href="mouth-fed.html" class="mouth-wrapper" id="mouth-link">
         <span class="tooltip">feed the mouth?</span>
         <img src="mouth.png" alt="Mouth" class="mouth-image" />
     </a>
     <script>
         (function () {
+            document.getElementById('mouth-link').addEventListener('click', function (e) {
+                e.preventDefault();
+                var biteAudio = new Audio('bite-sound.mp3');
+                var go = function () {
+                    window.location.href = 'mouth-fed.html';
+                };
+                biteAudio.play().then(function () {
+                    setTimeout(go, 800);
+                }).catch(function () {
+                    setTimeout(go, 100);
+                });
+            });
+
             var trail = document.getElementById('blood-trail');
             var lastX = 0, lastY = 0;
             var lastDrop = 0;

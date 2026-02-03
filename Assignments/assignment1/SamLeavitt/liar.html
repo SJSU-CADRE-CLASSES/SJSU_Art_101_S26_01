@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liar</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: url('empty-hand.png'), pointer; }
         html, body {
             width: 100%;
             min-height: 100%;
@@ -130,7 +130,7 @@
                     img.alt = '';
                     var tip = document.createElement('span');
                     tip.className = 'tooltip';
-                    tip.textContent = 'yeah';
+                    tip.textContent = ['yeah', 'nuh uh', 'yes'][Math.floor(Math.random() * 3)];
                     a.appendChild(img);
                     a.appendChild(tip);
                     wallpaper.appendChild(a);
@@ -138,6 +138,84 @@
             }
             fillWallpaper();
             window.addEventListener('resize', fillWallpaper);
+
+            var ctx = null;
+            function buildSynth() {
+                var Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                var audioCtx = new Ctx();
+
+                var master = audioCtx.createGain();
+                master.gain.value = 0.32;
+                master.connect(audioCtx.destination);
+
+                var filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 1100;
+                filter.Q.value = 4;
+                filter.connect(master);
+
+                function addOsc(freq, detune, type) {
+                    var osc = audioCtx.createOscillator();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    osc.detune.value = detune;
+                    var gain = audioCtx.createGain();
+                    gain.gain.value = 0.4;
+                    osc.connect(gain);
+                    gain.connect(filter);
+                    osc.start(0);
+                }
+                addOsc(55, 0, 'sawtooth');
+                addOsc(55.5, 18, 'sawtooth');
+                addOsc(69.3, -12, 'square');
+                addOsc(82.5, 25, 'sawtooth');
+                addOsc(110, -8, 'square');
+                addOsc(123.5, 30, 'sawtooth');
+
+                var lfo = audioCtx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.14;
+                var lfoGain = audioCtx.createGain();
+                lfoGain.gain.value = 280;
+                lfo.connect(lfoGain);
+                lfoGain.connect(filter.frequency);
+                lfo.start(0);
+
+                var highOsc = audioCtx.createOscillator();
+                highOsc.type = 'sawtooth';
+                highOsc.frequency.value = 220;
+                var highGain = audioCtx.createGain();
+                highGain.gain.value = 0.14;
+                highOsc.connect(highGain);
+                highGain.connect(filter);
+                highOsc.start(0);
+                var highLfo = audioCtx.createOscillator();
+                highLfo.type = 'sine';
+                highLfo.frequency.value = 0.06;
+                var highLfoGain = audioCtx.createGain();
+                highLfoGain.gain.value = 35;
+                highLfo.connect(highLfoGain);
+                highLfoGain.connect(highOsc.frequency);
+                highLfo.start(0);
+
+                return audioCtx;
+            }
+
+            function startEerieSynth() {
+                if (ctx) {
+                    if (ctx.state === 'suspended') ctx.resume();
+                    return;
+                }
+                ctx = buildSynth();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+            }
+
+            document.body.addEventListener('click', function once() {
+                startEerieSynth();
+                document.body.removeEventListener('click', once);
+            });
+            window.addEventListener('load', startEerieSynth);
         })();
     </script>
 </body>

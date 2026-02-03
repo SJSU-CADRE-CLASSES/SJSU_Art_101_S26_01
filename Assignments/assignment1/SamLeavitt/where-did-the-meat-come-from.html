@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Where did the meat come from</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: url('empty-hand.png'), pointer; }
         html, body {
             width: 100%;
             height: 100%;
@@ -51,22 +51,6 @@
                 linear-gradient(180deg, #525256 0%, #454548 15%, #3c3c40 50%, #38383c 85%, #323236 100%);
             background-size: 100% 100%, 100% 100%, 200% 100%, 200% 100%, 100% 100%;
             box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.3);
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='st'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23st)' opacity='0.06'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 2;
         }
         .metal-content {
             position: relative;
@@ -151,8 +135,134 @@
             <a href="go-hug-your-mom.html">father</a>
         </nav>
         <div class="metal-neither">
-            <a href="liar.html">neither</a>
+            <a href="liar.html" id="link-neither">neither!!</a>
         </div>
     </div>
+    <script>
+        (function () {
+            var ctx = null;
+            var staticSource = null;
+
+            function getCtx() {
+                if (ctx) return ctx;
+                var Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                ctx = new Ctx();
+                return ctx;
+            }
+
+            function playWrongBuzzer() {
+                var audioCtx = getCtx();
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                var now = audioCtx.currentTime;
+                var osc1 = audioCtx.createOscillator();
+                var osc2 = audioCtx.createOscillator();
+                osc1.type = 'square';
+                osc2.type = 'square';
+                osc1.frequency.setValueAtTime(320, now);
+                osc1.frequency.setValueAtTime(320, now + 0.18);
+                osc1.frequency.exponentialRampToValueAtTime(120, now + 0.28);
+                osc2.frequency.setValueAtTime(340, now);
+                osc2.frequency.setValueAtTime(340, now + 0.18);
+                osc2.frequency.exponentialRampToValueAtTime(130, now + 0.28);
+                osc2.detune.value = 20;
+
+                var gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.setValueAtTime(0.35, now + 0.18);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.3);
+                osc2.stop(now + 0.3);
+            }
+
+            function playRightDing() {
+                var audioCtx = getCtx();
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                var now = audioCtx.currentTime;
+                var osc1 = audioCtx.createOscillator();
+                var osc2 = audioCtx.createOscillator();
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(880, now);
+                osc2.frequency.setValueAtTime(1100, now);
+
+                var gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.35);
+                osc2.stop(now + 0.35);
+            }
+
+            document.getElementById('link-neither').addEventListener('click', function (e) {
+                e.preventDefault();
+                playWrongBuzzer();
+                setTimeout(function () {
+                    window.location.href = e.target.closest('a').href;
+                }, 450);
+            });
+
+            document.querySelectorAll('.metal-links a').forEach(function (a) {
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    playRightDing();
+                    setTimeout(function () {
+                        window.location.href = e.target.closest('a').href;
+                    }, 400);
+                });
+            });
+
+            function startStatic() {
+                if (ctx) {
+                    if (ctx.state === 'suspended') ctx.resume();
+                    return;
+                }
+                if (!getCtx()) return;
+
+                var sampleRate = ctx.sampleRate;
+                var length = sampleRate * 2;
+                var buffer = ctx.createBuffer(1, length, sampleRate);
+                var data = buffer.getChannelData(0);
+                for (var i = 0; i < length; i++) {
+                    data[i] = (Math.random() * 2 - 1) * 0.5;
+                }
+
+                var gain = ctx.createGain();
+                gain.gain.value = 0.08;
+                gain.connect(ctx.destination);
+
+                staticSource = ctx.createBufferSource();
+                staticSource.buffer = buffer;
+                staticSource.loop = true;
+                staticSource.connect(gain);
+                staticSource.start(0);
+
+                if (ctx.state === 'suspended') ctx.resume();
+            }
+
+            document.body.addEventListener('click', function once() {
+                startStatic();
+                document.body.removeEventListener('click', once);
+            });
+
+            window.addEventListener('load', startStatic);
+        })();
+    </script>
 </body>
 </html>
