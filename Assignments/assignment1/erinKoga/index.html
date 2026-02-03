@@ -102,7 +102,7 @@
     </style>
 </head>
 <body>
-    <audio src="jerma-terrified.mp3" autoplay></audio>
+    <audio id="lever-audio" src="jerma-terrified.mp3"></audio>
 
     <h1 class="page-header">welcome to HELL</h1>
     <p class="subheader">you are going to decide your own ETERNAL PUNISHMENT with whatever you answer</p>
@@ -112,8 +112,8 @@
     <p class="trolley-description">A trolley is approaching one person tied to the tracks. You can pull the lever to save them, but it will either stop the trolley, causing no deaths, or switch the trolley to a different track where five people are tied to it. Do you pull the lever?</p>
 
     <div class="button-group">
-        <a class="choice-btn" href="pull-lever.html">pull the lever</a>
-        <a class="choice-btn" href="dont-pull-lever.html">dont pull the lever</a>
+        <a class="choice-btn" href="pull-lever.html" onclick="document.getElementById('lever-audio').play();">pull the lever</a>
+        <a class="choice-btn" href="dont-pull-lever.html" onclick="document.getElementById('lever-audio').play();">dont pull the lever</a>
     </div>
 
     <div class="fire-bar" aria-hidden="true">
