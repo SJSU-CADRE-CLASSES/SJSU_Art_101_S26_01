@@ -289,7 +289,7 @@
             }
             document.body.addEventListener('click', function(e) {
                 var a = e.target.closest('a[href]');
-                if (a && a.getAttribute('href') && a.getAttribute('href') !== '#') playClickSound();
+                if (a) playClickSound();
             });
         })();
     </script>

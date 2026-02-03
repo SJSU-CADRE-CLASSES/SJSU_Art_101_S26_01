@@ -242,5 +242,28 @@
             document.body.addEventListener('touchstart', startHum, { once: true });
         })();
     </script>
+    <script>
+        (function() {
+            function playClickSound() {
+                try {
+                    var c = new (window.AudioContext || window.webkitAudioContext)();
+                    var osc = c.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 1200;
+                    var g = c.createGain();
+                    g.gain.setValueAtTime(0.15, c.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.04);
+                    osc.connect(g);
+                    g.connect(c.destination);
+                    osc.start(c.currentTime);
+                    osc.stop(c.currentTime + 0.04);
+                } catch (e) {}
+            }
+            document.body.addEventListener('click', function(e) {
+                var a = e.target.closest('a[href]');
+                if (a) playClickSound();
+            });
+        })();
+    </script>
 </body>
 </html>
