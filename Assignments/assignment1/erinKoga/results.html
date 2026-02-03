@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>No - Erin Koga</title>
+    <title>Results - Erin Koga</title>
     <style>
         body {
             background-color: #3b2a2a;
@@ -19,12 +19,8 @@
             font-size: 1.25rem;
             margin: 1rem 0 0;
         }
-        .button-group {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
+        a {
+            color: #ff7b0f;
         }
         .choice-btn {
             font-family: "Comic Sans MS", "Comic Sans", cursive;
@@ -36,6 +32,8 @@
             border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
+            display: inline-block;
+            margin-top: 1.5rem;
         }
         .choice-btn:hover {
             background-color: #e66d08;
@@ -43,15 +41,8 @@
     </style>
 </head>
 <body>
-    <audio id="dress-audio" src="jerma-terrified.mp3"></audio>
-    <h1>No.</h1>
-    <p class="subheader">ew freak, your punishment is going to be worse now</p>
-    <p class="subheader">QUESTION 3</p>
-    <img src="dress.webp" alt="Dress image">
-    <p style="color: #ff0000;">what color is the dress</p>
-    <div class="button-group">
-        <a class="choice-btn" href="results.html" target="content-frame" onmouseenter="document.getElementById('dress-audio').play();">blue and black</a>
-        <a class="choice-btn" href="results.html" target="content-frame" onmouseenter="document.getElementById('dress-audio').play();">white and gold</a>
-    </div>
+    <h1>Final Results.</h1>
+    <p class="subheader">no matter what you chose, your eternal punishment is locked in. thanks for playing.</p>
+    <a class="choice-btn" href="index-inner.html" target="content-frame">back to the start</a>
 </body>
 </html>
