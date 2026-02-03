@@ -3,9 +3,923 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beatriz Ayon</title>
+    <title>Morning Story – Beatriz Ayon</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #fdf2ff 0%, #f0f4ff 40%, #dfe8ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+        }
+
+        .scene-wrapper {
+            width: min(900px, 100%);
+            padding: 1.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            box-shadow:
+                0 18px 45px rgba(15, 23, 42, 0.18),
+                0 0 0 1px rgba(148, 163, 184, 0.3);
+            padding: 2rem 2.5rem 2.3rem;
+            backdrop-filter: blur(14px);
+        }
+
+        .title {
+            font-size: 1.6rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 0.35rem;
+        }
+
+        .subtitle {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.75rem;
+        }
+
+        .hint {
+            font-size: 0.92rem;
+            color: #64748b;
+            margin-bottom: 1.75rem;
+        }
+
+        .scene {
+            display: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .scene.active {
+            display: flex;
+        }
+
+        .scene-visual {
+            flex: 0 0 55%;
+            position: relative;
+            min-height: 260px;
+        }
+
+        .scene-text {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #1f2933;
+        }
+
+        /* Boy in bed scene */
+        .bed {
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            background: linear-gradient(to top, #1f2937 0%, #111827 55%, #111827 100%);
+            overflow: hidden;
+        }
+
+        .bed::before {
+            /* wall gradient */
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #020617 0%, #020617 35%, #1e293b 100%);
+            opacity: 0.6;
+        }
+
+        .bed-frame {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            bottom: 12%;
+            height: 40%;
+            background: #0b1120;
+            border-radius: 18px;
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .mattress {
+            position: absolute;
+            inset: 9% 6% auto;
+            height: 65%;
+            background: linear-gradient(135deg, #e5e7eb, #f9fafb);
+            border-radius: 18px 18px 26px 26px;
+        }
+
+        .blanket {
+            position: absolute;
+            inset: 32% 6% 0;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 26px 26px 22px 22px;
+            box-shadow: 0 14px 24px rgba(15, 23, 42, 0.8);
+        }
+
+        .blanket::before {
+            content: "";
+            position: absolute;
+            inset: 22% 20% 18% 8%;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.7), rgba(59, 130, 246, 0.9));
+            border-radius: 999px;
+            opacity: 0.7;
+        }
+
+        .boy-head {
+            position: absolute;
+            bottom: 53%;
+            left: 26%;
+            width: 80px;
+            height: 80px;
+            background: #fed7aa;
+            border-radius: 50%;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.65);
+        }
+
+        .hair {
+            position: absolute;
+            inset: 0 0 38%;
+            background: radial-gradient(circle at 15% 35%, #1f2933 0, #020617 45%, #020617 100%);
+            border-radius: 50% 50% 40% 40%;
+        }
+
+        .eye {
+            position: absolute;
+            top: 55%;
+            width: 10px;
+            height: 4px;
+            border-radius: 999px;
+            background: #111827;
+        }
+
+        .eye.left {
+            left: 26%;
+        }
+
+        .eye.right {
+            right: 26%;
+        }
+
+        .mouth {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            width: 22px;
+            height: 10px;
+            border-radius: 0 0 999px 999px;
+            border-bottom: 3px solid #111827;
+            transform: translateX(-50%);
+        }
+
+        .pillow {
+            position: absolute;
+            bottom: 61%;
+            left: 19%;
+            width: 120px;
+            height: 70px;
+            background: #e5e7eb;
+            border-radius: 22px;
+            box-shadow:
+                    0 4px 8px rgba(15, 23, 42, 0.7),
+                    0 0 0 2px rgba(148, 163, 184, 0.8);
+        }
+
+        .alarm {
+            position: absolute;
+            right: 11%;
+            bottom: 46%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 20%, #fee2e2 0, #f97373 30%, #ef4444 100%);
+            border-radius: 50%;
+            box-shadow:
+                    0 0 0 4px rgba(248, 113, 113, 0.85),
+                    0 16px 26px rgba(248, 113, 113, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .alarm:hover {
+            transform: translateY(-2px) scale(1.03);
+            filter: brightness(1.07);
+        }
+
+        .alarm:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow:
+                    0 0 0 3px rgba(248, 113, 113, 0.6),
+                    0 8px 14px rgba(0, 0, 0, 0.8);
+        }
+
+        .alarm-face {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 20%, #fefce8 0, #fef3c7 35%, #fde68a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 0 0 2px rgba(251, 191, 36, 0.9);
+        }
+
+        .alarm-hand {
+            position: absolute;
+            width: 3px;
+            height: 16px;
+            background: #0f172a;
+            border-radius: 999px;
+            transform-origin: bottom center;
+            animation: shake 0.16s infinite alternate;
+        }
+
+        .alarm-dot {
+            width: 7px;
+            height: 7px;
+            background: #0f172a;
+            border-radius: 50%;
+        }
+
+        .alarm-leg {
+            position: absolute;
+            bottom: -12px;
+            width: 12px;
+            height: 14px;
+            border-radius: 0 0 999px 999px;
+            background: #020617;
+        }
+
+        .alarm-leg.left {
+            left: 18px;
+        }
+
+        .alarm-leg.right {
+            right: 18px;
+        }
+
+        .alarm-bell {
+            position: absolute;
+            top: -18px;
+            width: 24px;
+            height: 16px;
+            border-radius: 999px 999px 0 0;
+            background: #fee2e2;
+        }
+
+        .alarm-bell.left {
+            left: 4px;
+        }
+
+        .alarm-bell.right {
+            right: 4px;
+        }
+
+        .alarm-handle {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            width: 26px;
+            height: 10px;
+            border-radius: 999px;
+            border: 3px solid #fecaca;
+            border-bottom: none;
+            transform: translateX(-50%);
+        }
+
+        .window {
+            position: absolute;
+            top: 10%;
+            left: 60%;
+            width: 30%;
+            height: 38%;
+            border-radius: 18px;
+            background: linear-gradient(to top, #0f172a, #1e293b, #0369a1);
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.8);
+            overflow: hidden;
+        }
+
+        .window-sun {
+            position: absolute;
+            bottom: -6%;
+            left: 35%;
+            width: 64px;
+            height: 64px;
+            background: radial-gradient(circle at 30% 30%, #fef9c3 0, #fde68a 45%, #fbbf24 100%);
+            border-radius: 50%;
+            box-shadow:
+                    0 0 40px rgba(250, 204, 21, 0.8),
+                    0 0 80px rgba(250, 204, 21, 0.5);
+        }
+
+        .window-cloud {
+            position: absolute;
+            bottom: 18%;
+            width: 60px;
+            height: 26px;
+            background: #e5f0ff;
+            border-radius: 999px;
+        }
+
+        .window-cloud::before,
+        .window-cloud::after {
+            content: "";
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: #e5f0ff;
+            border-radius: 50%;
+            top: -12px;
+        }
+
+        .window-cloud::before {
+            left: 4px;
+        }
+
+        .window-cloud::after {
+            right: 4px;
+        }
+
+        .window-cloud.left {
+            left: 8%;
+        }
+
+        .window-cloud.right {
+            right: 8%;
+        }
+
+        .night-stand {
+            position: absolute;
+            right: 6%;
+            bottom: 13%;
+            width: 90px;
+            height: 70px;
+            background: linear-gradient(to right, #111827, #020617);
+            border-radius: 10px;
+            box-shadow:
+                    0 9px 20px rgba(0, 0, 0, 0.9),
+                    0 0 0 1px rgba(15, 23, 42, 0.7);
+        }
+
+        .night-stand::before,
+        .night-stand::after {
+            content: "";
+            position: absolute;
+            left: 12%;
+            right: 12%;
+            height: 2px;
+            background: rgba(148, 163, 184, 0.6);
+        }
+
+        .night-stand::before {
+            top: 32%;
+        }
+
+        .night-stand::after {
+            top: 65%;
+        }
+
+        .night-stand-knob {
+            position: absolute;
+            top: 27%;
+            left: 50%;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #64748b;
+            transform: translateX(-50%);
+        }
+
+        .night-stand-knob.bottom {
+            top: 61%;
+        }
+
+        /* Breakfast scene */
+        .table {
+            position: absolute;
+            inset: auto 4% 3%;
+            height: 45%;
+            background: linear-gradient(to top, #0f172a, #020617);
+            border-radius: 24px;
+            box-shadow: 0 18px 32px rgba(15, 23, 42, 0.85);
+        }
+
+        .table-top {
+            position: absolute;
+            inset: 8% 7% 45%;
+            background: linear-gradient(135deg, #111827, #020617);
+            border-radius: 20px;
+            box-shadow:
+                    0 6px 18px rgba(15, 23, 42, 0.9),
+                    0 0 0 1px rgba(51, 65, 85, 0.7);
+        }
+
+        .boy-breakfast {
+            position: absolute;
+            bottom: 44%;
+            left: 24%;
+            width: 100px;
+            height: 120px;
+        }
+
+        .boy-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 90px;
+            height: 80px;
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            border-radius: 40px 40px 30px 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.8);
+        }
+
+        .boy-head-day {
+            position: absolute;
+            bottom: 70%;
+            left: 50%;
+            width: 72px;
+            height: 72px;
+            background: #fed7aa;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.75);
+        }
+
+        .boy-hair-day {
+            position: absolute;
+            inset: 0 0 40%;
+            background: radial-gradient(circle at 20% 30%, #1f2933 0, #020617 50%, #020617 100%);
+            border-radius: 55% 45% 45% 45%;
+        }
+
+        .boy-eye {
+            position: absolute;
+            top: 52%;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #020617;
+        }
+
+        .boy-eye.left {
+            left: 28%;
+        }
+
+        .boy-eye.right {
+            right: 28%;
+        }
+
+        .boy-mouth-smile {
+            position: absolute;
+            top: 69%;
+            left: 50%;
+            width: 22px;
+            height: 20px;
+            border-radius: 0 0 999px 999px;
+            border-bottom: 3px solid #111827;
+            transform: translateX(-50%);
+        }
+
+        .plate {
+            position: absolute;
+            left: 43%;
+            bottom: 50%;
+            width: 120px;
+            height: 40px;
+            background: radial-gradient(circle at 50% 10%, #e5e7eb 0, #d1d5db 55%, #9ca3af 100%);
+            border-radius: 999px;
+            box-shadow:
+                    0 8px 16px rgba(15, 23, 42, 0.9),
+                    0 0 0 2px rgba(148, 163, 184, 0.8);
+        }
+
+        .egg {
+            position: absolute;
+            left: 14%;
+            top: 6px;
+            width: 50px;
+            height: 30px;
+            background: #f9fafb;
+            border-radius: 999px;
+            box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.9);
+        }
+
+        .egg-yolk {
+            position: absolute;
+            inset: 7px 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fef9c3 0, #facc15 45%, #eab308 100%);
+        }
+
+        .toast {
+            position: absolute;
+            right: 16%;
+            top: -12px;
+            width: 50px;
+            height: 40px;
+            background: #f97316;
+            border-radius: 14px 14px 10px 10px;
+            box-shadow:
+                    0 4px 10px rgba(15, 23, 42, 0.7),
+                    inset 0 0 0 3px rgba(248, 171, 116, 0.9);
+        }
+
+        .toast::before {
+            content: "";
+            position: absolute;
+            inset: 8px 8px 14px;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #fed7aa, #fdba74);
+        }
+
+        .cup {
+            position: absolute;
+            left: 16%;
+            bottom: 50%;
+            width: 38px;
+            height: 44px;
+            background: #e5e7eb;
+            border-radius: 10px 10px 14px 14px;
+            box-shadow:
+                    0 6px 12px rgba(15, 23, 42, 0.8),
+                    0 0 0 2px rgba(148, 163, 184, 0.9);
+        }
+
+        .cup::before {
+            content: "";
+            position: absolute;
+            inset: 6px 6px 22px;
+            border-radius: 8px;
+            background: linear-gradient(to top, #0f172a, #020617);
+        }
+
+        .cup-handle {
+            position: absolute;
+            right: -12px;
+            top: 14px;
+            width: 16px;
+            height: 22px;
+            border-radius: 999px;
+            border: 4px solid #e5e7eb;
+            border-left: 4px solid transparent;
+        }
+
+        .steam {
+            position: absolute;
+            left: 8px;
+            top: -16px;
+            width: 8px;
+            height: 18px;
+            border-radius: 999px;
+            background: linear-gradient(to top, rgba(248, 250, 252, 0.1), rgba(248, 250, 252, 0.8));
+            filter: blur(0.4px);
+            animation: steam 1.8s infinite ease-in-out;
+        }
+
+        .steam:nth-child(2) {
+            left: 18px;
+            animation-delay: 0.4s;
+        }
+
+        .steam:nth-child(3) {
+            left: 26px;
+            animation-delay: 0.8s;
+        }
+
+        .window-day {
+            position: absolute;
+            top: 9%;
+            left: 58%;
+            width: 34%;
+            height: 44%;
+            border-radius: 18px;
+            background: linear-gradient(to top, #22c55e, #22c55e 30%, #0ea5e9 70%, #38bdf8 100%);
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.9);
+            overflow: hidden;
+        }
+
+        .window-day-sun {
+            position: absolute;
+            top: 14%;
+            left: 20%;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fefce8 0, #fde68a 40%, #facc15 100%);
+            box-shadow:
+                    0 0 40px rgba(250, 204, 21, 0.9),
+                    0 0 80px rgba(250, 204, 21, 0.7);
+        }
+
+        .window-day-cloud {
+            position: absolute;
+            top: 18%;
+            width: 68px;
+            height: 30px;
+            background: #f9fafb;
+            border-radius: 999px;
+        }
+
+        .window-day-cloud::before,
+        .window-day-cloud::after {
+            content: "";
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            background: #f9fafb;
+            border-radius: 50%;
+            top: -12px;
+        }
+
+        .window-day-cloud::before {
+            left: 4px;
+        }
+
+        .window-day-cloud::after {
+            right: 4px;
+        }
+
+        .window-day-cloud.left {
+            left: 45%;
+        }
+
+        .window-day-cloud.right {
+            top: 32%;
+            left: 12%;
+        }
+
+        .window-hill {
+            position: absolute;
+            bottom: -4%;
+            left: -10%;
+            width: 80%;
+            height: 40%;
+            border-radius: 999px;
+            background: radial-gradient(circle at 40% 0%, #22c55e 0, #16a34a 52%, #15803d 100%);
+        }
+
+        .window-hill.right {
+            left: 30%;
+            width: 80%;
+            background: radial-gradient(circle at 60% 0%, #4ade80 0, #22c55e 52%, #16a34a 100%);
+        }
+
+        .next-button {
+            margin-top: 1.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 999px;
+            border: none;
+            background: #0f172a;
+            color: white;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.6);
+            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+        }
+
+        .next-button span.icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            background: rgba(248, 250, 252, 0.12);
+            font-size: 0.95rem;
+        }
+
+        .next-button:hover {
+            transform: translateY(-1px);
+            background: #020617;
+            box-shadow: 0 16px 28px rgba(15, 23, 42, 0.7);
+        }
+
+        .next-button:active {
+            transform: translateY(1px) scale(0.99);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.7);
+        }
+
+        .tagline {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes shake {
+            from {
+                transform: translateY(-2px) rotate(-15deg);
+            }
+            to {
+                transform: translateY(2px) rotate(15deg);
+            }
+        }
+
+        @keyframes steam {
+            0% {
+                opacity: 0;
+                transform: translateY(8px) scale(0.8);
+            }
+            40% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-18px) scale(1.2);
+            }
+        }
+
+        @media (max-width: 780px) {
+            .card {
+                padding: 1.75rem 1.4rem 1.9rem;
+            }
+
+            .scene {
+                flex-direction: column;
+            }
+
+            .scene-visual {
+                flex: 0 0 auto;
+                width: 100%;
+                min-height: 260px;
+            }
+
+            .scene-text {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .subtitle {
+                font-size: 1.7rem;
+            }
+
+            .scene-wrapper {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <main class="scene-wrapper">
+        <section class="card">
+            <div class="tagline">Interactive Morning Story</div>
+            <h1 class="subtitle">Turn off the alarm to start the day</h1>
+            <p class="hint">Tap the glowing alarm clock to wake the boy up and see what happens next.</p>
 
+            <!-- Scene 1: Waking up -->
+            <div class="scene scene-wakeup active" id="scene-wakeup">
+                <div class="scene-visual">
+                    <div class="bed">
+                        <div class="window">
+                            <div class="window-sun"></div>
+                            <div class="window-cloud left"></div>
+                            <div class="window-cloud right"></div>
+                        </div>
+
+                        <div class="bed-frame"></div>
+                        <div class="mattress"></div>
+                        <div class="pillow"></div>
+                        <div class="blanket"></div>
+
+                        <div class="boy-head">
+                            <div class="hair"></div>
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                            <div class="mouth"></div>
+                        </div>
+
+                        <div class="night-stand">
+                            <div class="night-stand-knob"></div>
+                            <div class="night-stand-knob bottom"></div>
+                        </div>
+
+                        <button class="alarm" id="alarm-button" aria-label="Turn off alarm to wake up">
+                            <div class="alarm-handle"></div>
+                            <div class="alarm-bell left"></div>
+                            <div class="alarm-bell right"></div>
+                            <div class="alarm-face">
+                                <div class="alarm-hand"></div>
+                                <div class="alarm-dot"></div>
+                            </div>
+                            <div class="alarm-leg left"></div>
+                            <div class="alarm-leg right"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="scene-text">
+                    <h2 class="title">Scene One · Wake Up</h2>
+                    <p>
+                        A sleepy boy is tucked under a deep blue blanket, lost in his dreams.
+                        Morning light is starting to sneak in through the window, but his
+                        alarm won’t stop ringing.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        When you’re ready, <strong>click the glowing alarm clock</strong> on the nightstand
+                        to turn it off and wake him up.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Scene 2: Breakfast -->
+            <div class="scene scene-breakfast" id="scene-breakfast">
+                <div class="scene-visual">
+                    <div class="bed">
+                        <div class="window-day">
+                            <div class="window-day-sun"></div>
+                            <div class="window-day-cloud left"></div>
+                            <div class="window-day-cloud right"></div>
+                            <div class="window-hill"></div>
+                            <div class="window-hill right"></div>
+                        </div>
+
+                        <div class="table">
+                            <div class="table-top"></div>
+                        </div>
+
+                        <div class="boy-breakfast">
+                            <div class="boy-body"></div>
+                            <div class="boy-head-day">
+                                <div class="boy-hair-day"></div>
+                                <div class="boy-eye left"></div>
+                                <div class="boy-eye right"></div>
+                                <div class="boy-mouth-smile"></div>
+                            </div>
+                        </div>
+
+                        <div class="plate">
+                            <div class="egg">
+                                <div class="egg-yolk"></div>
+                            </div>
+                            <div class="toast"></div>
+                        </div>
+
+                        <div class="cup">
+                            <div class="cup-handle"></div>
+                            <div class="steam"></div>
+                            <div class="steam"></div>
+                            <div class="steam"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scene-text">
+                    <h2 class="title">Scene Two · Breakfast</h2>
+                    <p>
+                        With the alarm finally off, the boy is awake and ready for the day.
+                        He sits at the table enjoying a warm breakfast: eggs, toast, and a
+                        steaming cup of something cozy.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        The window is bright, the hills are green, and a new morning has begun.
+                    </p>
+
+                    <button class="next-button" id="restart-button">
+                        <span class="icon">⏰</span>
+                        Watch him wake up again
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const alarmButton = document.getElementById("alarm-button");
+        const restartButton = document.getElementById("restart-button");
+        const wakeupScene = document.getElementById("scene-wakeup");
+        const breakfastScene = document.getElementById("scene-breakfast");
+
+        function showBreakfastScene() {
+            wakeupScene.classList.remove("active");
+            breakfastScene.classList.add("active");
+        }
+
+        function showWakeupScene() {
+            breakfastScene.classList.remove("active");
+            wakeupScene.classList.add("active");
+        }
+
+        alarmButton.addEventListener("click", showBreakfastScene);
+        restartButton.addEventListener("click", showWakeupScene);
+    </script>
 </body>
 </html>
