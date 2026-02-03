@@ -25,13 +25,23 @@
     </style>
 </head>
 <body>
-    <audio src="jerma-uaaghh.mp3" autoplay loop></audio>
-    <audio src="life_is_pain_i_hatemp3converter.mp3" autoplay></audio>
-    <audio src="jerma-freddy-fazbear.mp3" autoplay loop></audio>
-    <audio src="jerma-best-noise-1.mp3" autoplay loop></audio>
-    <audio src="jeremy-noise.mp3" autoplay loop></audio>
-    <audio src="hitsound-1.mp3" autoplay loop></audio>
+    <audio id="uaaghh" src="jerma-uaaghh.mp3" autoplay loop></audio>
+    <audio id="life-pain" src="life_is_pain_i_hatemp3converter.mp3" autoplay></audio>
+    <audio id="freddy" src="jerma-freddy-fazbear.mp3" autoplay loop></audio>
+    <audio id="best-noise" src="jerma-best-noise-1.mp3" autoplay loop></audio>
+    <audio id="jeremy" src="jeremy-noise.mp3" autoplay loop></audio>
+    <audio id="hitsound" src="hitsound-1.mp3" autoplay loop></audio>
     <h1>WELCOME TO YOUR ETERNAL SENTENCING</h1>
-    <p class="subheader">you are forced to sit in a room with no light. the door is sealed shut and unable to be opened again. sitting in the dark all you hear are the screams of the people around you. was it worth it? were the choices you made for such stupid questions worth it? to be stuck in a dark room hearing nothing but nonsense for the rest of your eternity here?</p>
+    <p class="subheader">your choices lead you to being put in a room with your new friend Jeremy! he will forever sit here and do this thing at you for eternity now while the beautiful sounds of hell play outside</p>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            ['uaaghh', 'best-noise', 'jeremy'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.volume = 0.5;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
