@@ -1,10 +1,24 @@
-// SET EXAM DATE (change if you want)
-const examDate = new Date();
-examDate.setDate(examDate.getDate() + 3);
-examDate.setHours(9, 0, 0);
+// ---- EXAM TIMER (PERSISTENT) ----
+function getExamDate() {
+  let saved = localStorage.getItem("examTime");
+
+  if (!saved) {
+    const exam = new Date();
+    exam.setDate(exam.getDate() + 3);
+    exam.setHours(9, 0, 0, 0);
+    localStorage.setItem("examTime", exam.getTime());
+    return exam;
+  }
+
+  return new Date(parseInt(saved));
+}
 
 function startCountdown() {
   const timer = document.getElementById("timer");
+  if (!timer) return;
+
+  const examDate = getExamDate();
+
   setInterval(() => {
     const now = new Date();
     const diff = examDate - now;
@@ -21,7 +35,7 @@ function startCountdown() {
   }, 1000);
 }
 
-// VIDEO DISTRACTION
+// ---- VIDEO DISTRACTION ----
 function showVideo() {
   const overlay = document.getElementById("videoOverlay");
   overlay.style.display = "flex";
@@ -31,16 +45,18 @@ function showVideo() {
   }, 7000);
 }
 
-// DOOM SCROLL
+// ---- DOOM SCROLL ----
 function startDoomScroll() {
   const box = document.getElementById("scroll");
+  if (!box) return;
+
   const messages = [
     "POV: you said you'd start three days ago",
+    "One more scroll won’t hurt",
     "Everyone procrastinates… right?",
-    "One more scroll",
     "Why am I still awake?",
     "I’ll deal with it tomorrow",
-    "At least I'm not alone"
+    "At least I’m not alone"
   ];
 
   setInterval(() => {
@@ -48,5 +64,5 @@ function startDoomScroll() {
     p.textContent = messages[Math.floor(Math.random() * messages.length)];
     box.appendChild(p);
     box.scrollTop = box.scrollHeight;
-  }, 1600);
+  }, 1500);
 }
