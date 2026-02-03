@@ -21,12 +21,6 @@
         .eyes-wrap {
             position: fixed;
             inset: 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
             pointer-events: none;
         }
         .eye {
@@ -34,10 +28,9 @@
             height: 32px;
             background: #1a1a2e;
             border: 2px solid #00ff00;
-            position: relative;
+            position: absolute;
             overflow: hidden;
             pointer-events: auto;
-            flex-shrink: 0;
         }
         .eye.pixel {
             border-radius: 0;
@@ -96,21 +89,31 @@
 </head>
 <body>
     <div class="eyes-wrap" id="eyesWrap"></div>
-    <p class="page-text">Don't look at me · <a href="dont-feed-me.html" id="nextLink">continue</a></p>
+    <p class="page-text">don't look at me · <a href="dont-feed-me.html" id="nextLink">continue</a></p>
 
     <script>
         (function() {
             var wrap = document.getElementById('eyesWrap');
             var nextLink = document.getElementById('nextLink');
             var mouse = { x: 0, y: 0 };
-            var cols = 8;
-            var rows = 6;
-            var total = cols * rows;
-
+            var total = 48;
             for (var i = 0; i < total; i++) {
                 var eye = document.createElement('div');
                 eye.className = 'eye pixel';
                 eye.innerHTML = '<span class="pupil"></span>';
+                var zone = i % 8;
+                var x, y;
+                if (zone === 0) { x = Math.random() * 15; y = Math.random() * 100; }
+                else if (zone === 1) { x = 85 + Math.random() * 15; y = Math.random() * 100; }
+                else if (zone === 2) { x = Math.random() * 100; y = Math.random() * 12; }
+                else if (zone === 3) { x = Math.random() * 100; y = 88 + Math.random() * 12; }
+                else if (zone === 4) { x = Math.random() * 20; y = Math.random() * 20; }
+                else if (zone === 5) { x = 80 + Math.random() * 20; y = Math.random() * 20; }
+                else if (zone === 6) { x = Math.random() * 20; y = 80 + Math.random() * 20; }
+                else { x = 80 + Math.random() * 20; y = 80 + Math.random() * 20; }
+                eye.style.left = x + '%';
+                eye.style.top = y + '%';
+                eye.style.transform = 'translate(-50%, -50%)';
                 wrap.appendChild(eye);
             }
 
