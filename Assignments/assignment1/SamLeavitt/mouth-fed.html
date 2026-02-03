@@ -38,13 +38,77 @@
         #start-sound.visible {
             display: block;
         }
+        .bg-column {
+            position: fixed;
+            top: 0;
+            width: 60px;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-column.left { left: 5%; }
+        .bg-column.right { right: 5%; }
+        .bg-column-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: column-descend 25s linear infinite;
+        }
+        .bg-column-inner .line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.4em;
+        }
+        .bg-column-inner .char {
+            font-family: monospace;
+            font-size: 14px;
+            color: rgba(139, 0, 0, 0.35);
+            opacity: 0;
+            animation: type-in 0.12s ease-out forwards;
+        }
+        @keyframes type-in {
+            to { opacity: 1; }
+        }
+        @keyframes column-descend {
+            to { transform: translateY(100vh); }
+        }
+        h1 { position: relative; z-index: 1; }
     </style>
 </head>
 <body>
+    <div class="bg-column left" id="col-left" aria-hidden="true"></div>
+    <div class="bg-column right" id="col-right" aria-hidden="true"></div>
     <h1>MOUTH FED</h1>
     <div id="start-sound" aria-label="Click to start sound"></div>
     <script>
         (function () {
+            var text = 'tasty_meat';
+            var copies = 35;
+            var msPerChar = 90;
+            function buildColumn() {
+                var inner = document.createElement('div');
+                inner.className = 'bg-column-inner';
+                var charIndex = 0;
+                for (var c = 0; c < copies; c++) {
+                    var line = document.createElement('div');
+                    line.className = 'line';
+                    for (var i = 0; i < text.length; i++) {
+                        var span = document.createElement('span');
+                        span.className = 'char';
+                        span.textContent = text[i];
+                        span.style.animationDelay = (charIndex * msPerChar) + 'ms';
+                        line.appendChild(span);
+                        charIndex++;
+                    }
+                    inner.appendChild(line);
+                }
+                return inner;
+            }
+            document.getElementById('col-left').appendChild(buildColumn());
+            document.getElementById('col-right').appendChild(buildColumn());
+
             var overlay = document.getElementById('start-sound');
             var ctx = null;
 
