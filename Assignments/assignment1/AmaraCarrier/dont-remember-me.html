@@ -19,6 +19,9 @@
             position: relative;
             overflow: hidden;
             box-shadow: inset 0 0 0 3px #003300;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
         .original-content {
             font-size: clamp(18px, 4vw, 36px);
@@ -29,6 +32,8 @@
             letter-spacing: 1px;
             position: relative;
             z-index: 2;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .original-content .cursor {
             display: inline-block;
@@ -52,6 +57,8 @@
             background: #000;
             border: 2px solid #00ff00;
             overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         body.glitch .original-content {
             animation: glitch-text 0.15s infinite;
@@ -153,6 +160,23 @@
             96% { opacity: 0.97; }
             98% { opacity: 1; }
         }
+        .video-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+        .video-wrap.show {
+            display: flex;
+        }
+        .video-wrap iframe {
+            width: min(100vw, 1280px);
+            height: min(56.25vw, 720px);
+            max-height: 90vh;
+        }
     </style>
 </head>
 <body>
@@ -169,12 +193,15 @@
             </div>
         </div>
     </div>
+    <div class="video-wrap" id="videoWrap" aria-hidden="true">
+        <iframe id="rickVideo" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="Never Gonna Give You Up - Rick Astley" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
     <script>
         (function() {
             var typedEl = document.getElementById('typed');
             var cursorEl = document.getElementById('cursor');
-            var text = "Don't";
+            var text = "I must scream";
             var i = 0;
             var delayMs = 550;
             function typeNext() {
@@ -213,8 +240,67 @@
                     body.classList.remove('glitch');
                     body.classList.add('show-error');
                     playErrorBeep();
+                    setTimeout(function() {
+                        var wrap = document.getElementById('videoWrap');
+                        var iframe = document.getElementById('rickVideo');
+                        wrap.classList.add('show');
+                        iframe.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0';
+                    }, 2500);
                 }, 1200);
             }, 5800);
+        })();
+        (function() {
+            var bgCtx = null;
+            var bgStarted = false;
+            var chordIndex = 0;
+            var chords = [
+                [130.81, 196.00, 261.63],
+                [146.83, 220.00, 293.66],
+                [164.81, 246.94, 329.63],
+                [146.83, 220.00, 293.66]
+            ];
+            var chordDuration = 5;
+            function getBgCtx() {
+                if (!bgCtx) bgCtx = new (window.AudioContext || window.webkitAudioContext)();
+                return bgCtx;
+            }
+            function playPadChord(freqs, startTime, duration) {
+                var c = getBgCtx();
+                if (c.state === 'suspended') return;
+                var masterGain = c.createGain();
+                masterGain.gain.setValueAtTime(0, startTime);
+                masterGain.gain.linearRampToValueAtTime(0.06, startTime + 1.2);
+                masterGain.gain.setValueAtTime(0.06, startTime + duration - 1.5);
+                masterGain.gain.linearRampToValueAtTime(0.001, startTime + duration);
+                masterGain.connect(c.destination);
+                freqs.forEach(function(freq) {
+                    var osc = c.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    var g = c.createGain();
+                    g.gain.setValueAtTime(0.35, startTime);
+                    g.gain.linearRampToValueAtTime(0.001, startTime + duration);
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                });
+            }
+            function playLoop() {
+                if (!bgStarted || !bgCtx) return;
+                var base = bgCtx.currentTime;
+                playPadChord(chords[chordIndex], base, chordDuration);
+                chordIndex = (chordIndex + 1) % chords.length;
+                setTimeout(playLoop, chordDuration * 1000);
+            }
+            function startBgMusic() {
+                if (bgStarted) return;
+                bgStarted = true;
+                getBgCtx().resume().then(function() { playLoop(); }).catch(function() {});
+            }
+            document.body.addEventListener('click', startBgMusic, { once: true });
+            document.body.addEventListener('keydown', startBgMusic, { once: true });
+            document.body.addEventListener('touchstart', startBgMusic, { once: true });
         })();
         (function() {
             let ctx = null;
@@ -233,6 +319,29 @@
             document.body.addEventListener('click', startHum, { once: true });
             document.body.addEventListener('keydown', startHum, { once: true });
             document.body.addEventListener('touchstart', startHum, { once: true });
+        })();
+    </script>
+    <script>
+        (function() {
+            function playClickSound() {
+                try {
+                    var c = new (window.AudioContext || window.webkitAudioContext)();
+                    var osc = c.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 1200;
+                    var g = c.createGain();
+                    g.gain.setValueAtTime(0.15, c.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.04);
+                    osc.connect(g);
+                    g.connect(c.destination);
+                    osc.start(c.currentTime);
+                    osc.stop(c.currentTime + 0.04);
+                } catch (e) {}
+            }
+            document.body.addEventListener('click', function(e) {
+                var a = e.target.closest('a[href]');
+                if (a) playClickSound();
+            });
         })();
     </script>
 </body>

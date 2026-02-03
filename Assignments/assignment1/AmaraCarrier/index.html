@@ -3,299 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amara Carrier</title>
+    <title>Don't Look At Me</title>
     <link href="https://fonts.cdnfonts.com/css/perfect-dos-vga-437" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body {
-            background-color: #000;
-            color: #00ff00;
             margin: 0;
             min-height: 100vh;
-            position: relative;
-            cursor: pointer;
+            background: #0a0a0f;
+            color: #00ff00;
             font-family: 'Perfect DOS VGA 437', monospace;
-            box-shadow: inset 0 0 0 3px #003300;
+            overflow: hidden;
+            position: relative;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
-
-        .center-text {
+        .eyes-wrap {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+        .eye {
+            width: 48px;
+            height: 32px;
+            background: #1a1a2e;
+            border: 2px solid #00ff00;
+            position: absolute;
+            overflow: hidden;
+            pointer-events: auto;
+        }
+        .eye.pixel {
+            border-radius: 0;
+        }
+        .pupil {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #00ff00;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: left 0.08s ease-out, top 0.08s ease-out;
+        }
+        .eye.blink .pupil { opacity: 0; }
+        .eye.blink {
+            animation: eye-blink 0.15s steps(1);
+        }
+        @keyframes eye-blink {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(0.05); }
+            100% { transform: scaleY(1); }
+        }
+        .page-text {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-family: 'Perfect DOS VGA 437', monospace;
-            font-size: clamp(14px, 2.8vw, 26px);
-            max-width: 85vw;
-            padding: 0 1em;
-            box-sizing: border-box;
+            font-size: clamp(18px, 3vw, 28px);
             font-weight: bold;
             color: #00ff00;
             text-align: center;
-            z-index: 10;
             text-shadow: 0 0 1px #00ff00;
-            letter-spacing: 1px;
-            line-height: 1.2;
-            text-decoration: none;
-            display: inline-block;
+            letter-spacing: 2px;
+            z-index: 10;
+            pointer-events: auto;
         }
-        .center-text:hover {
+        .page-text a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+        .page-text a:hover {
             color: #55ff55;
         }
-
-        /* DOS CRT – scanlines only */
-        .crt-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 100;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent 0px,
-                transparent 2px,
-                rgba(0, 0, 0, 0.15) 2px,
-                rgba(0, 0, 0, 0.15) 3px
-            );
+        body.shake .eyes-wrap {
+            animation: page-shake 0.4s ease-out;
         }
-        .crt-overlay::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.03);
-            animation: crt-flicker 8s infinite;
-        }
-        @keyframes crt-flicker {
-            0%, 100% { opacity: 1; }
-            92% { opacity: 1; }
-            96% { opacity: 0.97; }
-            98% { opacity: 1; }
-        }
-
-        /* Eyes – ovoid shape, above shadow mask, larger irises, pupils follow mouse, progressive shake near link */
-        .eye {
-            position: fixed;
-            border-radius: 50%;
-            background: #c0c0c0;
-            overflow: hidden;
-            z-index: 9;
-            box-shadow: 0 0 0 2px #000;
-        }
-        .eye .iris {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            border-radius: 50%;
-            background: #2d5a2d;
-            box-shadow: inset 0 -1px 4px rgba(0,0,0,0.4);
-            transition: transform 0.08s ease-out;
-        }
-        .eye .pupil {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            background: #000;
-            border-radius: 50%;
-            transition: transform 0.08s ease-out;
-        }
-        .eye::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 0;
-            background: #c0c0c0;
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        .eye.eye-blink::after {
-            animation: eye-lid 0.18s ease-out forwards;
-        }
-        @keyframes eye-lid {
-            0%, 100% { height: 0; top: 0; }
-            50% { height: 100%; top: 0; }
-        }
-        .eye--sm { width: 40px; height: 24px; }
-        .eye--sm .iris { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
-        .eye--sm .pupil { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
-        .eye--md { width: 58px; height: 34px; }
-        .eye--md .iris { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
-        .eye--md .pupil { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
-        .eye--lg { width: 78px; height: 46px; }
-        .eye--lg .iris { width: 48px; height: 48px; margin: -24px 0 0 -24px; }
-        .eye--lg .pupil { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
-        .eye--xl { width: 100px; height: 58px; }
-        .eye--xl .iris { width: 60px; height: 60px; margin: -30px 0 0 -30px; }
-        .eye--xl .pupil { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
-        .eye--tl { top: 6%; left: 8%; }
-        .eye--tr { top: 6%; right: 8%; left: auto; }
-        .eye--t2 { top: 5%; left: 22%; }
-        .eye--t3 { top: 7%; right: 22%; left: auto; }
-        .eye--bl { bottom: 6%; left: 8%; top: auto; }
-        .eye--br { bottom: 6%; right: 8%; left: auto; top: auto; }
-        .eye--b2 { bottom: 8%; left: 25%; top: auto; }
-        .eye--b3 { bottom: 7%; right: 24%; left: auto; top: auto; }
-        .eye--ml { top: 50%; left: 4%; transform: translateY(-50%); }
-        .eye--mr { top: 50%; right: 4%; left: auto; transform: translateY(-50%); }
-        .eye--m2 { top: 28%; left: 5%; }
-        .eye--m3 { top: 72%; left: 6%; }
-        .eye--m4 { top: 25%; right: 5%; left: auto; }
-        .eye--m5 { top: 70%; right: 6%; left: auto; }
-        .eye--x1 { top: 12%; left: 50%; transform: translateX(-50%); }
-        .eye--x2 { bottom: 12%; left: 50%; top: auto; transform: translateX(-50%); }
-        .eye--x3 { top: 38%; left: 18%; }
-        .eye--x4 { top: 38%; right: 18%; left: auto; }
-        .eye--x5 { top: 15%; left: 38%; }
-        .eye--x6 { top: 18%; right: 38%; left: auto; }
-        .eye--x7 { bottom: 18%; left: 38%; top: auto; }
-        .eye--x8 { bottom: 15%; right: 38%; left: auto; top: auto; }
-
-        /* Black shadow with two eyeholes – user looks through holes to find text (below eyes) */
-        .shadow-mask {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.94);
-            pointer-events: none;
-            z-index: 4;
-            -webkit-mask-image:
-                linear-gradient(black, black),
-                radial-gradient(circle at 35% 50%, black 10vmin, transparent 10vmin),
-                radial-gradient(circle at 65% 50%, black 10vmin, transparent 10vmin);
-            mask-image:
-                linear-gradient(black, black),
-                radial-gradient(circle at 35% 50%, black 10vmin, transparent 10vmin),
-                radial-gradient(circle at 65% 50%, black 10vmin, transparent 10vmin);
-            -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
-            mask-size: 100% 100%, 100% 100%, 100% 100%;
-            -webkit-mask-position: 0 0, 0 0, 0 0;
-            mask-position: 0 0, 0 0, 0 0;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-composite: destination-out;
-            mask-composite: subtract;
+        @keyframes page-shake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-4px, 2px); }
+            40% { transform: translate(4px, -2px); }
+            60% { transform: translate(-2px, -4px); }
+            80% { transform: translate(2px, 4px); }
         }
     </style>
 </head>
 <body>
-    <a href="dont-feed-me.html" class="center-text">Don't Look At Me</a>
-    <div class="eye eye--sm eye--tl"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--tr"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--t2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--t3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--bl"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--xl eye--br"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--b2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--b3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--ml"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--mr"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--m2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--m3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--m4"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--m5"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--x1"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--x2"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--x3"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--x4"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--xl eye--x5"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--md eye--x6"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--sm eye--x7"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="eye eye--lg eye--x8"><div class="iris"><div class="pupil"></div></div></div>
-    <div class="shadow-mask" aria-hidden="true"></div>
-    <div class="crt-overlay" aria-hidden="true"></div>
+    <div class="eyes-wrap" id="eyesWrap"></div>
+    <p class="page-text"><a href="dont-feed-me.html" id="nextLink">don't look at me</a></p>
 
     <script>
         (function() {
-            const link = document.querySelector('a.center-text');
-            let mouseX = 0, mouseY = 0;
-            const TRIGGER_RADIUS = 420;
-            const MAX_SHAKE = 6;
-            const needsTranslateY = (el) => /eye--(ml|mr)\b/.test(el.className);
-            const needsTranslateX = (el) => /eye--(x1|x2)\b/.test(el.className);
+            var wrap = document.getElementById('eyesWrap');
+            var nextLink = document.getElementById('nextLink');
+            var mouse = { x: 0, y: 0 };
+            var total = 48;
+            for (var i = 0; i < total; i++) {
+                var eye = document.createElement('div');
+                eye.className = 'eye pixel';
+                eye.innerHTML = '<span class="pupil"></span>';
+                var zone = i % 8;
+                var x, y;
+                if (zone === 0) { x = Math.random() * 15; y = Math.random() * 100; }
+                else if (zone === 1) { x = 85 + Math.random() * 15; y = Math.random() * 100; }
+                else if (zone === 2) { x = Math.random() * 100; y = Math.random() * 12; }
+                else if (zone === 3) { x = Math.random() * 100; y = 88 + Math.random() * 12; }
+                else if (zone === 4) { x = Math.random() * 20; y = Math.random() * 20; }
+                else if (zone === 5) { x = 80 + Math.random() * 20; y = Math.random() * 20; }
+                else if (zone === 6) { x = Math.random() * 20; y = 80 + Math.random() * 20; }
+                else { x = 80 + Math.random() * 20; y = 80 + Math.random() * 20; }
+                eye.style.left = x + '%';
+                eye.style.top = y + '%';
+                eye.style.transform = 'translate(-50%, -50%)';
+                wrap.appendChild(eye);
+            }
 
-            function getLinkCenter() {
-                const rect = link ? link.getBoundingClientRect() : null;
-                if (!rect) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-                return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-            }
-            function getShakeIntensity() {
-                const c = getLinkCenter();
-                const d = Math.hypot(mouseX - c.x, mouseY - c.y);
-                if (d >= TRIGGER_RADIUS) return 0;
-                return Math.pow(1 - d / TRIGGER_RADIUS, 2);
-            }
+            var eyes = wrap.querySelectorAll('.eye');
+            var blinkIntervals = [];
+            eyes.forEach(function(eye, i) {
+                var delay = 2000 + Math.random() * 4000 + i * 100;
+                blinkIntervals.push(setInterval(function() {
+                    eye.classList.add('blink');
+                    setTimeout(function() { eye.classList.remove('blink'); }, 150);
+                }, delay));
+            });
 
             document.addEventListener('mousemove', function(e) {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                document.querySelectorAll('.eye').forEach(function(eye) {
-                    const iris = eye.querySelector('.iris');
-                    const pupil = eye.querySelector('.pupil');
-                    if (!iris || !pupil) return;
-                    const r = eye.getBoundingClientRect();
-                    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-                    const maxMove = Math.min(r.width, r.height) * 0.28;
-                    let dx = e.clientX - cx, dy = e.clientY - cy;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist > maxMove) { dx *= maxMove / dist; dy *= maxMove / dist; }
-                    iris.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
-                    pupil.style.transform = 'translate(0, 0)';
-                });
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
             });
 
-            function shakeLoop() {
-                const intensity = getShakeIntensity();
-                document.querySelectorAll('.eye').forEach(function(eye) {
-                    let base = '';
-                    if (needsTranslateY(eye)) base += ' translateY(-50%)';
-                    if (needsTranslateX(eye)) base += ' translateX(-50%)';
-                    if (intensity <= 0) {
-                        eye.style.transform = base || '';
-                        return;
+            function updatePupils() {
+                eyes.forEach(function(eye) {
+                    var rect = eye.getBoundingClientRect();
+                    var cx = rect.left + rect.width / 2;
+                    var cy = rect.top + rect.height / 2;
+                    var dx = mouse.x - cx;
+                    var dy = mouse.y - cy;
+                    var maxD = 10;
+                    var len = Math.sqrt(dx * dx + dy * dy) || 1;
+                    var scale = Math.min(1, maxD / len);
+                    var px = (dx / len) * scale * (rect.width * 0.25);
+                    var py = (dy / len) * scale * (rect.height * 0.25);
+                    var pupil = eye.querySelector('.pupil');
+                    if (pupil) {
+                        pupil.style.left = (50 + (px / rect.width) * 50) + '%';
+                        pupil.style.top = (50 + (py / rect.height) * 50) + '%';
+                        pupil.style.transform = 'translate(-50%, -50%)';
                     }
-                    const a = MAX_SHAKE * intensity;
-                    const sx = (Math.random() - 0.5) * 2 * a, sy = (Math.random() - 0.5) * 2 * a;
-                    eye.style.transform = 'translate(' + sx + 'px,' + sy + 'px)' + base;
                 });
-                requestAnimationFrame(shakeLoop);
+                requestAnimationFrame(updatePupils);
             }
-            requestAnimationFrame(shakeLoop);
-        })();
-    </script>
-    <script>
-        (function() {
-            document.querySelectorAll('.eye').forEach(function(eye) {
-                const minMs = 2200, maxMs = 4800;
-                const scheduleBlink = () => {
-                    const delay = minMs + Math.random() * (maxMs - minMs);
-                    setTimeout(() => {
-                        eye.classList.add('eye-blink');
-                        eye.addEventListener('animationend', function done() {
-                            eye.removeEventListener('animationend', done);
-                            eye.classList.remove('eye-blink');
-                            scheduleBlink();
-                        }, { once: true });
-                    }, delay);
-                };
-                scheduleBlink();
+            updatePupils();
+
+            var lastShake = 0;
+            var shakeCheck = setInterval(function() {
+                var linkRect = nextLink.getBoundingClientRect();
+                var dist = Math.hypot(mouse.x - (linkRect.left + linkRect.width / 2), mouse.y - (linkRect.top + linkRect.height / 2));
+                if (dist < 100 && Date.now() - lastShake > 600) {
+                    lastShake = Date.now();
+                    document.body.classList.add('shake');
+                    setTimeout(function() { document.body.classList.remove('shake'); }, 420);
+                }
+            }, 150);
+
+            nextLink.addEventListener('click', function() {
+                blinkIntervals.forEach(clearInterval);
+                clearInterval(shakeCheck);
             });
         })();
     </script>
     <script>
         (function() {
-            let ctx = null;
-            function startHum() {
-                if (ctx) return;
-                ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.value = 55;
-                const gain = ctx.createGain();
-                gain.gain.value = 0.06;
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(0);
+            var ctx = null;
+            var started = false;
+            var chordIndex = 0;
+            var chords = [
+                [130.81, 196.00, 261.63],
+                [146.83, 220.00, 293.66],
+                [164.81, 246.94, 329.63],
+                [146.83, 220.00, 293.66]
+            ];
+            var chordDuration = 5;
+            function getCtx() {
+                if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+                return ctx;
             }
-            document.body.addEventListener('click', startHum, { once: true });
-            document.body.addEventListener('keydown', startHum, { once: true });
-            document.body.addEventListener('touchstart', startHum, { once: true });
+            function playPadChord(freqs, startTime, duration) {
+                var c = getCtx();
+                if (c.state === 'suspended') return;
+                var masterGain = c.createGain();
+                masterGain.gain.setValueAtTime(0, startTime);
+                masterGain.gain.linearRampToValueAtTime(0.06, startTime + 1.2);
+                masterGain.gain.setValueAtTime(0.06, startTime + duration - 1.5);
+                masterGain.gain.linearRampToValueAtTime(0.001, startTime + duration);
+                masterGain.connect(c.destination);
+                freqs.forEach(function(freq) {
+                    var osc = c.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    var g = c.createGain();
+                    g.gain.setValueAtTime(0.35, startTime);
+                    g.gain.linearRampToValueAtTime(0.001, startTime + duration);
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                });
+            }
+            function playLoop() {
+                if (!started || !ctx) return;
+                var base = ctx.currentTime;
+                playPadChord(chords[chordIndex], base, chordDuration);
+                chordIndex = (chordIndex + 1) % chords.length;
+                setTimeout(playLoop, chordDuration * 1000);
+            }
+            function startMusic() {
+                if (started) return;
+                started = true;
+                getCtx().resume().then(function() { playLoop(); }).catch(function() {});
+            }
+            document.body.addEventListener('click', startMusic, { once: true });
+            document.body.addEventListener('keydown', startMusic, { once: true });
+            document.body.addEventListener('touchstart', startMusic, { once: true });
+        })();
+    </script>
+    <script>
+        (function() {
+            function playClickSound() {
+                try {
+                    var c = new (window.AudioContext || window.webkitAudioContext)();
+                    var osc = c.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 1200;
+                    var g = c.createGain();
+                    g.gain.setValueAtTime(0.15, c.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.04);
+                    osc.connect(g);
+                    g.connect(c.destination);
+                    osc.start(c.currentTime);
+                    osc.stop(c.currentTime + 0.04);
+                } catch (e) {}
+            }
+            document.body.addEventListener('click', function(e) {
+                var a = e.target.closest('a[href]');
+                if (a) playClickSound();
+            });
         })();
     </script>
 </body>

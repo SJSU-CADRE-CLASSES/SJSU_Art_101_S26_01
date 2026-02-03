@@ -13,13 +13,13 @@
 
         body {
             min-height: 100vh;
-            background-color: #3c5c69;
+            background-color: gray;
         }
 
         .images {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             padding: 1rem;
             min-height: 100vh;
             gap: 1rem;
@@ -40,7 +40,7 @@
             flex: 1;
             display: flex;
             justify-content: flex-end;
-            align-items: flex-start;
+            align-items: center;
             min-width: 0;
         }
 
@@ -54,22 +54,11 @@
             border-radius: 8px;
         }
 
-        .website-link {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 1rem;
-        }
-
-        .website-link a {
-            color: #fff;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(255,255,255,0.5);
-        }
-
-        .website-link a:hover {
-            border-bottom-color: #fff;
+        .images .stairs-wrap img.stairs-img {
+            max-width: 50%;
+            max-height: 40vh;
+            transform: scale(2);
+            transform-origin: right center;
         }
 
         .bottom-text {
@@ -86,10 +75,9 @@
     </style>
 </head>
 <body>
-    <p class="website-link"><a href="https://SJSU-CADRE-CLASSES.github.io/SJSU_Art_101_S26_01/Assignments/assignment1/AlanJacobVillareal/" target="_blank" rel="noopener">View on website</a></p>
     <div class="images">
-        <div class="img-wrap"><img src="Phase_1.jpg" alt="Phase 1"></div>
-        <div class="stairs-wrap"><a href="page2.html"><img src="stairs_1.jpg" alt="Stairs 1" class="stairs-img"></a></div>
+        <div class="img-wrap"><img src="Phase_4.jpg" alt="Phase 4"></div>
+        <div class="stairs-wrap"><a href="page5.html"><img src="stairs4.jpg" alt="Stairs 4" class="stairs-img"></a></div>
     </div>
     <p class="bottom-text">Go downstairs</p>
 </body>
