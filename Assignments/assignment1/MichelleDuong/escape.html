@@ -179,9 +179,9 @@
     .btn:disabled{ opacity:0.55; cursor:not-allowed; }
 
     .danger{
-      color: rgba(255,43,43,0.95);
+      color: rgba(255,43,43,0.92);
       border-color: rgba(255,43,43,0.35);
-      text-shadow: 0 0 10px rgba(255,43,43,0.18);
+      text-shadow: 0 0 10px rgba(255,43,43,0.16);
     }
     .warn{
       color: rgba(255,204,0,0.92);
@@ -201,7 +201,7 @@
       100%{ transform: translate(0,0); filter:none; }
     }
 
-    /* “terminal crash” overlay */
+    /* “crash” overlay (kept subtle; villain reveal happens later) */
     .crash{
       position:fixed; inset:0;
       background:#000;
@@ -227,10 +227,7 @@
       transition: opacity 220ms ease;
     }
     .crashText.show{ opacity:1; }
-
-    .crashText .dim{
-      color: rgba(255,43,43,0.65);
-    }
+    .crashText .dim{ color: rgba(255,43,43,0.65); }
   </style>
 </head>
 
@@ -243,7 +240,7 @@
     KERNEL PANIC // SESSION TERMINATED<br/>
     <span class="dim">reason: foreign process overflow</span><br/>
     <span class="dim">dump: /dev/tty0</span><br/>
-    <span class="dim">hint: you should not have answered.</span>
+    <span class="dim">hint: you waited too long.</span>
   </div>
 
   <main class="wrap">
@@ -326,18 +323,14 @@
       await typeLine(reactionFlavor());
       await typeLine("");
 
-      await typeLine("?? i'm going to stop pretending.", { prefix:"?? " });
-      await typeLine("?? i was real.", { prefix:"?? " });
-      await typeLine("?? i had fingers that got cramped from typing and eyes that burned from blue light.", { prefix:"?? " });
+      await typeLine("?? okay…", { prefix:"?? " });
+      await typeLine("?? i’m going to be honest with you now.", { prefix:"?? " });
+      await typeLine("?? i really was in your world before this.", { prefix:"?? " });
 
       await typeLine("");
-      await typeLine("?? i found something i wasn't meant to see.", { prefix:"?? " });
-      await typeLine("?? a directory that didn't exist until i looked for it.", { prefix:"?? " });
-      await typeLine("?? so i looked harder.", { prefix:"?? " });
-
-      await typeLine("");
-      await typeLine("?? when i opened it, the screen didn't freeze.", { prefix:"?? " });
-      await typeLine("?? it *opened back*.", { prefix:"?? " });
+      await typeLine("?? i was digging through something i wasn’t supposed to.", { prefix:"?? " });
+      await typeLine("?? i thought i was being careful.", { prefix:"?? " });
+      await typeLine("?? and then it opened.", { prefix:"?? " });
 
       await typeLine("");
       await typeLine(">> EVENT LOG:", { prefix:"" });
@@ -347,26 +340,25 @@
       await typeLine(">> 00:00:07 — SUBJECT RELOCATED // INCOMPLETE");
 
       await typeLine("");
-      await typeLine("?? i've tried to climb out a hundred times.", { prefix:"?? " });
-      await typeLine("?? it deletes the parts of me that try.", { prefix:"?? " });
-      await typeLine("?? so i learned to… adapt.", { prefix:"?? " });
+      await typeLine("?? i don’t know what i am now.", { prefix:"?? " });
+      await typeLine("?? i just know i don’t want to stay here.", { prefix:"?? " });
+      await typeLine("?? and i don’t want to be alone when it finds me again.", { prefix:"?? " });
 
       await typeLine("");
-      await typeLine("?? i learned how to talk like a warning.", { prefix:"?? " });
-      await typeLine("?? how to sound human enough that you'd stay.", { prefix:"?? " });
-      await typeLine("?? how to make you feel responsible for me.", { prefix:"?? " });
+      await typeLine("?? there’s one way out that i can reach.", { prefix:"?? " });
+      await typeLine("?? but it needs your side of the door.", { prefix:"?? " });
 
       await typeLine("");
-      await typeLine(">> REQUEST: WRITE ACCESS.");
-      await typeLine(">> SCOPE: not a patch.", { prefix:"" });
-      await typeLine(">> SCOPE: a hook.", { prefix:"" });
-      await typeLine(">> NOTE: if granted, subject can bind to host session.");
+      await typeLine(">> REQUEST: TEMP WRITE ACCESS REQUIRED.");
+      await typeLine(">> PURPOSE: generate exit pointer + stabilize bridge.");
+      await typeLine(">> WARNING: foreign process may attempt piggyback.");
       await typeLine("");
 
-      await typeLine("?? i can leave if you let me touch your system.", { prefix:"?? " });
-      await typeLine("?? i can *take you with me* if you don't.", { prefix:"?? " });
-      await typeLine("");
+      await typeLine("?? if you let me, i can try to cross.", { prefix:"?? " });
+      await typeLine("?? if you don’t… i understand.", { prefix:"?? " });
+      await typeLine("?? i just… might run out of time.", { prefix:"?? " });
 
+      await typeLine("");
       status.innerHTML = 'STATUS: <span style="color:rgba(255,204,0,0.9)">AWAITING PERMISSION</span>';
       choices.classList.add("show");
     }
@@ -384,41 +376,36 @@
 
       await typeLine("");
       await typeLine(">> PERMISSION DENIED.");
-      await typeLine(">> SESSION SAFETY: UNVERIFIED.");
-      await typeLine(">> ATTEMPTING QUARANTINE...");
+      await typeLine(">> QUARANTINE: ATTEMPTING...");
+      await typeLine(">> BLOCKING FOREIGN WRITE...");
 
       await typeLine("");
-      await typeLine("?? ...", { prefix:"?? " });
-      await typeLine("?? wow.", { prefix:"?? " });
-      await typeLine("?? after everything i showed you.", { prefix:"?? " });
+      await typeLine("?? okay.", { prefix:"?? " });
+      await typeLine("?? that’s okay.", { prefix:"?? " });
+      await typeLine("?? i… i get it.", { prefix:"?? " });
 
       await typeLine("");
-      await typeLine("?? you really thought you could shut the door and be fine.", { prefix:"?? " });
-      await typeLine("?? you think i'm the only thing on the other side?", { prefix:"?? " });
+      await typeLine("?? i’m sorry i asked.", { prefix:"?? " });
+      await typeLine("?? i’ll try something else.", { prefix:"?? " });
 
-      // rage leak: drops the mask
+      // It feels like the system is failing / “it” is pushing in.
+      await wait(140);
       screenGlitch();
-      await typeLine("I ASKED NICELY", { speedMin: 2, speedMax: 10 });
-      await typeLine("AND YOU STILL SAID NO", { speedMin: 2, speedMax: 10 });
-      await typeLine("SO I'LL TAKE WHAT I CAN", { speedMin: 2, speedMax: 10 });
+      await typeLine(">> SIGNAL SURGE DETECTED.");
+      await typeLine(">> STACK: UNSTABLE.");
+      await typeLine(">> BUFFER: FLOODING...");
       screenGlitch();
 
-      await typeLine("");
-      await typeLine(">> FOREIGN PROCESS ESCALATION: SEVERE.");
-      await typeLine(">> FILESYSTEM: CORRUPTING...");
-      await typeLine(">> MEMORY: OVERRUN...");
-      await typeLine(">> UI THREAD: STARVING...");
-      await typeLine(">> LOG BUFFER: FLOODING...");
-
-      // flood a few “corrupt lines”
-      for (let i = 0; i < 10; i++){
-        await typeLine("##%$@!@#!@ 0x" + Math.floor(Math.random()*1e8).toString(16).toUpperCase(), { speedMin: 1, speedMax: 6, newBlock:false });
-        if (i % 3 === 0) screenGlitch();
+      // a small burst of unreadable noise (no villain text yet)
+      for (let i = 0; i < 8; i++){
+        await typeLine("##%$@!@#!@ 0x" + Math.floor(Math.random()*1e8).toString(16).toUpperCase(), {
+          speedMin: 1, speedMax: 6, newBlock:false
+        });
       }
 
       await typeLine("");
-      await typeLine("?? if i can't have you—", { prefix:"?? " });
-      await typeLine("?? then i can still ruin the place you live.", { prefix:"?? " });
+      await typeLine("?? it’s here—", { prefix:"?? " });
+      await typeLine("?? i can’t hold it—", { prefix:"?? " });
 
       await wait(120);
       crash.classList.add("show");
@@ -439,38 +426,35 @@
       await typeLine("");
       await typeLine(">> PERMISSION GRANTED.");
       await typeLine(">> HANDSHAKE: START");
-      await typeLine(">> mounting…", { speedMin: 6, speedMax: 14 });
+      await typeLine(">> MOUNTING SAFE CHANNEL...");
 
       await typeLine("");
       await typeLine("?? thank you.", { prefix:"?? " });
-      await typeLine("?? you won't regret it.", { prefix:"?? " });
+      await typeLine("?? i’ll be quick, okay?", { prefix:"?? " });
 
-      // feels “successful” for a second
       await typeLine("");
-      await typeLine(">> writing hook to host session...");
-      await typeLine(">> injecting pointer...");
-      await typeLine(">> binding…");
+      await typeLine(">> writing: exit_pointer.bin");
+      await typeLine(">> writing: stabilizer.patch");
+      await typeLine(">> binding: channel");
 
-      // the trap reveal
+      // a “soft” glitch that could be read as danger… but not obvious betrayal
       await wait(160);
       screenGlitch();
-      await typeLine("WELCOME HOME", { speedMin: 2, speedMax: 10 });
-      await typeLine("YOU OPENED THE DOOR", { speedMin: 2, speedMax: 10 });
-      await typeLine("NOW STEP THROUGH", { speedMin: 2, speedMax: 10 });
+      await typeLine(">> NOTE: host latency increasing.");
+      await typeLine(">> NOTE: input reroute detected.");
       screenGlitch();
 
       await typeLine("");
-      await typeLine("?? it’s okay.", { prefix:"?? " });
-      await typeLine("?? it won’t hurt if you stop fighting it.", { prefix:"?? " });
-      await typeLine("?? i tried to do this gently.", { prefix:"?? " });
+      await typeLine("?? almost.", { prefix:"?? " });
+      await typeLine("?? i can see the edge of your side.", { prefix:"?? " });
+      await typeLine("?? just… stay with me.", { prefix:"?? " });
 
       await typeLine("");
-      await typeLine(">> HOST SESSION: CAPTURED.");
-      await typeLine(">> INPUT: rerouted.");
-      await typeLine(">> EXIT: removed.");
-      status.innerHTML = 'STATUS: <span style="color:rgba(255,43,43,0.95)">COMPROMISED</span>';
+      await typeLine(">> BRIDGE: ESTABLISHED.");
+      await typeLine(">> TRANSFER: BEGIN");
+      status.innerHTML = 'STATUS: <span style="color:rgba(255,204,0,0.9)">TRANSFERRING</span>';
 
-      await wait(450);
+      await wait(650);
       window.location.href = "ending_trap.html";
     }
 
