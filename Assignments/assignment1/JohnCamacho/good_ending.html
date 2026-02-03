@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crush - Ending A (Good Ending)</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --fg:#ffffff;
+      --border:#ffffff;
+      --v:#7dd3fc;
+      --c:#fda4af;
+      --p:#a7f3d0;
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:"Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      padding:24px;
+    }
+    .tvframe{ border:4px solid var(--border); padding:1.25rem; border-radius:14px; max-width:900px; width:100%; }
+    .lowerthird{ border:2px solid var(--border); padding:.5rem .75rem; margin-bottom:1rem; font-weight:800; letter-spacing:.5px; }
+    .panel{ border:2px solid var(--border); padding:1rem; margin:1rem 0; border-radius:12px; }
+    .bubble{ border:2px solid var(--border); padding:1rem; margin:1rem 0; border-radius:16px; }
+    .tag{ font-weight:900; margin-bottom:.5rem; opacity:.95; }
+    .bubble.v{ border-color:var(--v); background:rgba(125,211,252,.08); }
+    .bubble.c{ border-color:var(--c); background:rgba(253,164,175,.08); }
+    .bubble.p{ border-color:var(--p); background:rgba(167,243,208,.08); }
+    .btnRow{ margin-top:1rem; display:flex; flex-wrap:wrap; gap:.6rem; }
+    .btn{
+      display:inline-block;
+      border:2px solid var(--border);
+      padding:.7rem 1.1rem;
+      border-radius:14px;
+      text-decoration:none;
+      color:var(--fg);
+      font-weight:800;
+    }
+    .btn:hover{ opacity:.9; }
+    h1{ margin:.25rem 0 .75rem; font-size:2.2rem; }
+    .endCard{ opacity:.85; font-size:.95rem; margin-top:.75rem; }
+    .small{ opacity:.8; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <div class="tvframe">
+    <div class="lowerthird">ENDING A (GOOD ENDING)</div>
+    <h1>Crush</h1>
+
+    <div class="panel">
+      The cameras fade to a close-up of the finished plate.
+      It looks like food. It smells like food.
+      The audience claps because the sign tells them to,
+      and because tonight, nobody has to ask what the Mystery was.
+    </div>
+
+    <div class="bubble v">
+      <div class="tag">V (HOST)</div>
+      We did it! A clean cook, a clean plate!
+      <br><br>
+      Give it up for our viewer of the night: <span id="playerName">Viewer</span>!
+    </div>
+
+    <div class="bubble c">
+      <div class="tag">C (CHEF)</div>
+      Thank you... truly.
+      <br><br>
+      When you picked the safe options, it felt like the room got lighter.
+      Like the show remembered how to be a show.
+    </div>
+
+    <div class="bubble p">
+      <div class="tag"><span id="playerName2">Viewer</span> (VIEWER)</div>
+      You breathe out. Your hands feel real again.
+      You can leave, and the kitchen stays behind the glass.
+    </div>
+
+    <div class="panel">
+      The studio lights dim.
+      For a moment, the set looks like a set.
+      <br><br>
+      Then the microphone pops once, softly.
+      Like a small hungry cough.
+    </div>
+
+    <div class="bubble v">
+      <div class="tag">V (HOST)</div>
+      Goodnight!
+      <br>
+      Sleep tight.
+      <br><br>
+      And come back tomorrow... if you can.
+    </div>
+
+    <div class="btnRow">
+      <a class="btn" href="index.html">Back to Start (Title)</a>
+    </div>
+
+    <div class="endCard"><small>ENDING A - Good Ending</small></div>
+    <div class="small">You lived another day. The show lived too.</div>
+  </div>
+
+  <script>
+    (function(){
+      var params = new URLSearchParams(window.location.search);
+      var name = (params.get("name") || "Viewer").trim();
+      if(!name) name = "Viewer";
+      // Basic safety: limit length for layout
+      if(name.length > 24) name = name.slice(0,24);
+      document.getElementById("playerName").textContent = name;
+      document.getElementById("playerName2").textContent = name;
+    })();
+  </script>
+</body>
+</html>
