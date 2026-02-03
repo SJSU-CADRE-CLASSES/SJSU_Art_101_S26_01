@@ -95,7 +95,7 @@
         }
         .metal-links {
             display: flex;
-            gap: 2rem;
+            gap: 12rem;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -118,6 +118,29 @@
                 1px 1px 0 rgba(255, 255, 255, 0.15),
                 -1px -1px 0 rgba(0, 0, 0, 0.6);
         }
+        .metal-neither {
+            margin-top: 0.5rem;
+        }
+        .metal-neither a {
+            display: inline-block;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+            color: #2a2a2c;
+            text-decoration: none;
+            text-transform: lowercase;
+            letter-spacing: 0.08em;
+            padding: 0.5rem 1.2rem;
+            text-shadow:
+                1px 1px 0 rgba(255, 255, 255, 0.1),
+                -1px -1px 0 rgba(0, 0, 0, 0.5);
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        .metal-neither a:hover {
+            color: #151518;
+            text-shadow:
+                1px 1px 0 rgba(255, 255, 255, 0.15),
+                -1px -1px 0 rgba(0, 0, 0, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -127,6 +150,9 @@
             <a href="go-hug-your-dad.html">mom</a>
             <a href="go-hug-your-mom.html">father</a>
         </nav>
+        <div class="metal-neither">
+            <a href="liar.html">neither</a>
+        </div>
     </div>
 </body>
 </html>
