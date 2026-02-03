@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>The Night Before</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>The Night Before</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
-<body class="night" onload="startCountdown(); startDoomScroll();">
-  <div id="timer"></div>
-
+<body class="night">
+  <canvas id="particles"></canvas>
   <div class="container">
-    <p>
+    <p class="remaining-time">8 hours til exam</p>
+    <p class="main-text">
       Fuck it.<br><br>
       I’m not going to study anymore.<br>
       I can’t finish in time anyways.<br>
       I’ll just retake the class.
     </p>
-
     <p><em>It’s not the end of the world.</em></p>
-
     <div id="scroll" class="scroll-box"></div>
-
     <a href="after.html"><button>Go to exam</button></a>
     <a href="index.html"><button>Go back to the start</button></a>
-
-    <p style="margin-top:30px; opacity:0.6;">
-      One exam doesn’t define me.
-    </p>
+    <p style="margin-top:30px; opacity:0.6;">One exam doesn’t define me.</p>
   </div>
-
-  <script src="script.js"></script>
+  <script src="particles.js"></script>
+  <script>
+    const box = document.getElementById("scroll");
+    const messages = [
+      "POV: you said you'd start three days ago",
+      "One more scroll won’t hurt",
+      "Everyone procrastinates… right?",
+      "Why am I still awake?",
+      "I’ll deal with it tomorrow",
+      "At least I'm not alone"
+    ];
+    setInterval(()=>{
+      const p=document.createElement("p");
+      p.textContent=messages[Math.floor(Math.random()*messages.length)];
+      box.appendChild(p);
+      box.scrollTop=box.scrollHeight;
+    },1500);
+  </script>
 </body>
 </html>
