@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alan Jacob Villareal - Assignment 1 - Page 6</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body img {
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .good-night {
+            position: fixed;
+            text-decoration: none;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            z-index: 10;
+            animation: move-around 8s ease-in-out infinite;
+        }
+
+        @keyframes move-around {
+            0%   { left: 10%;  top: 15%; }
+            25%  { left: 70%;  top: 15%; }
+            50%  { left: 70%;  top: 70%; }
+            75%  { left: 10%;  top: 70%; }
+            100% { left: 10%;  top: 15%; }
+        }
+    </style>
+</head>
+<body>
+    <img src="Phase_6.jpg" alt="Phase 6">
+    <a href="index.html" class="good-night">GOOD NIGHT</a>
+</body>
+</html>
