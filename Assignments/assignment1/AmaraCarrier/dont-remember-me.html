@@ -8,8 +8,8 @@
     <style>
         * { box-sizing: border-box; }
         body {
-            background-color: #0d0d0d;
-            color: #e0e0e0;
+            background-color: #000;
+            color: #00ff00;
             margin: 0;
             min-height: 100vh;
             display: flex;
@@ -18,16 +18,29 @@
             font-family: 'Perfect DOS VGA 437', monospace;
             position: relative;
             overflow: hidden;
+            box-shadow: inset 0 0 0 3px #003300;
         }
         .original-content {
             font-size: clamp(18px, 4vw, 36px);
             font-weight: bold;
-            color: #ff0000;
+            color: #00ff00;
             text-align: center;
-            text-shadow: 1px 1px 0px #000, 0 0 10px rgba(255, 60, 60, 0.9);
-            letter-spacing: 2px;
+            text-shadow: 0 0 1px #00ff00;
+            letter-spacing: 1px;
             position: relative;
             z-index: 2;
+        }
+        .original-content .cursor {
+            display: inline-block;
+            width: 0.15em;
+            height: 1em;
+            background: #00ff00;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: cursor-blink 1s step-end infinite;
+        }
+        @keyframes cursor-blink {
+            50% { opacity: 0; }
         }
         .error-content {
             display: none;
@@ -36,9 +49,8 @@
             position: relative;
             z-index: 2;
             width: min(420px, 90vw);
-            background: #fff;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            border: 1px solid #0078d4;
+            background: #000;
+            border: 2px solid #00ff00;
             overflow: hidden;
         }
         body.glitch .original-content {
@@ -51,8 +63,8 @@
             display: flex;
         }
         body.show-error {
-            background: #1a1a1a;
-            color: #c0c0c0;
+            background: #000;
+            color: #00ff00;
         }
         @keyframes glitch-text {
             0% { transform: translate(0); filter: none; }
@@ -63,12 +75,13 @@
             100% { transform: translate(0); filter: none; }
         }
         .error-title-bar {
-            background: #0078d4;
-            color: #fff;
+            background: #003300;
+            color: #00ff00;
             padding: 8px 12px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: bold;
             font-family: 'Perfect DOS VGA 437', monospace;
+            border-bottom: 1px solid #00ff00;
         }
         .error-body {
             display: flex;
@@ -81,12 +94,11 @@
             width: 32px;
             height: 32px;
             min-width: 32px;
-            background: #e74c3c;
-            border-radius: 2px;
+            background: #00ff00;
+            color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
             font-size: 20px;
             font-weight: bold;
             font-family: 'Perfect DOS VGA 437', monospace;
@@ -96,45 +108,43 @@
         }
         .error-code {
             font-size: 14px;
-            font-weight: 600;
-            color: #000;
+            font-weight: bold;
+            color: #00ff00;
             line-height: 1.3;
             margin-bottom: 6px;
             font-family: 'Perfect DOS VGA 437', monospace;
         }
         .error-msg {
             font-size: 13px;
-            color: #333;
+            color: #00aa00;
             margin-bottom: 8px;
             font-family: 'Perfect DOS VGA 437', monospace;
         }
         .error-detail {
             font-size: 12px;
-            color: #666;
+            color: #008800;
             line-height: 1.4;
             font-family: 'Perfect DOS VGA 437', monospace;
         }
-        /* CRT TV screen filter */
+        /* DOS CRT – scanlines */
         .crt-overlay {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 100;
-            background:
-                repeating-linear-gradient(
-                    0deg,
-                    transparent 0px,
-                    transparent 2px,
-                    rgba(0, 0, 0, 0.12) 2px,
-                    rgba(0, 0, 0, 0.12) 3px
-                ),
-                radial-gradient(ellipse 80% 80% at 50% 50%, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 2px,
+                rgba(0, 0, 0, 0.15) 3px
+            );
         }
         .crt-overlay::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.02);
+            background: rgba(0, 0, 0, 0.03);
             animation: crt-flicker 8s infinite;
         }
         @keyframes crt-flicker {
@@ -147,7 +157,7 @@
 </head>
 <body>
     <div class="crt-overlay" aria-hidden="true"></div>
-    <p class="original-content" id="original">Don't remember me</p>
+    <p class="original-content" id="original"><span id="typed"></span><span class="cursor" id="cursor"></span></p>
     <div class="error-content">
         <div class="error-title-bar">Error</div>
         <div class="error-body">
@@ -160,6 +170,25 @@
         </div>
     </div>
 
+    <script>
+        (function() {
+            var typedEl = document.getElementById('typed');
+            var cursorEl = document.getElementById('cursor');
+            var text = "Don't";
+            var i = 0;
+            var delayMs = 550;
+            function typeNext() {
+                if (i < text.length) {
+                    typedEl.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeNext, delayMs);
+                } else {
+                    cursorEl.style.animation = 'none';
+                }
+            }
+            setTimeout(typeNext, 400);
+        })();
+    </script>
     <script>
         (function() {
             const body = document.body;

@@ -7,8 +7,8 @@
     <link href="https://fonts.cdnfonts.com/css/perfect-dos-vga-437" rel="stylesheet">
     <style>
         body {
-            background-color: black;
-            color: white;
+            background-color: #000;
+            color: #00ff00;
             margin: 0;
             min-height: 100vh;
             display: flex;
@@ -17,27 +17,24 @@
             justify-content: center;
             font-family: 'Perfect DOS VGA 437', monospace;
             position: relative;
+            box-shadow: inset 0 0 0 3px #003300;
         }
         .page-text {
             font-size: clamp(20px, 4vw, 40px);
             font-weight: bold;
-            color: #ff0000;
+            color: #00ff00;
             text-align: center;
-            text-shadow:
-                1px 1px 0px #000,
-                -1px -1px 0px #000,
-                0 0 10px rgba(255, 60, 60, 0.9),
-                0 0 20px rgba(255, 0, 0, 0.5);
-            letter-spacing: 2px;
+            text-shadow: 0 0 1px #00ff00;
+            letter-spacing: 1px;
             min-height: 1.2em;
             margin-bottom: 1em;
         }
         .page-text a {
-            color: #ff0000;
+            color: #00ff00;
             text-decoration: none;
         }
         .page-text a:hover {
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.9);
+            color: #55ff55;
         }
         .page-text a:not([href]) {
             pointer-events: none;
@@ -80,27 +77,25 @@
             70% { transform: translateX(-2px); }
             80% { transform: translateX(2px); }
         }
-        /* CRT TV screen filter */
+        /* DOS CRT – scanlines */
         .crt-overlay {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 100;
-            background:
-                repeating-linear-gradient(
-                    0deg,
-                    transparent 0px,
-                    transparent 2px,
-                    rgba(0, 0, 0, 0.12) 2px,
-                    rgba(0, 0, 0, 0.12) 3px
-                ),
-                radial-gradient(ellipse 80% 80% at 50% 50%, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 2px,
+                rgba(0, 0, 0, 0.15) 3px
+            );
         }
         .crt-overlay::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.02);
+            background: rgba(0, 0, 0, 0.03);
             animation: crt-flicker 8s infinite;
         }
         @keyframes crt-flicker {
