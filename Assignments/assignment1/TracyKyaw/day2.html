@@ -1,18 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Two Days Before</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
-</head>
-<body class="day2">
-  <div class="container">
-    <p>I should probably study.</p>
+<body class="day2" onload="startCountdown()">
+<div id="timer"></div>
 
-    <button onclick="fakeDistraction()">Check phone</button>
-    <a href="day1.html"><button>Study (later)</button></a>
-  </div>
+<div class="container">
+  <p>I should probably study.</p>
+
+  <button onclick="showVideo()">Check phone</button>
+  <a href="day1.html"><button>Study (later)</button></a>
+</div>
+
+<div id="videoOverlay">
+  <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+          allow="autoplay"></iframe>
+</div>
+
+<script src="script.js"></script>
 </body>
-</html>
-
