@@ -17,6 +17,19 @@
             font-family: 'Courier New', monospace;
             position: relative;
         }
+        .page-title {
+            position: absolute;
+            top: 1.5rem;
+            left: 0;
+            right: 0;
+            margin: 0;
+            font-size: clamp(18px, 3.5vw, 32px);
+            font-weight: bold;
+            color: #ff0000;
+            text-align: center;
+            text-shadow: 1px 1px 0px #000, 0 0 10px rgba(255, 60, 60, 0.9);
+            letter-spacing: 2px;
+        }
         .page-text {
             font-size: clamp(20px, 4vw, 40px);
             font-weight: bold;
@@ -98,6 +111,7 @@
 </head>
 <body>
     <div class="crt-overlay" aria-hidden="true"></div>
+    <h1 class="page-title">Don't Feed Me</h1>
     <p class="page-text" id="message"></p>
 
     <script>
