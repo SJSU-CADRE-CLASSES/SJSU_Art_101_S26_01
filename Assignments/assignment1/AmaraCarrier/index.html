@@ -56,9 +56,9 @@
         }
         .page-text {
             position: fixed;
-            bottom: 2rem;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             font-size: clamp(18px, 3vw, 28px);
             font-weight: bold;
             color: #00ff00;
@@ -89,7 +89,7 @@
 </head>
 <body>
     <div class="eyes-wrap" id="eyesWrap"></div>
-    <p class="page-text">don't look at me · <a href="dont-feed-me.html" id="nextLink">continue</a></p>
+    <p class="page-text"><a href="dont-feed-me.html" id="nextLink">don't look at me</a></p>
 
     <script>
         (function() {

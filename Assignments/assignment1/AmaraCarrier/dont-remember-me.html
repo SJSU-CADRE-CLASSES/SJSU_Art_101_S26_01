@@ -160,6 +160,23 @@
             96% { opacity: 0.97; }
             98% { opacity: 1; }
         }
+        .video-wrap {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+        .video-wrap.show {
+            display: flex;
+        }
+        .video-wrap iframe {
+            width: min(100vw, 1280px);
+            height: min(56.25vw, 720px);
+            max-height: 90vh;
+        }
     </style>
 </head>
 <body>
@@ -175,6 +192,9 @@
                 <div class="error-detail">It may have been moved or deleted.</div>
             </div>
         </div>
+    </div>
+    <div class="video-wrap" id="videoWrap" aria-hidden="true">
+        <iframe id="rickVideo" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="Never Gonna Give You Up - Rick Astley" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
 
     <script>
@@ -220,6 +240,12 @@
                     body.classList.remove('glitch');
                     body.classList.add('show-error');
                     playErrorBeep();
+                    setTimeout(function() {
+                        var wrap = document.getElementById('videoWrap');
+                        var iframe = document.getElementById('rickVideo');
+                        wrap.classList.add('show');
+                        iframe.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0';
+                    }, 2500);
                 }, 1200);
             }, 5800);
         })();
