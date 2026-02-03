@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pixel World</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #2a2940; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: monospace;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    
+    .space {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .space span {
+      position: absolute;
+      animation: drift 8s infinite ease-in-out;
+    }
+
+    .big   { font-size: 44px; opacity: 0.35; }
+    .mid   { font-size: 30px; opacity: 0.5; }
+    .small { font-size: 18px; opacity: 0.75; }
+
+    @keyframes drift {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-12px); }
+      100% { transform: translateY(0); }
+    }
+
+
+    .ufo {
+      position: absolute;
+      top: 14%;
+      font-size: 56px;
+      opacity: 0.6;
+      animation: ufoMove 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes ufoMove {
+      0%   { transform: translateX(-140px); }
+      100% { transform: translateX(calc(100vw + 140px)); }
+    }
+
+  
+    .container {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .earth {
+      width: 500px;
+      image-rendering: pixelated;
+      animation: earthFloat 5s infinite ease-in-out;
+      margin-bottom: 28px;
+    }
+
+    @keyframes earthFloat {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+
+    .prompt {
+      margin-bottom: 28px;
+      font-size: 18px;
+      letter-spacing: 1px;
+      opacity: 0.85;
+    }
+
+    .choices {
+      display: flex;
+      justify-content: center;
+      gap: 56px;
+    }
+
+    .choice {
+      width: 150px;
+      height: 96px;
+      border: 2px solid #ffffff;
+      border-radius: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      text-decoration: none;
+      color: #ffffff;
+      transition:
+        background 0.25s,
+        transform 0.25s,
+        box-shadow 0.25s;
+    }
+
+    .choice:hover {
+      background: rgba(255,255,255,0.9);
+      color: #2a2940;
+      transform: translateY(-6px) scale(1.08);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+    }
+
+    .emoji {
+      font-size: 30px;
+      margin-bottom: 6px;
+    }
+
+    .label {
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div class="space">
+
+    <span class="big" style="top:8%; left:12%;">✨</span>
+    <span class="big" style="top:22%; left:48%;">🌠</span>
+    <span class="big" style="top:40%; left:72%;">✨</span>
+    <span class="big" style="top:65%; left:30%;">🌟</span>
+
+
+    <span class="mid" style="top:12%; left:78%;">⭐</span>
+    <span class="mid" style="top:28%; left:20%;">🌟</span>
+    <span class="mid" style="top:35%; left:60%;">⭐</span>
+    <span class="mid" style="top:55%; left:85%;">🌠</span>
+    <span class="mid" style="top:70%; left:50%;">⭐</span>
+
+
+    <span class="small" style="top:6%; left:35%;">✨</span>
+    <span class="small" style="top:18%; left:5%;">⭐</span>
+    <span class="small" style="top:32%; left:90%;">✨</span>
+    <span class="small" style="top:48%; left:15%;">⭐</span>
+    <span class="small" style="top:62%; left:65%;">✨</span>
+    <span class="small" style="top:78%; left:10%;">⭐</span>
+    <span class="small" style="top:82%; left:88%;">✨</span>
+  </div>
+
+
+  <div class="ufo">🛸</div>
+
+
+  <div class="container">
+    <img src="earth.png" alt="Pixel Earth" class="earth" />
+
+    <div class="prompt">
+      Choose how you enter this world
+    </div>
+
+    <div class="choices">
+      <a href="human.html" class="choice">
+        <div class="emoji">👤</div>
+        <div class="label">HUMAN</div>
+      </a>
+
+      <a href="cat.html" class="choice">
+        <div class="emoji">🐱</div>
+        <div class="label">CAT</div>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

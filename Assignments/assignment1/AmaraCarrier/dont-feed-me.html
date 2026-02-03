@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don't Feed Me</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        .page-text {
+            font-size: clamp(20px, 4vw, 40px);
+            font-weight: bold;
+            color: #ff0000;
+            text-align: center;
+            text-shadow:
+                1px 1px 0px #000,
+                -1px -1px 0px #000,
+                0 0 10px rgba(255, 60, 60, 0.9),
+                0 0 20px rgba(255, 0, 0, 0.5);
+            letter-spacing: 2px;
+            min-height: 1.2em;
+            margin-bottom: 1em;
+        }
+        .page-text a {
+            color: #ff0000;
+            text-decoration: none;
+        }
+        .page-text a:hover {
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.9);
+        }
+        .page-text a:not([href]) {
+            pointer-events: none;
+            cursor: default;
+        }
+        .food-popup {
+            position: fixed;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 10;
+            animation: food-pop-in 0.3s ease-out;
+            transition: transform 0.15s;
+        }
+        .food-popup:hover {
+            transform: scale(1.15);
+        }
+        .food-popup:active {
+            transform: scale(0.95);
+        }
+        @keyframes food-pop-in {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* CRT TV screen filter */
+        .crt-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.12) 2px,
+                    rgba(0, 0, 0, 0.12) 3px
+                ),
+                radial-gradient(ellipse 80% 80% at 50% 50%, transparent 0%, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+        }
+        .crt-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.02);
+            animation: crt-flicker 8s infinite;
+        }
+        @keyframes crt-flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            96% { opacity: 0.97; }
+            98% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-overlay" aria-hidden="true"></div>
+    <p class="page-text" id="message"></p>
+
+    <script>
+        const TARGET = 'feed me';
+        let lettersFound = 0;
+        const messageEl = document.getElementById('message');
+
+        const foods = ['🍎', '🍕', '🍔', '🥗', '🍟', '🌮', '🍣', '🥪', '🍩', '🍪', '🥕', '🍗', '🧁', '🍝', '🥞'];
+        const positions = [
+            { top: '12%', left: '10%' }, { top: '18%', right: '15%', left: 'auto' }, { top: '25%', left: '22%' },
+            { bottom: '30%', left: '8%', top: 'auto' }, { bottom: '25%', right: '12%', left: 'auto', top: 'auto' },
+            { top: '40%', left: '5%' }, { top: '45%', right: '8%', left: 'auto' }, { top: '60%', left: '18%' },
+            { bottom: '40%', right: '20%', left: 'auto', top: 'auto' }, { bottom: '15%', left: '25%', top: 'auto' },
+            { top: '75%', left: '12%' }, { top: '20%', left: '45%' }, { top: '35%', right: '35%', left: 'auto' },
+            { bottom: '50%', left: '40%', top: 'auto' }, { top: '55%', right: '25%', left: 'auto' }
+        ];
+
+        function updateMessage() {
+            const soFar = TARGET.slice(0, lettersFound);
+            if (lettersFound >= TARGET.length) {
+                messageEl.innerHTML = '<a href="dont-remember-me.html">feed me</a>';
+            } else {
+                messageEl.textContent = soFar;
+            }
+        }
+
+        function spawnFood(i) {
+            const food = document.createElement('div');
+            food.className = 'food-popup';
+            food.textContent = foods[i % foods.length];
+            const pos = positions[i % positions.length];
+            Object.assign(food.style, pos);
+            food.addEventListener('click', () => {
+                if (lettersFound < TARGET.length) {
+                    lettersFound++;
+                    updateMessage();
+                    food.remove();
+                }
+            });
+            document.body.appendChild(food);
+        }
+
+        updateMessage();
+
+        for (let i = 0; i < 14; i++) {
+            setTimeout(() => spawnFood(i), 400 + i * 350);
+        }
+
+        (function() {
+            let ctx = null;
+            function startHum() {
+                if (ctx) return;
+                ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = 55;
+                const gain = ctx.createGain();
+                gain.gain.value = 0.06;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(0);
+            }
+            document.body.addEventListener('click', startHum, { once: true });
+            document.body.addEventListener('keydown', startHum, { once: true });
+            document.body.addEventListener('touchstart', startHum, { once: true });
+        })();
+    </script>
+</body>
+</html>

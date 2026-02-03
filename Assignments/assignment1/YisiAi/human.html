@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Human Day</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #2a2940;
+      font-family: monospace;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      font-size: 64px;
+      opacity: 0.18;
+      z-index: 0;
+    }
+
+    .bg span {
+      position: absolute;
+    }
+
+
+    .container {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 80px;
+      z-index: 1;
+    }
+
+
+    .left {
+      width: 40%;
+      text-align: center;
+    }
+
+    .human {
+      width: 200px;
+      image-rendering: pixelated;
+    }
+
+    .clock {
+      margin-top: 24px;
+      font-size: 56px;
+      letter-spacing: 6px;
+      border: 3px solid rgba(255,255,255,0.4);
+      display: inline-block;
+      padding: 10px 20px;
+    }
+
+  
+    .right {
+      width: 60%;
+      padding-left: 60px;
+    }
+
+    .time {
+      font-size: 26px;
+      margin: 16px 0;
+      padding: 14px 18px;
+      border: 2px dashed rgba(255,255,255,0.3);
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .time.active {
+      opacity: 1;
+      cursor: pointer;
+      border-style: solid;
+    }
+
+    .time.done {
+      opacity: 0.15;
+      text-decoration: line-through;
+    }
+
+    .complete {
+      position: absolute;
+      bottom: 40px;
+      width: 100%;
+      text-align: center;
+      font-size: 28px;
+      letter-spacing: 3px;
+      opacity: 0.85;
+      display: none;
+    }
+
+
+    .bar-rain {
+      position: fixed;
+      top: -40px;
+      font-size: 40px;
+      pointer-events: none;
+      animation: fall 2.5s linear forwards;
+      z-index: 2;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .home-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  font-size: 16px;
+  padding: 8px 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.6;
+  z-index: 10;
+  background: transparent;
+}
+
+.home-btn:hover {
+  opacity: 1;
+  border-color: #ffffff;
+}
+
+  </style>
+</head>
+
+<body>
+<a href="index.html" class="home-btn">🌍 Back to Earth</a>
+
+
+  <div class="bg">
+    <span style="top:5%; left:10%;">🌍</span>
+    <span style="top:15%; left:80%;">🛰️</span>
+    <span style="top:30%; left:60%;">🏙️</span>
+    <span style="top:45%; left:90%;">🕒</span>
+    <span style="top:60%; left:70%;">🚦</span>
+    <span style="top:75%; left:15%;">🏢</span>
+    <span style="top:50%; left:35%;">🌎</span>
+    <span style="top:20%; left:45%;">📱</span>
+    <span style="top:85%; left:55%;">🧑‍💼</span>
+  </div>
+
+  <div class="container">
+
+
+    <div class="left">
+      <img
+        id="human"
+        class="human"
+        src="idle/idle_Animation 1_0.png"
+        alt="human"
+      >
+      <div class="clock" id="clock">07:00</div>
+    </div>
+
+
+    <div class="right" id="timeline"></div>
+
+    <div class="complete" id="complete">
+      Day complete.
+    </div>
+
+  </div>
+
+  <script>
+    const times = [
+      "07:00 Wake up",
+      "08:00 Work",
+      "12:00 Lunch",
+      "17:00 Off work",
+      "21:00 Bar",
+      "01:00 Sleep"
+    ];
+
+    const idleFrames = [
+      "idle/idle_Animation 1_0.png",
+      "idle/idle_Animation 1_1.png",
+      "idle/idle_Animation 1_2.png",
+      "idle/idle_Animation 1_3.png",
+      "idle/idle_Animation 1_4.png",
+      "idle/idle_Animation 1_5.png",
+      "idle/idle_Animation 1_6.png",
+      "idle/idle_Animation 1_7.png"
+    ];
+
+    const walkFrames = [
+      "walk/walk_Animation 1_0.png",
+      "walk/walk_Animation 1_1.png",
+      "walk/walk_Animation 1_2.png",
+      "walk/walk_Animation 1_3.png",
+      "walk/walk_Animation 1_4.png",
+      "walk/walk_Animation 1_5.png",
+      "walk/walk_Animation 1_6.png",
+      "walk/walk_Animation 1_7.png"
+    ];
+
+    let currentFrames = idleFrames;
+    let frameIndex = 0;
+    let current = 0;
+
+    const human = document.getElementById("human");
+    const clock = document.getElementById("clock");
+    const timeline = document.getElementById("timeline");
+    const complete = document.getElementById("complete");
+
+
+    function barRain() {
+      const emojis = ["🕶️", "🥳", "🍷", "💃", "🪩", "🍸"];
+
+      for (let i = 0; i < 28; i++) {
+        const span = document.createElement("span");
+        span.className = "bar-rain";
+        span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        span.style.left = Math.random() * window.innerWidth + "px";
+        span.style.animationDelay = Math.random() * 0.5 + "s";
+
+        document.body.appendChild(span);
+
+        setTimeout(() => span.remove(), 3000);
+      }
+    }
+
+
+    times.forEach((label, index) => {
+      const div = document.createElement("div");
+      div.className = "time";
+      div.innerText = label;
+
+      if (index === 0) div.classList.add("active");
+
+      div.addEventListener("click", () => {
+        if (index !== current) return;
+
+        div.classList.remove("active");
+        div.classList.add("done");
+
+        if (
+          label.includes("Work") ||
+          label.includes("Lunch") ||
+          label.includes("Bar")
+        ) {
+          currentFrames = walkFrames;
+
+          if (label.includes("Bar")) {
+            barRain();
+          }
+        } else {
+          currentFrames = idleFrames;
+        }
+
+        current++;
+
+        if (current < times.length) {
+          clock.innerText = times[current].split(" ")[0];
+          timeline.children[current].classList.add("active");
+        } else {
+          currentFrames = idleFrames;
+          clock.style.opacity = 0.3;
+          complete.style.display = "block";
+        }
+      });
+
+      timeline.appendChild(div);
+    });
+
+  
+    setInterval(() => {
+      frameIndex = (frameIndex + 1) % currentFrames.length;
+      human.src = currentFrames[frameIndex];
+    }, 180);
+  </script>
+
+</body>
+</html>

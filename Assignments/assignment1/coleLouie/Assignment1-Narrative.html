@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Press Start</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes zoomIn {
+      from { transform: scale(0.82); }
+      to { transform: scale(1); }
+    }
+    .title-text {
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 5rem;
+      font-weight: 600;
+      text-align: center;
+      animation: zoomIn 10s ease-out forwards;
+    }
+    .title-char {
+      opacity: 0;
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+    .press-start {
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 3rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeIn 2s ease-out 8s forwards;
+      margin-top: -1.5rem;
+    }
+    .go-btn {
+      display: inline-block;
+      background: #c00;
+      color: #fff;
+      border: none;
+      padding: 1rem 3rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 4px 0 #900, 0 6px 12px rgba(0,0,0,0.5);
+      text-decoration: none;
+      opacity: 0;
+      animation: fadeIn 0.5s ease-out 10s forwards;
+    }
+    .go-btn:hover {
+      background: #e00;
+      transform: translateY(-1px);
+      color: #fff;
+    }
+    .go-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #900, 0 2px 8px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <h1 class="title-text">Don't Worry Darling! I'll Be Home!</h1>
+  <p class="press-start">Press Start</p>
+  <a class="go-btn" href="page1-letter.html">Go</a>
+  <script>
+    (function() {
+      var el = document.querySelector('.title-text');
+      var text = el.textContent;
+      el.textContent = '';
+      for (var i = 0; i < text.length; i++) {
+        var span = document.createElement('span');
+        span.className = 'title-char';
+        span.style.animationDelay = (i * 0.22) + 's';
+        span.textContent = text[i];
+        el.appendChild(span);
+      }
+    })();
+  </script>
+</body>
+</html>
