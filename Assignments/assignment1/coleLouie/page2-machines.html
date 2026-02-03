@@ -143,6 +143,7 @@
   </style>
 </head>
 <body>
+  <audio id="flashAudio" src="Flash.mp3" preload="auto"></audio>
   <div class="image-bg">
     <img src="trench-image.png" alt="">
   </div>
@@ -156,6 +157,14 @@
   </main>
   <script>
     (function() {
+      var flashAudio = document.getElementById('flashAudio');
+      if (flashAudio) {
+        flashAudio.volume = 1.0;
+        var playPromise = flashAudio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(function() {});
+        }
+      }
       var configs = [
         { sel: '.quote-text', baseDelay: 3, wordDelay: 0.4 },
         { sel: '.quote-text-2', baseDelay: 10, wordDelay: 0.4 },
