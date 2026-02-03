@@ -49,6 +49,31 @@
         }
         .bg-column.left { left: 5%; }
         .bg-column.right { right: 5%; }
+        .center-band {
+            position: fixed;
+            top: 0;
+            left: calc(5% + 95px);
+            right: calc(5% + 95px);
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .center-tile {
+            width: 100px;
+            height: 100%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .bg-column-inner .word-faint {
+            font-family: monospace;
+            font-size: 9px;
+            color: rgba(139, 0, 0, 0.22);
+        }
         .bg-column-inner {
             display: flex;
             flex-direction: column;
@@ -63,7 +88,7 @@
         .bg-column-inner .word {
             font-family: monospace;
             font-size: 14px;
-            color: rgba(139, 0, 0, 0.35);
+            color: rgba(139, 0, 0, 0.5);
         }
         @keyframes column-descend {
             from { transform: translateY(-15%); }
@@ -112,6 +137,7 @@
 <body>
     <div class="bg-column left" id="col-left" aria-hidden="true"></div>
     <div class="bg-column right" id="col-right" aria-hidden="true"></div>
+    <div class="center-band" id="center-band" aria-hidden="true"></div>
     <div class="main-content">
         <h1>MOUTH FED</h1>
         <div class="choice-links" id="choice-links">
@@ -123,7 +149,7 @@
     <script>
         (function () {
             var text = 'tasty_meat';
-            var copies = 35;
+            var copies = 70;
             function buildColumn() {
                 var inner = document.createElement('div');
                 inner.className = 'bg-column-inner';
@@ -138,8 +164,32 @@
                 }
                 return inner;
             }
+            function buildCenterColumn() {
+                var phrase = 'what have i done?';
+                var copies = 80;
+                var inner = document.createElement('div');
+                inner.className = 'bg-column-inner';
+                for (var c = 0; c < copies; c++) {
+                    var line = document.createElement('div');
+                    line.className = 'line';
+                    var span = document.createElement('span');
+                    span.className = 'word-faint';
+                    span.textContent = phrase;
+                    line.appendChild(span);
+                    inner.appendChild(line);
+                }
+                return inner;
+            }
             document.getElementById('col-left').appendChild(buildColumn());
             document.getElementById('col-right').appendChild(buildColumn());
+            var centerBand = document.getElementById('center-band');
+            var centerCols = Math.max(12, Math.ceil((window.innerWidth - (window.innerWidth * 0.1 + 190)) / 100) + 2);
+            for (var i = 0; i < centerCols; i++) {
+                var tile = document.createElement('div');
+                tile.className = 'center-tile';
+                tile.appendChild(buildCenterColumn());
+                centerBand.appendChild(tile);
+            }
 
             var overlay = document.getElementById('start-sound');
             var ctx = null;
