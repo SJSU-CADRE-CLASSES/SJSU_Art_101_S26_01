@@ -4,8 +4,356 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jerrod Reyes - Assignment 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: #1e1e1e;
+            color: #e8e8e8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .progress-bar-wrapper {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background: #252525;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: #3498db;
+            border-radius: 4px;
+            transition: width 0.2s ease;
+        }
+        #progress-bar-counter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 2px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+        .content-row {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            align-items: flex-start;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 560px;
+            width: 100%;
+            padding: 2.5rem;
+            background: #2a2a2a;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5em;
+        }
+        button {
+            font-family: 'Ubuntu', sans-serif;
+            padding: 0.5em 1em;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .counters {
+            text-align: center;
+            margin-top: 0.75em;
+        }
+        #click-count,
+        #auto-clicker-amount-el,
+        #upgrade-cost-el {
+            margin-top: 0.25em;
+            font-size: 0.95rem;
+        }
+        #click-count {
+            margin-top: 0;
+        }
+        .links {
+            margin-top: 1.5rem;
+        }
+        .links p {
+            margin-bottom: 0.5em;
+        }
+        a {
+            color: #7eb8da;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        a:hover {
+            color: #9dd4f5;
+        }
+        .hidden {
+            display: none;
+        }
+        #unlocks {
+            width: 200px;
+            flex-shrink: 0;
+            padding: 1.5rem;
+            background: #2a2a2a;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e8e8e8;
+        }
+        #unlocks h2 {
+            margin: 0 0 0.75em 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        #unlocks .unlock-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+        #auto-clicker-btn.auto-clicker-off {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+        }
+        #auto-clicker-btn.auto-clicker-on {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+        }
+        body.btn-color-default button {
+            background-color: #e0e0e0;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        body.btn-color-red button {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+        }
+        body.btn-color-orange button {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+        }
+        body.btn-color-yellow button {
+            background-color: #f1c40f;
+            color: #333;
+            border: none;
+        }
+        body.btn-color-green button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+        }
+        body.btn-color-blue button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        body.btn-color-indigo button {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+        }
+        body.btn-color-violet button {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Jerrod Reyes</h1>
+    <div class="progress-bar-wrapper">
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+            <span id="progress-bar-counter" class="hidden">0 / 1000</span>
+        </div>
+    </div>
+    <div class="content-row">
+    <div class="main-content">
+        <div class="container">
+            <h1>CLICK OR DIE</h1>
+            <div class="button-row">
+                <button type="button" id="click-btn">Click</button>
+                <button type="button" id="click-btn-2" class="hidden">2 Clicks</button>
+            </div>
+            <div class="counters">
+                <p id="click-count">Clicks: 0</p>
+                <p id="auto-clicker-amount-el" class="hidden">Auto-Clicker Amount: 1</p>
+                <p id="upgrade-cost-el" class="hidden">Upgrade Cost: 2</p>
+            </div>
+            <div class="links">
+                <p id="link-page-one" class="hidden"><a href="pageOne.html">Something new?</a></p>
+                <p id="link-page-two" class="hidden"><a href="pageTwo.html">Page Two</a></p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <aside id="unlocks">
+        <h2>Unlocks</h2>
+        <div class="unlock-buttons">
+            <button type="button" id="bg-toggle-btn" class="hidden">Toggle background</button>
+            <button type="button" id="auto-clicker-btn" class="hidden auto-clicker-off">Auto-Clicker</button>
+            <button type="button" id="auto-clicker-upgrade-btn" class="hidden">Auto-Clicker Upgrade</button>
+            <button type="button" id="btn-color-btn" class="hidden">Button Color</button>
+            <button type="button" id="detailed-progress-btn" class="hidden">Detailed Progress Bar</button>
+        </div>
+    </aside>
+
+    <script>
+        (function () {
+            var count = 0;
+            var btn = document.getElementById('click-btn');
+            var btn2 = document.getElementById('click-btn-2');
+            var countEl = document.getElementById('click-count');
+            var linkOne = document.getElementById('link-page-one');
+            var linkTwo = document.getElementById('link-page-two');
+            var bgToggleBtn = document.getElementById('bg-toggle-btn');
+            var autoClickerBtn = document.getElementById('auto-clicker-btn');
+            var autoClickerUpgradeBtn = document.getElementById('auto-clicker-upgrade-btn');
+            var autoClickerAmountEl = document.getElementById('auto-clicker-amount-el');
+            var upgradeCostEl = document.getElementById('upgrade-cost-el');
+            var btnColorBtn = document.getElementById('btn-color-btn');
+            var detailedProgressBtn = document.getElementById('detailed-progress-btn');
+            var progressBarFill = document.getElementById('progress-bar-fill');
+            var progressBarCounter = document.getElementById('progress-bar-counter');
+            var isDarkBlue = false;
+            var buttonColorCycle = ['btn-color-default', 'btn-color-red', 'btn-color-orange', 'btn-color-yellow', 'btn-color-green', 'btn-color-blue', 'btn-color-indigo', 'btn-color-violet'];
+            var buttonColorIndex = 0;
+            var n = 1;
+            var upgradeCost = 2;
+            var isAutoClickerOn = false;
+            var autoClickerIntervalId = null;
+
+            function updateNAmountDisplay() {
+                autoClickerAmountEl.textContent = 'Auto-Clicker Amount: ' + n;
+            }
+
+            function updateUpgradeCostDisplay() {
+                upgradeCostEl.textContent = 'Upgrade Cost: ' + upgradeCost;
+            }
+
+            function updateProgressBar() {
+                var pct = Math.min(100, (count / 1000) * 100);
+                progressBarFill.style.width = pct + '%';
+                progressBarCounter.textContent = count + ' / 1000';
+            }
+
+            function updateCount(amount) {
+                count += amount;
+                countEl.textContent = 'Clicks: ' + count;
+                updateProgressBar();
+                if (count >= 50) {
+                    linkOne.classList.remove('hidden');
+                }
+                if (count >= 100) {
+                    linkTwo.classList.remove('hidden');
+                }
+                if (count >= 20) {
+                    btn2.classList.remove('hidden');
+                }
+                if (count >= 25) {
+                    bgToggleBtn.classList.remove('hidden');
+                }
+                if (count >= 150) {
+                    btnColorBtn.classList.remove('hidden');
+                }
+                if (count >= 200) {
+                    detailedProgressBtn.classList.remove('hidden');
+                }
+                if (count >= 75) {
+                    autoClickerBtn.classList.remove('hidden');
+                    autoClickerUpgradeBtn.classList.remove('hidden');
+                    autoClickerAmountEl.classList.remove('hidden');
+                    upgradeCostEl.classList.remove('hidden');
+                    updateNAmountDisplay();
+                    updateUpgradeCostDisplay();
+                }
+            }
+
+            bgToggleBtn.addEventListener('click', function () {
+                isDarkBlue = !isDarkBlue;
+                document.body.style.backgroundColor = isDarkBlue ? '#0a1628' : '#1e1e1e';
+            });
+
+            btn.addEventListener('click', function () {
+                updateCount(1);
+            });
+
+            btn2.addEventListener('click', function () {
+                updateCount(2);
+            });
+
+            autoClickerBtn.addEventListener('click', function () {
+                isAutoClickerOn = !isAutoClickerOn;
+                if (isAutoClickerOn) {
+                    autoClickerBtn.classList.remove('auto-clicker-off');
+                    autoClickerBtn.classList.add('auto-clicker-on');
+                    autoClickerIntervalId = setInterval(function () {
+                        updateCount(n);
+                    }, 1000);
+                } else {
+                    autoClickerBtn.classList.remove('auto-clicker-on');
+                    autoClickerBtn.classList.add('auto-clicker-off');
+                    if (autoClickerIntervalId !== null) {
+                        clearInterval(autoClickerIntervalId);
+                        autoClickerIntervalId = null;
+                    }
+                }
+            });
+
+            autoClickerUpgradeBtn.addEventListener('click', function () {
+                if (count < upgradeCost) return;
+                count -= upgradeCost;
+                countEl.textContent = 'Clicks: ' + count;
+                updateProgressBar();
+                n += 1;
+                upgradeCost = Math.ceil(upgradeCost * 1.5);
+                if (!autoClickerAmountEl.classList.contains('hidden')) {
+                    updateNAmountDisplay();
+                }
+                updateUpgradeCostDisplay();
+            });
+
+            btnColorBtn.addEventListener('click', function () {
+                document.body.classList.remove(buttonColorCycle[buttonColorIndex]);
+                buttonColorIndex = (buttonColorIndex + 1) % buttonColorCycle.length;
+                document.body.classList.add(buttonColorCycle[buttonColorIndex]);
+            });
+
+            detailedProgressBtn.addEventListener('click', function () {
+                progressBarCounter.classList.toggle('hidden');
+            });
+        })();
+    </script>
 </body>
 </html>

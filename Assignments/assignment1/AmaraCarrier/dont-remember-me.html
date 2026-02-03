@@ -5,31 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don't remember me</title>
     <style>
+        * { box-sizing: border-box; }
         body {
-            background-color: black;
-            color: white;
+            background-color: #0d0d0d;
+            color: #e0e0e0;
             margin: 0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Courier New', monospace;
-            animation: page-disappear 12s ease-out forwards;
+            position: relative;
+            overflow: hidden;
         }
-        .page-text {
+        .original-content {
             font-size: clamp(18px, 4vw, 36px);
             font-weight: bold;
             color: #ff0000;
             text-align: center;
-            text-shadow:
-                1px 1px 0px #000,
-                0 0 10px rgba(255, 60, 60, 0.9);
+            text-shadow: 1px 1px 0px #000, 0 0 10px rgba(255, 60, 60, 0.9);
             letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
         }
-        @keyframes page-disappear {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; }
+        .error-content {
+            display: none;
+            flex-direction: column;
+            align-items: stretch;
+            position: relative;
+            z-index: 2;
+            width: min(420px, 90vw);
+            background: #fff;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border: 1px solid #0078d4;
+            overflow: hidden;
+        }
+        body.glitch .original-content {
+            animation: glitch-text 0.15s infinite;
+        }
+        body.show-error .original-content {
+            display: none;
+        }
+        body.show-error .error-content {
+            display: flex;
+        }
+        body.show-error {
+            background: #1a1a1a;
+            color: #c0c0c0;
+        }
+        @keyframes glitch-text {
+            0% { transform: translate(0); filter: none; }
+            20% { transform: translate(-3px, 2px); filter: hue-rotate(-10deg); }
+            40% { transform: translate(3px, -2px); filter: hue-rotate(10deg); }
+            60% { transform: translate(-2px, -3px); }
+            80% { transform: translate(2px, 3px); }
+            100% { transform: translate(0); filter: none; }
+        }
+        .error-title-bar {
+            background: #0078d4;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .error-body {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 16px;
+            text-align: left;
+        }
+        .error-icon {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            background: #e74c3c;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        .error-text {
+            flex: 1;
+        }
+        .error-code {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            line-height: 1.3;
+            margin-bottom: 6px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .error-msg {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .error-detail {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         /* CRT TV screen filter */
         .crt-overlay {
@@ -64,9 +146,46 @@
 </head>
 <body>
     <div class="crt-overlay" aria-hidden="true"></div>
-    <p class="page-text">Don't remember me</p>
+    <p class="original-content" id="original">Don't remember me</p>
+    <div class="error-content">
+        <div class="error-title-bar">Error</div>
+        <div class="error-body">
+            <div class="error-icon">!</div>
+            <div class="error-text">
+                <div class="error-code">404 - Page Not Found</div>
+                <div class="error-msg">The requested resource could not be found.</div>
+                <div class="error-detail">It may have been moved or deleted.</div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        (function() {
+            const body = document.body;
+            const original = document.getElementById('original');
+            function playErrorBeep() {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.value = 800;
+                    const gain = ctx.createGain();
+                    gain.gain.value = 0.15;
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(0);
+                    osc.stop(ctx.currentTime + 0.8);
+                } catch (e) {}
+            }
+            setTimeout(function() {
+                body.classList.add('glitch');
+                setTimeout(function() {
+                    body.classList.remove('glitch');
+                    body.classList.add('show-error');
+                    playErrorBeep();
+                }, 1200);
+            }, 1500);
+        })();
         (function() {
             let ctx = null;
             function startHum() {

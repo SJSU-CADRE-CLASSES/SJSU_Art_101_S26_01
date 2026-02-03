@@ -101,7 +101,7 @@
     <p class="page-text" id="message"></p>
 
     <script>
-        const TARGET = 'feed me';
+        const TARGET = "Don't feed me";
         let lettersFound = 0;
         const messageEl = document.getElementById('message');
 
@@ -118,7 +118,7 @@
         function updateMessage() {
             const soFar = TARGET.slice(0, lettersFound);
             if (lettersFound >= TARGET.length) {
-                messageEl.innerHTML = '<a href="dont-remember-me.html">feed me</a>';
+                messageEl.innerHTML = '<a href="dont-remember-me.html">Don\'t feed me</a>';
             } else {
                 messageEl.textContent = soFar;
             }
@@ -142,7 +142,7 @@
 
         updateMessage();
 
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < TARGET.length; i++) {
             setTimeout(() => spawnFood(i), 400 + i * 350);
         }
 

@@ -58,7 +58,15 @@
 </head>
 <body>
     <h1>You pulled the lever.</h1>
-    <p class="subheader">pulling the lever made the trolley go faster and run over the 5 people instead. sucks!</p>
+    <p class="subheader" id="outcome"></p>
+    <script>
+        (function () {
+            var el = document.getElementById('outcome');
+            el.textContent = Math.random() < 0.75
+                ? 'pulling the lever made the trolley go faster and run over the 5 people instead'
+                : 'you pulled the lever and it stopped the trolley i cant believe it';
+        })();
+    </script>
     <img class="page-image" src="pineapple pizza.jpg" alt="Pineapple pizza">
     <p class="image-caption">pineapple on pizza?</p>
     <div class="button-group">

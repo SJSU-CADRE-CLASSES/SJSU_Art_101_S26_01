@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAP 201 - Canv-azz</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Lato", "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: #2d3b45; background: #f5f5f5; }
+        .ic-app-header { background: #394B58; color: #fff; height: 52px; display: flex; align-items: center; padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .ic-app-header__logo { font-weight: 700; font-size: 1.25rem; }
+        .ic-app-header a { color: #fff; text-decoration: none; margin-right: 1rem; }
+        .ic-app-header a:hover { text-decoration: underline; }
+        .ic-layout-container { margin-top: 52px; padding: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .course-banner { background: #E41F35; color: #fff; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .course-banner h1 { margin: 0; font-size: 1.5rem; }
+        .course-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .course-nav a { padding: 0.5rem 1rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 3px; color: #2d3b45; text-decoration: none; font-size: 0.9rem; }
+        .course-nav a:hover { background: #f5f5f5; }
+        .content-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.25rem; margin-bottom: 1rem; }
+        .content-box h2 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.5rem; }
+        .assignment-item, .announcement-item, .discussion-item { padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+        .assignment-item:last-child, .announcement-item:last-child, .discussion-item:last-child { border-bottom: none; }
+        .due { color: #6c757d; font-size: 0.85rem; }
+        .interactive-box { background: #fff8f0; border: 1px dashed #E41F35; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+        .interactive-box button { padding: 0.5rem 1rem; background: #E41F35; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+        .interactive-box button:hover { opacity: 0.9; }
+        .interactive-box .result { margin-top: 0.75rem; font-style: italic; color: #333; }
+        #runaway { position: absolute; padding: 0.5rem 1rem; background: #E41F35; color: #fff; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: left 0.15s, top 0.15s; user-select: none; }
+        .nap-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 200; flex-direction: column; }
+        .nap-overlay.visible { display: flex; }
+        .nap-overlay .zzz { font-size: 3rem; color: rgba(255,255,255,0.9); letter-spacing: 0.5rem; animation: zzz 1.5s ease infinite; }
+        @keyframes zzz { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .course-nav a:active { transform: scale(0.98); }
+        .assignment-item:hover { background: #fafafa; }
+        @media (max-width: 768px) {
+            .ic-layout-container { padding: 1rem; }
+            .course-banner h1 { font-size: 1.25rem; }
+            .course-nav { flex-wrap: wrap; gap: 0.4rem; }
+            .course-nav a { padding: 0.5rem 0.75rem; font-size: 0.85rem; min-height: 44px; display: inline-flex; align-items: center; }
+            .content-box { padding: 1rem; }
+            .interactive-box button, .nap-overlay button { min-height: 44px; }
+            #placesInput { max-width: 100%; }
+        }
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            .ic-layout-container { padding: 0.75rem; }
+            .course-banner { padding: 1rem; }
+            .course-banner h1 { font-size: 1.1rem; }
+            .nap-overlay .zzz { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="ic-app-header">
+        <span class="ic-app-header__logo">Canv-azz</span>
+        <a href="index.html">Dashboard</a>
+        <span>NAP 201</span>
+    </header>
+    <div class="ic-layout-container">
+        <div class="course-banner">
+            <h1>NAP 201 - Advanced Avoidance</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">The art of not being there.</p>
+            <button type="button" id="takeNap" style="margin-top:0.75rem;padding:0.5rem 1rem;background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.5);border-radius:4px;cursor:pointer;font:inherit;">Take a short nap</button>
+        </div>
+        <div class="nap-overlay" id="napOverlay">
+            <span class="zzz">Z z z</span>
+            <button type="button" id="wakeUp" style="margin-top:1.5rem;padding:0.5rem 1rem;background:#E41F35;color:#fff;border:none;border-radius:4px;cursor:pointer;font:inherit;display:none;">Wake up</button>
+        </div>
+        <nav class="course-nav">
+            <a href="#assignments">Assignments</a>
+            <a href="#announcements">Announcements</a>
+            <a href="#discussions">Discussions</a>
+            <a href="#files">Files</a>
+        </nav>
+
+        <div class="content-box" id="assignments">
+            <h2>Assignments</h2>
+            <div class="assignment-item">
+                <strong>Log a 12-minute power nap</strong><br>
+                <span class="due">Due: Yesterday-ish — 0 pts</span><br>
+                Submit proof of avoidance (screenshot of closed eyes optional).
+                <div class="interactive-box">
+                    <button type="button" id="logNap">Log a nap now</button>
+                    <div class="result" id="napResult"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Identify 5 places to not be</strong><br>
+                <span class="due">Due: Whenever — 10 pts</span><br>
+                List locations you successfully avoided this week.
+                <input type="text" id="placesInput" placeholder="e.g. the gym, the DMV..." style="margin-top:0.5rem;padding:0.4rem;width:100%;max-width:300px;font:inherit;">
+                <button type="button" id="submitPlaces" style="margin-top:0.25rem;padding:0.4rem 0.8rem;background:#E41F35;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Submit places</button>
+                <div id="placesResult" style="margin-top:0.5rem;font-style:italic;"></div>
+            </div>
+            <div class="assignment-item">
+                <strong>Disappear for 5 seconds</strong><br>
+                <span class="due">Due: Whenever — 15 pts</span><br>
+                Practice vanishing. Click to make the main content disappear, then reappear.
+                <div class="interactive-box">
+                    <button type="button" id="disappearBtn" style="padding:0.5rem 1rem;background:#E41F35;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Disappear now</button>
+                    <div id="disappearResult" style="margin-top:0.5rem;font-style:italic;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Avoidance streak</strong><br>
+                <span class="due">Due: Don't click — 10 pts</span><br>
+                Don't click the button for 3 seconds. Your streak: <strong id="napStreak">0</strong> sec.
+                <button type="button" id="napStreakBtn" style="margin-left:0.5rem;padding:0.4rem 0.8rem;background:#ccc;color:#333;border:none;border-radius:3px;cursor:pointer;font:inherit;">I avoided clicking</button>
+                <div id="napStreakResult" style="margin-top:0.5rem;font-style:italic;"></div>
+            </div>
+            <div class="assignment-item">
+                <strong>Quiz: Advanced Avoidance</strong><br>
+                <span class="due">Due: Whenever — 25 pts</span><br>
+                <div class="interactive-box quiz-box">
+                    <p><strong>Q1.</strong> The best place to avoid is: <label><input type="radio" name="napq1" value="a"> (a) The gym</label> <label><input type="radio" name="napq1" value="b"> (b) The DMV</label> <label><input type="radio" name="napq1" value="c"> (c) This quiz</label></p>
+                    <p><strong>Q2.</strong> A power nap should last: <label><input type="radio" name="napq2" value="a"> (a) 12 min</label> <label><input type="radio" name="napq2" value="b"> (b) 12 hours</label> <label><input type="radio" name="napq2" value="c"> (c) Until someone finds you</label></p>
+                    <p><strong>Q3.</strong> If you avoid the final, you get: <label><input type="radio" name="napq3" value="a"> (a) An F</label> <label><input type="radio" name="napq3" value="b"> (b) Graded in absentia</label> <label><input type="radio" name="napq3" value="c"> (c) A nap</label></p>
+                    <button type="button" id="napQuizSubmit" style="padding:0.5rem 1rem;background:#E41F35;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Submit quiz</button>
+                    <div id="napQuizResult" style="margin-top:0.75rem;font-style:italic;font-weight:bold;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Final: The Great Disappearing Act</strong><br>
+                <span class="due">Due: The day after never — 100 pts</span><br>
+                Don't show up. We'll grade you in absentia.
+            </div>
+        </div>
+
+        <div class="content-box" id="announcements">
+            <h2>Announcements</h2>
+            <div class="announcement-item">
+                <strong>Welcome to NAP 201</strong><br>
+                If you're reading this, you're already doing it wrong. Try closing the tab and taking a nap.
+            </div>
+            <div class="announcement-item" id="officeHours" style="cursor:pointer;" title="Click me">
+                <strong>Office hours cancelled</strong><br>
+                <span class="office-body">I won't be there. You shouldn't be either. See you never.</span>
+            </div>
+        </div>
+
+        <div class="content-box" id="discussions">
+            <h2>Discussions</h2>
+            <div class="discussion-item" id="napDiscussion">
+                <strong>Week 1: What are you avoiding right now?</strong><br>
+                <span id="napReplyCount">0</span> replies. (We're all avoiding it.) <button type="button" id="napAddReply" style="margin-left:0.5rem;padding:0.25rem 0.5rem;font-size:0.8rem;cursor:pointer;background:#E41F35;color:#fff;border:none;border-radius:3px;">Reply anyway</button>
+            </div>
+        </div>
+
+        <div class="content-box" id="files">
+            <h2>Files</h2>
+            <p style="margin: 0; color: #6c757d;">syllabus.pdf — "Read this later" (you won't)<br>
+            nap_log_template.xlsx — Track your avoidance hours</p>
+        </div>
+
+        <div class="content-box" style="position: relative; min-height: 80px;">
+            <h2>Practice: Advanced Avoidance</h2>
+            <p>Try to click the button. (It doesn't want to be clicked.)</p>
+            <div id="runaway">Don't click me</div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('logNap').addEventListener('click', function() {
+            var r = document.getElementById('napResult');
+            r.textContent = 'Nap logged! Duration: 12 min. Grade: A+. Participation: 10/10. Consciousness: 2/10.';
+        });
+        document.getElementById('takeNap').addEventListener('click', function() {
+            var overlay = document.getElementById('napOverlay');
+            var wakeBtn = document.getElementById('wakeUp');
+            overlay.classList.add('visible');
+            wakeBtn.style.display = 'none';
+            setTimeout(function() {
+                wakeBtn.style.display = 'block';
+                wakeBtn.textContent = 'Wake up';
+            }, 4000);
+            wakeBtn.onclick = function() {
+                overlay.classList.remove('visible');
+            };
+        });
+        document.getElementById('submitPlaces').addEventListener('click', function() {
+            var input = document.getElementById('placesInput');
+            var r = document.getElementById('placesResult');
+            var text = input.value.trim();
+            var count = text ? text.split(/[,;]/).map(function(s) { return s.trim(); }).filter(Boolean).length : 0;
+            r.textContent = count >= 5 ? 'All 5 places logged. Avoidance: A+.' : (count ? 'We counted ' + count + '. Need ' + (5 - count) + ' more places to avoid.' : 'You didn\'t list any places. That\'s one way to avoid the assignment.');
+        });
+        (function() {
+            var btn = document.getElementById('runaway');
+            var box = btn.parentElement;
+            var padding = 20;
+            function move(e) {
+                var rect = box.getBoundingClientRect();
+                var btnRect = btn.getBoundingClientRect();
+                var mx = e.clientX, my = e.clientY;
+                var bx = btnRect.left + btnRect.width/2, by = btnRect.top + btnRect.height/2;
+                var dx = mx - bx, dy = my - by;
+                var dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 120) {
+                    var angle = Math.atan2(dy, dx);
+                    var nx = btn.offsetLeft + Math.cos(angle) * 40;
+                    var ny = btn.offsetTop + Math.sin(angle) * 40;
+                    nx = Math.max(padding, Math.min(box.offsetWidth - btn.offsetWidth - padding, nx));
+                    ny = Math.max(padding, Math.min(80 - btn.offsetHeight - padding, ny));
+                    btn.style.left = nx + 'px';
+                    btn.style.top = ny + 'px';
+                }
+            }
+            box.addEventListener('mousemove', move);
+            btn.addEventListener('click', function() {
+                btn.textContent = '... fine. You found me.';
+                box.removeEventListener('mousemove', move);
+            });
+            btn.style.left = '20px';
+            btn.style.top = '20px';
+        })();
+        var napReplies = 0;
+        document.getElementById('napAddReply').addEventListener('click', function() {
+            napReplies++;
+            document.getElementById('napReplyCount').textContent = napReplies;
+            var msgs = ['You replied. We\'re surprised.', 'Still avoiding? Reply counts.', 'Okay. We\'ll grade it. Eventually.'];
+            this.textContent = napReplies === 1 ? '1 reply' : napReplies + ' replies';
+        });
+        document.getElementById('officeHours').addEventListener('click', function() {
+            var body = this.querySelector('.office-body');
+            body.textContent = body.textContent === 'I won\'t be there. You shouldn\'t be either. See you never.' ? '... fine. See you never.' : 'I won\'t be there. You shouldn\'t be either. See you never.';
+        });
+        document.getElementById('disappearBtn').addEventListener('click', function() {
+            var main = document.querySelector('.ic-layout-container');
+            main.style.transition = 'opacity 0.5s';
+            main.style.opacity = '0';
+            document.getElementById('disappearResult').textContent = 'You disappeared. Grading in absentia...';
+            setTimeout(function() {
+                main.style.opacity = '1';
+                document.getElementById('disappearResult').textContent = 'You\'re back. Avoidance: A+.';
+            }, 5000);
+        });
+        var streakStart = null;
+        var streakInterval = null;
+        document.getElementById('napStreakBtn').addEventListener('click', function() {
+            streakStart = null;
+            clearInterval(streakInterval);
+            document.getElementById('napStreak').textContent = '0';
+            document.getElementById('napStreakResult').textContent = 'You clicked. Streak reset. Try again.';
+        });
+        streakInterval = setInterval(function() {
+            if (!streakStart) { streakStart = Date.now(); }
+            var sec = Math.floor((Date.now() - streakStart) / 1000);
+            document.getElementById('napStreak').textContent = sec;
+            if (sec >= 3) document.getElementById('napStreakResult').textContent = '3+ seconds without clicking! Avoidance: A+.';
+        }, 500);
+        document.getElementById('napQuizSubmit').addEventListener('click', function() {
+            var q1 = document.querySelector('input[name="napq1"]:checked'); var q2 = document.querySelector('input[name="napq2"]:checked'); var q3 = document.querySelector('input[name="napq3"]:checked');
+            var score = 0; if (q1 && q1.value === 'c') score++; if (q2 && q2.value === 'c') score++; if (q3 && q3.value === 'b') score++;
+            var out = document.getElementById('napQuizResult');
+            out.textContent = 'Score: ' + score + '/3. ' + (score >= 2 ? 'Avoidance: A+. You get it.' : 'Try avoiding the quiz next time.');
+        });
+    </script>
+</body>
+</html>

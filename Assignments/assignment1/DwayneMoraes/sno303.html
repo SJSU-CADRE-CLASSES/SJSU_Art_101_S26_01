@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNO 303 - Canv-azz</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Lato", "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: #2d3b45; background: #f5f5f5; }
+        .ic-app-header { background: #394B58; color: #fff; height: 52px; display: flex; align-items: center; padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .ic-app-header__logo { font-weight: 700; font-size: 1.25rem; }
+        .ic-app-header a { color: #fff; text-decoration: none; margin-right: 1rem; }
+        .ic-app-header a:hover { text-decoration: underline; }
+        .ic-layout-container { margin-top: 52px; padding: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .course-banner { background: #E41F35; color: #fff; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .course-banner h1 { margin: 0; font-size: 1.5rem; }
+        .course-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .course-nav a { padding: 0.5rem 1rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 3px; color: #2d3b45; text-decoration: none; font-size: 0.9rem; }
+        .course-nav a:hover { background: #f5f5f5; }
+        .content-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.25rem; margin-bottom: 1rem; }
+        .content-box h2 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.5rem; }
+        .assignment-item, .announcement-item, .discussion-item { padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+        .assignment-item:last-child, .announcement-item:last-child, .discussion-item:last-child { border-bottom: none; }
+        .due { color: #6c757d; font-size: 0.85rem; }
+        .interactive-box { background: #fff0f5; border: 1px dashed #E41F35; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+        .interactive-box button { padding: 0.5rem 1rem; background: #E41F35; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; margin-right: 0.5rem; }
+        .interactive-box button:hover { opacity: 0.9; }
+        .alarm-ringing { animation: pulse 0.5s ease infinite; }
+        @keyframes pulse { 50% { opacity: 0.7; } }
+        .snooze-display { font-size: 1.1rem; margin: 0.75rem 0; }
+        .sleepy-mode { filter: brightness(0.6); transition: filter 0.5s; }
+        .dream-journal { background: #fff0f5; border: 1px dashed #E41F35; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+        .dream-journal .dream-text { font-style: italic; color: #555; min-height: 2em; }
+        @media (max-width: 768px) {
+            .ic-layout-container { padding: 1rem; }
+            .course-banner h1 { font-size: 1.25rem; }
+            .course-nav { flex-wrap: wrap; gap: 0.4rem; }
+            .course-nav a { padding: 0.5rem 0.75rem; font-size: 0.85rem; min-height: 44px; display: inline-flex; align-items: center; }
+            .content-box { padding: 1rem; }
+            .interactive-box button { min-height: 44px; }
+            #alarmBtn, #snoozeBtn, #sleepyBtn, #dreamBtn { min-height: 44px; }
+        }
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            .ic-layout-container { padding: 0.75rem; }
+            .course-banner { padding: 1rem; }
+            .course-banner h1 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body id="snoBody">
+    <header class="ic-app-header">
+        <span class="ic-app-header__logo">Canv-azz</span>
+        <a href="index.html">Dashboard</a>
+        <span>SNO 303</span>
+    </header>
+    <div class="ic-layout-container">
+        <div class="course-banner">
+            <h1>SNO 303 - Snooze Theory</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Advanced studies in the 9-minute delay.</p>
+        </div>
+        <nav class="course-nav">
+            <a href="#assignments">Assignments</a>
+            <a href="#announcements">Announcements</a>
+            <a href="#discussions">Discussions</a>
+            <a href="#files">Files</a>
+        </nav>
+
+        <div class="content-box" id="assignments">
+            <h2>Assignments</h2>
+            <div class="assignment-item">
+                <strong>Demonstrate a controlled snooze</strong><br>
+                <span class="due">Due: 2:00 AM (or 2:07) — 10 pts</span><br>
+                Hit snooze exactly 3 times. Document the emotional journey.
+                <div class="interactive-box" id="snoozeBox">
+                    <p class="snooze-display" id="alarmDisplay">Alarm: 2:00 AM. (Hit Snooze to practice.)</p>
+                    <button type="button" id="alarmBtn">🔔 Alarm off / Ring again</button>
+                    <button type="button" id="snoozeBtn">Snooze (+9 min)</button>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Set your ideal wake time</strong><br>
+                <span class="due">Due: 2:00 AM (or later) — 15 pts</span><br>
+                Each click adds 9 minutes. How many times would you hit snooze?
+                <div class="interactive-box">
+                    <p class="snooze-display">Ideal wake: <strong id="idealWake">2:00</strong></p>
+                    <button type="button" id="addSnooze" style="padding:0.5rem 1rem;background:#E41F35;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">+9 min (snooze)</button>
+                    <div id="idealWakeResult" style="margin-top:0.5rem;font-style:italic;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Yawn log</strong><br>
+                <span class="due">Due: Whenever you wake up — 10 pts</span><br>
+                Log your yawns. We're grading participation.
+                <div class="interactive-box">
+                    <button type="button" id="yawnBtn" style="padding:0.5rem 1rem;background:#E41F35;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">*yawn*</button>
+                    <span id="yawnCount">0</span> yawns logged.
+                    <div id="yawnResult" style="margin-top:0.5rem;font-style:italic;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Compare alarm sounds: anxiety vs. gentle</strong><br>
+                <span class="due">Due: After you wake up — 20 pts</span><br>
+                Spoiler: They're all anxiety. We'll grade you in your dreams.
+            </div>
+            <div class="assignment-item">
+                <strong>Quiz: Snooze Theory</strong><br>
+                <span class="due">Due: 2:00 AM (or 2:27) — 25 pts</span><br>
+                <div class="interactive-box quiz-box">
+                    <p><strong>Q1.</strong> Hitting snooze adds: <label><input type="radio" name="snoq1" value="a"> (a) 5 min</label> <label><input type="radio" name="snoq1" value="b"> (b) 9 min</label> <label><input type="radio" name="snoq1" value="c"> (c) Regret</label></p>
+                    <p><strong>Q2.</strong> Participation while asleep: <label><input type="radio" name="snoq2" value="a"> (a) Doesn't count</label> <label><input type="radio" name="snoq2" value="b"> (b) Counts</label> <label><input type="radio" name="snoq2" value="c"> (c) We grade your dreams</label></p>
+                    <p><strong>Q3.</strong> The ideal wake time is: <label><input type="radio" name="snoq3" value="a"> (a) 5:00 AM</label> <label><input type="radio" name="snoq3" value="b"> (b) After 3 snoozes</label> <label><input type="radio" name="snoq3" value="c"> (c) Never</label></p>
+                    <button type="button" id="snoQuizSubmit" style="padding:0.5rem 1rem;background:#E41F35;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Submit quiz</button>
+                    <div id="snoQuizResult" style="margin-top:0.75rem;font-style:italic;font-weight:bold;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Final: The 5:00 AM challenge</strong><br>
+                <span class="due">Due: You'll sleep through it — 100 pts</span><br>
+                Set alarm for 5 AM. Show up to the exam. (Participation: asleep counts.)
+            </div>
+        </div>
+
+        <div class="content-box" id="announcements">
+            <h2>Announcements</h2>
+            <div class="announcement-item">
+                <strong>Lecture moved to 3 AM</strong><br>
+                Just kidding. It's asynchronous. So is your consciousness. Zzz.
+            </div>
+            <div class="announcement-item">
+                <strong>Discussion participation</strong><br>
+                You were asleep in the discussion. I graded your dreams. — Instructor
+            </div>
+        </div>
+
+        <div class="content-box" id="discussions">
+            <h2>Discussions</h2>
+            <div class="discussion-item">
+                <strong>How many snoozes is too many?</strong><br>
+                <span id="snoReplyCount">12</span> replies. (Half were written half-asleep.) <button type="button" id="snoAddReply" style="margin-left:0.5rem;padding:0.25rem 0.5rem;font-size:0.8rem;cursor:pointer;background:#E41F35;color:#fff;border:none;border-radius:3px;">Post half-asleep</button>
+            </div>
+        </div>
+
+        <div class="content-box" id="files">
+            <h2>Files</h2>
+            <p style="margin: 0; color: #6c757d;">syllabus.pdf — Read before the first nap<br>
+            dream_journal_template.pdf — Optional. You'll forget to fill it out.</p>
+        </div>
+    </div>
+    <script>
+        var alarmMinutes = 2 * 60; // 2:00 = 120 min from midnight for display
+        var snoozeCount = 0;
+        var ringing = false;
+        function formatTime(m) {
+            var h = Math.floor(m / 60) % 24;
+            var min = m % 60;
+            return (h < 10 ? '0' : '') + h + ':' + (min < 10 ? '0' : '') + min;
+        }
+        function updateAlarmDisplay() {
+            var el = document.getElementById('alarmDisplay');
+            if (ringing) {
+                el.textContent = '⏰ RING RING RING. Hit Snooze!';
+                document.getElementById('snoozeBox').classList.add('alarm-ringing');
+            } else {
+                document.getElementById('snoozeBox').classList.remove('alarm-ringing');
+                el.textContent = 'Next alarm: ' + formatTime(alarmMinutes) + '. Snoozes: ' + snoozeCount + '.';
+            }
+        }
+        document.getElementById('alarmBtn').addEventListener('click', function() {
+            ringing = !ringing;
+            if (ringing) document.getElementById('snoozeBtn').textContent = 'Snooze (+9 min)';
+            updateAlarmDisplay();
+        });
+        document.getElementById('snoozeBtn').addEventListener('click', function() {
+            if (ringing) {
+                ringing = false;
+                snoozeCount++;
+                alarmMinutes += 9;
+                updateAlarmDisplay();
+                if (snoozeCount >= 3) {
+                    document.getElementById('alarmDisplay').textContent = 'You hit snooze ' + snoozeCount + ' times. Participation: 10/10. Consciousness: 2/10.';
+                }
+            }
+        });
+        updateAlarmDisplay();
+        document.getElementById('sleepyBtn').addEventListener('click', function() {
+            var body = document.getElementById('snoBody');
+            var sleepy = body.classList.toggle('sleepy-mode');
+            this.textContent = sleepy ? 'Wake up' : 'Make page sleepy';
+        });
+        var dreamLines = ['I was in a lecture but the slides were made of pillows...', 'The alarm was a cat. I hit snooze. The cat left.', 'I forgot what I was dreaming. MEM 101 crossover.'];
+        document.getElementById('dreamBtn').addEventListener('click', function() {
+            var el = document.getElementById('dreamText');
+            var line = dreamLines[Math.floor(Math.random() * dreamLines.length)];
+            el.textContent = '';
+            var i = 0;
+            function type() {
+                if (i < line.length) {
+                    el.textContent += line[i];
+                    i++;
+                    setTimeout(type, 80);
+                } else {
+                    setTimeout(function() { el.style.opacity = '0.5'; }, 1000);
+                }
+            }
+            el.style.opacity = '1';
+            type();
+        });
+        var idealWakeMin = 2 * 60;
+        function fmtWake(m) {
+            var h = Math.floor(m / 60) % 24;
+            var min = m % 60;
+            return (h < 10 ? '0' : '') + h + ':' + (min < 10 ? '0' : '') + min;
+        }
+        document.getElementById('addSnooze').addEventListener('click', function() {
+            idealWakeMin += 9;
+            document.getElementById('idealWake').textContent = fmtWake(idealWakeMin);
+            var r = document.getElementById('idealWakeResult');
+            r.textContent = idealWakeMin >= 2*60 + 27 ? 'That\'s 3+ snoozes. Participation: 10/10.' : 'Snooze logged. +9 min.';
+        });
+        var yawnCount = 0;
+        document.getElementById('yawnBtn').addEventListener('click', function() {
+            yawnCount++;
+            document.getElementById('yawnCount').textContent = yawnCount;
+            document.getElementById('yawnResult').textContent = yawnCount >= 5 ? '5+ yawns. Consciousness: 2/10. Grade: A.' : 'Yawn logged. Zzz.';
+        });
+        document.getElementById('snoQuizSubmit').addEventListener('click', function() {
+            var q1 = document.querySelector('input[name="snoq1"]:checked'); var q2 = document.querySelector('input[name="snoq2"]:checked'); var q3 = document.querySelector('input[name="snoq3"]:checked');
+            var score = 0; if (q1 && q1.value === 'b') score++; if (q2 && q2.value === 'c') score++; if (q3 && q3.value === 'c') score++;
+            document.getElementById('snoQuizResult').textContent = 'Score: ' + score + '/3. ' + (score >= 2 ? 'Consciousness: 2/10. Grade: A. Zzz.' : 'Try again after a nap.');
+        });
+        var snoReplies = 12;
+        document.getElementById('snoAddReply').addEventListener('click', function() {
+            snoReplies++;
+            document.getElementById('snoReplyCount').textContent = snoReplies;
+            var dreamEl = document.getElementById('dreamText');
+            dreamEl.textContent = 'zzz... ' + snoReplies + ' snoozes... zzz';
+            dreamEl.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
