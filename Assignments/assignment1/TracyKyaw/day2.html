@@ -4,19 +4,77 @@
 <meta charset="UTF-8">
 <title>Two Days Before</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Video overlay styling */
+  #videoOverlay {
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    flex-direction: column;
+  }
+  #videoOverlay iframe {
+    border-radius: 12px;
+    max-width: 90%;
+    max-height: 70%;
+  }
+  #videoOverlay button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body class="day2">
   <canvas id="particles"></canvas>
   <div class="container">
     <p class="remaining-time">48 hours til exam</p>
     <p class="main-text">I should probably study.</p>
-    <button onclick="document.getElementById('videoOverlay').style.display='flex'">Check phone</button>
+    <button id="checkPhoneBtn">Check phone</button>
     <a href="day1.html"><button>Study (later)</button></a>
   </div>
+
+  <!-- Video Overlay -->
   <div id="videoOverlay">
-    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" allow="autoplay" 
-            style="width:560px;height:315px;border-radius:12px;"></iframe>
+    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+            allow="autoplay" allowfullscreen></iframe>
+    <button id="skipBtn">Skip</button>
   </div>
+
   <script src="particles.js"></script>
+  <script>
+    const overlay = document.getElementById('videoOverlay');
+    const checkBtn = document.getElementById('checkPhoneBtn');
+    const skipBtn = document.getElementById('skipBtn');
+
+    // Open overlay when "Check phone" is clicked
+    checkBtn.addEventListener('click', () => {
+      overlay.style.display = 'flex';
+    });
+
+    // Close overlay when "Skip" is clicked
+    skipBtn.addEventListener('click', () => {
+      overlay.style.display = 'none';
+      // Stop video by resetting src
+      const iframe = overlay.querySelector('iframe');
+      iframe.src = iframe.src;
+    });
+
+    // Optional: click outside iframe closes overlay
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.style.display = 'none';
+        const iframe = overlay.querySelector('iframe');
+        iframe.src = iframe.src;
+      }
+    });
+  </script>
 </body>
 </html>
