@@ -72,10 +72,10 @@
             98% { opacity: 1; }
         }
 
-        /* Eyes – above shadow mask, brighter, various sizes, pupils follow mouse, progressive shake near link */
+        /* Eyes – ovoid shape, above shadow mask, larger irises, pupils follow mouse, progressive shake near link */
         .eye {
             position: fixed;
-            border-radius: 45% 40% 40% 45% / 32% 32% 68% 68%;
+            border-radius: 50%;
             background: linear-gradient(180deg, #fffef8 0%, #fffaf0 40%, #f5f0e8 100%);
             overflow: hidden;
             z-index: 9;
@@ -98,17 +98,17 @@
             transition: transform 0.08s ease-out;
         }
         .eye--sm { width: 40px; height: 24px; }
-        .eye--sm .iris { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
-        .eye--sm .pupil { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+        .eye--sm .iris { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+        .eye--sm .pupil { width: 10px; height: 10px; margin: -5px 0 0 -5px; }
         .eye--md { width: 58px; height: 34px; }
-        .eye--md .iris { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
-        .eye--md .pupil { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
+        .eye--md .iris { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
+        .eye--md .pupil { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
         .eye--lg { width: 78px; height: 46px; }
-        .eye--lg .iris { width: 34px; height: 34px; margin: -17px 0 0 -17px; }
-        .eye--lg .pupil { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
+        .eye--lg .iris { width: 48px; height: 48px; margin: -24px 0 0 -24px; }
+        .eye--lg .pupil { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
         .eye--xl { width: 100px; height: 58px; }
-        .eye--xl .iris { width: 44px; height: 44px; margin: -22px 0 0 -22px; }
-        .eye--xl .pupil { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
+        .eye--xl .iris { width: 60px; height: 60px; margin: -30px 0 0 -30px; }
+        .eye--xl .pupil { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
         .eye--tl { top: 6%; left: 8%; }
         .eye--tr { top: 6%; right: 8%; left: auto; }
         .eye--t2 { top: 5%; left: 22%; }
