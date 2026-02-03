@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <title>The Night Before</title>
   <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
 </head>
-<body class="night" onload="addDoomScroll()">
+
+<body class="night" onload="startCountdown(); startDoomScroll();">
+  <div id="timer"></div>
+
   <div class="container">
     <p>
       Fuck it.<br><br>
@@ -19,15 +21,14 @@
 
     <div id="scroll" class="scroll-box"></div>
 
-    <button onclick="tooLate()">Study</button>
-    <button onclick="alert('I’ll deal with tomorrow when it gets here.')">
-      Set an alarm anyway
-    </button>
+    <a href="after.html"><button>Go to exam</button></a>
+    <a href="index.html"><button>Go back to the start</button></a>
 
-    <p style="margin-top:30px; opacity:0.7;">
+    <p style="margin-top:30px; opacity:0.6;">
       One exam doesn’t define me.
     </p>
   </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
