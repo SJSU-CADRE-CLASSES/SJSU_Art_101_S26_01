@@ -15,6 +15,9 @@
             cursor: pointer;
             font-family: 'Perfect DOS VGA 437', monospace;
             box-shadow: inset 0 0 0 3px #003300;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
 
         .center-text {
@@ -36,6 +39,8 @@
             line-height: 1.2;
             text-decoration: none;
             display: inline-block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .center-text:hover {
             color: #55ff55;
@@ -69,7 +74,7 @@
             98% { opacity: 1; }
         }
 
-        /* Eyes – ovoid shape, above shadow mask, larger irises, pupils follow mouse, progressive shake near link */
+        /* Eyes – pixel-art style (crisp rendering), above shadow mask, pupils follow mouse, progressive shake near link */
         .eye {
             position: fixed;
             border-radius: 50%;
@@ -77,6 +82,9 @@
             overflow: hidden;
             z-index: 9;
             box-shadow: 0 0 0 2px #000;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
         .eye .iris {
             position: absolute;
@@ -86,6 +94,8 @@
             background: #2d5a2d;
             box-shadow: inset 0 -1px 4px rgba(0,0,0,0.4);
             transition: transform 0.08s ease-out;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .eye .pupil {
             position: absolute;
@@ -281,9 +291,25 @@
     <script>
         (function() {
             let ctx = null;
+            function playBootSound(c) {
+                const gain = c.createGain();
+                gain.gain.value = 0.2;
+                gain.connect(c.destination);
+                function beep(freq, start, duration) {
+                    const osc = c.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.value = freq;
+                    osc.connect(gain);
+                    osc.start(start);
+                    osc.stop(start + duration);
+                }
+                beep(320, 0, 0.12);
+                beep(480, 0.2, 0.12);
+            }
             function startHum() {
                 if (ctx) return;
                 ctx = new (window.AudioContext || window.webkitAudioContext)();
+                try { playBootSound(ctx); } catch (e) {}
                 const osc = ctx.createOscillator();
                 osc.type = 'sine';
                 osc.frequency.value = 55;
@@ -291,7 +317,7 @@
                 gain.gain.value = 0.06;
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-                osc.start(0);
+                osc.start(0.5);
             }
             document.body.addEventListener('click', startHum, { once: true });
             document.body.addEventListener('keydown', startHum, { once: true });
