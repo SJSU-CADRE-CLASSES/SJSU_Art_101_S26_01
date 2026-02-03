@@ -45,12 +45,14 @@
             if (uaaghh) {
                 uaaghh.volume = 0.05;
             }
-            ['best-noise', 'jeremy'].forEach(function (id) {
-                var el = document.getElementById(id);
-                if (el) {
-                    el.volume = 0.5;
-                }
-            });
+            var best = document.getElementById('best-noise');
+            if (best) {
+                best.volume = 0.5;
+            }
+            var jeremy = document.getElementById('jeremy');
+            if (jeremy) {
+                jeremy.volume = 1.0; // 100% (max allowed)
+            }
         });
     </script>
 </body>
