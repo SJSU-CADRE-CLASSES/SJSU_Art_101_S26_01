@@ -18,6 +18,9 @@
             font-family: 'Perfect DOS VGA 437', monospace;
             position: relative;
             box-shadow: inset 0 0 0 3px #003300;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
         .page-text {
             font-size: clamp(20px, 4vw, 40px);
@@ -28,6 +31,8 @@
             letter-spacing: 1px;
             min-height: 1.2em;
             margin-bottom: 1em;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .page-text a {
             color: #00ff00;
@@ -47,11 +52,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
             cursor: pointer;
             z-index: 10;
             animation: food-pop-in 0.3s ease-out;
             transition: transform 0.15s;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 720px 48px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 16'%3E%3Cg fill='%23c00'%3E%3Crect x='4' y='4' width='8' height='8'/%3E%3Crect x='6' y='2' width='4' height='2' fill='%23080'/%3E%3C/g%3E%3Cg transform='translate(16,0)'%3E%3Crect x='2' y='2' width='12' height='12' fill='%23fc0'/%3E%3Cpath d='M8 2 L16 14 L2 14 Z' fill='%23c00'/%3E%3C/g%3E%3Cg transform='translate(32,0)'%3E%3Crect x='2' y='4' width='12' height='2' fill='%23854'/%3E%3Crect x='2' y='7' width='12' height='2' fill='%23fc0'/%3E%3Crect x='2' y='10' width='12' height='2' fill='%23854'/%3E%3C/g%3E%3Cg transform='translate(48,0)'%3E%3Crect x='4' y='2' width='8' height='4' fill='%230a0'/%3E%3Crect x='2' y='6' width='12' height='6' fill='%23060'/%3E%3C/g%3E%3Cg transform='translate(64,0)'%3E%3Crect x='2' y='4' width='2' height='8' fill='%23fc0'/%3E%3Crect x='6' y='4' width='2' height='8' fill='%23fc0'/%3E%3Crect x='10' y='4' width='2' height='8' fill='%23fc0'/%3E%3Crect x='14' y='4' width='2' height='8' fill='%23fc0'/%3E%3C/g%3E%3Cg transform='translate(80,0)'%3E%3Crect x='2' y='6' width='12' height='6' fill='%23f90'/%3E%3Crect x='4' y='4' width='8' height='2' fill='%23da8'/%3E%3C/g%3E%3Cg transform='translate(96,0)'%3E%3Crect x='2' y='4' width='12' height='4' fill='%23fcc'/%3E%3Crect x='4' y='8' width='8' height='4' fill='%23c00'/%3E%3C/g%3E%3Cg transform='translate(112,0)'%3E%3Crect x='2' y='5' width='12' height='2' fill='%23daa'/%3E%3Crect x='2' y='8' width='12' height='2' fill='%23daa'/%3E%3Crect x='2' y='11' width='12' height='2' fill='%23daa'/%3E%3C/g%3E%3Cg transform='translate(128,0)'%3E%3Crect x='2' y='4' width='12' height='8' fill='%23f96'/%3E%3Crect x='4' y='6' width='8' height='4' fill='%23000'/%3E%3C/g%3E%3Cg transform='translate(144,0)'%3E%3Crect x='2' y='4' width='12' height='8' fill='%23c85'/%3E%3Crect x='6' y='6' width='4' height='4' fill='%23854'/%3E%3C/g%3E%3Cg transform='translate(160,0)'%3E%3Crect x='6' y='2' width='4' height='12' fill='%23f80'/%3E%3Crect x='4' y='10' width='8' height='4' fill='%23080'/%3E%3C/g%3E%3Cg transform='translate(176,0)'%3E%3Crect x='4' y='2' width='8' height='10' fill='%23faa'/%3E%3Crect x='2' y='12' width='12' height='2' fill='%23f80'/%3E%3C/g%3E%3Cg transform='translate(192,0)'%3E%3Crect x='4' y='6' width='8' height='6' fill='%23fcc'/%3E%3Crect x='2' y='4' width='12' height='2' fill='%23c00'/%3E%3C/g%3E%3Cg transform='translate(208,0)'%3E%3Crect x='2' y='6' width='12' height='2' fill='%23ff0'/%3E%3Crect x='2' y='9' width='12' height='2' fill='%23ff0'/%3E%3Crect x='2' y='12' width='12' height='2' fill='%23ff0'/%3E%3C/g%3E%3Cg transform='translate(224,0)'%3E%3Crect x='2' y='4' width='12' height='8' fill='%23da8'/%3E%3Crect x='4' y='6' width='8' height='2' fill='%23c85'/%3E%3C/g%3E%3C/svg%3E");
         }
         .food-popup:hover {
             transform: scale(1.15);
@@ -115,6 +125,38 @@
         let lettersFound = 0;
         const messageEl = document.getElementById('message');
 
+        let audioCtx = null;
+        let humStarted = false;
+        function getCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            return audioCtx;
+        }
+        function playDistortedBlip() {
+            try {
+                const c = getCtx();
+                if (c.state === 'suspended') c.resume();
+                const osc = c.createOscillator();
+                osc.type = 'square';
+                osc.frequency.value = 180 + Math.random() * 320;
+                const gain = c.createGain();
+                gain.gain.setValueAtTime(0.35, c.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.08);
+                const curve = new Float32Array(256);
+                for (let i = 0; i < 256; i++) {
+                    const x = (i / 128) - 1;
+                    curve[i] = Math.tanh(x * 4) * 0.5;
+                }
+                const distort = c.createWaveShaper();
+                distort.curve = curve;
+                distort.oversample = '4x';
+                osc.connect(distort);
+                distort.connect(gain);
+                gain.connect(c.destination);
+                osc.start(c.currentTime);
+                osc.stop(c.currentTime + 0.08);
+            } catch (e) {}
+        }
+
         const foods = ['🍎', '🍕', '🍔', '🥗', '🍟', '🌮', '🍣', '🥪', '🍩', '🍪', '🥕', '🍗', '🧁', '🍝', '🥞'];
         const positions = [
             { top: '12%', left: '10%' }, { top: '18%', right: '15%', left: 'auto' }, { top: '25%', left: '22%' },
@@ -137,12 +179,14 @@
         function spawnFood(i) {
             const food = document.createElement('div');
             food.className = 'food-popup';
-            food.textContent = foods[i % foods.length];
+            const iconIndex = i % 15;
+            food.style.backgroundPosition = (-iconIndex * 48) + 'px 0';
             const pos = positions[i % positions.length];
             Object.assign(food.style, pos);
             food.addEventListener('click', () => {
                 if (lettersFound < TARGET.length) {
                     lettersFound++;
+                    playDistortedBlip();
                     updateMessage();
                     food.remove();
                     document.body.classList.add('shake');
@@ -159,10 +203,10 @@
         }
 
         (function() {
-            let ctx = null;
             function startHum() {
-                if (ctx) return;
-                ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (humStarted) return;
+                humStarted = true;
+                const ctx = getCtx();
                 const osc = ctx.createOscillator();
                 osc.type = 'sine';
                 osc.frequency.value = 55;

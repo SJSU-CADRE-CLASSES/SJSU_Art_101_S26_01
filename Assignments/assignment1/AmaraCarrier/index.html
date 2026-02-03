@@ -15,6 +15,9 @@
             cursor: pointer;
             font-family: 'Perfect DOS VGA 437', monospace;
             box-shadow: inset 0 0 0 3px #003300;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
 
         .center-text {
@@ -36,6 +39,8 @@
             line-height: 1.2;
             text-decoration: none;
             display: inline-block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .center-text:hover {
             color: #55ff55;
@@ -69,30 +74,35 @@
             98% { opacity: 1; }
         }
 
-        /* Eyes – ovoid shape, above shadow mask, larger irises, pupils follow mouse, progressive shake near link */
+        /* Eyes – pixel art (blocky rectangles), above shadow mask, pupils follow mouse, progressive shake near link */
         .eye {
             position: fixed;
-            border-radius: 50%;
+            border-radius: 0;
             background: #c0c0c0;
             overflow: hidden;
             z-index: 9;
             box-shadow: 0 0 0 2px #000;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
         .eye .iris {
             position: absolute;
             left: 50%;
             top: 50%;
-            border-radius: 50%;
+            border-radius: 0;
             background: #2d5a2d;
-            box-shadow: inset 0 -1px 4px rgba(0,0,0,0.4);
+            box-shadow: none;
             transition: transform 0.08s ease-out;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .eye .pupil {
             position: absolute;
             left: 50%;
             top: 50%;
             background: #000;
-            border-radius: 50%;
+            border-radius: 0;
             transition: transform 0.08s ease-out;
         }
         .eye::after {
@@ -103,7 +113,7 @@
             top: 0;
             height: 0;
             background: #c0c0c0;
-            border-radius: 50%;
+            border-radius: 0;
             pointer-events: none;
         }
         .eye.eye-blink::after {
@@ -116,15 +126,15 @@
         .eye--sm { width: 40px; height: 24px; }
         .eye--sm .iris { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
         .eye--sm .pupil { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
-        .eye--md { width: 58px; height: 34px; }
-        .eye--md .iris { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
-        .eye--md .pupil { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
-        .eye--lg { width: 78px; height: 46px; }
-        .eye--lg .iris { width: 48px; height: 48px; margin: -24px 0 0 -24px; }
-        .eye--lg .pupil { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
-        .eye--xl { width: 100px; height: 58px; }
-        .eye--xl .iris { width: 60px; height: 60px; margin: -30px 0 0 -30px; }
-        .eye--xl .pupil { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+        .eye--md { width: 56px; height: 32px; }
+        .eye--md .iris { width: 32px; height: 32px; margin: -16px 0 0 -16px; }
+        .eye--md .pupil { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+        .eye--lg { width: 72px; height: 40px; }
+        .eye--lg .iris { width: 44px; height: 44px; margin: -22px 0 0 -22px; }
+        .eye--lg .pupil { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
+        .eye--xl { width: 88px; height: 48px; }
+        .eye--xl .iris { width: 52px; height: 52px; margin: -26px 0 0 -26px; }
+        .eye--xl .pupil { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
         .eye--tl { top: 6%; left: 8%; }
         .eye--tr { top: 6%; right: 8%; left: auto; }
         .eye--t2 { top: 5%; left: 22%; }
@@ -281,9 +291,25 @@
     <script>
         (function() {
             let ctx = null;
+            function playBootSound(c) {
+                const gain = c.createGain();
+                gain.gain.value = 0.2;
+                gain.connect(c.destination);
+                function beep(freq, start, duration) {
+                    const osc = c.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.value = freq;
+                    osc.connect(gain);
+                    osc.start(start);
+                    osc.stop(start + duration);
+                }
+                beep(320, 0, 0.12);
+                beep(480, 0.2, 0.12);
+            }
             function startHum() {
                 if (ctx) return;
                 ctx = new (window.AudioContext || window.webkitAudioContext)();
+                try { playBootSound(ctx); } catch (e) {}
                 const osc = ctx.createOscillator();
                 osc.type = 'sine';
                 osc.frequency.value = 55;
@@ -291,7 +317,7 @@
                 gain.gain.value = 0.06;
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-                osc.start(0);
+                osc.start(0.5);
             }
             document.body.addEventListener('click', startHum, { once: true });
             document.body.addEventListener('keydown', startHum, { once: true });
