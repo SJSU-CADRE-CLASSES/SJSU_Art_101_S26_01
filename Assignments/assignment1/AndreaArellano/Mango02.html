@@ -12,17 +12,42 @@
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
+                position: relative;
+                overflow: hidden;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                color: #1f1f1f;
+            }
+
+            h1 {
+                margin: 18px;
+                font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            }
+
+            .mango-link {
+                position: absolute;
+                top: 58%;
+                left: 20%;
+                transform: translate(-50%, -50%);
+                display: inline-block;
+            }
+
+            .mango-link img {
+                width: clamp(140px, 18vw, 200px);
+                height: auto;
+                filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
+                transition: transform 0.3s ease;
+            }
+
+            .mango-link:hover img {
+                transform: scale(1.05);
             }
         </style>
     </head>
     <body>
         <h1>The Mango is consuming me</h1>
-        <nav>
-            <a href="Mango01.html">Previous</a>
-            |
-            <a href="index.html">Home</a>
-            |
-            <a href="Mango03.html">Next</a>
-        </nav>
+        <a class="mango-link" href="Mango03.html">
+            <img src="mango-transparent-background-free-png.png" alt="Continue to the next mango scene">
+        </a>
     </body>
 </html>
