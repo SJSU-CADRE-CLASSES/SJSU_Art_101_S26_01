@@ -75,15 +75,8 @@
         .page-text a:hover {
             color: #55ff55;
         }
-        body.shake .eyes-wrap {
-            animation: page-shake 0.4s ease-out;
-        }
-        @keyframes page-shake {
-            0%, 100% { transform: translate(0, 0); }
-            20% { transform: translate(-4px, 2px); }
-            40% { transform: translate(4px, -2px); }
-            60% { transform: translate(-2px, -4px); }
-            80% { transform: translate(2px, 4px); }
+        .eyes-wrap.proximity-shake {
+            transition: transform 0.05s ease-out;
         }
     </style>
 </head>
@@ -151,24 +144,28 @@
                         pupil.style.transform = 'translate(-50%, -50%)';
                     }
                 });
+                var linkRect = nextLink.getBoundingClientRect();
+                var linkCx = linkRect.left + linkRect.width / 2;
+                var linkCy = linkRect.top + linkRect.height / 2;
+                var dist = Math.hypot(mouse.x - linkCx, mouse.y - linkCy);
+                var maxDist = 220;
+                if (dist < maxDist) {
+                    wrap.classList.add('proximity-shake');
+                    var t = Date.now() / 40;
+                    var intensity = 1 - dist / maxDist;
+                    var shakeX = (Math.sin(t) * 2 + Math.sin(t * 1.3) * 1.5) * intensity * 8;
+                    var shakeY = (Math.cos(t * 0.9) * 2 + Math.cos(t * 1.1) * 1.5) * intensity * 8;
+                    wrap.style.transform = 'translate(' + shakeX + 'px, ' + shakeY + 'px)';
+                } else {
+                    wrap.classList.remove('proximity-shake');
+                    wrap.style.transform = 'translate(0, 0)';
+                }
                 requestAnimationFrame(updatePupils);
             }
             updatePupils();
 
-            var lastShake = 0;
-            var shakeCheck = setInterval(function() {
-                var linkRect = nextLink.getBoundingClientRect();
-                var dist = Math.hypot(mouse.x - (linkRect.left + linkRect.width / 2), mouse.y - (linkRect.top + linkRect.height / 2));
-                if (dist < 100 && Date.now() - lastShake > 600) {
-                    lastShake = Date.now();
-                    document.body.classList.add('shake');
-                    setTimeout(function() { document.body.classList.remove('shake'); }, 420);
-                }
-            }, 150);
-
             nextLink.addEventListener('click', function() {
                 blinkIntervals.forEach(clearInterval);
-                clearInterval(shakeCheck);
             });
         })();
     </script>
