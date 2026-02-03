@@ -13,13 +13,13 @@
 
         body {
             min-height: 100vh;
-            background-color: #3c5c69;
+            background-color: gray;
         }
 
         .images {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             padding: 1rem;
             min-height: 100vh;
             gap: 1rem;
@@ -40,7 +40,7 @@
             flex: 1;
             display: flex;
             justify-content: flex-end;
-            align-items: flex-start;
+            align-items: center;
             min-width: 0;
         }
 
@@ -52,6 +52,13 @@
             height: auto;
             object-fit: contain;
             border-radius: 8px;
+        }
+
+        .images .stairs-wrap img.stairs-img {
+            max-width: 50%;
+            max-height: 40vh;
+            transform: scale(2);
+            transform-origin: right center;
         }
 
         .bottom-text {
@@ -69,8 +76,8 @@
 </head>
 <body>
     <div class="images">
-        <div class="img-wrap"><img src="Phase_1.jpg" alt="Phase 1"></div>
-        <div class="stairs-wrap"><a href="page2.html"><img src="stairs_1.jpg" alt="Stairs 1" class="stairs-img"></a></div>
+        <div class="img-wrap"><img src="Phase_4.jpg" alt="Phase 4"></div>
+        <div class="stairs-wrap"><a href="page5.html"><img src="stairs4.jpg" alt="Stairs 4" class="stairs-img"></a></div>
     </div>
     <p class="bottom-text">Go downstairs</p>
 </body>
