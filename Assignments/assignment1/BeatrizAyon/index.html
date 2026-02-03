@@ -54,6 +54,12 @@
             display: none; /* hide explanatory text */
         }
 
+        .tagline,
+        .subtitle,
+        .hint {
+            display: none; /* hide top text as well */
+        }
+
         /* Boy in bed scene */
         .bed {
             position: absolute;
@@ -436,29 +442,29 @@
 
         .boy-eye {
             position: absolute;
-            top: 52%;
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
+            top: 55%;
+            width: 12px;
+            height: 4px;
+            border-radius: 999px;
             background: #020617;
         }
 
         .boy-eye.left {
-            left: 28%;
+            left: 26%;
         }
 
         .boy-eye.right {
-            right: 28%;
+            right: 26%;
         }
 
         .boy-mouth-smile {
             position: absolute;
-            top: 69%;
+            top: 70%;
             left: 50%;
-            width: 22px;
-            height: 20px;
-            border-radius: 0 0 999px 999px;
-            border-bottom: 3px solid #111827;
+            width: 28px;
+            height: 2px;
+            background: #111827;
+            border-radius: 999px;
             transform: translateX(-50%);
         }
 
@@ -468,11 +474,10 @@
             bottom: 50%;
             width: 120px;
             height: 40px;
-            background: radial-gradient(circle at 50% 10%, #e5e7eb 0, #d1d5db 55%, #9ca3af 100%);
+            background: #d0d0d0;
             border-radius: 999px;
-            box-shadow:
-                    0 8px 16px rgba(15, 23, 42, 0.9),
-                    0 0 0 2px rgba(148, 163, 184, 0.8);
+            box-shadow: 0 0 0 1px #999999;
+            cursor: pointer;
         }
 
         .egg {
@@ -574,23 +579,20 @@
             left: 58%;
             width: 34%;
             height: 44%;
-            border-radius: 18px;
-            background: linear-gradient(to top, #22c55e, #22c55e 30%, #0ea5e9 70%, #38bdf8 100%);
-            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.9);
+            border-radius: 4px;
+            background: #9fc4e5;
+            box-shadow: 0 0 0 1px #777777;
             overflow: hidden;
         }
 
         .window-day-sun {
             position: absolute;
-            top: 14%;
+            top: 18%;
             left: 20%;
-            width: 54px;
-            height: 54px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fefce8 0, #fde68a 40%, #facc15 100%);
-            box-shadow:
-                    0 0 40px rgba(250, 204, 21, 0.9),
-                    0 0 80px rgba(250, 204, 21, 0.7);
+            background: #ffd966;
         }
 
         .window-day-cloud {
@@ -637,61 +639,219 @@
             width: 80%;
             height: 40%;
             border-radius: 999px;
-            background: radial-gradient(circle at 40% 0%, #22c55e 0, #16a34a 52%, #15803d 100%);
+            background: #7ba86b;
         }
 
         .window-hill.right {
             left: 30%;
             width: 80%;
-            background: radial-gradient(circle at 60% 0%, #4ade80 0, #22c55e 52%, #16a34a 100%);
+            background: #88b879;
         }
 
-        .next-button {
-            margin-top: 1.75rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-            padding: 0.7rem 1.2rem;
+        /* Office scene */
+        .office-room {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: #c5cad0;
+            overflow: hidden;
+            transition: background 0.4s ease;
+        }
+
+        .office-room.office-morning {
+            background: #c7ced7;
+        }
+
+        .office-room.office-afternoon {
+            background: #a9b0ba;
+        }
+
+        .office-room.office-evening {
+            background: #7d828b;
+        }
+
+        .office-room.office-night {
+            background: #4a4d54;
+        }
+
+        .office-window {
+            position: absolute;
+            top: 10%;
+            right: 8%;
+            width: 26%;
+            height: 40%;
+            border-radius: 4px;
+            background: #8ea8c7;
+            box-shadow: 0 0 0 1px #555555;
+        }
+
+        .office-desk {
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            bottom: 18%;
+            height: 26%;
+            background: #707070;
+            border-radius: 6px;
+        }
+
+        .office-desk::before {
+            content: "";
+            position: absolute;
+            inset: 10% 8% 55%;
+            background: #8a8a8a;
+            border-radius: 4px;
+        }
+
+        .office-boy {
+            position: absolute;
+            bottom: 18%;
+            left: 22%;
+            width: 90px;
+            height: 120px;
+        }
+
+        .office-boy-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 80px;
+            height: 78px;
+            background: #8080b0;
+            border-radius: 40px 40px 26px 26px;
+            transform: translateX(-50%);
+        }
+
+        .office-boy-head {
+            position: absolute;
+            bottom: 78%;
+            left: 50%;
+            width: 68px;
+            height: 68px;
+            background: #f4c9a1;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+        .office-boy-hair {
+            position: absolute;
+            inset: 0 0 42%;
+            background: #303030;
+            border-radius: 55% 45% 45% 45%;
+        }
+
+        .office-boy-eye {
+            position: absolute;
+            top: 56%;
+            width: 12px;
+            height: 4px;
             border-radius: 999px;
-            border: none;
-            background: #0f172a;
-            color: white;
-            font-size: 0.9rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.6);
-            transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+            background: #111111;
         }
 
-        .next-button span.icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .office-boy-eye.left {
+            left: 26%;
+        }
+
+        .office-boy-eye.right {
+            right: 26%;
+        }
+
+        .office-boy-mouth {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            width: 24px;
+            height: 10px;
+            border-radius: 0 0 999px 999px;
+            border-bottom: 3px solid #262626;
+            transform: translateX(-50%) rotate(10deg);
+        }
+
+        .office-monitor {
+            position: absolute;
+            left: 48%;
+            bottom: 32%;
+            width: 120px;
+            height: 70px;
+            background: #303030;
+            border-radius: 4px;
+            box-shadow: 0 0 0 2px #555555;
+        }
+
+        .office-monitor-screen {
+            position: absolute;
+            inset: 10% 10%;
+            background: #c0c0c0;
+        }
+
+        .office-monitor-stand {
+            position: absolute;
+            left: 50%;
+            bottom: -14px;
+            width: 24px;
+            height: 14px;
+            background: #404040;
+            transform: translateX(-50%);
+        }
+
+        .office-keyboard {
+            position: absolute;
+            left: 46%;
+            bottom: 24%;
+            width: 110px;
+            height: 18px;
+            background: #d0d0d0;
+            border-radius: 4px;
+        }
+
+        .office-mouse {
+            position: absolute;
+            left: 64%;
+            bottom: 21%;
             width: 22px;
-            height: 22px;
+            height: 30px;
+            background: #e0e0e0;
             border-radius: 999px;
-            background: rgba(248, 250, 252, 0.12);
-            font-size: 0.95rem;
+            box-shadow: 0 0 0 1px #999999;
+            cursor: pointer;
         }
 
-        .next-button:hover {
-            transform: translateY(-1px);
-            background: #020617;
-            box-shadow: 0 16px 28px rgba(15, 23, 42, 0.7);
+        .office-mouse::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            width: 2px;
+            height: 10px;
+            background: #777777;
+            transform: translateX(-50%);
         }
 
-        .next-button:active {
-            transform: translateY(1px) scale(0.99);
-            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.7);
+        .office-clock {
+            position: absolute;
+            top: 12%;
+            left: 10%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            box-shadow: 0 0 0 1px #777777;
         }
 
-        .tagline {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: #94a3b8;
-            margin-bottom: 0.5rem;
+        .office-clock-hand-hour,
+        .office-clock-hand-minute {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2px;
+            height: 12px;
+            background: #333333;
+            transform-origin: bottom center;
+        }
+
+        .office-clock-hand-minute {
+            height: 16px;
         }
 
         @keyframes shake {
@@ -836,7 +996,7 @@
                             </div>
                         </div>
 
-                        <div class="plate">
+                        <div class="plate" id="plate-button">
                             <div class="egg">
                                 <div class="egg-yolk"></div>
                             </div>
@@ -863,20 +1023,62 @@
                         The window is bright, the hills are green, and a new morning has begun.
                     </p>
 
-                    <button class="next-button" id="restart-button">
-                        <span class="icon">⏰</span>
-                        Watch him wake up again
-                    </button>
                 </div>
+            </div>
+
+            <!-- Scene 3: Office -->
+            <div class="scene scene-office" id="scene-office">
+                <div class="scene-visual">
+                    <div class="office-room office-morning" id="office-room">
+                        <div class="office-window"></div>
+                        <div class="office-desk"></div>
+                        <div class="office-boy">
+                            <div class="office-boy-body"></div>
+                            <div class="office-boy-head">
+                                <div class="office-boy-hair"></div>
+                                <div class="office-boy-eye left"></div>
+                                <div class="office-boy-eye right"></div>
+                                <div class="office-boy-mouth"></div>
+                            </div>
+                        </div>
+
+                        <div class="office-monitor">
+                            <div class="office-monitor-screen"></div>
+                            <div class="office-monitor-stand"></div>
+                        </div>
+                        <div class="office-keyboard"></div>
+                        <div class="office-mouse" id="office-mouse"></div>
+
+                        <div class="office-clock">
+                            <div class="office-clock-hand-hour" id="clock-hour"></div>
+                            <div class="office-clock-hand-minute" id="clock-minute"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="scene-text"></div>
             </div>
         </section>
     </main>
 
     <script>
         const alarmButton = document.getElementById("alarm-button");
-        const restartButton = document.getElementById("restart-button");
+        const plateButton = document.getElementById("plate-button");
         const wakeupScene = document.getElementById("scene-wakeup");
         const breakfastScene = document.getElementById("scene-breakfast");
+        const officeScene = document.getElementById("scene-office");
+        const officeRoom = document.getElementById("office-room");
+        const officeMouse = document.getElementById("office-mouse");
+        const clockHour = document.getElementById("clock-hour");
+        const clockMinute = document.getElementById("clock-minute");
+
+        const officePhases = [
+            { roomClass: "office-morning", hourDeg: 30, minuteDeg: 0 },   // ~1:00
+            { roomClass: "office-afternoon", hourDeg: 90, minuteDeg: 0 }, // ~3:00
+            { roomClass: "office-evening", hourDeg: 150, minuteDeg: 0 },  // ~5:00
+            { roomClass: "office-night", hourDeg: 210, minuteDeg: 0 }     // ~7:00
+        ];
+
+        let officePhaseIndex = 0;
 
         function showBreakfastScene() {
             wakeupScene.classList.remove("active");
@@ -888,8 +1090,28 @@
             wakeupScene.classList.add("active");
         }
 
+        function showOfficeScene() {
+            breakfastScene.classList.remove("active");
+            officeScene.classList.add("active");
+            officePhaseIndex = 0;
+            applyOfficePhase();
+        }
+
+        function applyOfficePhase() {
+            const phase = officePhases[officePhaseIndex];
+            officeRoom.className = "office-room " + phase.roomClass;
+            clockHour.style.transform = "translate(-50%, 0) rotate(" + phase.hourDeg + "deg)";
+            clockMinute.style.transform = "translate(-50%, 0) rotate(" + phase.minuteDeg + "deg)";
+        }
+
+        function advanceOfficeTime() {
+            officePhaseIndex = (officePhaseIndex + 1) % officePhases.length;
+            applyOfficePhase();
+        }
+
         alarmButton.addEventListener("click", showBreakfastScene);
-        restartButton.addEventListener("click", showWakeupScene);
+        plateButton.addEventListener("click", showOfficeScene);
+        officeMouse.addEventListener("click", advanceOfficeTime);
     </script>
 </body>
 </html>
