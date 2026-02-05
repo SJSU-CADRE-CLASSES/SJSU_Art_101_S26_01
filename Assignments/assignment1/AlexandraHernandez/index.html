@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartoon Dodgeball | Alexandra Hernandez</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Comic Neue', cursive;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #87CEEB 0%, #E8F4E8 50%, #8B4513 100%);
+      background-attachment: fixed;
+      padding: 0;
+    }
+
+    /* Gym floor stripes */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 80px,
+        rgba(0,0,0,0.03) 80px,
+        rgba(0,0,0,0.03) 82px
+      );
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 50rem;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 3.5rem;
+      color: #C41E3A;
+      text-shadow: 4px 4px 0 #1E3A8A, 6px 6px 0 rgba(0,0,0,0.2);
+      letter-spacing: 3px;
+      margin: 0;
+      animation: wobble 2s ease-in-out infinite;
+    }
+
+    @keyframes wobble {
+      0%, 100% { transform: rotate(-1deg); }
+      50% { transform: rotate(1deg); }
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: #1E3A8A;
+      margin-top: 0.5rem;
+    }
+
+    /* Floating cartoon balls */
+    .balls-display {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+
+    .ball {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #FF6B6B, #C41E3A);
+      border: 3px solid #333;
+      box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3), 3px 3px 0 rgba(0,0,0,0.3);
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    .ball:nth-child(2) { animation-delay: 0.15s; }
+    .ball:nth-child(3) { animation-delay: 0.3s; }
+    .ball:nth-child(4) { animation-delay: 0.45s; }
+    .ball:nth-child(5) { animation-delay: 0.6s; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    section {
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      border: 4px solid #333;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.2), inset 0 0 0 4px #fff;
+    }
+
+    section h2 {
+      font-family: 'Bangers', cursive;
+      font-size: 1.8rem;
+      color: #1E3A8A;
+      margin-top: 0;
+      border-bottom: 3px dashed #C41E3A;
+      padding-bottom: 0.5rem;
+    }
+
+    section p, section ul {
+      line-height: 1.8;
+      color: #333;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    .court-sketch {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 2rem;
+      background: #228B22;
+      border-radius: 12px;
+      border: 4px solid #1a6b1a;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .court-sketch::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: white;
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+
+    .team-side {
+      text-align: center;
+    }
+
+    .team-side span {
+      display: inline-block;
+      font-family: 'Bangers', cursive;
+      font-size: 1.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: white;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    }
+
+    .team-red { background: #C41E3A; }
+    .team-blue { background: #1E3A8A; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #555;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ CARTOON DODGEBALL ⚡</h1>
+      <p class="subtitle">The most epic playground sport, cartoon-style!</p>
+      <div class="balls-display">
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>What is Dodgeball?</h2>
+      <p>Dodgeball is the classic gym-class game where two teams face off, hurling rubber balls at each other while dodging incoming fire! In cartoon world, it's even more exaggerated—balls leave trails, characters spin in mid-air, and getting hit means a comedic spiral into the wall. It's chaos, laughs, and pure fun!</p>
+    </section>
+
+    <section>
+      <h2>Cartoon Dodgeball Rules</h2>
+      <ul>
+        <li><strong>Stay in bounds!</strong> Step out of the court and you're out.</li>
+        <li><strong>Catch = Revival:</strong> Catch a thrown ball and a teammate comes back in.</li>
+        <li><strong>Hit = Out:</strong> Get tagged by a ball and you're sitting on the sideline.</li>
+        <li><strong>Head shots don't count</strong> (in friendly games).</li>
+        <li><strong>Last team standing wins!</strong> Or the team with the most players when time runs out.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>The Court</h2>
+      <div class="court-sketch">
+        <div class="team-side"><span class="team-red">RED TEAM</span></div>
+        <div class="team-side"><span class="team-blue">BLUE TEAM</span></div>
+      </div>
+      <p>Two sides, one center line, and a whole lot of rubber balls. Simple, right? In cartoon dodgeball, the court might stretch, shrink, or tilt—but the spirit of the game stays the same!</p>
+    </section>
+
+    <section>
+      <h2>Why We Love It</h2>
+      <p>Cartoon dodgeball captures that mix of competition and silliness. Nobody takes themselves too seriously—you duck, dive, and dodge with exaggerated moves, and everyone laughs when someone gets pegged. It's the perfect blend of gym class nostalgia and over-the-top animated action!</p>
+    </section>
+
+    <footer>
+      <p>Alexandra Hernandez • SJSU Art 101 S26 01 • Assignment 1</p>
+    </footer>
+  </div>
+</body>
+</html>
