@@ -154,6 +154,14 @@
       border: 3px solid #333;
       box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 3px 3px 0 rgba(0,0,0,0.3);
       animation: windup 2s ease-in-out infinite;
+      display: block;
+      cursor: pointer;
+      text-decoration: none;
+      z-index: 5;
+    }
+
+    a.ball:hover {
+      transform: scale(1.15);
     }
 
     @keyframes windup {
@@ -200,7 +208,7 @@
       <div class="eye eye-right"></div>
     </div>
     <div class="arm-back"></div>
-    <div class="ball"></div>
+    <a href="getting-hit.html" class="ball" title="Throw the ball!"></a>
     <div class="arm-front"></div>
     <div class="ground"></div>
   </div>
