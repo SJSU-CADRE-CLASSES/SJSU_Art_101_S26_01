@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release of Liability</title>
+</head>
+<body>
+    <h1>Release of Liability and Consent</h1>
+
+    <section>
+        <h2>Agreement</h2>
+        <p>
+            I understand that participation may involve risks, including but not limited to physical injury, discomfort, or other foreseeable and unforeseeable harms. I voluntarily assume all such risks.
+        </p>
+        <p>
+            I hereby release, waive, discharge, and covenant not to sue the organizers, facilitators, and any related parties from any and all liability, claims, demands, or causes of action arising out of or related to my participation, whether caused by negligence or otherwise.
+        </p>
+        <p>
+            I have read this release of liability, understand its terms, and agree to be bound by it. I am signing of my own free will.
+        </p>
+    </section>
+
+    <form>
+        <fieldset>
+            <legend>Do you agree to the terms above?</legend>
+            <label>
+                <input type="radio" name="agree" value="yes" required>
+                Yes
+            </label>
+            <label>
+                <input type="radio" name="agree" value="no">
+                No
+            </label>
+        </fieldset>
+
+        <p>
+            <label for="signature">Signature (type your full name):</label><br>
+            <input type="text" id="signature" name="signature" placeholder="Full name" required>
+        </p>
+
+        <p>
+            <button type="submit">Sign and continue</button>
+        </p>
+    </form>
+    <script>
+        document.querySelectorAll('input[name="agree"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === 'no') {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
