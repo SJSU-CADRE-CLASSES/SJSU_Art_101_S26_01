@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEATH - Erin Koga</title>
+    <style>
+        body {
+            background-color: #000000;
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            color: #ff0000;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .subheader {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .tenor-gif-embed {
+            max-width: 60%;
+            margin: 2rem auto 0;
+        }
+    </style>
+</head>
+<body>
+    <audio id="uaaghh" src="jerma-uaaghh.mp3" autoplay loop></audio>
+    <audio id="life-pain" src="life_is_pain_i_hatemp3converter.mp3" autoplay></audio>
+    <audio id="freddy" src="jerma-freddy-fazbear.mp3" autoplay loop></audio>
+    <audio id="best-noise" src="jerma-best-noise-1.mp3" autoplay loop></audio>
+    <audio id="jeremy" src="jeremy-noise.mp3" autoplay loop></audio>
+    <audio id="hitsound" src="hitsound-1.mp3" autoplay loop></audio>
+    <h1>WELCOME TO YOUR ETERNAL SENTENCING</h1>
+    <p class="subheader">your choices lead you to being put in a room with your new friend Jeremy! he will forever sit here and do this thing at you for eternity now while the beautiful sounds of hell play outside</p>
+    <div class="tenor-gif-embed" data-postid="24490029" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/jeremy-smiling-friends-psychicpebbles-charlie-gif-24490029">Jeremy Smiling Friends GIF</a>from <a href="https://tenor.com/search/jeremy-gifs">Jeremy GIFs</a></div>
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+    <button style="margin-top: 2rem; padding: 0.75rem 1.5rem; font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 1.1rem; border-radius: 8px; border: none; cursor: pointer; background-color: #ff0000; color: #ffffff;" onclick="stopNoises()">stop noises</button>
+    <button style="margin-top: 0.5rem; margin-left: 0.5rem; padding: 0.75rem 1.5rem; font-family: 'Comic Sans MS', 'Comic Sans', cursive; font-size: 1.1rem; border-radius: 8px; border: none; cursor: pointer; background-color: #8b0000; color: #ffffff;" onclick="resumeNoises()">RESUME YOUR TORTURE</button>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var uaaghh = document.getElementById('uaaghh');
+            if (uaaghh) {
+                uaaghh.volume = 0.05;
+            }
+            var best = document.getElementById('best-noise');
+            if (best) {
+                best.volume = 0.5;
+            }
+            var jeremy = document.getElementById('jeremy');
+            if (jeremy) {
+                jeremy.volume = 1.0; // 100% (max allowed)
+            }
+        });
+        function stopNoises() {
+            document.querySelectorAll('audio').forEach(function (el) {
+                el.pause();
+                el.currentTime = 0;
+            });
+        }
+        function resumeNoises() {
+            document.querySelectorAll('audio').forEach(function (el) {
+                el.play();
+            });
+        }
+    </script>
+</body>
+</html>

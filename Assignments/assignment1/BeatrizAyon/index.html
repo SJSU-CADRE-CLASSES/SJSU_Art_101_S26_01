@@ -3,9 +3,1557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beatriz Ayon</title>
+    <title>Morning Story – Beatriz Ayon</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Courier New", Courier, monospace;
+            background: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+        }
+
+        .scene-wrapper {
+            width: min(800px, 100%);
+            padding: 1.5rem;
+        }
+
+        .card {
+            position: relative;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px #b0b0b0;
+            padding: 1.5rem;
+        }
+
+        .cycle-message {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 20;
+        }
+
+        .cycle-message.visible {
+            opacity: 1;
+        }
+
+        .cycle-message span {
+            font-size: 1rem;
+            color: #000000;
+        }
+
+        .scene {
+            display: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .scene.active {
+            display: flex;
+        }
+
+        .scene-visual {
+            flex: 0 0 55%;
+            position: relative;
+            min-height: 260px;
+        }
+
+        .scene-text {
+            flex: 1;
+            display: none; /* hide explanatory text */
+        }
+
+        .tagline,
+        .subtitle,
+        .hint {
+            display: none; /* hide top text as well */
+        }
+
+        .tip {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-size: 0.8rem;
+            color: #333333;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 4px;
+            padding: 2px 8px;
+            border: 1px solid #bcbcbc;
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        /* Boy in bed scene */
+        .bed {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: #c0c0c0;
+            overflow: hidden;
+        }
+
+        .bed::before {
+            /* wall */
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: #b0b0b0;
+            opacity: 1;
+        }
+
+        .bed-frame {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            bottom: 12%;
+            height: 40%;
+            background: #0b1120;
+            border-radius: 18px;
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .mattress {
+            position: absolute;
+            inset: 9% 6% auto;
+            height: 65%;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .blanket {
+            position: absolute;
+            inset: 32% 6% 0;
+            background: #9999ff;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        .blanket::before {
+            content: "";
+            position: absolute;
+            inset: 25% 20% 25% 10%;
+            background: #8080d0;
+            border-radius: 999px;
+            opacity: 1;
+        }
+
+        .boy-head {
+            position: absolute;
+            bottom: 53%;
+            left: 26%;
+            width: 80px;
+            height: 80px;
+            background: #fed7aa;
+            border-radius: 50%;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.65);
+        }
+
+        .hair {
+            position: absolute;
+            inset: 0 0 38%;
+            background: radial-gradient(circle at 15% 35%, #1f2933 0, #020617 45%, #020617 100%);
+            border-radius: 50% 50% 40% 40%;
+        }
+
+        .eye {
+            position: absolute;
+            top: 55%;
+            width: 10px;
+            height: 4px;
+            border-radius: 999px;
+            background: #111827;
+        }
+
+        .eye.left {
+            left: 26%;
+            transform: rotate(-2deg);
+        }
+
+        .eye.right {
+            right: 26%;
+            transform: rotate(2deg);
+        }
+
+        .mouth {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            width: 22px;
+            height: 10px;
+            border-radius: 999px 999px 0 0;
+            border-top: 3px solid #111827;
+            transform: translateX(-50%);
+        }
+
+        .pillow {
+            position: absolute;
+            bottom: 61%;
+            left: 19%;
+            width: 120px;
+            height: 70px;
+            background: #e5e7eb;
+            border-radius: 22px;
+            box-shadow:
+                    0 4px 8px rgba(15, 23, 42, 0.7),
+                    0 0 0 2px rgba(148, 163, 184, 0.8);
+        }
+
+        .alarm {
+            position: absolute;
+            right: 11%;
+            bottom: 46%;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 20%, #fee2e2 0, #f97373 30%, #ef4444 100%);
+            border-radius: 50%;
+            box-shadow:
+                    0 0 0 4px rgba(248, 113, 113, 0.85),
+                    0 16px 26px rgba(248, 113, 113, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .alarm:hover {
+            transform: translateY(-2px) scale(1.03);
+            filter: brightness(1.07);
+        }
+
+        .alarm:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow:
+                    0 0 0 3px rgba(248, 113, 113, 0.6),
+                    0 8px 14px rgba(0, 0, 0, 0.8);
+        }
+
+        .alarm-face {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 20%, #fefce8 0, #fef3c7 35%, #fde68a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 0 0 2px rgba(251, 191, 36, 0.9);
+        }
+
+        .alarm-hand {
+            position: absolute;
+            width: 3px;
+            height: 16px;
+            background: #0f172a;
+            border-radius: 999px;
+            transform-origin: bottom center;
+            animation: shake 0.16s infinite alternate;
+        }
+
+        .alarm-dot {
+            width: 7px;
+            height: 7px;
+            background: #0f172a;
+            border-radius: 50%;
+        }
+
+        .alarm-leg {
+            position: absolute;
+            bottom: -12px;
+            width: 12px;
+            height: 14px;
+            border-radius: 0 0 999px 999px;
+            background: #020617;
+        }
+
+        .alarm-leg.left {
+            left: 18px;
+        }
+
+        .alarm-leg.right {
+            right: 18px;
+        }
+
+        .alarm-bell {
+            position: absolute;
+            top: -18px;
+            width: 24px;
+            height: 16px;
+            border-radius: 999px 999px 0 0;
+            background: #fee2e2;
+        }
+
+        .alarm-bell.left {
+            left: 4px;
+        }
+
+        .alarm-bell.right {
+            right: 4px;
+        }
+
+        .alarm-handle {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            width: 26px;
+            height: 10px;
+            border-radius: 999px;
+            border: 3px solid #fecaca;
+            border-bottom: none;
+            transform: translateX(-50%);
+        }
+
+        .window {
+            position: absolute;
+            top: 10%;
+            left: 60%;
+            width: 30%;
+            height: 38%;
+            border-radius: 4px;
+            background: #87b3e0;
+            box-shadow: 0 0 0 1px #555;
+            overflow: hidden;
+        }
+
+        .window-sun {
+            position: absolute;
+            bottom: 0;
+            left: 35%;
+            width: 40px;
+            height: 40px;
+            background: #ffd966;
+            border-radius: 50%;
+            box-shadow: none;
+        }
+
+        .window-cloud {
+            position: absolute;
+            bottom: 18%;
+            width: 60px;
+            height: 26px;
+            background: #e5f0ff;
+            border-radius: 999px;
+        }
+
+        .window-cloud::before,
+        .window-cloud::after {
+            content: "";
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: #e5f0ff;
+            border-radius: 50%;
+            top: -12px;
+        }
+
+        .window-cloud::before {
+            left: 4px;
+        }
+
+        .window-cloud::after {
+            right: 4px;
+        }
+
+        .window-cloud.left {
+            left: 8%;
+        }
+
+        .window-cloud.right {
+            right: 8%;
+        }
+
+        .night-stand {
+            position: absolute;
+            right: 6%;
+            bottom: 13%;
+            width: 90px;
+            height: 70px;
+            background: linear-gradient(to right, #111827, #020617);
+            border-radius: 10px;
+            box-shadow:
+                    0 9px 20px rgba(0, 0, 0, 0.9),
+                    0 0 0 1px rgba(15, 23, 42, 0.7);
+        }
+
+        .night-stand::before,
+        .night-stand::after {
+            content: "";
+            position: absolute;
+            left: 12%;
+            right: 12%;
+            height: 2px;
+            background: rgba(148, 163, 184, 0.6);
+        }
+
+        .night-stand::before {
+            top: 32%;
+        }
+
+        .night-stand::after {
+            top: 65%;
+        }
+
+        .night-stand-knob {
+            position: absolute;
+            top: 27%;
+            left: 50%;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #64748b;
+            transform: translateX(-50%);
+        }
+
+        .night-stand-knob.bottom {
+            top: 61%;
+        }
+
+        /* Breakfast scene */
+        .table {
+            position: absolute;
+            inset: auto 4% 3%;
+            height: 45%;
+            background: #555555;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        .table-top {
+            position: absolute;
+            inset: 8% 7% 45%;
+            background: #666666;
+            border-radius: 6px;
+            box-shadow: none;
+        }
+
+        .boy-breakfast {
+            position: absolute;
+            bottom: 44%;
+            left: 24%;
+            width: 100px;
+            height: 120px;
+        }
+
+        .boy-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 90px;
+            height: 80px;
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            border-radius: 40px 40px 30px 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.8);
+        }
+
+        .boy-head-day {
+            position: absolute;
+            bottom: 70%;
+            left: 50%;
+            width: 72px;
+            height: 72px;
+            background: #fed7aa;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.75);
+        }
+
+        .boy-hair-day {
+            position: absolute;
+            inset: 0 0 40%;
+            background: radial-gradient(circle at 20% 30%, #1f2933 0, #020617 50%, #020617 100%);
+            border-radius: 55% 45% 45% 45%;
+        }
+
+        .boy-eye {
+            position: absolute;
+            top: 55%;
+            width: 12px;
+            height: 4px;
+            border-radius: 999px;
+            background: #020617;
+        }
+
+        .boy-eye.left {
+            left: 26%;
+            transform: rotate(-2deg);
+        }
+
+        .boy-eye.right {
+            right: 26%;
+            transform: rotate(2deg);
+        }
+
+        .boy-mouth-smile {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            width: 26px;
+            height: 10px;
+            border-radius: 999px 999px 0 0;
+            border-top: 3px solid #111827;
+            transform: translateX(-50%);
+        }
+
+        .plate {
+            position: absolute;
+            left: 43%;
+            bottom: 50%;
+            width: 120px;
+            height: 40px;
+            background: #d0d0d0;
+            border-radius: 999px;
+            box-shadow: 0 0 0 1px #999999;
+            cursor: pointer;
+        }
+
+        .egg {
+            position: absolute;
+            left: 14%;
+            top: 6px;
+            width: 50px;
+            height: 30px;
+            background: #f9fafb;
+            border-radius: 999px;
+            box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.9);
+        }
+
+        .egg-yolk {
+            position: absolute;
+            inset: 7px 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fef9c3 0, #facc15 45%, #eab308 100%);
+        }
+
+        .toast {
+            position: absolute;
+            right: 16%;
+            top: -12px;
+            width: 50px;
+            height: 40px;
+            background: #f97316;
+            border-radius: 14px 14px 10px 10px;
+            box-shadow:
+                    0 4px 10px rgba(15, 23, 42, 0.7),
+                    inset 0 0 0 3px rgba(248, 171, 116, 0.9);
+        }
+
+        .toast::before {
+            content: "";
+            position: absolute;
+            inset: 8px 8px 14px;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #fed7aa, #fdba74);
+        }
+
+        .cup {
+            position: absolute;
+            left: 16%;
+            bottom: 50%;
+            width: 38px;
+            height: 44px;
+            background: #e5e7eb;
+            border-radius: 10px 10px 14px 14px;
+            box-shadow:
+                    0 6px 12px rgba(15, 23, 42, 0.8),
+                    0 0 0 2px rgba(148, 163, 184, 0.9);
+        }
+
+        .cup::before {
+            content: "";
+            position: absolute;
+            inset: 6px 6px 22px;
+            border-radius: 8px;
+            background: linear-gradient(to top, #0f172a, #020617);
+        }
+
+        .cup-handle {
+            position: absolute;
+            right: -12px;
+            top: 14px;
+            width: 16px;
+            height: 22px;
+            border-radius: 999px;
+            border: 4px solid #e5e7eb;
+            border-left: 4px solid transparent;
+        }
+
+        .steam {
+            position: absolute;
+            left: 8px;
+            top: -16px;
+            width: 8px;
+            height: 18px;
+            border-radius: 999px;
+            background: linear-gradient(to top, rgba(248, 250, 252, 0.1), rgba(248, 250, 252, 0.8));
+            filter: blur(0.4px);
+            animation: steam 1.8s infinite ease-in-out;
+        }
+
+        .steam:nth-child(2) {
+            left: 18px;
+            animation-delay: 0.4s;
+        }
+
+        .steam:nth-child(3) {
+            left: 26px;
+            animation-delay: 0.8s;
+        }
+
+        .window-day {
+            position: absolute;
+            top: 9%;
+            left: 58%;
+            width: 34%;
+            height: 44%;
+            border-radius: 4px;
+            background: #9fc4e5;
+            box-shadow: 0 0 0 1px #777777;
+            overflow: hidden;
+        }
+
+        .window-day-sun {
+            position: absolute;
+            top: 18%;
+            left: 20%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ffd966;
+        }
+
+        .window-day-cloud {
+            position: absolute;
+            top: 18%;
+            width: 68px;
+            height: 30px;
+            background: #f9fafb;
+            border-radius: 999px;
+        }
+
+        .window-day-cloud::before,
+        .window-day-cloud::after {
+            content: "";
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            background: #f9fafb;
+            border-radius: 50%;
+            top: -12px;
+        }
+
+        .window-day-cloud::before {
+            left: 4px;
+        }
+
+        .window-day-cloud::after {
+            right: 4px;
+        }
+
+        .window-day-cloud.left {
+            left: 45%;
+        }
+
+        .window-day-cloud.right {
+            top: 32%;
+            left: 12%;
+        }
+
+        .window-hill {
+            position: absolute;
+            bottom: -4%;
+            left: -10%;
+            width: 80%;
+            height: 40%;
+            border-radius: 999px;
+            background: #7ba86b;
+        }
+
+        .window-hill.right {
+            left: 30%;
+            width: 80%;
+            background: #88b879;
+        }
+
+        /* Office scene */
+        .office-room {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: #c5cad0;
+            overflow: hidden;
+            transition: background 0.4s ease;
+        }
+
+        .office-room.office-morning {
+            background: #c7ced7;
+        }
+
+        .office-room.office-afternoon {
+            background: #a9b0ba;
+        }
+
+        .office-room.office-evening {
+            background: #7d828b;
+        }
+
+        .office-room.office-night {
+            background: #4a4d54;
+        }
+
+        .office-window {
+            position: absolute;
+            top: 10%;
+            right: 8%;
+            width: 26%;
+            height: 40%;
+            border-radius: 4px;
+            background: #8ea8c7;
+            box-shadow: 0 0 0 1px #555555;
+        }
+
+        .office-desk {
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            bottom: 18%;
+            height: 26%;
+            background: #707070;
+            border-radius: 6px;
+        }
+
+        .office-desk::before {
+            content: "";
+            position: absolute;
+            inset: 10% 8% 55%;
+            background: #8a8a8a;
+            border-radius: 4px;
+        }
+
+        .office-boy {
+            position: absolute;
+            bottom: 18%;
+            left: 22%;
+            width: 90px;
+            height: 120px;
+        }
+
+        .office-boy-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 80px;
+            height: 78px;
+            background: #8080b0;
+            border-radius: 40px 40px 26px 26px;
+            transform: translateX(-50%);
+        }
+
+        .office-boy-head {
+            position: absolute;
+            bottom: 78%;
+            left: 50%;
+            width: 68px;
+            height: 68px;
+            background: #f4c9a1;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+        .office-boy-hair {
+            position: absolute;
+            inset: 0 0 42%;
+            background: #303030;
+            border-radius: 55% 45% 45% 45%;
+        }
+
+        .office-boy-eye {
+            position: absolute;
+            top: 56%;
+            width: 12px;
+            height: 4px;
+            border-radius: 999px;
+            background: #111111;
+        }
+
+        .office-boy-eye.left {
+            left: 26%;
+            transform: rotate(-2deg);
+        }
+
+        .office-boy-eye.right {
+            right: 26%;
+            transform: rotate(2deg);
+        }
+
+        .office-boy-mouth {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            width: 24px;
+            height: 10px;
+            border-radius: 999px 999px 0 0;
+            border-top: 3px solid #262626;
+            transform: translateX(-50%);
+        }
+
+        .office-monitor {
+            position: absolute;
+            left: 48%;
+            bottom: 32%;
+            width: 120px;
+            height: 70px;
+            background: #303030;
+            border-radius: 4px;
+            box-shadow: 0 0 0 2px #555555;
+        }
+
+        .office-monitor-screen {
+            position: absolute;
+            inset: 10% 10%;
+            background: #c0c0c0;
+        }
+
+        .office-monitor-stand {
+            position: absolute;
+            left: 50%;
+            bottom: -14px;
+            width: 24px;
+            height: 14px;
+            background: #404040;
+            transform: translateX(-50%);
+        }
+
+        .office-keyboard {
+            position: absolute;
+            left: 46%;
+            bottom: 24%;
+            width: 110px;
+            height: 18px;
+            background: #d0d0d0;
+            border-radius: 4px;
+        }
+
+        .office-mouse {
+            position: absolute;
+            left: 64%;
+            bottom: 21%;
+            width: 22px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 999px;
+            box-shadow: 0 0 0 1px #999999;
+            cursor: pointer;
+        }
+
+        .office-mouse::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            width: 2px;
+            height: 10px;
+            background: #777777;
+            transform: translateX(-50%);
+        }
+
+        .office-clock {
+            position: absolute;
+            top: 12%;
+            left: 10%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            box-shadow: 0 0 0 1px #777777;
+        }
+
+        .office-clock-hand-hour,
+        .office-clock-hand-minute {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2px;
+            height: 12px;
+            background: #333333;
+            transform-origin: bottom center;
+        }
+
+        .office-clock-hand-minute {
+            height: 16px;
+        }
+
+        /* Microwave scene */
+        .microwave-room {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: #b8bcc2;
+            overflow: hidden;
+        }
+
+        .microwave-counter {
+            position: absolute;
+            left: 6%;
+            right: 6%;
+            bottom: 15%;
+            height: 30%;
+            background: #8b8f96;
+            border-radius: 6px;
+        }
+
+        .microwave-box {
+            position: absolute;
+            top: 22%;
+            left: 18%;
+            width: 52%;
+            height: 40%;
+            background: #e5e5e5;
+            border-radius: 6px;
+            box-shadow: 0 0 0 1px #888888;
+        }
+
+        .microwave-door {
+            position: absolute;
+            inset: 12% 38% 12% 8%;
+            background: #c0c0c0;
+        }
+
+        .microwave-panel {
+            position: absolute;
+            top: 16%;
+            right: 6%;
+            bottom: 16%;
+            width: 26%;
+            background: #d6d6d6;
+        }
+
+        .microwave-display {
+            position: absolute;
+            top: 18%;
+            left: 14%;
+            right: 14%;
+            height: 18px;
+            background: #4a4a4a;
+        }
+
+        .microwave-button {
+            position: absolute;
+            left: 22%;
+            right: 22%;
+            bottom: 16%;
+            height: 22px;
+            border-radius: 999px;
+            background: #bbbbbb;
+            box-shadow: 0 0 0 1px #888888;
+        }
+
+        .microwave-plate {
+            position: absolute;
+            inset: 26% 44% 30% 14%;
+            border-radius: 999px;
+            background: #e0e0e0;
+        }
+
+        .microwave-food {
+            position: absolute;
+            inset: 8px 18px;
+            border-radius: 12px;
+            background: #c89e68;
+        }
+
+        .microwave-boy {
+            position: absolute;
+            bottom: 18%;
+            right: 12%;
+            width: 80px;
+            height: 110px;
+        }
+
+        .microwave-boy-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            background: #8080b0;
+            border-radius: 36px 36px 24px 24px;
+            transform: translateX(-50%);
+        }
+
+        .microwave-boy-head {
+            position: absolute;
+            bottom: 72%;
+            left: 50%;
+            width: 64px;
+            height: 64px;
+            background: #f4c9a1;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+        .microwave-boy-hair {
+            position: absolute;
+            inset: 0 0 44%;
+            background: #303030;
+            border-radius: 55% 45% 45% 45%;
+        }
+
+        .microwave-boy-eye {
+            position: absolute;
+            top: 58%;
+            width: 12px;
+            height: 4px;
+            border-radius: 999px;
+            background: #111111;
+        }
+
+        .microwave-boy-eye.left {
+            left: 26%;
+            transform: rotate(-2deg);
+        }
+
+        .microwave-boy-eye.right {
+            right: 26%;
+            transform: rotate(2deg);
+        }
+
+        .microwave-boy-mouth {
+            position: absolute;
+            top: 73%;
+            left: 50%;
+            width: 24px;
+            height: 10px;
+            border-radius: 999px 999px 0 0;
+            border-top: 3px solid #262626;
+            transform: translateX(-50%);
+        }
+
+        .microwave-handle-area {
+            position: absolute;
+            inset: 18% 68% 18% 72%;
+            cursor: pointer;
+        }
+
+        /* Bathroom / toothbrush scene */
+        .bathroom-room {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: #b7c0c8;
+            overflow: hidden;
+        }
+
+        .bathroom-sink {
+            position: absolute;
+            bottom: 18%;
+            left: 18%;
+            width: 64%;
+            height: 22%;
+            background: #d9dde0;
+            border-radius: 8px;
+        }
+
+        .bathroom-mirror {
+            position: absolute;
+            top: 14%;
+            left: 22%;
+            width: 56%;
+            height: 34%;
+            background: #c4d0da;
+            border-radius: 6px;
+        }
+
+        .bathroom-boy {
+            position: absolute;
+            bottom: 20%;
+            left: 30%;
+            width: 90px;
+            height: 120px;
+        }
+
+        .bathroom-boy-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 76px;
+            height: 76px;
+            background: #8090b5;
+            border-radius: 38px 38px 26px 26px;
+            transform: translateX(-50%);
+        }
+
+        .bathroom-boy-head {
+            position: absolute;
+            bottom: 76%;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            background: #f4c9a1;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bathroom-boy-hair {
+            position: absolute;
+            inset: 0 0 44%;
+            background: #303030;
+            border-radius: 55% 45% 45% 45%;
+        }
+
+        .bathroom-boy-eye {
+            position: absolute;
+            top: 60%;
+            width: 14px;
+            height: 4px;
+            border-radius: 999px;
+            background: #111111;
+            transform: rotate(-3deg);
+        }
+
+        .bathroom-boy-eye.left {
+            left: 24%;
+        }
+
+        .bathroom-boy-eye.right {
+            right: 24%;
+            transform: rotate(3deg);
+        }
+
+        .bathroom-boy-mouth {
+            position: absolute;
+            top: 76%;
+            left: 50%;
+            width: 30px;
+            height: 12px;
+            border-radius: 999px 999px 0 0;
+            border-top: 3px solid #262626;
+            transform: translateX(-50%);
+        }
+
+        .bathroom-toothbrush {
+            position: absolute;
+            bottom: 22%;
+            right: 22%;
+            width: 48px;
+            height: 10px;
+            background: #7b9ac5;
+            border-radius: 4px;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .bathroom-toothbrush-head {
+            position: absolute;
+            right: -8px;
+            top: -3px;
+            width: 14px;
+            height: 12px;
+            background: #e5e5e5;
+            border-radius: 3px;
+        }
+
+        @keyframes shake {
+            from {
+                transform: translateY(-2px) rotate(-15deg);
+            }
+            to {
+                transform: translateY(2px) rotate(15deg);
+            }
+        }
+
+        @keyframes steam {
+            0% {
+                opacity: 0;
+                transform: translateY(8px) scale(0.8);
+            }
+            40% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-18px) scale(1.2);
+            }
+        }
+
+        @media (max-width: 780px) {
+            .card {
+                padding: 1.75rem 1.4rem 1.9rem;
+            }
+
+            .scene {
+                flex-direction: column;
+            }
+
+            .scene-visual {
+                flex: 0 0 auto;
+                width: 100%;
+                min-height: 260px;
+            }
+
+            .scene-text {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .subtitle {
+                font-size: 1.7rem;
+            }
+
+            .scene-wrapper {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <main class="scene-wrapper">
+        <section class="card">
+            <div class="tagline">Interactive Morning Story</div>
+            <h1 class="subtitle">Turn off the alarm to start the day</h1>
+            <p class="hint">Tap the glowing alarm clock to wake the boy up and see what happens next.</p>
 
+            <!-- Scene 1: Waking up -->
+            <div class="scene scene-wakeup active" id="scene-wakeup">
+                <div class="scene-visual">
+                    <div class="bed">
+                        <div class="window">
+                            <div class="window-sun"></div>
+                            <div class="window-cloud left"></div>
+                            <div class="window-cloud right"></div>
+                        </div>
+
+                        <div class="bed-frame"></div>
+                        <div class="mattress"></div>
+                        <div class="pillow"></div>
+                        <div class="blanket"></div>
+
+                        <div class="boy-head">
+                            <div class="hair"></div>
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                            <div class="mouth"></div>
+                        </div>
+
+                        <div class="night-stand">
+                            <div class="night-stand-knob"></div>
+                            <div class="night-stand-knob bottom"></div>
+                        </div>
+
+                        <button class="alarm" id="alarm-button" aria-label="Turn off alarm to wake up">
+                            <div class="alarm-handle"></div>
+                            <div class="alarm-bell left"></div>
+                            <div class="alarm-bell right"></div>
+                            <div class="alarm-face">
+                                <div class="alarm-hand"></div>
+                                <div class="alarm-dot"></div>
+                            </div>
+                            <div class="alarm-leg left"></div>
+                            <div class="alarm-leg right"></div>
+                        </button>
+                    </div>
+                    <div class="tip">click alarm</div>
+                </div>
+
+                <div class="scene-text">
+                    <h2 class="title">Scene One · Wake Up</h2>
+                    <p>
+                        A sleepy boy is tucked under a deep blue blanket, lost in his dreams.
+                        Morning light is starting to sneak in through the window, but his
+                        alarm won’t stop ringing.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        When you’re ready, <strong>click the glowing alarm clock</strong> on the nightstand
+                        to turn it off and wake him up.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Scene 2: Breakfast -->
+            <div class="scene scene-breakfast" id="scene-breakfast">
+                <div class="scene-visual">
+                    <div class="bed">
+                        <div class="window-day">
+                            <div class="window-day-sun"></div>
+                            <div class="window-day-cloud left"></div>
+                            <div class="window-day-cloud right"></div>
+                            <div class="window-hill"></div>
+                            <div class="window-hill right"></div>
+                        </div>
+
+                        <div class="table">
+                            <div class="table-top"></div>
+                        </div>
+
+                        <div class="boy-breakfast">
+                            <div class="boy-body"></div>
+                            <div class="boy-head-day">
+                                <div class="boy-hair-day"></div>
+                                <div class="boy-eye left"></div>
+                                <div class="boy-eye right"></div>
+                                <div class="boy-mouth-smile"></div>
+                            </div>
+                        </div>
+
+                        <div class="plate" id="plate-button">
+                            <div class="egg">
+                                <div class="egg-yolk"></div>
+                            </div>
+                            <div class="toast"></div>
+                        </div>
+
+                        <div class="cup">
+                            <div class="cup-handle"></div>
+                            <div class="steam"></div>
+                            <div class="steam"></div>
+                            <div class="steam"></div>
+                        </div>
+                    </div>
+                    <div class="tip">click plate</div>
+                </div>
+
+                <div class="scene-text">
+                    <h2 class="title">Scene Two · Breakfast</h2>
+                    <p>
+                        With the alarm finally off, the boy is awake and ready for the day.
+                        He sits at the table enjoying a warm breakfast: eggs, toast, and a
+                        steaming cup of something cozy.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        The window is bright, the hills are green, and a new morning has begun.
+                    </p>
+
+                </div>
+            </div>
+
+            <!-- Scene 3: Office -->
+            <div class="scene scene-office" id="scene-office">
+                <div class="scene-visual">
+                    <div class="office-room office-morning" id="office-room">
+                        <div class="office-window"></div>
+                        <div class="office-desk"></div>
+                        <div class="office-boy">
+                            <div class="office-boy-body"></div>
+                            <div class="office-boy-head">
+                                <div class="office-boy-hair"></div>
+                                <div class="office-boy-eye left"></div>
+                                <div class="office-boy-eye right"></div>
+                                <div class="office-boy-mouth"></div>
+                            </div>
+                        </div>
+
+                        <div class="office-monitor">
+                            <div class="office-monitor-screen"></div>
+                            <div class="office-monitor-stand"></div>
+                        </div>
+                        <div class="office-keyboard"></div>
+                        <div class="office-mouse" id="office-mouse"></div>
+
+                        <div class="office-clock">
+                            <div class="office-clock-hand-hour" id="clock-hour"></div>
+                            <div class="office-clock-hand-minute" id="clock-minute"></div>
+                        </div>
+                    </div>
+                    <div class="tip">click mouse</div>
+                </div>
+                <div class="scene-text"></div>
+            </div>
+
+            <!-- Scene 4: Microwave -->
+            <div class="scene scene-microwave" id="scene-microwave">
+                <div class="scene-visual">
+                    <div class="microwave-room">
+                        <div class="microwave-counter"></div>
+                        <div class="microwave-box">
+                            <div class="microwave-door"></div>
+                            <div class="microwave-panel">
+                                <div class="microwave-display"></div>
+                                <div class="microwave-button" id="microwave-button"></div>
+                            </div>
+                            <div class="microwave-plate">
+                                <div class="microwave-food"></div>
+                            </div>
+                        </div>
+                        <div class="microwave-boy">
+                            <div class="microwave-boy-body"></div>
+                            <div class="microwave-boy-head">
+                                <div class="microwave-boy-hair"></div>
+                                <div class="microwave-boy-eye left"></div>
+                                <div class="microwave-boy-eye right"></div>
+                                <div class="microwave-boy-mouth"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tip">press button</div>
+                </div>
+                <div class="scene-text"></div>
+            </div>
+
+            <!-- Scene 5: Toothbrush / bathroom -->
+            <div class="scene scene-bathroom" id="scene-bathroom">
+                <div class="scene-visual">
+                    <div class="bathroom-room">
+                        <div class="bathroom-mirror"></div>
+                        <div class="bathroom-sink"></div>
+                        <div class="bathroom-boy">
+                            <div class="bathroom-boy-body"></div>
+                            <div class="bathroom-boy-head">
+                                <div class="bathroom-boy-hair"></div>
+                                <div class="bathroom-boy-eye left"></div>
+                                <div class="bathroom-boy-eye right"></div>
+                                <div class="bathroom-boy-mouth"></div>
+                            </div>
+                        </div>
+                        <div class="bathroom-toothbrush" id="bathroom-toothbrush">
+                            <div class="bathroom-toothbrush-head"></div>
+                        </div>
+                    </div>
+                    <div class="tip">click toothbrush</div>
+                </div>
+                <div class="scene-text"></div>
+            </div>
+
+            <!-- Scene 6: Back in bed -->
+            <div class="scene scene-bedend" id="scene-bedend">
+                <div class="scene-visual">
+                    <div class="bed">
+                        <div class="window">
+                            <div class="window-sun"></div>
+                            <div class="window-cloud left"></div>
+                            <div class="window-cloud right"></div>
+                        </div>
+
+                        <div class="bed-frame"></div>
+                        <div class="mattress"></div>
+                        <div class="pillow"></div>
+                        <div class="blanket"></div>
+
+                        <div class="boy-head">
+                            <div class="hair"></div>
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                            <div class="mouth"></div>
+                        </div>
+
+                        <div id="bed-reset-area" style="position:absolute; inset:0; cursor:pointer;"></div>
+                    </div>
+                    <div class="tip">click bed</div>
+                </div>
+                <div class="scene-text"></div>
+            </div>
+
+            <div class="cycle-message" id="cycle-message" aria-live="polite"><span>and all over again…</span></div>
+        </section>
+    </main>
+
+    <script>
+        const alarmButton = document.getElementById("alarm-button");
+        const plateButton = document.getElementById("plate-button");
+        const wakeupScene = document.getElementById("scene-wakeup");
+        const breakfastScene = document.getElementById("scene-breakfast");
+        const officeScene = document.getElementById("scene-office");
+        const microwaveScene = document.getElementById("scene-microwave");
+        const bathroomScene = document.getElementById("scene-bathroom");
+        const bedendScene = document.getElementById("scene-bedend");
+        const officeRoom = document.getElementById("office-room");
+        const officeMouse = document.getElementById("office-mouse");
+        const clockHour = document.getElementById("clock-hour");
+        const clockMinute = document.getElementById("clock-minute");
+        const microwaveButton = document.getElementById("microwave-button");
+        const bathroomToothbrush = document.getElementById("bathroom-toothbrush");
+        const bedResetArea = document.getElementById("bed-reset-area");
+        const cycleMessage = document.getElementById("cycle-message");
+
+        const officePhases = [
+            { roomClass: "office-morning", hourDeg: 30, minuteDeg: 0 },   // ~1:00
+            { roomClass: "office-afternoon", hourDeg: 90, minuteDeg: 0 }, // ~3:00
+            { roomClass: "office-evening", hourDeg: 150, minuteDeg: 0 },  // ~5:00
+            { roomClass: "office-night", hourDeg: 210, minuteDeg: 0 }     // ~7:00
+        ];
+
+        let officePhaseIndex = 0;
+
+        function showBreakfastScene() {
+            wakeupScene.classList.remove("active");
+            breakfastScene.classList.add("active");
+        }
+
+        function showWakeupScene() {
+            breakfastScene.classList.remove("active");
+            wakeupScene.classList.add("active");
+        }
+
+        function showOfficeScene() {
+            breakfastScene.classList.remove("active");
+            officeScene.classList.add("active");
+            officePhaseIndex = 0;
+            applyOfficePhase();
+        }
+
+        function applyOfficePhase() {
+            const phase = officePhases[officePhaseIndex];
+            officeRoom.className = "office-room " + phase.roomClass;
+            clockHour.style.transform = "translate(-50%, 0) rotate(" + phase.hourDeg + "deg)";
+            clockMinute.style.transform = "translate(-50%, 0) rotate(" + phase.minuteDeg + "deg)";
+        }
+
+        function advanceOfficeTime() {
+            if (officePhaseIndex < officePhases.length - 1) {
+                officePhaseIndex += 1;
+                applyOfficePhase();
+            } else {
+                officeScene.classList.remove("active");
+                microwaveScene.classList.add("active");
+            }
+        }
+
+        function showBathroomScene() {
+            microwaveScene.classList.remove("active");
+            bathroomScene.classList.add("active");
+        }
+
+        function showBedendScene() {
+            bathroomScene.classList.remove("active");
+            bedendScene.classList.add("active");
+        }
+
+        function resetToStart() {
+            cycleMessage.classList.add("visible");
+            setTimeout(function () {
+                cycleMessage.classList.remove("visible");
+                bedendScene.classList.remove("active");
+                wakeupScene.classList.add("active");
+                breakfastScene.classList.remove("active");
+                officeScene.classList.remove("active");
+                microwaveScene.classList.remove("active");
+                bathroomScene.classList.remove("active");
+                officePhaseIndex = 0;
+                applyOfficePhase();
+            }, 2200);
+        }
+
+        alarmButton.addEventListener("click", showBreakfastScene);
+        plateButton.addEventListener("click", showOfficeScene);
+        officeMouse.addEventListener("click", advanceOfficeTime);
+        microwaveButton.addEventListener("click", showBathroomScene);
+        bathroomToothbrush.addEventListener("click", showBedendScene);
+        bedResetArea.addEventListener("click", resetToStart);
+    </script>
 </body>
 </html>

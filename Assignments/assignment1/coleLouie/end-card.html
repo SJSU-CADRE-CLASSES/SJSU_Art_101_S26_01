@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>End card</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+      position: relative;
+    }
+    .image-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .image-bg-2 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeInBg2 0.7s ease-out 3.5s forwards;
+    }
+    .image-bg-3 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeInBg3 0.7s ease-out 6.5s forwards;
+    }
+    @keyframes fadeInBg2 {
+      to { opacity: 1; }
+    }
+    @keyframes fadeInBg3 {
+      to { opacity: 1; }
+    }
+    .image-bg img,
+    .image-bg-2 img,
+    .image-bg-3 img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .white-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 3;
+      animation: flashFade 1.2s ease-out forwards;
+    }
+    .white-flash-2 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 4;
+      opacity: 0;
+      animation: flashFade2 1.2s ease-out 3s forwards;
+    }
+    .white-flash-3 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 5;
+      opacity: 0;
+      animation: flashFade3 1.2s ease-out 6s forwards;
+    }
+    .white-flash-4 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 6;
+      opacity: 0;
+      animation: flashFade4 1.2s ease-out 9s forwards;
+    }
+    .black-hold {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 7;
+      opacity: 0;
+      animation: blackHold 0s linear 10.2s forwards;
+    }
+    @keyframes flashFade {
+      0%, 41.67% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @keyframes flashFade2 {
+      0% { opacity: 1; }
+      41.67% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @keyframes flashFade3 {
+      0% { opacity: 1; }
+      41.67% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @keyframes flashFade4 {
+      0% { opacity: 1; }
+      41.67% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @keyframes blackHold {
+      to { opacity: 1; }
+    }
+    .content {
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 8;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-bg">
+    <img src="Cut 1.jpg" alt="">
+  </div>
+  <div class="image-bg-2">
+    <img src="Cut 2.jpg" alt="">
+  </div>
+  <div class="image-bg-3">
+    <img src="Cut 3.jpg" alt="">
+  </div>
+  <div class="white-flash"></div>
+  <div class="white-flash-2"></div>
+  <div class="white-flash-3"></div>
+  <div class="white-flash-4"></div>
+  <div class="black-hold"></div>
+  <main class="content">
+  </main>
+  <script>
+    setTimeout(function() {
+      window.location.href = 'Index-Start.html';
+    }, 12200);
+  </script>
+</body>
+</html>

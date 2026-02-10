@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erin Koga - Assignment 1 (Inner)</title>
+    <style>
+        body {
+            background-color: #3b2a2a;
+            margin: 0;
+            min-height: 150vh;
+            padding-bottom: 160px;
+        }
+        .page-header {
+            text-align: center;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 2.5rem;
+            color: #ff7b0f;
+            margin: 0;
+            padding: 1.5rem;
+        }
+        .subheader {
+            text-align: center;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 1.25rem;
+            color: #ff7b0f;
+            margin: 0;
+            padding: 0 1.5rem 1.5rem;
+        }
+        .trolley-image {
+            display: block;
+            margin: 0 auto 2rem;
+            max-width: 100%;
+            height: auto;
+        }
+        .trolley-description {
+            text-align: center;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 1.1rem;
+            color: #ff0000;
+            margin: 0 auto 2rem;
+            padding: 0 1.5rem;
+            max-width: 600px;
+        }
+        .button-group {
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .choice-btn {
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 1.25rem;
+            color: #3b2a2a;
+            background-color: #ff7b0f;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .choice-btn:hover {
+            background-color: #e66d08;
+        }
+        .fire-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+        }
+        .fire-bar .gif-tile {
+            flex: 0 0 auto;
+            width: 200px;
+            height: 100%;
+            min-width: 200px;
+        }
+        .fire-bar .gif-tile .tenor-gif-embed {
+            width: 100%;
+            height: 100%;
+        }
+        .fire-bar .gif-tile .tenor-gif-embed iframe {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .fire-bar .gif-tile .tenor-gif-embed {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <audio id="lever-audio" src="jerma-terrified.mp3"></audio>
+
+    <h1 class="page-header">welcome to HELL</h1>
+    <p class="subheader">you are going to decide your own ETERNAL PUNISHMENT with whatever you answer</p>
+    <p class="subheader">QUESTION 1</p>
+
+    <img class="trolley-image" src="trolley problem.jpg" alt="Trolley problem">
+
+    <p class="trolley-description">A trolley is approaching one person tied to the tracks. You can pull the lever to save them, but it will either stop the trolley, causing no deaths, or switch the trolley to a different track where five people are tied to it. Do you pull the lever?</p>
+
+    <div class="button-group">
+        <a class="choice-btn" href="pull-lever.html" target="content-frame" onmouseenter="document.getElementById('lever-audio').play();">pull the lever</a>
+        <a class="choice-btn" href="dont-pull-lever.html" target="content-frame" onmouseenter="document.getElementById('lever-audio').play();">dont pull the lever</a>
+    </div>
+
+    <div class="fire-bar" aria-hidden="true">
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+        <div class="gif-tile"><div class="tenor-gif-embed" data-postid="27608574" data-share-method="host" data-aspect-ratio="1.76796" data-width="100%"><a href="https://tenor.com/view/animated-fire-low-res-gif-27608574">Animated Fire Sticker</a> from <a href="https://tenor.com/search/animated-stickers">Animated Stickers</a></div></div>
+    </div>
+
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+</body>
+</html>

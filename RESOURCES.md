@@ -35,3 +35,22 @@ Resources
 10. Gas Town Critique https://maggieappleton.com/gastown
 11. Windows93 https://www.windows93.net/#!pd
 
+2/3
+
+1. open ai codex
+2. p5js https://editor.p5js.org/
+3. Magnitude of the Continental Divide https://vimeo.com/257427411?fl=pl&fe=vl
+4. moltbook https://www.youtube.com/watch?v=-fmNzXCp7zA&t=6s
+5. audio generation https://mynoise.net/NoiseMachines/cafeRestaurantNoiseGenerator.php
+6. the books https://www.youtube.com/watch?v=WnzZimagUjM
+
+2/5
+
+1. homebase ux https://docs.google.com/drawings/d/1MFTgObeOcCyQJN1UeUuBxE4YFMjKgysdF94rUGFSFFk/edit
+2. w3 css https://www.w3schools.com/w3css/default.asp
+3. openWRT https://openwrt.org/
+4. Arom Bartholl https://arambartholl.com/
+5. Jer Thorp https://www.jerthorp.me/portfolio
+6. Hugging Face https://huggingface.co/models
+7. Claude Code https://code.claude.com/docs/en/setup
+

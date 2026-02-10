@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page 5 - End</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+      position: relative;
+    }
+    .image-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .image-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .white-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 1;
+      animation: flashFade 2.5s ease-out forwards;
+    }
+    @keyframes flashFade {
+      0%, 60% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    .content {
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+    .quote {
+      position: fixed;
+      top: 8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 90%;
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: #000;
+      font-family: 'Courier New', Courier, monospace;
+      z-index: 2;
+      text-align: center;
+    }
+    .quote-2 {
+      top: 14rem;
+    }
+    .quote-3 {
+      top: 20rem;
+    }
+    .quote .word {
+      opacity: 0;
+      animation: quoteWordIn 0.5s ease-out forwards;
+    }
+    @keyframes quoteWordIn {
+      to { opacity: 1; }
+    }
+    .end-btn {
+      position: fixed;
+      top: 28rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      padding: 0.75rem 2rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      animation: quoteWordIn 0.8s ease-out 32s forwards;
+    }
+    .end-btn:hover {
+      background: #eee;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-bg">
+    <img src="soisson.png" alt="">
+  </div>
+  <div class="white-flash"></div>
+  <p class="quote">
+    <span class="word" style="animation-delay: 4.5s;">We</span>
+    <span class="word" style="animation-delay: 4.9s;">move</span>
+    <span class="word" style="animation-delay: 5.3s;">out</span>
+    <span class="word" style="animation-delay: 5.7s;">to</span>
+    <span class="word" style="animation-delay: 6.1s;">assault</span>
+    <span class="word" style="animation-delay: 6.5s;">a</span>
+    <span class="word" style="animation-delay: 6.9s;">Hun</span>
+    <span class="word" style="animation-delay: 7.3s;">stronghold</span>
+    <span class="word" style="animation-delay: 7.7s;">at</span>
+    <span class="word" style="animation-delay: 8.1s;">dawn.</span>
+    <span class="word" style="animation-delay: 8.5s;">I</span>
+    <span class="word" style="animation-delay: 8.9s;">don't</span>
+    <span class="word" style="animation-delay: 9.3s;">know</span>
+    <span class="word" style="animation-delay: 9.7s;">when</span>
+    <span class="word" style="animation-delay: 10.1s;">I'll</span>
+    <span class="word" style="animation-delay: 10.5s;">be</span>
+    <span class="word" style="animation-delay: 10.9s;">able</span>
+    <span class="word" style="animation-delay: 11.3s;">to</span>
+    <span class="word" style="animation-delay: 11.7s;">write</span>
+    <span class="word" style="animation-delay: 12.1s;">back...</span>
+  </p>
+  <p class="quote quote-2">
+    <span class="word" style="animation-delay: 14.6s;">I</span>
+    <span class="word" style="animation-delay: 15s;">know</span>
+    <span class="word" style="animation-delay: 15.4s;">you'll</span>
+    <span class="word" style="animation-delay: 15.8s;">fear</span>
+    <span class="word" style="animation-delay: 16.2s;">for</span>
+    <span class="word" style="animation-delay: 16.6s;">my</span>
+    <span class="word" style="animation-delay: 17s;">safety</span>
+    <span class="word" style="animation-delay: 17.4s;">and</span>
+    <span class="word" style="animation-delay: 17.8s;">I</span>
+    <span class="word" style="animation-delay: 18.2s;">assure</span>
+    <span class="word" style="animation-delay: 18.6s;">you...</span>
+  </p>
+  <p class="quote quote-3">
+    <span class="word" style="animation-delay: 21.1s;">They'll</span>
+    <span class="word" style="animation-delay: 21.5s;">have</span>
+    <span class="word" style="animation-delay: 21.9s;">to</span>
+    <span class="word" style="animation-delay: 22.3s;">have</span>
+    <span class="word" style="animation-delay: 22.7s;">a</span>
+    <span class="word" style="animation-delay: 23.1s;">lot</span>
+    <span class="word" style="animation-delay: 23.5s;">of</span>
+    <span class="word" style="animation-delay: 23.9s;">luck</span>
+    <span class="word" style="animation-delay: 24.3s;">to</span>
+    <span class="word" style="animation-delay: 24.7s;">hit</span>
+    <span class="word" style="animation-delay: 25.1s;">me</span>
+    <span class="word" style="animation-delay: 25.5s;">with</span>
+    <span class="word" style="animation-delay: 25.9s;">a</span>
+    <span class="word" style="animation-delay: 26.3s;">single</span>
+    <span class="word" style="animation-delay: 26.7s;">bullet.</span>
+    <span class="word" style="animation-delay: 27.1s;">Maybe</span>
+    <span class="word" style="animation-delay: 27.5s;">even</span>
+    <span class="word" style="animation-delay: 27.9s;">to</span>
+    <span class="word" style="animation-delay: 28.3s;">graze</span>
+    <span class="word" style="animation-delay: 28.7s;">me</span>
+    <span class="word" style="animation-delay: 29.1s;">with</span>
+    <span class="word" style="animation-delay: 29.5s;">one.</span>
+  </p>
+  <a class="end-btn" href="end-card.html">end</a>
+  <main class="content">
+  </main>
+</body>
+</html>

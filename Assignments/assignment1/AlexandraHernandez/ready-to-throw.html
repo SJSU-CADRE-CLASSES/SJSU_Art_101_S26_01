@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ready to Throw! | Alexandra Hernandez</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Comic Neue', cursive;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #87CEEB 0%, #E8F4E8 50%, #8B4513 100%);
+      background-attachment: fixed;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-link {
+      display: inline-block;
+      font-family: 'Bangers', cursive;
+      font-size: 1.4rem;
+      padding: 0.6rem 1.2rem;
+      background: #C41E3A;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 3px solid #333;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      margin-bottom: 2rem;
+      letter-spacing: 2px;
+    }
+
+    .nav-link:hover {
+      background: #E63946;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 2rem;
+      color: #1E3A8A;
+      margin-bottom: 2rem;
+    }
+
+    .illustration {
+      position: relative;
+      width: 280px;
+      height: 400px;
+    }
+
+    /* Ground line */
+    .ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: #5D4E37;
+      border-radius: 4px;
+      border: 2px solid #333;
+    }
+
+    /* Legs - stance */
+    .leg {
+      position: absolute;
+      bottom: 8px;
+      width: 24px;
+      height: 80px;
+      background: #1E3A8A;
+      border: 3px solid #333;
+      border-radius: 8px;
+    }
+    .leg-left { left: 118px; transform: rotate(-8deg); transform-origin: top center; }
+    .leg-right { left: 138px; transform: rotate(8deg); transform-origin: top center; }
+
+    /* Body/torso */
+    .torso {
+      position: absolute;
+      bottom: 88px;
+      left: 110px;
+      width: 60px;
+      height: 90px;
+      background: #C41E3A;
+      border: 3px solid #333;
+      border-radius: 12px;
+      transform: rotate(-15deg);
+      transform-origin: bottom center;
+    }
+
+    /* Head */
+    .head {
+      position: absolute;
+      bottom: 168px;
+      left: 118px;
+      width: 56px;
+      height: 56px;
+      background: #FFDBAC;
+      border: 3px solid #333;
+      border-radius: 50%;
+      transform: rotate(-15deg);
+    }
+
+    .eye {
+      position: absolute;
+      width: 8px;
+      height: 10px;
+      background: #333;
+      border-radius: 50%;
+      top: 18px;
+    }
+    .eye-left { left: 14px; }
+    .eye-right { left: 32px; }
+
+    .brow {
+      position: absolute;
+      width: 14px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      top: 12px;
+    }
+    .brow-left { left: 12px; transform: rotate(-10deg); }
+    .brow-right { left: 30px; transform: rotate(10deg); }
+
+    /* Arm winding back with ball */
+    .arm-back {
+      position: absolute;
+      bottom: 145px;
+      left: 55px;
+      width: 16px;
+      height: 70px;
+      background: #FFDBAC;
+      border: 3px solid #333;
+      border-radius: 8px;
+      transform: rotate(45deg);
+      transform-origin: bottom right;
+    }
+
+    .ball {
+      position: absolute;
+      bottom: 200px;
+      left: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #FF6B6B, #C41E3A);
+      border: 3px solid #333;
+      box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 3px 3px 0 rgba(0,0,0,0.3);
+      animation: windup 2s ease-in-out infinite;
+      display: block;
+      cursor: pointer;
+      text-decoration: none;
+      z-index: 5;
+    }
+
+    a.ball:hover {
+      transform: scale(1.15);
+    }
+
+    @keyframes windup {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Front arm - bracing */
+    .arm-front {
+      position: absolute;
+      bottom: 150px;
+      left: 165px;
+      width: 14px;
+      height: 55px;
+      background: #FFDBAC;
+      border: 3px solid #333;
+      border-radius: 8px;
+      transform: rotate(-25deg);
+      transform-origin: bottom left;
+    }
+
+    .caption {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #333;
+      max-width: 280px;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="nav-link">← Back to Cartoon Dodgeball</a>
+
+  <h1>Ready to Throw!</h1>
+
+  <div class="illustration">
+    <div class="leg leg-left"></div>
+    <div class="leg leg-right"></div>
+    <div class="torso"></div>
+    <div class="head">
+      <div class="brow brow-left"></div>
+      <div class="brow brow-right"></div>
+      <div class="eye eye-left"></div>
+      <div class="eye eye-right"></div>
+    </div>
+    <div class="arm-back"></div>
+    <a href="getting-hit.html" class="ball" title="Throw the ball!"></a>
+    <div class="arm-front"></div>
+    <div class="ground"></div>
+  </div>
+
+  <p class="caption">A cartoon player winds up, ready to launch the dodgeball! Watch out!</p>
+</body>
+</html>

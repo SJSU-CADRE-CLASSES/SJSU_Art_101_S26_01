@@ -12,125 +12,85 @@
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            color: #e8e8e8;
-            padding: 2rem;
-            line-height: 1.6;
+            background-color: #3c5c69;
         }
 
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
+        .images {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            min-height: 100vh;
+            gap: 1rem;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid rgba(232, 232, 232, 0.2);
+        .images .img-wrap {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            min-width: 0;
         }
 
-        header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            margin-bottom: 0.25rem;
+        .images .img-wrap:first-child {
+            justify-content: flex-start;
         }
 
-        header p {
-            color: #a0aec0;
+        .images .stairs-wrap {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            min-width: 0;
+        }
+
+        .images .img-wrap img,
+        .images .stairs-wrap img {
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .website-link {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            font-family: 'Times New Roman', Times, serif;
             font-size: 1rem;
         }
 
-        section {
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        section h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
-            color: #63b3ed;
-        }
-
-        section p {
-            color: #cbd5e0;
-            margin-bottom: 0.5rem;
-        }
-
-        section p:last-child {
-            margin-bottom: 0;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1.5rem;
-        }
-
-        .nav-links a {
-            display: inline-block;
-            padding: 0.6rem 1.2rem;
-            background: #3182ce;
-            color: white;
+        .website-link a {
+            color: #fff;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
         }
 
-        .nav-links a:hover {
-            background: #2b6cb0;
+        .website-link a:hover {
+            border-bottom-color: #fff;
         }
 
-        .nav-links a.secondary {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        .nav-links a.secondary:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        footer {
+        .bottom-text {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             text-align: center;
-            margin-top: 2rem;
-            color: #718096;
-            font-size: 0.875rem;
+            padding: 1rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 5rem;
+            color: black;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Alan Jacob Villareal</h1>
-            <p>Assignment 1 — ART 101</p>
-        </header>
-
-        <section>
-            <h2>About this assignment</h2>
-            <p>This page is the main index for Assignment 1. You can use it to navigate to other pages and view the work for this assignment.</p>
-        </section>
-
-        <section>
-            <h2>Pages</h2>
-            <p>Continue to the next part of the assignment or explore the linked pages below.</p>
-            <div class="nav-links">
-                <a href="page2.html">Go to Page 2 →</a>
-                <a href="page3.html">Go to Page 3 →</a>
-                <a href="../AndrewBlanton/index.html" class="secondary">Other assignments</a>
-            </div>
-        </section>
-
-        <footer>
-            <p>Alan Jacob Villareal — SJSU Art 101</p>
-        </footer>
+    <p class="website-link"><a href="https://SJSU-CADRE-CLASSES.github.io/SJSU_Art_101_S26_01/Assignments/assignment1/AlanJacobVillareal/" target="_blank" rel="noopener">View on website</a></p>
+    <div class="images">
+        <div class="img-wrap"><img src="Phase_1.jpg" alt="Phase 1"></div>
+        <div class="stairs-wrap"><a href="page2.html"><img src="stairs_1.jpg" alt="Stairs 1" class="stairs-img"></a></div>
     </div>
+    <p class="bottom-text">Go downstairs</p>
 </body>
 </html>

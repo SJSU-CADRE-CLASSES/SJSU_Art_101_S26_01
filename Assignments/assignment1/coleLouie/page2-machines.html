@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page 2 - Machines</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      position: relative;
+    }
+    .image-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+    .image-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .white-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 9999;
+      animation: flashFade 2s ease-out forwards;
+    }
+    @keyframes flashFade {
+      0%, 70% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @keyframes fadeInText {
+      to { opacity: 1; }
+    }
+    .word-fade {
+      opacity: 0;
+      animation: fadeInText 1s ease-out forwards;
+    }
+    .char-fade {
+      opacity: 0;
+      animation: fadeInText 0.4s ease-out forwards;
+    }
+    .content {
+      color: #fff;
+      font-size: 2rem;
+      padding: 2rem;
+    }
+    .quote-text {
+      position: fixed;
+      top: 7rem;
+      left: 5rem;
+      max-width: 45%;
+      color: #000;
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .quote-text-2 {
+      position: fixed;
+      top: 25%;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 80%;
+      text-align: center;
+      color: #000;
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .quote-text-3 {
+      position: fixed;
+      top: 50%;
+      left: 5rem;
+      transform: translateY(-50%);
+      max-width: 35%;
+      text-align: left;
+      color: #000;
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .quote-text-4 {
+      position: fixed;
+      bottom: 15rem;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 85%;
+      text-align: center;
+      color: #000;
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .next-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      padding: 0.75rem 2rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10001;
+      opacity: 0;
+      animation: fadeInText 0.8s ease-out 34.5s forwards;
+    }
+    .next-btn:hover {
+      background: #eee;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <audio id="flashAudio" src="Flash.mp3" preload="auto"></audio>
+  <div class="image-bg">
+    <img src="trench-image.png" alt="">
+  </div>
+  <div class="white-flash"></div>
+  <p class="quote-text">My dear, it's an odd war that I am entering..</p>
+  <p class="quote-text-2">Father's stories of grand assaults and fighting on horseback seems so... distant now</p>
+  <p class="quote-text-3">Upon arrival I've seen machines of war so bewildering... so frightning</p>
+  <p class="quote-text-4">Our training is not learning how to use these machines... only how to kill them</p>
+  <a class="next-btn" href="page3-fighting-the-machine.html">next</a>
+  <main class="content">
+  </main>
+  <script>
+    (function() {
+      var flashAudio = document.getElementById('flashAudio');
+      if (flashAudio) {
+        flashAudio.volume = 1.0;
+        var playPromise = flashAudio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(function() {});
+        }
+      }
+      var configs = [
+        { sel: '.quote-text', baseDelay: 3, wordDelay: 0.4 },
+        { sel: '.quote-text-2', baseDelay: 10, wordDelay: 0.4 },
+        { sel: '.quote-text-3', baseDelay: 17, wordDelay: 0.4 },
+        { sel: '.quote-text-4', baseDelay: 24, wordDelay: 0.5 }
+      ];
+      configs.forEach(function(cfg) {
+        var el = document.querySelector(cfg.sel);
+        if (!el) return;
+        var text = el.textContent;
+        var words = text.split(/\s+/);
+        el.textContent = '';
+        words.forEach(function(word, i) {
+          var span = document.createElement('span');
+          span.className = 'word-fade';
+          span.style.animationDelay = (cfg.baseDelay + i * cfg.wordDelay) + 's';
+          span.textContent = word + (i < words.length - 1 ? ' ' : '');
+          el.appendChild(span);
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

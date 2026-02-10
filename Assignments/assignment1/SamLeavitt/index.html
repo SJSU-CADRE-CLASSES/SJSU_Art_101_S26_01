@@ -31,9 +31,11 @@
             position: fixed;
             width: 8px;
             height: 8px;
-            background: radial-gradient(circle at 30% 30%, #8b0000, #4a0000);
+            background: radial-gradient(circle at 30% 30%, #b22222, #6b0f0f);
             border-radius: 50%;
-            animation: blood-fade 2s ease-out forwards;
+            box-shadow: 0 0 6px 2px rgba(139, 0, 0, 0.4);
+            filter: blur(0.5px);
+            animation: blood-coagulate 3s ease-out forwards;
         }
         .blood-drop::after {
             content: '';
@@ -42,17 +44,47 @@
             left: 2px;
             width: 3px;
             height: 3px;
-            background: rgba(139, 0, 0, 0.6);
+            background: rgba(180, 30, 30, 0.7);
             border-radius: 50%;
         }
-        @keyframes blood-fade {
-            0% { opacity: 0.9; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.5); }
+        @keyframes blood-coagulate {
+            0% {
+                opacity: 0.95;
+                transform: scale(1) translateY(0);
+                box-shadow: 0 0 6px 2px rgba(139, 0, 0, 0.45);
+                filter: blur(0.5px) brightness(1.1);
+            }
+            25% {
+                opacity: 0.92;
+                transform: scale(1.2) translateY(4px);
+                box-shadow: 0 2px 10px 4px rgba(100, 0, 0, 0.5);
+                filter: blur(1px) brightness(0.95);
+            }
+            50% {
+                opacity: 0.88;
+                transform: scale(1.35) translateY(8px);
+                box-shadow: 0 4px 14px 5px rgba(70, 0, 0, 0.5);
+                filter: blur(1.5px) brightness(0.85);
+            }
+            75% {
+                opacity: 0.8;
+                transform: scale(1.45) translateY(11px);
+                box-shadow: 0 6px 16px 6px rgba(50, 0, 0, 0.45);
+                filter: blur(2px) brightness(0.75);
+            }
+            100% {
+                opacity: 0.7;
+                transform: scale(1.5) translateY(14px);
+                box-shadow: 0 8px 18px 6px rgba(35, 0, 0, 0.45);
+                filter: blur(2px) brightness(0.65);
+            }
         }
         .mouth-wrapper {
             position: absolute;
             bottom: 20px;
             right: 20px;
+            text-decoration: none;
+            color: inherit;
         }
         .mouth-image {
             width: 150px;
@@ -94,36 +126,49 @@
 </head>
 <body>
     <div id="blood-trail"></div>
-    <div class="mouth-wrapper">
+    <a href="mouth-fed.html" class="mouth-wrapper" id="mouth-link">
         <span class="tooltip">feed the mouth?</span>
         <img src="mouth.png" alt="Mouth" class="mouth-image" />
-    </div>
+    </a>
     <script>
         (function () {
+            document.getElementById('mouth-link').addEventListener('click', function (e) {
+                e.preventDefault();
+                var biteAudio = new Audio('bite-sound.mp3');
+                var go = function () {
+                    window.location.href = 'mouth-fed.html';
+                };
+                biteAudio.play().then(function () {
+                    setTimeout(go, 800);
+                }).catch(function () {
+                    setTimeout(go, 100);
+                });
+            });
+
             var trail = document.getElementById('blood-trail');
             var lastX = 0, lastY = 0;
             var lastDrop = 0;
-            var minDist = 12;
+            var minDist = 8;
 
             document.addEventListener('mousemove', function (e) {
                 var now = Date.now();
                 var dx = e.clientX - lastX;
                 var dy = e.clientY - lastY;
                 var dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < minDist && now - lastDrop < 80) return;
+                if (dist < minDist && now - lastDrop < 50) return;
                 lastX = e.clientX;
                 lastY = e.clientY;
                 lastDrop = now;
 
                 var drop = document.createElement('div');
                 drop.className = 'blood-drop';
-                var size = 5 + Math.random() * 6;
+                var size = 6 + Math.random() * 8;
                 drop.style.width = size + 'px';
                 drop.style.height = size + 'px';
                 drop.style.left = (e.clientX - size / 2) + 'px';
                 drop.style.top = (e.clientY - size / 2) + 'px';
                 trail.appendChild(drop);
-                setTimeout(function () { drop.remove(); }, 2100);
+                setTimeout(function () { drop.remove(); }, 3100);
             });
         })();
     </script>

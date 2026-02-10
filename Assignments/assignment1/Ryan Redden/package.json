@@ -1,0 +1,12 @@
+{
+  "name": "ryan-redden-assignment1",
+  "private": true,
+  "scripts": {
+    "start": "serve .",
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4",
+    "vite": "^6.0.3"
+  }
+}

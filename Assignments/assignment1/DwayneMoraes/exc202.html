@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXC 202 - Canv-azz</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Lato", "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: #2d3b45; background: #f5f5f5; }
+        .ic-app-header { background: #394B58; color: #fff; height: 52px; display: flex; align-items: center; padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .ic-app-header__logo { font-weight: 700; font-size: 1.25rem; }
+        .ic-app-header a { color: #fff; text-decoration: none; margin-right: 1rem; }
+        .ic-app-header a:hover { text-decoration: underline; }
+        .ic-layout-container { margin-top: 52px; padding: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .course-banner { background: #057D9E; color: #fff; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .course-banner h1 { margin: 0; font-size: 1.5rem; }
+        .course-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .course-nav a { padding: 0.5rem 1rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 3px; color: #2d3b45; text-decoration: none; font-size: 0.9rem; }
+        .course-nav a:hover { background: #f5f5f5; }
+        .content-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.25rem; margin-bottom: 1rem; }
+        .content-box h2 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.5rem; }
+        .assignment-item, .announcement-item, .discussion-item { padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+        .assignment-item:last-child, .announcement-item:last-child, .discussion-item:last-child { border-bottom: none; }
+        .due { color: #6c757d; font-size: 0.85rem; }
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+        .interactive-box { background: #f0fff8; border: 1px dashed #057D9E; border-radius: 4px; padding: 1rem; margin: 1rem 0; color: #2d3b45; }
+        .interactive-box button { padding: 0.5rem 1rem; background: #057D9E; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+        .interactive-box h3 { color: #2d3b45; font-size: 1.15rem; margin-bottom: 0.75rem; }
+        .interactive-box input { padding: 0.5rem; font: inherit; margin-right: 0.5rem; width: 280px; }
+        .feedback-result { margin-top: 0.75rem; font-style: italic; padding: 0.5rem; background: #fff; border-radius: 3px; color: #2d3b45; }
+        .rate-excuse { padding: 0.75rem 0; border-bottom: 1px solid #c8e6d0; }
+        .rate-excuse:last-of-type { border-bottom: none; }
+        .rate-excuse .excuse-text { font-style: italic; color: #2d3b45; font-size: 1rem; font-weight: 500; line-height: 1.45; display: block; margin-bottom: 0.5rem; }
+        .rate-excuse button { padding: 0.4rem 0.75rem; margin-right: 0.5rem; margin-top: 0.25rem; font-size: 0.95rem; font-weight: 500; cursor: pointer; background: #e0e0e0; color: #2d3b45; border: 1px solid #bbb; border-radius: 3px; }
+        .rate-excuse button:hover { background: #d0d0d0; color: #2d3b45; }
+=======
+=======
+>>>>>>> Stashed changes
+        .interactive-box { background: #f0fff8; border: 1px dashed #057D9E; border-radius: 4px; padding: 1rem; margin: 1rem 0; }
+        .interactive-box button { padding: 0.5rem 1rem; background: #057D9E; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+        .interactive-box input { padding: 0.5rem; font: inherit; margin-right: 0.5rem; width: 280px; }
+        .feedback-result { margin-top: 0.75rem; font-style: italic; padding: 0.5rem; background: #fff; border-radius: 3px; }
+        .rate-excuse { padding: 0.75rem 0; border-bottom: 1px solid #c8e6d4; }
+        .rate-excuse:last-of-type { border-bottom: none; }
+        .rate-excuse .excuse-text { font-style: italic; color: #2d3b45; font-size: 1rem; line-height: 1.4; display: inline-block; margin-bottom: 0.5rem; }
+        .rate-excuse button { padding: 0.4rem 0.75rem; margin-right: 0.35rem; margin-top: 0.25rem; font-size: 0.95rem; cursor: pointer; background: #fff; color: #2d3b45; border: 1px solid #057D9E; border-radius: 4px; font-weight: 500; }
+        .rate-excuse button:hover { background: #e8f4f8; }
+        .rate-excuses-title { margin-top: 0; margin-bottom: 1rem; font-size: 1.2rem; color: #2d3b45; font-weight: 600; }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+        @media (max-width: 768px) {
+            .ic-layout-container { padding: 1rem; }
+            .course-banner h1 { font-size: 1.25rem; }
+            .course-nav { flex-wrap: wrap; gap: 0.4rem; }
+            .course-nav a { padding: 0.5rem 0.75rem; font-size: 0.85rem; min-height: 44px; display: inline-flex; align-items: center; }
+            .content-box { padding: 1rem; }
+            .interactive-box input { width: 100%; max-width: 100%; }
+            .interactive-box button { min-height: 44px; }
+            .rate-excuse button { padding: 0.35rem 0.5rem; min-height: 36px; }
+        }
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            .ic-layout-container { padding: 0.75rem; }
+            .course-banner { padding: 1rem; }
+            .course-banner h1 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="ic-app-header">
+        <span class="ic-app-header__logo">Canv-azz</span>
+        <a href="index.html">Dashboard</a>
+        <span>EXC 202</span>
+    </header>
+    <div class="ic-layout-container">
+        <div class="course-banner">
+            <h1>EXC 202 - Creative Excuses</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">When "my dog ate it" isn't enough.</p>
+        </div>
+        <nav class="course-nav">
+            <a href="#assignments">Assignments</a>
+            <a href="#announcements">Announcements</a>
+            <a href="#discussions">Discussions</a>
+            <a href="#files">Files</a>
+        </nav>
+
+        <div class="content-box" id="assignments">
+            <h2>Assignments</h2>
+            <div class="assignment-item">
+                <strong>Submit 3 original excuses</strong><br>
+                <span class="due">Due: Tomorrow (or a cool story) — 25 pts</span><br>
+                No "internet was down." We've heard it. Make us believe.
+                <div class="interactive-box">
+                    <input type="text" id="excuseInput" placeholder="Type your excuse...">
+                    <button type="button" id="submitExcuse">Submit excuse</button>
+                    <button type="button" id="generateExcuse" style="margin-left:0.25rem;padding:0.5rem 1rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Generate excuse</button>
+                    <p style="margin:0.5rem 0 0 0;font-size:0.85rem;">Rate your excuse (1–5 creative): <button type="button" class="rate-self" data-r="1">1</button> <button type="button" class="rate-self" data-r="2">2</button> <button type="button" class="rate-self" data-r="3">3</button> <button type="button" class="rate-self" data-r="4">4</button> <button type="button" class="rate-self" data-r="5">5</button></p>
+                    <div class="feedback-result" id="excuseFeedback"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Excuse mad lib</strong><br>
+                <span class="due">Due: When you think of one — 20 pts</span><br>
+                Fill in the blanks. My <input type="text" id="madlib1" placeholder="noun" style="width:80px;padding:0.2rem;font:inherit;"> <input type="text" id="madlib2" placeholder="verb" style="width:80px;padding:0.2rem;font:inherit;"> my <input type="text" id="madlib3" placeholder="noun" style="width:80px;padding:0.2rem;font:inherit;">.
+                <button type="button" id="madlibSubmit" style="margin-left:0.5rem;padding:0.4rem 0.8rem;background:#057D9E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Generate excuse</button>
+                <div id="madlibResult" class="feedback-result" style="margin-top:0.5rem;"></div>
+            </div>
+            <div class="assignment-item">
+                <strong>Excuse roulette</strong><br>
+                <span class="due">Due: Spin the wheel — 15 pts</span><br>
+                Click to get a random excuse template. Fill it in and submit.
+                <div class="interactive-box">
+                    <button type="button" id="excuseRoulette" style="padding:0.5rem 1rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Spin excuse roulette</button>
+                    <div id="rouletteResult" class="feedback-result" style="margin-top:0.5rem;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Peer review: Rate each other's excuses</strong><br>
+                <span class="due">Due: When you get to it — 15 pts</span><br>
+                Grade on creativity, plausibility, and whether we laughed or cried.
+            </div>
+            <div class="assignment-item">
+                <strong>Quiz: Creative Excuses</strong><br>
+                <span class="due">Due: Tomorrow (or a cool story) — 25 pts</span><br>
+                <div class="interactive-box quiz-box">
+                    <p><strong>Q1.</strong> The best excuse for late work is: <label><input type="radio" name="excq1" value="a"> (a) My dog ate it</label> <label><input type="radio" name="excq1" value="b"> (b) Canv-azz was needy</label> <label><input type="radio" name="excq1" value="c"> (c) Something we haven't heard</label></p>
+                    <p><strong>Q2.</strong> Excuses are graded on: <label><input type="radio" name="excq2" value="a"> (a) Plausibility</label> <label><input type="radio" name="excq2" value="b"> (b) Creativity</label> <label><input type="radio" name="excq2" value="c"> (c) Whether we laughed</label></p>
+                    <p><strong>Q3.</strong> "My cat had a meeting" is: <label><input type="radio" name="excq3" value="a"> (a) Believable</label> <label><input type="radio" name="excq3" value="b"> (b) Creative but no</label> <label><input type="radio" name="excq3" value="c"> (c) Office hours cancelled</label></p>
+                    <button type="button" id="excQuizSubmit" style="padding:0.5rem 1rem;background:#057D9E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Submit quiz</button>
+                    <div id="excQuizResult" class="feedback-result" style="margin-top:0.75rem;font-weight:bold;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Final: The mother of all excuses</strong><br>
+                <span class="due">Due: End of term — 100 pts</span><br>
+                One excuse to rule them all. Excuse #2 was creative. Excuse #1 made us laugh-cry.
+            </div>
+        </div>
+
+        <div class="content-box" id="announcements">
+            <h2>Announcements</h2>
+            <div class="announcement-item">
+                <strong>Late work policy</strong><br>
+                Submit an excuse with every late assignment. We'll grade the excuse. The assignment is extra credit.
+            </div>
+            <div class="announcement-item">
+                <strong>Office hours cancelled</strong><br>
+                My cat had a meeting. You understand.
+            </div>
+        </div>
+
+        <div class="content-box" id="discussions">
+            <h2>Discussions</h2>
+            <div class="discussion-item">
+                <strong>Best excuse you've ever used (or heard)</strong><br>
+                89 replies. (Some were so good we forgot to grade them.)
+            </div>
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+            <div class="interactive-box">
+                <h3 style="margin-top: 0;">Rate these excuses</h3>
+=======
+            <div class="interactive-box rate-excuses-box">
+                <h3 class="rate-excuses-title">Rate these excuses</h3>
+>>>>>>> Stashed changes
+=======
+            <div class="interactive-box rate-excuses-box">
+                <h3 class="rate-excuses-title">Rate these excuses</h3>
+>>>>>>> Stashed changes
+                <div class="rate-excuse">
+                    <span class="excuse-text">"My dog ate my laptop. And my backup. And the cloud."</span><br>
+                    <button type="button" data-excuse="dog">👍 Believable</button>
+                    <button type="button" data-excuse="dog">👎 Creative but no</button>
+                </div>
+                <div class="rate-excuse">
+                    <span class="excuse-text">"I was abducted. They said my essay was out of this world."</span><br>
+                    <button type="button" data-excuse="alien">👍 Believable</button>
+                    <button type="button" data-excuse="alien">👎 Creative but no</button>
+                </div>
+                <div class="rate-excuse">
+                    <span class="excuse-text">"Canv-azz was feeling needy. I had to stay."</span><br>
+                    <button type="button" data-excuse="canv">👍 Believable</button>
+                    <button type="button" data-excuse="canv">👎 Creative but no</button>
+                </div>
+                <div id="rateResult" class="feedback-result"></div>
+            </div>
+        </div>
+
+        <div class="content-box" id="files">
+            <h2>Files</h2>
+            <p style="margin: 0; color: #6c757d;">syllabus.pdf — "I'll read it when I have time"<br>
+            excuse_rubric.pdf — Creativity 50%, Straight face 50%</p>
+        </div>
+    </div>
+    <script>
+        var feedbacks = [
+            'Creativity: A+. Plausibility: F. We laughed. 25/25 pts.',
+            'We\'ve heard worse. We\'ve heard better. 18/25 pts.',
+            'Excuse #2 was creative. Excuse #1 made us laugh-cry. 25/25 pts.',
+            'My dog ate my grading rubric. You get full points. 25/25 pts.',
+            'Believable? No. Memorable? Yes. 20/25 pts.'
+        ];
+        var selfRating = 0;
+        document.querySelectorAll('.rate-self').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                selfRating = parseInt(this.getAttribute('data-r'), 10);
+                document.querySelectorAll('.rate-self').forEach(function(b) { b.style.background = ''; b.style.color = ''; });
+                this.style.background = '#057D9E';
+                this.style.color = '#fff';
+            });
+        });
+        document.getElementById('submitExcuse').addEventListener('click', function() {
+            var input = document.getElementById('excuseInput');
+            var fb = document.getElementById('excuseFeedback');
+            var text = input.value.trim();
+            if (!text) { fb.textContent = 'You didn\'t submit an excuse. That\'s a bold choice. 0/25 pts.'; return; }
+            var msg = feedbacks[Math.floor(Math.random() * feedbacks.length)];
+            if (selfRating) msg = 'You rated yourself ' + selfRating + '/5. ' + msg;
+            fb.textContent = msg;
+            input.value = '';
+        });
+        var excuses = ['My dog ate my laptop. And my backup. And the cloud.', 'I was abducted. They said my essay was out of this world.', 'Canv-azz was feeling needy. I had to stay.', 'I had to help a squirrel. It was urgent.', 'The internet was down. (Just kidding. We\'ve heard that one.)'];
+        document.getElementById('generateExcuse').addEventListener('click', function() {
+            document.getElementById('excuseInput').value = excuses[Math.floor(Math.random() * excuses.length)];
+        });
+        document.getElementById('madlibSubmit').addEventListener('click', function() {
+            var n1 = document.getElementById('madlib1').value.trim() || 'dog';
+            var v = document.getElementById('madlib2').value.trim() || 'ate';
+            var n2 = document.getElementById('madlib3').value.trim() || 'homework';
+            document.getElementById('madlibResult').textContent = 'My ' + n1 + ' ' + v + ' my ' + n2 + '. — Creativity: A. 20/20 pts.';
+        });
+        var rouletteTemplates = ['My [pet] had an emergency. It was [adjective].', 'I was [verb] by [noun]. They said my essay was [adjective].', 'Canv-azz needed me. I had to [verb].', 'The [noun] was [adjective]. I couldn\'t [verb].'];
+        document.getElementById('excuseRoulette').addEventListener('click', function() {
+            document.getElementById('rouletteResult').textContent = rouletteTemplates[Math.floor(Math.random() * rouletteTemplates.length)] + ' (Fill in the blanks and submit as your excuse.)';
+        });
+        document.querySelectorAll('.rate-excuse button').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var result = document.getElementById('rateResult');
+                var isBelievable = btn.textContent.indexOf('👍') !== -1;
+                result.textContent = isBelievable ? 'Marked as "Believable." We\'ll allow it.' : 'Marked as "Creative but no." We still laughed.';
+            });
+        });
+        document.getElementById('excQuizSubmit').addEventListener('click', function() {
+            var q1 = document.querySelector('input[name="excq1"]:checked'); var q2 = document.querySelector('input[name="excq2"]:checked'); var q3 = document.querySelector('input[name="excq3"]:checked');
+            var score = 0; if (q1 && q1.value === 'c') score++; if (q2 && q2.value === 'c') score++; if (q3 && q3.value === 'b') score++;
+            document.getElementById('excQuizResult').textContent = 'Score: ' + score + '/3. ' + (score >= 2 ? 'We laughed. Full points. 25/25 pts.' : 'Excuse #1: "I didn\'t study." We\'ve heard it.');
+        });
+    </script>
+</body>
+</html>

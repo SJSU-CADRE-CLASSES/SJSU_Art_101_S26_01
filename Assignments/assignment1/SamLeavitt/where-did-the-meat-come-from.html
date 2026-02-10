@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where did the meat come from</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: url('empty-hand.png'), pointer; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        body {
+            background-color: #3e3e42;
+            background-image:
+                /* Panel seams: vertical streaks */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0,
+                    transparent 1px,
+                    rgba(0, 0, 0, 0.12) 1px,
+                    rgba(0, 0, 0, 0.12) 2px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0,
+                    transparent 79px,
+                    rgba(0, 0, 0, 0.2) 79px,
+                    rgba(0, 0, 0, 0.2) 81px
+                ),
+                /* Brushed steel streaks */
+                repeating-linear-gradient(
+                    105deg,
+                    transparent 0,
+                    transparent 3px,
+                    rgba(255, 255, 255, 0.02) 3px,
+                    rgba(255, 255, 255, 0.02) 4px
+                ),
+                repeating-linear-gradient(
+                    75deg,
+                    transparent 0,
+                    transparent 5px,
+                    rgba(0, 0, 0, 0.04) 5px,
+                    rgba(0, 0, 0, 0.04) 6px
+                ),
+                linear-gradient(180deg, #525256 0%, #454548 15%, #3c3c40 50%, #38383c 85%, #323236 100%);
+            background-size: 100% 100%, 100% 100%, 200% 100%, 200% 100%, 100% 100%;
+            box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.3);
+        }
+        .metal-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            max-width: 90%;
+        }
+        .metal-text {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(1.5rem, 4.5vw, 3rem);
+            font-weight: 700;
+            color: #1e1e20;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            line-height: 1.4;
+            text-align: center;
+            /* Stamped / pressed into metal: recessed look */
+            text-shadow:
+                2px 2px 1px rgba(255, 255, 255, 0.12),
+                1px 1px 0 rgba(255, 255, 255, 0.08),
+                -1px -1px 0 rgba(0, 0, 0, 0.6),
+                -2px -2px 3px rgba(0, 0, 0, 0.5);
+        }
+        .metal-links {
+            display: flex;
+            gap: 12rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .metal-links a {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: #2a2a2c;
+            text-decoration: none;
+            text-transform: lowercase;
+            letter-spacing: 0.08em;
+            padding: 0.4rem 0.8rem;
+            text-shadow:
+                1px 1px 0 rgba(255, 255, 255, 0.1),
+                -1px -1px 0 rgba(0, 0, 0, 0.5);
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        .metal-links a:hover {
+            color: #151518;
+            text-shadow:
+                1px 1px 0 rgba(255, 255, 255, 0.15),
+                -1px -1px 0 rgba(0, 0, 0, 0.6);
+        }
+        .metal-neither {
+            margin-top: 0.5rem;
+        }
+        .metal-neither a {
+            display: inline-block;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+            color: #2a2a2c;
+            text-decoration: none;
+            text-transform: lowercase;
+            letter-spacing: 0.08em;
+            padding: 0.5rem 1.2rem;
+            text-shadow:
+                1px 1px 0 rgba(255, 255, 255, 0.1),
+                -1px -1px 0 rgba(0, 0, 0, 0.5);
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        .metal-neither a:hover {
+            color: #151518;
+            text-shadow:
+                1px 1px 0 rgba(255, 255, 255, 0.15),
+                -1px -1px 0 rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="metal-content">
+        <h1 class="metal-text">Where did the meat come from</h1>
+        <nav class="metal-links">
+            <a href="go-hug-your-dad.html">mom</a>
+            <a href="go-hug-your-mom.html">father</a>
+        </nav>
+        <div class="metal-neither">
+            <a href="liar.html" id="link-neither">neither!!</a>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var ctx = null;
+            var staticSource = null;
+
+            function getCtx() {
+                if (ctx) return ctx;
+                var Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                ctx = new Ctx();
+                return ctx;
+            }
+
+            function playWrongBuzzer() {
+                var audioCtx = getCtx();
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                var now = audioCtx.currentTime;
+                var osc1 = audioCtx.createOscillator();
+                var osc2 = audioCtx.createOscillator();
+                osc1.type = 'square';
+                osc2.type = 'square';
+                osc1.frequency.setValueAtTime(320, now);
+                osc1.frequency.setValueAtTime(320, now + 0.18);
+                osc1.frequency.exponentialRampToValueAtTime(120, now + 0.28);
+                osc2.frequency.setValueAtTime(340, now);
+                osc2.frequency.setValueAtTime(340, now + 0.18);
+                osc2.frequency.exponentialRampToValueAtTime(130, now + 0.28);
+                osc2.detune.value = 20;
+
+                var gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.setValueAtTime(0.35, now + 0.18);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.3);
+                osc2.stop(now + 0.3);
+            }
+
+            function playRightDing() {
+                var audioCtx = getCtx();
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                var now = audioCtx.currentTime;
+                var osc1 = audioCtx.createOscillator();
+                var osc2 = audioCtx.createOscillator();
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(880, now);
+                osc2.frequency.setValueAtTime(1100, now);
+
+                var gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.35);
+                osc2.stop(now + 0.35);
+            }
+
+            document.getElementById('link-neither').addEventListener('click', function (e) {
+                e.preventDefault();
+                playWrongBuzzer();
+                setTimeout(function () {
+                    window.location.href = e.target.closest('a').href;
+                }, 450);
+            });
+
+            document.querySelectorAll('.metal-links a').forEach(function (a) {
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    playRightDing();
+                    setTimeout(function () {
+                        window.location.href = e.target.closest('a').href;
+                    }, 400);
+                });
+            });
+
+            function startStatic() {
+                if (ctx) {
+                    if (ctx.state === 'suspended') ctx.resume();
+                    return;
+                }
+                if (!getCtx()) return;
+
+                var sampleRate = ctx.sampleRate;
+                var length = sampleRate * 2;
+                var buffer = ctx.createBuffer(1, length, sampleRate);
+                var data = buffer.getChannelData(0);
+                for (var i = 0; i < length; i++) {
+                    data[i] = (Math.random() * 2 - 1) * 0.5;
+                }
+
+                var gain = ctx.createGain();
+                gain.gain.value = 0.08;
+                gain.connect(ctx.destination);
+
+                staticSource = ctx.createBufferSource();
+                staticSource.buffer = buffer;
+                staticSource.loop = true;
+                staticSource.connect(gain);
+                staticSource.start(0);
+
+                if (ctx.state === 'suspended') ctx.resume();
+            }
+
+            document.body.addEventListener('click', function once() {
+                startStatic();
+                document.body.removeEventListener('click', once);
+            });
+
+            window.addEventListener('load', startStatic);
+        })();
+    </script>
+</body>
+</html>

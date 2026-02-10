@@ -1,12 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cassidy Singman - Assignment 1</title>
+  <meta charset="UTF-8" />
+  <title>Interactive 3-Page Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+      text-align: center;
+    }
+
+    nav {
+      background: #222;
+      padding: 15px;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      margin: 0 15px;
+      cursor: pointer;
+    }
+
+    nav button:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      display: none;
+      padding: 40px;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .card {
+      background: white;
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button.action {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button.action:hover {
+      background: #45a049;
+    }
+  </style>
 </head>
 <body>
-    <h1>Cassidy Singman</h1>
-    <p>hi this is my page</p>
+
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('about')">About</button>
+    <button onclick="showPage('contact')">Contact</button>
+  </nav>
+
+  <!-- HOME PAGE -->
+  <section id="home" class="page active">
+    <div class="card">
+      <h1>Interactive Webpage👋</h1>
+      <p>Click the button to change the message.</p>
+      <p id="homeMessage">⸜(｡˃ ᵕ ˂ )⸝♡ </p>
+      <button class="action" onclick="changeMessage()">Change Message</button>
+    </div>
+  </section>
+
+  <!-- ABOUT PAGE -->
+  <section id="about" class="page">
+    <div class="card">
+      <h1>About This Site</h1>
+      <p>This page remembers your clicks ⋆.˚🦋༘⋆</p>
+      <p>Button clicked <strong><span id="count">0</span></strong> times.</p>
+      <button class="action" onclick="incrementCount()">Click Me</button>
+    </div>
+  </section>
+
+  <!-- CONTACT PAGE -->
+  <section id="contact" class="page">
+    <div class="card">
+      <h1>Contact</h1>
+      <p>Type a message and submit it ✎ᝰ.</p>
+      <textarea id="message" rows="4" placeholder="Your message..."></textarea><br>
+      <button class="action" onclick="submitMessage()">Submit</button>
+      <p id="confirmation"></p>
+    </div>
+  </section>
+
+  <script>
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function changeMessage() {
+      const messages = [
+        "(˶ˆᗜˆ˵) 🎉",
+        "ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧ ⚡",
+        "(⊙ _ ⊙ )"
+      ];
+      const random = Math.floor(Math.random() * messages.length);
+      document.getElementById('homeMessage').innerText = messages[random];
+    }
+
+    let count = 0;
+    function incrementCount() {
+      count++;
+      document.getElementById('count').innerText = count;
+    }
+
+    function submitMessage() {
+      const msg = document.getElementById('message').value;
+      if (msg.trim() === "") {
+        document.getElementById('confirmation').innerText = "Please write something first.";
+        return;
+      }
+      document.getElementById('confirmation').innerText = "Message received! ✅";
+      document.getElementById('message').value = "";
+    }
+  </script>
+
 </body>
 </html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page 3 - Fighting the Machine</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      position: relative;
+    }
+    .image-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9998;
+    }
+    .image-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .white-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 9999;
+      animation: flashFade 3s ease-out forwards;
+    }
+    @keyframes flashFade {
+      0%, 70% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+    @keyframes fadeInText {
+      to { opacity: 1; }
+    }
+    .word-fade {
+      opacity: 0;
+      animation: fadeInText 0.5s ease-out forwards;
+    }
+    .quote-text {
+      position: fixed;
+      top: 9rem;
+      left: 2rem;
+      right: 2rem;
+      white-space: nowrap;
+      color: #000;
+      font-size: 2rem;
+      font-weight: 600;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .quote-text-1b {
+      position: fixed;
+      top: 11.5rem;
+      left: 2rem;
+      right: 2rem;
+      white-space: nowrap;
+      color: #000;
+      font-size: 2rem;
+      font-weight: 600;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .quote-text-2 {
+      position: fixed;
+      top: 16rem;
+      left: 70%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #000;
+      font-size: 2rem;
+      font-weight: 600;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .quote-text-3 {
+      position: fixed;
+      top: 58%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 70%;
+      text-align: center;
+      color: #000;
+      font-size: 2rem;
+      font-weight: 600;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.5;
+      z-index: 10000;
+    }
+    .next-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      padding: 0.75rem 2rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10001;
+      opacity: 0;
+      animation: fadeInText 0.8s ease-out 29s forwards;
+    }
+    .next-btn:hover {
+      background: #eee;
+      color: #000;
+    }
+    .content {
+      color: #fff;
+      font-size: 2rem;
+      padding: 2rem;
+      position: relative;
+      z-index: 10000;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-bg">
+    <img src="fighting-machine.png" alt="">
+  </div>
+  <div class="white-flash"></div>
+  <p class="quote-text">shame... I would have preferred to drive them</p>
+  <p class="quote-text-1b">rather than to obliterate them on the field.</p>
+  <p class="quote-text-2">Our French allies have given us warning about the front..</p>
+  <p class="quote-text-3">they talk of a ruthless enemy and an unforgiving world beyond the ports of the Atlantic.</p>
+  <a class="next-btn" href="page4-the-enemy.html">next</a>
+  <main class="content">
+  </main>
+  <script>
+    (function() {
+      var el = document.querySelector('.quote-text');
+      if (!el) return;
+      var text = el.textContent;
+      var words = text.split(/\s+/);
+      el.textContent = '';
+      var baseDelay = 5;
+      var wordDelay = 0.4;
+      var pauseAfterFirst = 2;
+      words.forEach(function(word, i) {
+        var span = document.createElement('span');
+        span.className = 'word-fade';
+        var delay = i === 0 ? baseDelay : baseDelay + pauseAfterFirst + (i - 1) * wordDelay;
+        span.style.animationDelay = delay + 's';
+        span.textContent = word + (i < words.length - 1 ? ' ' : '');
+        el.appendChild(span);
+      });
+
+      var el1b = document.querySelector('.quote-text-1b');
+      if (el1b) {
+        var text1b = el1b.textContent;
+        var words1b = text1b.split(/\s+/);
+        el1b.textContent = '';
+        var baseDelay1b = 10;
+        var wordDelay1b = 0.4;
+        words1b.forEach(function(word, i) {
+          var span = document.createElement('span');
+          span.className = 'word-fade';
+          span.style.animationDelay = (baseDelay1b + i * wordDelay1b) + 's';
+          span.textContent = word + (i < words1b.length - 1 ? ' ' : '');
+          el1b.appendChild(span);
+        });
+      }
+
+      var el2 = document.querySelector('.quote-text-2');
+      if (el2) {
+        var text2 = el2.textContent;
+        var words2 = text2.split(/\s+/);
+        el2.textContent = '';
+        var baseDelay2 = 15;
+        var wordDelay2 = 0.4;
+        words2.forEach(function(word, i) {
+          var span = document.createElement('span');
+          span.className = 'word-fade';
+          span.style.animationDelay = (baseDelay2 + i * wordDelay2) + 's';
+          span.textContent = word + (i < words2.length - 1 ? ' ' : '');
+          el2.appendChild(span);
+        });
+      }
+
+      var el3 = document.querySelector('.quote-text-3');
+      if (el3) {
+        var text3 = el3.textContent;
+        var words3 = text3.split(/\s+/);
+        el3.textContent = '';
+        var baseDelay3 = 21;
+        var wordDelay3 = 0.4;
+        words3.forEach(function(word, i) {
+          var span = document.createElement('span');
+          span.className = 'word-fade';
+          span.style.animationDelay = (baseDelay3 + i * wordDelay3) + 's';
+          span.textContent = word + (i < words3.length - 1 ? ' ' : '');
+          el3.appendChild(span);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEM 101 - Canv-azz</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "Lato", "Helvetica Neue", Arial, sans-serif; font-size: 14px; color: #2d3b45; background: #f5f5f5; }
+        .ic-app-header { background: #394B58; color: #fff; height: 52px; display: flex; align-items: center; padding: 0 1rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .ic-app-header__logo { font-weight: 700; font-size: 1.25rem; }
+        .ic-app-header a { color: #fff; text-decoration: none; margin-right: 1rem; }
+        .ic-app-header a:hover { text-decoration: underline; }
+        .ic-layout-container { margin-top: 52px; padding: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .course-banner { background: #6B7F2E; color: #fff; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; }
+        .course-banner h1 { margin: 0; font-size: 1.5rem; }
+        .course-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .course-nav a { padding: 0.5rem 1rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 3px; color: #2d3b45; text-decoration: none; font-size: 0.9rem; }
+        .course-nav a:hover { background: #f5f5f5; }
+        .content-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1.25rem; margin-bottom: 1rem; }
+        .content-box h2 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.5rem; }
+        .assignment-item, .announcement-item, .discussion-item { padding: 0.75rem 0; border-bottom: 1px solid #f0f0f0; }
+        .assignment-item:last-child, .announcement-item:last-child, .discussion-item:last-child { border-bottom: none; }
+        .due { color: #6c757d; font-size: 0.85rem; }
+        .quiz-item { padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+        .quiz-item.forgotten .quiz-q { color: #999; }
+        .quiz-item .quiz-answer { margin: 0.25rem 0.25rem 0 0; padding: 0.4rem; font: inherit; width: 200px; }
+        .quiz-item .quiz-submit { padding: 0.4rem 0.8rem; background: #6B7F2E; color: #fff; border: none; border-radius: 3px; cursor: pointer; font: inherit; }
+        @media (max-width: 768px) {
+            .ic-layout-container { padding: 1rem; }
+            .course-banner h1 { font-size: 1.25rem; }
+            .course-nav { flex-wrap: wrap; gap: 0.4rem; }
+            .course-nav a { padding: 0.5rem 0.75rem; font-size: 0.85rem; min-height: 44px; display: inline-flex; align-items: center; }
+            .content-box { padding: 1rem; }
+            .interactive-box input { width: 100%; max-width: 100%; }
+            .interactive-box button, .quiz-item .quiz-submit { min-height: 44px; }
+        }
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            .ic-layout-container { padding: 0.75rem; }
+            .course-banner { padding: 1rem; }
+            .course-banner h1 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="ic-app-header">
+        <span class="ic-app-header__logo">Canv-azz</span>
+        <a href="index.html">Dashboard</a>
+        <span>MEM 101</span>
+    </header>
+    <div class="ic-layout-container">
+        <div class="course-banner">
+            <h1>MEM 101 - Forgetting Basics</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Wait, what was this course about again?</p>
+        </div>
+        <nav class="course-nav">
+            <a href="#assignments">Assignments</a>
+            <a href="#announcements">Announcements</a>
+            <a href="#discussions">Discussions</a>
+            <a href="#files">Files</a>
+        </nav>
+
+        <div class="content-box" id="assignments">
+            <h2>Assignments</h2>
+            <div class="assignment-item">
+                <strong>Remember why you logged in</strong><br>
+                <span class="due">Due: Recommended — 0 pts</span><br>
+                If you forgot, just stay a while. It'll come back. Maybe.
+            </div>
+            <div class="assignment-item">
+                <strong>Forget one thing on purpose</strong><br>
+                <span class="due">Due: You'll forget the due date — 15 pts</span><br>
+                Document what you chose to forget. Then forget you documented it.
+                <div class="interactive-box">
+                    <input type="text" id="forgetThing" placeholder="Thing to forget..." style="padding:0.4rem;width:200px;font:inherit;margin-right:0.5rem;">
+                    <button type="button" id="forgetThingBtn" style="padding:0.4rem 0.8rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Forget it</button>
+                    <div id="forgetThingResult" style="margin-top:0.5rem;font-style:italic;transition:opacity 2s;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Memory flash cards</strong><br>
+                <span class="due">Due: You'll forget — 20 pts</span><br>
+                Click a card. We'll show the answer. Then we'll forget the question.
+                <div class="interactive-box">
+                    <button type="button" class="mem-card" data-q="What is MEM 101?" data-a="We forgot." style="padding:0.5rem 1rem;margin:0.25rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Card 1</button>
+                    <button type="button" class="mem-card" data-q="What did you forget?" data-a="Everything." style="padding:0.5rem 1rem;margin:0.25rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Card 2</button>
+                    <button type="button" class="mem-card" data-q="What was the first card?" data-a="???" style="padding:0.5rem 1rem;margin:0.25rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Card 3</button>
+                    <div id="memCardResult" style="margin-top:0.5rem;font-style:italic;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Quiz: Forgetting Basics</strong><br>
+                <span class="due">Due: You'll forget — 25 pts</span><br>
+                <div class="interactive-box quiz-box">
+                    <p><strong>Q1.</strong> What is MEM 101 about? <label><input type="radio" name="memq1" value="a"> (a) Memory</label> <label><input type="radio" name="memq1" value="b"> (b) Forgetting</label> <label><input type="radio" name="memq1" value="c"> (c) Wait, what was the question?</label></p>
+                    <p><strong>Q2.</strong> After you answer, we: <label><input type="radio" name="memq2" value="a"> (a) Grade it</label> <label><input type="radio" name="memq2" value="b"> (b) Forget the question</label> <label><input type="radio" name="memq2" value="c"> (c) Both</label></p>
+                    <p><strong>Q3.</strong> The first question was: <label><input type="radio" name="memq3" value="a"> (a) ???</label> <label><input type="radio" name="memq3" value="b"> (b) Something about memory</label> <label><input type="radio" name="memq3" value="c"> (c) We forgot</label></p>
+                    <button type="button" id="memQuizSubmit" style="padding:0.5rem 1rem;background:#6B7F2E;color:#fff;border:none;border-radius:3px;cursor:pointer;font:inherit;">Submit quiz</button>
+                    <div id="memQuizResult" style="margin-top:0.75rem;font-style:italic;font-weight:bold;"></div>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <strong>Final: What was this class?</strong><br>
+                <span class="due">Due: End of term — 100 pts</span><br>
+                Write everything you remember. (We're grading on effort. And we might forget the rubric.)
+            </div>
+        </div>
+
+        <div class="content-box" id="announcements">
+            <h2>Announcements</h2>
+            <div class="announcement-item forgettable" id="forgettableAnnouncement" data-text="We had something to tell you. It's gone now. We'll update when we remember.">
+                <strong>Important: Please remember</strong><br>
+                <span class="announcement-body">We had something to tell you. It's gone now. We'll update when we remember.</span>
+            </div>
+            <div class="announcement-item">
+                <strong>Reminder about the thing</strong><br>
+                You know. The thing. From that one day. Yeah.
+            </div>
+        </div>
+
+        <div class="content-box" id="discussions">
+            <h2>Discussions</h2>
+            <div class="discussion-item" id="memDiscussion">
+                <strong class="mem-forget-q">Week 1: What did you forget this week?</strong><br>
+                <span id="memReplyCount">23</span> replies. (Most people forgot to reply.) <button type="button" id="memAddReply" style="margin-left:0.5rem;padding:0.25rem 0.5rem;font-size:0.8rem;cursor:pointer;background:#6B7F2E;color:#fff;border:none;border-radius:3px;">Reply</button>
+            </div>
+        </div>
+
+        <div class="content-box" id="files">
+            <h2>Files</h2>
+            <p style="margin: 0; color: #6c757d;">syllabus.pdf — (We forgot to upload it. Again.)<br>
+            rubric.pdf — "You forgot the rubric. I taped it to your brain." — Instructor</p>
+        </div>
+
+        <div class="content-box interactive-box">
+            <h2>Remember this</h2>
+            <p>Type something. We'll remember it. Then we'll forget it.</p>
+            <input type="text" id="rememberInput" placeholder="Type something to remember...">
+            <button type="button" id="rememberBtn">Remember this</button>
+            <div class="result" id="rememberResult" style="margin-top: 0.75rem;"></div>
+        </div>
+
+        <div class="content-box interactive-box">
+            <h2>What was this class? (Quiz)</h2>
+            <p>Answer each question. After you answer, we forget the question.</p>
+            <div class="quiz-item" data-q="What is MEM 101 about?"><strong class="quiz-q">What is MEM 101 about?</strong><br>
+                <input type="text" class="quiz-answer" placeholder="Your answer"><button type="button" class="quiz-submit">Submit</button></div>
+            <div class="quiz-item" data-q="What did you forget this week?"><strong class="quiz-q">What did you forget this week?</strong><br>
+                <input type="text" class="quiz-answer" placeholder="Your answer"><button type="button" class="quiz-submit">Submit</button></div>
+            <div class="quiz-item" data-q="What was the first question?"><strong class="quiz-q">What was the first question?</strong><br>
+                <input type="text" class="quiz-answer" placeholder="Your answer"><button type="button" class="quiz-submit">Submit</button></div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('forgettableAnnouncement').addEventListener('click', function() {
+            var body = this.querySelector('.announcement-body');
+            body.textContent = 'Wait, what was I saying?';
+            this.classList.add('forgotten');
+        });
+        document.getElementById('rememberBtn').addEventListener('click', function() {
+            var input = document.getElementById('rememberInput');
+            var result = document.getElementById('rememberResult');
+            var text = input.value.trim() || '(nothing)';
+            result.textContent = 'Remembered: "' + text + '"';
+            input.value = '';
+            setTimeout(function() {
+                result.textContent = 'Wait, what did you say? I forgot.';
+            }, 3000);
+        });
+        document.querySelectorAll('.quiz-submit').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var item = this.closest('.quiz-item');
+                var qEl = item.querySelector('.quiz-q');
+                qEl.textContent = '??? (We forgot the question.)';
+                item.classList.add('forgotten');
+            });
+        });
+        document.getElementById('forgetThingBtn').addEventListener('click', function() {
+            var input = document.getElementById('forgetThing');
+            var result = document.getElementById('forgetThingResult');
+            var text = input.value.trim() || '(nothing)';
+            result.textContent = 'Forgot: "' + text + '"';
+            result.style.opacity = '1';
+            input.value = '';
+            setTimeout(function() { result.style.opacity = '0'; result.textContent = 'Wait, what did you forget?'; }, 2000);
+        });
+        document.querySelectorAll('.mem-card').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var a = this.getAttribute('data-a');
+                document.getElementById('memCardResult').textContent = 'Answer: ' + a;
+                this.textContent = '???';
+                this.disabled = true;
+            });
+        });
+        document.getElementById('memQuizSubmit').addEventListener('click', function() {
+            var q1 = document.querySelector('input[name="memq1"]:checked'); var q2 = document.querySelector('input[name="memq2"]:checked'); var q3 = document.querySelector('input[name="memq3"]:checked');
+            var score = 0; if (q1 && q1.value === 'c') score++; if (q2 && q2.value === 'b') score++; if (q3 && q3.value === 'c') score++;
+            document.getElementById('memQuizResult').textContent = 'Score: ' + score + '/3. ' + (score >= 2 ? 'We forgot to grade it. A+.' : 'Wait, what was the quiz?');
+        });
+        var memReplies = 23;
+        document.getElementById('memAddReply').addEventListener('click', function() {
+            memReplies++;
+            document.getElementById('memReplyCount').textContent = memReplies;
+            var q = document.querySelector('#memDiscussion .mem-forget-q');
+            q.textContent = 'Wait, what was the question?';
+            setTimeout(function() { q.textContent = 'Week 1: What did you forget this week?'; }, 2000);
+        });
+    </script>
+</body>
+</html>

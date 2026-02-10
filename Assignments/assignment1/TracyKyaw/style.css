@@ -1,0 +1,130 @@
+/* ===== Global Styles ===== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 600px;
+  padding: 20px;
+  z-index: 1; /* above particles */
+  position: relative;
+}
+
+/* ===== Backgrounds per page ===== */
+body.day3 {
+  background: linear-gradient(rgba(255,242,216,0.6), rgba(255,228,181,0.6)),
+              url('images/day3.png') no-repeat center center / cover;
+  color: #333;
+}
+
+body.day2 {
+  background: linear-gradient(rgba(255,214,214,0.6), rgba(255,239,239,0.6)),
+              url('images/day2.png') no-repeat center center / cover;
+  color: #333;
+}
+
+body.day1 {
+  background: linear-gradient(rgba(43,43,43,0.6), rgba(26,26,26,0.6)),
+              url('images/day1.png') no-repeat center center / cover;
+  color: #eee;
+}
+
+body.night {
+  background: radial-gradient(circle at center, rgba(17,17,17,0.8), rgba(0,0,0,0.9)),
+              url('images/night.png') no-repeat center center / cover;
+  color: #ccc;
+}
+
+body.after {
+  background: linear-gradient(rgba(199,210,254,0.7), rgba(224,231,255,0.7)),
+              url('images/after.png') no-repeat center center / cover;
+  color: #222;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeSlideIn {0%{opacity:0; transform:translateY(-20px);}100%{opacity:1; transform:translateY(0);}}
+@keyframes fadeSlideLeft {0%{opacity:0; transform:translateX(-20px);}100%{opacity:1; transform:translateX(0);}}
+@keyframes fadeSlideRight {0%{opacity:0; transform:translateX(20px);}100%{opacity:1; transform:translateX(0);}}
+
+.remaining-time {
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  animation: fadeSlideIn 1s ease-out forwards;
+}
+
+.main-text {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  opacity: 0;
+  animation: fadeSlideLeft 1s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+button, a button {
+  opacity: 0;
+  animation: fadeSlideRight 0.8s ease-out forwards;
+  animation-delay: 1s;
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ffcc66;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background-color: #ffaa33;
+}
+
+/* ===== Video overlay ===== */
+#videoOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 12px;
+}
+
+/* ===== Doom scroll ===== */
+.scroll-box {
+  max-height: 150px;
+  overflow-y: auto;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.2);
+  margin: 15px 0;
+  opacity: 0;
+  animation: fadeSlideIn 1s ease-out forwards;
+  animation-delay: 1.2s;
+}
+
+/* ===== Particle Canvas ===== */
+#particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}

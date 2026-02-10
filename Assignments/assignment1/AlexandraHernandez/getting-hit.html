@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got Hit! | Alexandra Hernandez</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Comic Neue', cursive;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #87CEEB 0%, #E8F4E8 50%, #8B4513 100%);
+      background-attachment: fixed;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .nav-link {
+      display: inline-block;
+      font-family: 'Bangers', cursive;
+      font-size: 1.4rem;
+      padding: 0.6rem 1.2rem;
+      background: #C41E3A;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 3px solid #333;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      margin-bottom: 2rem;
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-link:hover {
+      background: #E63946;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .scene {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Motion lines - ball coming at you */
+    .motion-lines {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .motion-line {
+      position: absolute;
+      height: 4px;
+      background: rgba(0,0,0,0.15);
+      transform-origin: center right;
+      border-radius: 2px;
+    }
+
+    .motion-line:nth-child(1) { top: 35%; left: 10%; width: 120px; transform: rotate(-5deg); }
+    .motion-line:nth-child(2) { top: 40%; left: 5%; width: 150px; transform: rotate(-2deg); }
+    .motion-line:nth-child(3) { top: 45%; left: 0; width: 180px; }
+    .motion-line:nth-child(4) { top: 50%; left: 0; width: 200px; }
+    .motion-line:nth-child(5) { top: 55%; left: 0; width: 180px; }
+    .motion-line:nth-child(6) { top: 60%; left: 5%; width: 150px; transform: rotate(2deg); }
+    .motion-line:nth-child(7) { top: 65%; left: 10%; width: 120px; transform: rotate(5deg); }
+
+    /* The ball - huge, coming right at the viewer */
+    .ball {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FF6B6B, #C41E3A);
+      border: 5px solid #333;
+      box-shadow: inset -15px -15px 30px rgba(0,0,0,0.3), 8px 8px 0 rgba(0,0,0,0.3);
+      animation: incoming 3s ease-in infinite;
+      z-index: 5;
+    }
+
+    @keyframes incoming {
+      0% {
+        transform: scale(0.4) translateX(-100px);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.1) translateX(20px);
+        opacity: 1;
+      }
+    }
+
+    /* Impact text */
+    .impact {
+      position: absolute;
+      font-family: 'Bangers', cursive;
+      font-size: 3rem;
+      color: #C41E3A;
+      text-shadow: 4px 4px 0 #333, 6px 6px 0 rgba(0,0,0,0.3);
+      letter-spacing: 4px;
+      z-index: 6;
+      bottom: 60px;
+      animation: impact-shake 0.5s ease-in-out infinite;
+    }
+
+    @keyframes impact-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+    }
+
+    .caption {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #333;
+      max-width: 320px;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="nav-link">← Back to Cartoon Dodgeball</a>
+
+  <div class="scene">
+    <div class="motion-lines">
+      <div class="motion-line"></div>
+      <div class="motion-line"></div>
+      <div class="motion-line"></div>
+      <div class="motion-line"></div>
+      <div class="motion-line"></div>
+      <div class="motion-line"></div>
+      <div class="motion-line"></div>
+    </div>
+    <div class="ball"></div>
+    <div class="impact">POW!</div>
+  </div>
+
+  <p class="caption">The ball flies right at you—YOU'RE HIT! Better luck next round!</p>
+</body>
+</html>

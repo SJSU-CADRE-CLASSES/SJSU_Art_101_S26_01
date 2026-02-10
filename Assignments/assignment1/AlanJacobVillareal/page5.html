@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alan Jacob Villareal - Assignment 1 - Page 5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #404040;
+        }
+
+        .images {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            min-height: 100vh;
+            gap: 1rem;
+        }
+
+        .images .img-wrap {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            min-width: 0;
+        }
+
+        .images .img-wrap:first-child {
+            justify-content: flex-start;
+        }
+
+        .images .stairs-wrap {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .images .img-wrap img,
+        .images .stairs-wrap img {
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .images .stairs-wrap img.stairs-img {
+            max-width: 50%;
+            max-height: 40vh;
+            transform: scale(2);
+            transform-origin: right center;
+        }
+
+        .bottom-text {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 1rem;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 5rem;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="images">
+        <div class="img-wrap"><img src="Phase_5.jpg" alt="Phase 5"></div>
+        <div class="stairs-wrap"><a href="page6.html"><img src="Bed.webp" alt="Bed" class="stairs-img"></a></div>
+    </div>
+    <p class="bottom-text">Its bedtime</p>
+</body>
+</html>

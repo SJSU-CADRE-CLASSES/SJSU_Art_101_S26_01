@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouth Fed</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: url('empty-hand.png'), pointer; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #0a0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        h1 {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-size: clamp(3rem, 15vw, 12rem);
+            font-weight: 900;
+            color: #8b0000;
+            text-shadow:
+                0 0 20px rgba(139, 0, 0, 0.8),
+                0 0 60px rgba(100, 0, 0, 0.5),
+                0 0 100px rgba(80, 0, 0, 0.3);
+            letter-spacing: 0.05em;
+            user-select: none;
+        }
+        #start-sound {
+            position: fixed;
+            inset: 0;
+            background: transparent;
+            cursor: pointer;
+            z-index: 10;
+            display: none;
+        }
+        #start-sound.visible {
+            display: block;
+        }
+        .bg-column {
+            position: fixed;
+            top: 0;
+            width: 95px;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-column.left { left: 5%; }
+        .bg-column.right { right: 5%; }
+        .center-band {
+            position: fixed;
+            top: 0;
+            left: calc(5% + 95px);
+            right: calc(5% + 95px);
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .center-tile {
+            width: 100px;
+            height: 100%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .bg-column-inner .word-faint {
+            font-family: monospace;
+            font-size: 9px;
+            color: rgba(139, 0, 0, 0.22);
+        }
+        .bg-column-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: column-descend 25s linear infinite;
+        }
+        .bg-column-inner .line {
+            white-space: nowrap;
+            margin-bottom: 0.5em;
+            text-align: center;
+        }
+        .bg-column-inner .word {
+            font-family: monospace;
+            font-size: 14px;
+            color: rgba(139, 0, 0, 0.5);
+        }
+        @keyframes column-descend {
+            from { transform: translateY(-15%); }
+            to { transform: translateY(100vh); }
+        }
+        .main-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        h1 { margin: 0; }
+        .choice-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        .choice-links.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .choice-links a {
+            display: block;
+            padding: 0.75rem 1.75rem;
+            background: #5c0000;
+            color: #f5f5dc;
+            font-family: sans-serif;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.15s;
+        }
+        .choice-links a:hover {
+            background: #6b0f0f;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-column left" id="col-left" aria-hidden="true"></div>
+    <div class="bg-column right" id="col-right" aria-hidden="true"></div>
+    <div class="center-band" id="center-band" aria-hidden="true"></div>
+    <div class="main-content">
+        <h1>MOUTH FED</h1>
+        <div class="choice-links" id="choice-links">
+            <a href="where-did-the-meat-come-from.html">I'm sorry</a>
+            <a href="where-did-the-meat-come-from.html">I regret nothing</a>
+        </div>
+    </div>
+    <div id="start-sound" aria-label="Click to start sound"></div>
+    <script>
+        (function () {
+            var text = 'tasty_meat';
+            var copies = 70;
+            function buildColumn() {
+                var inner = document.createElement('div');
+                inner.className = 'bg-column-inner';
+                for (var c = 0; c < copies; c++) {
+                    var line = document.createElement('div');
+                    line.className = 'line';
+                    var span = document.createElement('span');
+                    span.className = 'word';
+                    span.textContent = text;
+                    line.appendChild(span);
+                    inner.appendChild(line);
+                }
+                return inner;
+            }
+            function buildCenterColumn() {
+                var phrase = 'what have i done?';
+                var copies = 80;
+                var inner = document.createElement('div');
+                inner.className = 'bg-column-inner';
+                for (var c = 0; c < copies; c++) {
+                    var line = document.createElement('div');
+                    line.className = 'line';
+                    var span = document.createElement('span');
+                    span.className = 'word-faint';
+                    span.textContent = phrase;
+                    line.appendChild(span);
+                    inner.appendChild(line);
+                }
+                return inner;
+            }
+            document.getElementById('col-left').appendChild(buildColumn());
+            document.getElementById('col-right').appendChild(buildColumn());
+            var centerBand = document.getElementById('center-band');
+            var centerCols = Math.max(12, Math.ceil((window.innerWidth - (window.innerWidth * 0.1 + 190)) / 100) + 2);
+            for (var i = 0; i < centerCols; i++) {
+                var tile = document.createElement('div');
+                tile.className = 'center-tile';
+                tile.appendChild(buildCenterColumn());
+                centerBand.appendChild(tile);
+            }
+
+            var overlay = document.getElementById('start-sound');
+            var ctx = null;
+
+            function buildSynth() {
+                var Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                var audioCtx = new Ctx();
+
+                var master = audioCtx.createGain();
+                master.gain.value = 0.25;
+                master.connect(audioCtx.destination);
+
+                var filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 400;
+                filter.Q.value = 1;
+                filter.connect(master);
+
+                function addOsc(freq, detune, type) {
+                    var osc = audioCtx.createOscillator();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    osc.detune.value = detune;
+                    var gain = audioCtx.createGain();
+                    gain.gain.value = 0.35;
+                    osc.connect(gain);
+                    gain.connect(filter);
+                    osc.start(0);
+                }
+                addOsc(55, 0, 'sawtooth');
+                addOsc(55.2, 7, 'sawtooth');
+                addOsc(82.5, -3, 'triangle');
+                addOsc(110, 5, 'sine');
+
+                var lfo = audioCtx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.08;
+                var lfoGain = audioCtx.createGain();
+                lfoGain.gain.value = 120;
+                lfo.connect(lfoGain);
+                lfoGain.connect(filter.frequency);
+                lfo.start(0);
+
+                var highOsc = audioCtx.createOscillator();
+                highOsc.type = 'sine';
+                highOsc.frequency.value = 220;
+                var highGain = audioCtx.createGain();
+                highGain.gain.value = 0.06;
+                highOsc.connect(highGain);
+                highGain.connect(filter);
+                highOsc.start(0);
+                var highLfo = audioCtx.createOscillator();
+                highLfo.type = 'sine';
+                highLfo.frequency.value = 0.03;
+                var highLfoGain = audioCtx.createGain();
+                highLfoGain.gain.value = 15;
+                highLfo.connect(highLfoGain);
+                highLfoGain.connect(highOsc.frequency);
+                highLfo.start(0);
+
+                return audioCtx;
+            }
+
+            function startEerieSynth() {
+                overlay.classList.remove('visible');
+                if (ctx) {
+                    if (ctx.state === 'suspended') ctx.resume();
+                    return;
+                }
+                ctx = buildSynth();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+            }
+
+            overlay.addEventListener('click', function () {
+                startEerieSynth();
+            });
+
+            window.addEventListener('load', function () {
+                ctx = buildSynth();
+                if (ctx && ctx.state === 'suspended') overlay.classList.add('visible');
+                setTimeout(function () {
+                    document.getElementById('choice-links').classList.add('visible');
+                }, 1500);
+            });
+        })();
+    </script>
+</body>
+</html>

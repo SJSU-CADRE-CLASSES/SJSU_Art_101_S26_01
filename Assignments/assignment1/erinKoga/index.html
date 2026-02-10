@@ -4,8 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erin Koga - Assignment 1</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .music-button {
+            margin: 0.5rem;
+            align-self: flex-start;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background-color: #ff7b0f;
+            color: #000;
+        }
+        .content-frame {
+            flex: 1;
+            border: none;
+            width: 100%;
+        }
+        .music-frame {
+            width: 0;
+            height: 0;
+            border: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Erin Koga</h1>
+    <button class="music-button" onclick="startMusic()">click here for music</button>
+    <!-- Background YouTube music player -->
+    <iframe
+        id="music-player"
+        class="music-frame"
+        src="https://www.youtube.com/embed/7S3s_60QKVU?loop=1&playlist=7S3s_60QKVU&enablejsapi=1"
+        title="YouTube video player"
+        frameborder="0"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen>
+    </iframe>
+
+    <!-- Main content frame that loads the existing pages -->
+    <iframe class="content-frame" name="content-frame" src="index-inner.html"></iframe>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        var musicPlayer;
+        function onYouTubeIframeAPIReady() {
+            musicPlayer = new YT.Player('music-player', {
+                events: {
+                    'onReady': function (event) {
+                        // Set volume to 60%
+                        event.target.setVolume(60);
+                    }
+                }
+            });
+        }
+        function startMusic() {
+            if (musicPlayer && typeof musicPlayer.playVideo === 'function') {
+                musicPlayer.playVideo();
+            }
+        }
+    </script>
 </body>
 </html>

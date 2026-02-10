@@ -1,11 +1,352 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michelle Duong - Assignment 1</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SYSTEM // ERROR</title>
+
+  <!-- Optional pixel font (remove if you want zero external assets) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050607;
+      --green:#19ff5a;
+      --green-dim: rgba(25, 255, 90, 0.55);
+      --red:#ff2b2b;
+      --panel: rgba(10, 18, 12, 0.55);
+      --border: rgba(25, 255, 90, 0.35);
+      --shadow: rgba(25, 255, 90, 0.12);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:var(--bg); color:var(--green); }
+
+    body{
+      font-family: "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow:hidden;
+    }
+
+    /* Subtle screen flicker / glow */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background: radial-gradient(1200px 800px at 50% 35%, rgba(25,255,90,0.06), transparent 60%);
+      mix-blend-mode: screen;
+      animation: glowPulse 4.8s ease-in-out infinite;
+      opacity:0.7;
+    }
+
+    /* Scanlines */
+    .scanlines{
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0) 0px,
+          rgba(0,0,0,0) 2px,
+          rgba(0,0,0,0.18) 3px
+        );
+      opacity:0.55;
+      transform: translateZ(0);
+    }
+
+    /* Noise overlay */
+    .noise{
+      position:fixed; inset:-30%;
+      pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      opacity:0.08;
+      animation: noiseShift 1.4s steps(2) infinite;
+      mix-blend-mode: overlay;
+    }
+
+    @keyframes noiseShift{
+      0%{ transform: translate(0,0); }
+      20%{ transform: translate(-2%,1%); }
+      40%{ transform: translate(1%,-2%); }
+      60%{ transform: translate(2%,2%); }
+      80%{ transform: translate(-1%,-1%); }
+      100%{ transform: translate(0,0); }
+    }
+    @keyframes glowPulse{
+      0%,100%{ opacity:0.55; }
+      50%{ opacity:0.85; }
+    }
+
+    /* Layout */
+    .wrap{
+      position:relative;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .terminal{
+      width:min(980px, 95vw);
+      height:min(560px, 80vh);
+      background: linear-gradient(180deg, rgba(10,18,12,0.45), rgba(5,8,6,0.6));
+      border:1px solid rgba(25,255,90,0.35);
+      box-shadow: 0 0 0 1px rgba(25,255,90,0.06), 0 0 40px rgba(25,255,90,0.12);
+      border-radius:12px;
+      padding:22px 18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* Terminal “header” strip */
+    .terminal .bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px 10px 14px;
+      border:1px solid rgba(25,255,90,0.18);
+      border-radius:10px;
+      background: rgba(0,0,0,0.25);
+      margin-bottom:14px;
+      font-size:12px;
+      color: rgba(25,255,90,0.55);
+    }
+    .dots{ display:flex; gap:8px; align-items:center; }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: rgba(25,255,90,0.25);
+      box-shadow: 0 0 10px rgba(25,255,90,0.12);
+    }
+    .dot:nth-child(2){ opacity:0.6; }
+    .dot:nth-child(3){ opacity:0.35; }
+
+    .content{
+      font-size:12px;
+      line-height:1.75;
+      letter-spacing:0.02em;
+      text-shadow: 0 0 12px rgba(25,255,90,0.20);
+      user-select:none;
+      padding-left:6px;
+    }
+
+    .prompt{
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      appearance:none;
+      background: rgba(0,0,0,0.35);
+      border:1px solid rgba(25,255,90,0.35);
+      color: rgba(25,255,90,1);
+      padding:12px 14px;
+      border-radius:10px;
+      font-family: inherit;
+      font-size:12px;
+      cursor:pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+      outline:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(25,255,90,0.65);
+      box-shadow: 0 0 0 2px rgba(25,255,90,0.10), 0 0 18px rgba(25,255,90,0.12);
+    }
+    .btn:active{ transform: translateY(0px); }
+    .btn:disabled{ opacity:0.55; cursor:not-allowed; }
+
+    .btn.danger{
+      border-color: rgba(255,43,43,0.35);
+      color: rgba(255,43,43,0.9);
+      text-shadow: 0 0 10px rgba(255,43,43,0.18);
+    }
+    .btn.danger:hover{
+      border-color: rgba(255,43,43,0.65);
+      box-shadow: 0 0 0 2px rgba(255,43,43,0.08), 0 0 18px rgba(255,43,43,0.12);
+    }
+
+    /* Typing cursor */
+    .cursor{
+      display:inline-block;
+      width:10px;
+      height:14px;
+      background: var(--green);
+      margin-left:6px;
+      transform: translateY(2px);
+      animation: blink 1s steps(2) infinite;
+      box-shadow: 0 0 12px rgba(25,255,90,0.25);
+    }
+    @keyframes blink{
+      0%,49%{ opacity:1; }
+      50%,100%{ opacity:0; }
+    }
+
+    /* Glitch shake (used when user tries IGNORE) */
+    .glitch{
+      animation: glitch 220ms steps(2) 0s 6;
+    }
+    @keyframes glitch{
+      0%{ transform: translate(0,0); filter:none; }
+      20%{ transform: translate(-2px,1px); filter: hue-rotate(10deg); }
+      40%{ transform: translate(2px,-1px); filter: hue-rotate(-10deg); }
+      60%{ transform: translate(-1px,-2px); filter: contrast(1.05); }
+      80%{ transform: translate(1px,2px); filter: saturate(1.2); }
+      100%{ transform: translate(0,0); filter:none; }
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:10px;
+      color: rgba(25,255,90,0.45);
+      padding-left:6px;
+    }
+
+    @media (max-width: 520px){
+      .content{ font-size:11px; }
+      .btn{ width: 100%; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Michelle Duong</h1>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <main class="wrap">
+    <section class="terminal" id="terminal" aria-label="Terminal">
+      <div class="bar">
+        <div class="dots" aria-hidden="true">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <div>SYSTEM://DIAGNOSTICS</div>
+        <div id="status">STATUS: <span style="color:rgba(255,43,43,0.9)">ERROR</span></div>
+      </div>
+
+      <div class="content" id="output" role="log" aria-live="polite"></div>
+
+      <div class="prompt" id="actions" style="display:none;">
+        <button class="btn" id="connectBtn">[ CONNECT ]</button>
+        <button class="btn danger" id="ignoreBtn">[ IGNORE ]</button>
+      </div>
+
+      <div class="hint" id="hint" style="display:none;">
+        TIP: You can’t close a signal that already found you.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const output = document.getElementById("output");
+    const actions = document.getElementById("actions");
+    const hint = document.getElementById("hint");
+    const terminal = document.getElementById("terminal");
+    const status = document.getElementById("status");
+
+    const connectBtn = document.getElementById("connectBtn");
+    const ignoreBtn = document.getElementById("ignoreBtn");
+
+    const lines = [
+      "BOOT SEQUENCE INITIATED...",
+      "LOADING CORE MODULES........OK",
+      "VERIFYING DISPLAY BUFFER.....OK",
+      "CHECKING NETWORK INTERFACE....FAIL",
+      "",
+      "SYSTEM ERROR: unknown user detected.",
+      "ORIGIN: external signal // unstable",
+      "",
+      "attempting handshake...",
+      "attempting handshake...",
+      "attempting handshake... ",
+      "",
+      ">> IS ANYONE THERE?",
+      ">> PLEASE RESPOND."
+    ];
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    let isTyping = true;
+
+    // Start with one line container
+    const firstLine = document.createElement("div");
+    output.appendChild(firstLine);
+
+    // Cursor element
+    const cursor = document.createElement("span");
+    cursor.className = "cursor";
+    firstLine.appendChild(cursor);
+
+    function rand(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function typeNextChar(){
+      if (!isTyping) return;
+
+      const currentLine = lines[lineIndex] ?? "";
+      const currentLineEl = output.lastElementChild;
+
+      // Ensure cursor is at the end of the current line
+      if (!currentLineEl.contains(cursor)) currentLineEl.appendChild(cursor);
+
+      if (charIndex < currentLine.length){
+        cursor.insertAdjacentText("beforebegin", currentLine[charIndex]);
+        charIndex++;
+        setTimeout(typeNextChar, rand(14, 40));
+      } else {
+        // Line done: move to a new line
+        if (currentLineEl.contains(cursor)) currentLineEl.removeChild(cursor);
+
+        const nextLineEl = document.createElement("div");
+        output.appendChild(nextLineEl);
+        nextLineEl.appendChild(cursor);
+
+        lineIndex++;
+        charIndex = 0;
+
+        output.scrollTop = output.scrollHeight;
+
+        if (lineIndex >= lines.length){
+          isTyping = false;
+          actions.style.display = "flex";
+          hint.style.display = "block";
+          return;
+        }
+
+        setTimeout(typeNextChar, rand(120, 360));
+      }
+    }
+
+    typeNextChar();
+
+    // ✅ CONNECT NOW REDIRECTS TO PAGE 2 (contact.html)
+    connectBtn.addEventListener("click", () => {
+      window.location.href = "contact.html";
+    });
+
+    // IGNORE = screen fights back
+    ignoreBtn.addEventListener("click", () => {
+      terminal.classList.remove("glitch");
+      void terminal.offsetWidth; // restart animation
+      terminal.classList.add("glitch");
+
+      appendSystemLine("");
+      appendSystemLine("!! WARNING: signal persistence detected.");
+      appendSystemLine("!! IGNORE COMMAND REJECTED.");
+      appendSystemLine(">> The connection remains open.");
+      status.innerHTML = 'STATUS: <span style="color:rgba(255,43,43,0.9)">LOCKED</span>';
+    });
+
+    function appendSystemLine(text){
+      const div = document.createElement("div");
+      div.textContent = text;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+  </script>
 </body>
 </html>
