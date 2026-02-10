@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ash Test</title>
+    <style>
+        body {
+            background-color: #AD0AFD;
+            font-family: Helvetica, sans-serif;
+            cursor: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        * {
+            cursor: none;
+        }
+        
+        .inverted-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .inverted-cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ash Test</h1>
+    <div class="inverted-cursor" id="invertedCursor"></div>
+    
+    <script>
+        // Inverted cursor controls
+        let centerX = window.innerWidth / 2;
+        let centerY = window.innerHeight / 2;
+        let cursorX = centerX;
+        let cursorY = centerY;
+        const cursor = document.getElementById('invertedCursor');
+        
+        // Initialize cursor position at center
+        cursor.style.left = centerX + 'px';
+        cursor.style.top = centerY + 'px';
+        
+        document.addEventListener('mousemove', function(e) {
+            // Calculate mouse offset from center
+            const mouseOffsetX = e.clientX - centerX;
+            const mouseOffsetY = e.clientY - centerY;
+            
+            // Invert the offset (opposite direction)
+            const invertedOffsetX = -mouseOffsetX;
+            const invertedOffsetY = -mouseOffsetY;
+            
+            // Calculate new cursor position
+            cursorX = centerX + invertedOffsetX;
+            cursorY = centerY + invertedOffsetY;
+            
+            // Update cursor position
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+        });
+        
+        // Update center on window resize
+        window.addEventListener('resize', function() {
+            centerX = window.innerWidth / 2;
+            centerY = window.innerHeight / 2;
+        });
+        
+        // Text to speech on load
+        window.addEventListener('load', function() {
+            const text = document.body.innerText || document.body.textContent;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            speechSynthesis.speak(utterance);
+        });
+    </script>
+</body>
+</html>
