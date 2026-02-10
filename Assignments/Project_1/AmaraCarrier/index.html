@@ -3,9 +3,381 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amara Carrier - Project 1</title>
+  <title>Join Our Team | Amara Carrier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a222c;
+      --accent: #e8b86d;
+      --accent-soft: rgba(232, 184, 109, 0.15);
+      --text: #e6edf3;
+      --text-muted: #8b9aab;
+      --border: #2d3a47;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232, 184, 109, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232, 184, 109, 0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 5rem 0 6rem;
+      text-align: center;
+    }
+
+    .hero .tag {
+      display: inline-block;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(232, 184, 109, 0.35);
+    }
+
+    /* Section common */
+    section {
+      padding: 4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-of-type {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      color: var(--text);
+    }
+
+    /* Why join */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .why-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px var(--accent-soft);
+    }
+
+    .why-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .why-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* Open roles */
+    .roles-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .role-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .role-item:hover {
+      border-color: var(--accent);
+    }
+
+    .role-info h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .role-info span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .role-item .btn {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.9rem;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .role-item .btn:hover {
+      background: var(--accent-soft);
+    }
+
+    /* Benefits */
+    .benefits {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .benefits ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .benefits li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .benefits li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      padding: 5rem 0;
+    }
+
+    .cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 2rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <div class="container">
+      <span class="logo">Amara Carrier</span>
+    </div>
+  </header>
 
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="tag">We're Hiring</p>
+        <h1>Build your career with us</h1>
+        <p>We're looking for talented people who want to do meaningful work. Join a team that values creativity, collaboration, and growth.</p>
+        <a href="#roles" class="btn btn-primary">View Open Positions</a>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">Why join us</h2>
+        <div class="why-grid">
+          <div class="why-card">
+            <h3>Growth & learning</h3>
+            <p>Access to training, mentorship, and opportunities to take on new challenges and advance your skills.</p>
+          </div>
+          <div class="why-card">
+            <h3>Inclusive culture</h3>
+            <p>We believe the best ideas come from diverse perspectives. Everyone has a voice and a seat at the table.</p>
+          </div>
+          <div class="why-card">
+            <h3>Work that matters</h3>
+            <p>Contribute to projects that have real impact. We care about quality, integrity, and making a difference.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="roles">
+      <div class="container">
+        <h2 class="section-title">Open positions</h2>
+        <div class="roles-list">
+          <div class="role-item">
+            <div class="role-info">
+              <h3>Design Lead</h3>
+              <span>Design · Full-time · San Jose</span>
+            </div>
+            <a href="#" class="btn">Apply</a>
+          </div>
+          <div class="role-item">
+            <div class="role-info">
+              <h3>Front-End Developer</h3>
+              <span>Engineering · Full-time · Remote</span>
+            </div>
+            <a href="#" class="btn">Apply</a>
+          </div>
+          <div class="role-item">
+            <div class="role-info">
+              <h3>Project Coordinator</h3>
+              <span>Operations · Full-time · Hybrid</span>
+            </div>
+            <a href="#" class="btn">Apply</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">Benefits & perks</h2>
+        <div class="benefits">
+          <ul>
+            <li>Health, dental & vision insurance</li>
+            <li>Flexible hours & remote options</li>
+            <li>Paid time off & holidays</li>
+            <li>Professional development budget</li>
+            <li>401(k) with company match</li>
+            <li>Team events & wellness programs</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <h2>Don't see the right fit?</h2>
+        <p>We're always interested in meeting talented people. Send us your resume and tell us what you're looking for.</p>
+        <a href="mailto:careers@amaracarrier.com" class="btn btn-primary">Get in touch</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 Amara Carrier. <a href="#">Privacy</a> · <a href="#">Contact</a></p>
+    </div>
+  </footer>
 </body>
 </html>
