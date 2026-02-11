@@ -6,7 +6,7 @@
   <title>Join Our Team | Amara Carrier</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0f1419;
@@ -281,36 +281,260 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    /* Ad popup */
+    .ad-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .ad-overlay.is-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ad-popup {
+      position: relative;
+      background: linear-gradient(145deg, #1a0a0a 0%, #2d1515 100%);
+      border: 2px solid #ff3333;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 0 40px rgba(255, 51, 51, 0.3), 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .ad-popup-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.25rem;
+      line-height: 1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .ad-popup-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .ad-popup .ad-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #ff6666;
+      margin-bottom: 0.75rem;
+    }
+
+    .ad-popup h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .ad-popup .ad-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      color: #fff;
+      text-transform: uppercase;
+      text-shadow:
+        0 0 20px rgba(255, 51, 51, 0.8),
+        0 0 40px rgba(255, 51, 51, 0.4),
+        0 2px 0 #cc0000,
+        0 4px 8px rgba(0, 0, 0, 0.6);
+      margin-bottom: 0.5rem;
+      -webkit-text-stroke: 1px rgba(255, 51, 51, 0.5);
+    }
+
+    .ad-popup .ad-tagline {
+      font-size: 1.1rem;
+      color: #ff9999;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+
+    .ad-popup .ad-drink-image {
+      display: block;
+      width: 100%;
+      max-width: 140px;
+      height: auto;
+      margin: 0 auto 1.25rem;
+    }
+
+    .ad-popup ul {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .ad-popup li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      color: #e0e0e0;
+      font-size: 0.95rem;
+    }
+
+    .ad-popup li::before {
+      content: '⚡';
+      position: absolute;
+      left: 0;
+    }
+
+    .ad-popup .btn-buy {
+      display: block;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: linear-gradient(180deg, #ff3333 0%, #cc0000 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .ad-popup .btn-buy:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(255, 51, 51, 0.5);
+    }
   </style>
 </head>
 <body>
+  <!-- Energy drink ad popup -->
+  <div class="ad-overlay" id="adPopup" role="dialog" aria-label="Advertisement">
+    <div class="ad-popup">
+      <button type="button" class="ad-popup-close" id="adClose" aria-label="Close">×</button>
+      <span class="ad-badge">New</span>
+      <h2 class="ad-brand">24HR ENERGY</h2>
+      <p class="ad-tagline">Stay awake. Stay ahead.</p>
+      <svg class="ad-drink-image" viewBox="0 0 90 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <!-- Shadow -->
+          <filter id="canShadow" x="-20%" y="-10%" width="140%" height="120%">
+            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
+          </filter>
+          <!-- Body: vertical gradient (light top, dark bottom) -->
+          <linearGradient id="canBody" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#e85555"/>
+            <stop offset="15%" stop-color="#dd3333"/>
+            <stop offset="50%" stop-color="#b30000"/>
+            <stop offset="85%" stop-color="#8c0000"/>
+            <stop offset="100%" stop-color="#660000"/>
+          </linearGradient>
+          <!-- Curved highlight (center of can) -->
+          <linearGradient id="canHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#000" stop-opacity="0.25"/>
+            <stop offset="35%" stop-color="#fff" stop-opacity="0.35"/>
+            <stop offset="50%" stop-color="#fff" stop-opacity="0.5"/>
+            <stop offset="65%" stop-color="#fff" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0.15"/>
+          </linearGradient>
+          <!-- Rim top (bright edge) -->
+          <linearGradient id="rimTop" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#e8e8e8"/>
+            <stop offset="40%" stop-color="#c0c0c0"/>
+            <stop offset="100%" stop-color="#707070"/>
+          </linearGradient>
+          <!-- Rim underside -->
+          <linearGradient id="rimUnder" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#505050"/>
+            <stop offset="100%" stop-color="#202020"/>
+          </linearGradient>
+          <!-- Label base with slight gradient -->
+          <linearGradient id="labelBg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0.12"/>
+            <stop offset="50%" stop-color="#fff" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0.05"/>
+          </linearGradient>
+          <!-- Pull tab metal -->
+          <linearGradient id="tabMetal" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#9a9a9a"/>
+            <stop offset="50%" stop-color="#6a6a6a"/>
+            <stop offset="100%" stop-color="#3a3a3a"/>
+          </linearGradient>
+        </defs>
+        <!-- Ground shadow -->
+        <ellipse cx="45" cy="212" rx="28" ry="6" fill="#000" opacity="0.25"/>
+        <!-- Can body (rounded rectangle for front face of cylinder) -->
+        <path d="M22 38 L68 38 L70 42 L70 198 L20 198 L20 42 Z" fill="url(#canBody)" filter="url(#canShadow)"/>
+        <!-- Curved highlight overlay -->
+        <path d="M22 38 L68 38 L70 42 L70 198 L20 198 L20 42 Z" fill="url(#canHighlight)"/>
+        <!-- Top rim (beveled) - top ellipse -->
+        <ellipse cx="45" cy="40" rx="24" ry="6" fill="url(#rimTop)"/>
+        <!-- Rim thickness (dark band under lip) -->
+        <path d="M21 44 L69 44 L70 48 L20 48 Z" fill="url(#rimUnder)"/>
+        <!-- Label area (slightly inset) -->
+        <path d="M26 72 L64 72 L65 76 L65 168 L25 168 L25 76 Z" fill="url(#labelBg)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <text x="45" y="102" text-anchor="middle" fill="#fff" font-family="Arial Black, sans-serif" font-size="16" font-weight="bold" letter-spacing="0.5">24HR</text>
+        <text x="45" y="120" text-anchor="middle" fill="#fff" font-family="Arial Black, sans-serif" font-size="16" font-weight="bold" letter-spacing="0.5">ENERGY</text>
+        <!-- Pull tab (on lid) -->
+        <path d="M38 50 L52 50 L52 54 L55 54 L55 64 L35 64 L35 54 L38 54 Z" fill="url(#tabMetal)" stroke="#444" stroke-width="0.5"/>
+        <ellipse cx="45" cy="52" rx="4" ry="2" fill="#555" stroke="#333" stroke-width="0.5"/>
+      </svg>
+      <ul>
+        <li><strong>24 hours of focus</strong> — No crash, no excuses.</li>
+        <li><strong>No more getting yelled at by the boss</strong> — Show up sharp every shift.</li>
+        <li><strong>More time to make money</strong> — Work longer, earn more.</li>
+      </ul>
+      <a href="#" class="btn-buy">Try it now</a>
+    </div>
+  </div>
+
   <header>
     <div class="container">
-      <span class="logo">Amara Carrier</span>
+      <span class="logo">S.L.M.B.U.R.</span>
     </div>
   </header>
 
   <main>
     <section class="hero">
       <div class="container">
-        <p class="tag">We're Hiring</p>
-        <h1>Build your career with us</h1>
-        <p>We're looking for talented people who want to do meaningful work. Join a team that values creativity, collaboration, and growth.</p>
+        <p class="tag">Join Us</p>
+        <h1>Sleep Could Be Yours</h1>
+        <p>If you are looking for a way to finally rest and help others, join us.</p>
         <a href="#roles" class="btn btn-primary">View Open Positions</a>
       </div>
     </section>
 
     <section>
       <div class="container">
-        <h2 class="section-title">Why join us</h2>
+        <h2 class="section-title">Who Are We?</h2>
         <div class="why-grid">
           <div class="why-card">
-            <h3>Growth & learning</h3>
-            <p>Access to training, mentorship, and opportunities to take on new challenges and advance your skills.</p>
+            <h3>Just Like You</h3>
+            <p>We, at S.L.M.B.U.R., believe that sleep is a right, not a privilege. We are a team of sleep enthusiasts who are dedicated to helping others get the sleep they need.</p>
           </div>
           <div class="why-card">
-            <h3>Inclusive culture</h3>
-            <p>We believe the best ideas come from diverse perspectives. Everyone has a voice and a seat at the table.</p>
+            <h3>Guilt-free Sleep</h3>
+            <p> </p>
           </div>
           <div class="why-card">
             <h3>Work that matters</h3>
@@ -376,8 +600,30 @@
 
   <footer>
     <div class="container">
-      <p>© 2026 Amara Carrier. <a href="#">Privacy</a> · <a href="#">Contact</a></p>
+      <p>© 2026 S.L.M.B.U.R. <a href="#">Privacy</a> · <a href="#">Contact</a></p>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      var popup = document.getElementById('adPopup');
+      var closeBtn = document.getElementById('adClose');
+
+      function showPopup() {
+        popup.classList.add('is-visible');
+      }
+
+      function hidePopup() {
+        popup.classList.remove('is-visible');
+      }
+
+      setTimeout(showPopup, 800);
+
+      closeBtn.addEventListener('click', hidePopup);
+      popup.addEventListener('click', function (e) {
+        if (e.target === popup) hidePopup();
+      });
+    })();
+  </script>
 </body>
 </html>
