@@ -253,18 +253,46 @@
       color: var(--accent-cold);
       text-decoration: none;
     }
-  </style>
+  
+/* --- shared nav --- */
+.site-nav{
+  position: fixed;
+  left: 16px; right: 16px; top: 16px;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(18, 20, 31, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.site-nav a{
+  color: rgba(233,233,238,0.72);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.site-nav a:hover{ color: #4ecdc4; }
+.site-nav a.active{ color: #4ecdc4; font-weight: 600; }
+
+
+main{ padding-top: 6.5rem !important; }
+</style>
 </head>
 <body>
   <div class="sky" aria-hidden="true"></div>
 
+  <nav class="site-nav" aria-label="Site navigation">
+  <a href="index_nav.html">Weather</a>
+  <a href="subscriptions_nav.html">YouTube Subscriptions</a>
+  <a href="steamdb_nav.html">Steam Aura</a>
+  <a href="page4_nav.html">Browser Sonification</a>
+</nav>
+
   <main>
-    <nav>
-      <a href="index.html" class="active">Weather</a>
-      <a href="page2.html">Page 2</a>
-      <a href="page3.html">Page 3</a>
-      <a href="page4.html">Browser Sonification</a>
-    </nav>
+    
     <header>
       <h1 class="title">February 2025</h1>
       <p class="subtitle">San Jose · Daily high temperatures</p>
@@ -382,5 +410,16 @@
     path.setAttribute('d', d);
     glow.setAttribute('d', d);
   </script>
+<script>
+(function(){
+  try{
+    const path = (location.pathname || "").split("/").pop() || "index_nav.html";
+    document.querySelectorAll(".site-nav a").forEach(a=>{
+      const href = (a.getAttribute("href")||"").split("/").pop();
+      if(href === path) a.classList.add("active");
+    });
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
