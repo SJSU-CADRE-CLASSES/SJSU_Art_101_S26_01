@@ -54,3 +54,22 @@ Resources
 6. Hugging Face https://huggingface.co/models
 7. Claude Code https://code.claude.com/docs/en/setup
 
+2/10
+1. Oscilloscope drawing https://www.youtube.com/watch?v=rtR63-ecUNo
+2. Switch Journal https://switch.sjsu.edu/archive/nextswitch/switch_engine/front/front.php%3Fcat=13.html
+3. Digital Swap Meet https://docs.google.com/document/d/101eyk8ivl8Fsm5T_cHVbqmoSSlVyPuHbFDjqK1Wcsv0/edit?usp=sharing
+4. Jim Drain https://www.jimdrain.info/
+5. Art in the Age of Mechanical Reproduction https://web.mit.edu/allanmc/www/benjamin.pdf
+6. Dolphin Accelerator https://vimeo.com/186337332
+7. I started programming when i was 7 https://www.jamesdrandall.com/posts/the_thing_i_loved_has_changed/
+8. Strange Attractors https://strange-attractors.jujiplay.com/dadras
+9. awesome list https://github.com/sindresorhus/awesome?tab=readme-ov-file
+10. interactive introduction to fourier transform https://www.jezzamon.com/fourier/index.html
+11. visualized trigonometric functions https://visualize-it.github.io/trig_functions/simulation.html
+12. v2 test lab https://v2.nl/events/test_lab-the-graduation-edition-2014
+13. quotidian record https://vimeo.com/48919422
+14. line describing a cone https://www.youtube.com/watch?v=1-HWsxPnNNY
+15. mutek https://mutek.org/
+16. robert henke lumiere https://www.youtube.com/watch?v=7cmkZfkuMR8
+17. buchla https://www.vintagesynth.com/buchla/200-series
+
