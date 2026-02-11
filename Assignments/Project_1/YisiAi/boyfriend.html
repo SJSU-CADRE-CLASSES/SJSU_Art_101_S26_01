@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Talking to Boyfriend</title>
+
+<style>
+body {
+  margin: 0;
+  background: #0f1226;
+  font-family: "Comic Sans MS", "Arial", sans-serif;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* 背景 emoji */
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  font-size: 38px;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+.bg span {
+  position: absolute;
+  animation: float 8s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+/* 返回按钮 */
+.back {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  text-decoration: none;
+  color: white;
+  border: 2px solid white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.back:hover {
+  opacity: 1;
+}
+
+/* 标题 */
+.title {
+  text-align: center;
+  font-size: 42px;
+  margin-top: 60px;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  text-align: center;
+  opacity: 0.6;
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+/* 网格 */
+.grid {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 40px auto 80px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  padding: 0 40px;
+}
+
+/* meme 卡片 */
+.card {
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.card img:hover {
+  transform: scale(1.05) rotate(-1deg);
+}
+
+.count {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.reaction {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 4px;
+  height: 16px;
+}
+
+.pop {
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.voted {
+  color: #00ff9c;
+}
+</style>
+</head>
+
+<body>
+
+<a href="index.html" class="back">← Home</a>
+
+<!-- 背景 -->
+<div class="bg">
+  <span style="top:10%; left:20%;">💖</span>
+  <span style="top:20%; left:70%;">💬</span>
+  <span style="top:35%; left:40%;">🥰</span>
+  <span style="top:60%; left:80%;">📱</span>
+  <span style="top:75%; left:25%;">💭</span>
+  <span style="top:50%; left:55%;">💘</span>
+  <span style="top:15%; left:50%;">👀</span>
+  <span style="top:80%; left:60%;">💕</span>
+</div>
+
+<div class="title">Talking to Boyfriend</div>
+<div class="subtitle">soft mode activated</div>
+
+<div class="grid">
+
+  <!-- 1 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend1.GIF" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend2.GIF" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend3.GIF" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend4.GIF" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend5.GIF" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend6.PNG" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend7.JPG" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <img src="meme/TalkingtoBoyfriend8.GIF" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  </div>
+
+</div>
+
+<script>
+function vote(img) {
+  const countText = img.nextElementSibling;
+  const reaction = countText.nextElementSibling;
+
+  let num = parseInt(countText.innerText.match(/\d+/)[0]);
+  num++;
+  countText.innerText = "used " + num + " times";
+  countText.classList.add("voted");
+
+  const messages = [
+    "sent ✔",
+    "seen",
+    "he liked this",
+    "typing…",
+    "delivered"
+  ];
+
+  reaction.innerText = messages[Math.floor(Math.random() * messages.length)];
+
+  img.classList.add("pop");
+  setTimeout(() => img.classList.remove("pop"), 250);
+}
+</script>
+
+</body>
+</html>

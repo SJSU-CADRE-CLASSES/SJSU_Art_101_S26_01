@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chatting with Friends</title>
+<style>
+body {
+  margin: 0;
+  background: #0f1226;
+  font-family: "Comic Sans MS", "Arial", sans-serif;
+  color: white;
+  overflow-x: hidden;
+}
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  font-size: 38px;
+  opacity: 0.08;
+}
+.bg span {
+  position: absolute;
+  animation: float 8s infinite ease-in-out;
+}
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+.back {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  text-decoration: none;
+  color: white;
+  border: 2px solid white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  opacity: 0.7;
+}
+.title {
+  text-align: center;
+  font-size: 42px;
+  margin-top: 60px;
+}
+.grid {
+  max-width: 900px;
+  margin: 40px auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  padding: 0 40px;
+}
+.card img {
+  width: 100%;
+  border-radius: 14px;
+  cursor: pointer;
+}
+.count { font-size: 14px; opacity: 0.7; }
+.reaction { font-size: 12px; opacity: 0.6; height:16px;}
+.voted { color:#00ff9c; }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← Home</a>
+
+<div class="bg">
+<span style="top:10%; left:20%;">😂</span>
+<span style="top:40%; left:70%;">🍜</span>
+<span style="top:70%; left:40%;">🗣️</span>
+<span style="top:30%; left:60%;">🤣</span>
+</div>
+
+<div class="title">Chatting with Friends</div>
+
+<div class="grid">
+<script>
+const files = [
+"ChattingwithFriends1.GIF",
+"ChattingwithFriends2.GIF",
+"ChattingwithFriends3.GIF",
+"ChattingwithFriends4.GIF",
+"ChattingwithFriends5.GIF",
+"ChattingwithFriends6.GIF"
+];
+
+files.forEach(f=>{
+document.write(`
+<div class="card">
+<img src="meme/${f}" onclick="vote(this)">
+<div class="count">used 0 times</div>
+<div class="reaction"></div>
+</div>`);
+});
+</script>
+</div>
+
+<script>
+function vote(img){
+let c=img.nextElementSibling;
+let r=c.nextElementSibling;
+let n=parseInt(c.innerText.match(/\d+/)[0])+1;
+c.innerText="used "+n+" times";
+c.classList.add("voted");
+let msgs=["LMAO","sent","seen","replying…","haha"];
+r.innerText=msgs[Math.floor(Math.random()*msgs.length)];
+}
+</script>
+
+</body>
+</html>
