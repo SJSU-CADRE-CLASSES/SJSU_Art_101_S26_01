@@ -30,9 +30,9 @@ body {
 
 .sprite-placeholder {
     position: absolute;
-    bottom: 0;
     left: 50%;
-    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 280px;
     height: 320px;
     background: rgba(120, 110, 140, 0.5);
@@ -44,6 +44,18 @@ body {
     color: rgba(255, 255, 255, 0.35);
     font-size: 0.9rem;
     font-family: 'Playfair Display', Georgia, serif;
+    animation: sprite-bob 3.5s ease-in-out infinite;
+    transition: opacity 0.1s linear, filter 0.1s linear, clip-path 0.1s linear, transform 0.1s linear;
+}
+
+.sprite-placeholder.sprite-dissolving {
+    animation: none;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes sprite-bob {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-14px); }
 }
 
 /* Ren'Py-style dialogue box at bottom (dialogue keeps its own fonts) */
@@ -72,6 +84,21 @@ body {
     line-height: 1.5;
     color: #e8e4ef;
     font-weight: 400;
+    overflow: hidden;
+}
+
+.dialogue-text-inner {
+    display: inline-block;
+    max-width: 100%;
+}
+
+.dialogue-text-inner.reveal {
+    animation: dialogue-sweep 2.5s ease-out forwards;
+}
+
+@keyframes dialogue-sweep {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
 }
 
 .dialogue-text em {
@@ -86,4 +113,73 @@ body {
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.875rem;
     font-family: 'Playfair Display', Georgia, serif;
+    cursor: pointer;
+}
+
+.next-indicator:hover {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Proceed confirmation modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal-box {
+    background: #2d2a3e;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.75rem 2rem;
+    max-width: 90%;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-text {
+    color: #e8e4ef;
+    font-size: 1.25rem;
+    margin: 0 0 1.25rem 0;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.modal-btn-no {
+    background: rgba(120, 110, 140, 0.4);
+    color: #e8e4ef;
+}
+
+.modal-btn-no:hover {
+    background: rgba(120, 110, 140, 0.6);
+}
+
+.modal-btn-yes {
+    background: rgba(201, 184, 224, 0.25);
+    color: #c9b8e0;
+}
+
+.modal-btn-yes:hover {
+    background: rgba(201, 184, 224, 0.4);
 }

@@ -10,16 +10,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <audio id="bgm" src="audio/song.mp3" preload="metadata"></audio>
     <div class="game-frame">
         <div class="stage">
-            <div class="sprite-placeholder">[ character sprite ]</div>
+            <div class="sprite-placeholder" id="sprite-placeholder">[ character sprite ]</div>
         </div>
         <div class="dialogue-box">
-            <div class="dialogue-name">Mysterious Stranger</div>
+            <div class="dialogue-name" id="dialogue-name">Mysterious Stranger</div>
             <div class="dialogue-text">
-                Welcome, <span id="player-name">...</span>. So you've chosen to go through with it. <em>Interesting.</em> I hope you're ready for what comes next.
+                <span class="dialogue-text-inner reveal" id="dialogue-text-inner">Welcome, <span id="player-name">...</span>. So you've chosen to go through with it. <em>Interesting.</em> I hope you're ready for what comes next.</span>
             </div>
-            <span class="next-indicator">▼</span>
+            <span class="next-indicator" id="next-arrow" title="Proceed">▼</span>
+        </div>
+    </div>
+    <div class="modal-overlay" id="proceed-modal" hidden>
+        <div class="modal-box">
+            <p class="modal-text">Do you really want to proceed?</p>
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn modal-btn-no" id="proceed-no">No</button>
+                <button type="button" class="modal-btn modal-btn-yes" id="proceed-yes">Yes</button>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
