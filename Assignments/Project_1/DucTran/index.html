@@ -1,11 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duc Tran</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duc Tran — Data Self Portrait | Art 101 Project 1</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Hello, I'm Duc Tran</h1>
+  <div class="wrap">
+    <header>
+      <h1>Data Self Portrait</h1>
+      <p class="subtitle">Duc Tran — Art 101 S26 — Project 1</p>
+      <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="activity.html">Activity</a>
+        <a href="servers.html">Servers</a>
+        <a href="words.html">Words</a>
+        <a href="about.html">About the Data</a>
+      </nav>
+    </header>
+    <main>
+      <section>
+        <p>A multi-page visualization and narrative built from <strong>Discord</strong> data about myself: when I message, where I hang out, and the words I use.</p>
+        <div class="stats-grid" id="home-stats"></div>
+        <p>Use the links above to explore activity over time, servers & channels, and word frequency — all from a dataset that represents my digital presence on Discord.</p>
+      </section>
+    </main>
+    <footer>SJSU Art 101 S26 — Project 1</footer>
+  </div>
+  <script src="data/discord-data.js"></script>
+  <script>
+    (function () {
+      var stats = document.getElementById("home-stats");
+      if (typeof discordPortrait !== "undefined") {
+        var n = discordPortrait.totalMessages;
+        var msgNum = (n && n.toLocaleString) ? n.toLocaleString() : (n || "0");
+        stats.innerHTML = "<div class=\"stat\"><div class=\"stat-num\">" + msgNum + "</div><div class=\"stat-label\">Messages</div></div>" +
+          "<div class=\"stat\"><div class=\"stat-num\">" + (discordPortrait.totalServers || "0") + "</div><div class=\"stat-label\">Servers</div></div>" +
+          "<div class=\"stat\"><div class=\"stat-num\">" + (discordPortrait.activeSince || "—") + "</div><div class=\"stat-label\">Active since</div></div>";
+      } else {
+        stats.innerHTML = "<p style='color:#b5bac1'>Data not loaded. Open from a web server or check data/discord-data.js.</p>";
+      }
+    })();
+  </script>
 </body>
 </html>

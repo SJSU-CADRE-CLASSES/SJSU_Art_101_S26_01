@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About the Data — Duc Tran Data Self Portrait</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Data Self Portrait</h1>
+      <p class="subtitle">Duc Tran — About the data</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="activity.html">Activity</a>
+        <a href="servers.html">Servers</a>
+        <a href="words.html">Words</a>
+        <a href="about.html" class="active">About the Data</a>
+      </nav>
+    </header>
+    <main class="about">
+      <section class="card">
+        <h2>Using Discord data</h2>
+        <p>This project uses a dataset inspired by <strong>Discord</strong>. You can request your own copy of your Discord data and use it to replace the sample data in this site.</p>
+        <p><strong>How to get your Discord data:</strong></p>
+        <ol style="margin:0 0 1rem 0; padding-left:1.25rem; color:#b5bac1;">
+          <li>Open Discord (desktop or browser).</li>
+          <li>Click the <strong>gear icon</strong> (User Settings) at the bottom left.</li>
+          <li>Go to <strong>Privacy &amp; Safety</strong> in the left sidebar.</li>
+          <li>Scroll to <strong>Data Request</strong> and click <strong>Request a copy of your data</strong>.</li>
+          <li>Discord will email you when your data is ready (often within a few days). Download the ZIP and extract it.</li>
+        </ol>
+        <p>The export includes account info, messages (DMs and servers), and activity. You can open the JSON/CSV files, summarize message counts by month or server, and update <code>data/discord-data.js</code> with your real numbers and word counts so this portrait reflects your actual usage.</p>
+      </section>
+      <section class="card">
+        <h2>Narrative</h2>
+        <p>This data self portrait turns my Discord activity into a simple narrative: <em>when</em> I message (activity by month and day of week), <em>where</em> I hang out (servers), and <em>how</em> I talk (word frequency). Right now the site uses sample data so it runs without waiting for an export. Once I have my real Discord package, I’ll replace the numbers in <code>discord-data.js</code> to make the visualizations and story about me.</p>
+      </section>
+    </main>
+    <footer>SJSU Art 101 S26 — Project 1</footer>
+  </div>
+</body>
+</html>

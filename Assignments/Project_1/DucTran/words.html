@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Words — Duc Tran Data Self Portrait</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Data Self Portrait</h1>
+      <p class="subtitle">Duc Tran — Word frequency</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="activity.html">Activity</a>
+        <a href="servers.html">Servers</a>
+        <a href="words.html" class="active">Words</a>
+        <a href="about.html">About the Data</a>
+      </nav>
+    </header>
+    <main>
+      <section class="card">
+        <h2>Top words from my messages</h2>
+        <p style="margin:0 0 1rem 0; color:#b5bac1;">Most used words in my Discord messages (sample data — replace with your export).</p>
+        <div class="word-list" id="word-list"></div>
+      </section>
+      <section class="card">
+        <h2>Word frequency (bar)</h2>
+        <div id="chart-words"></div>
+      </section>
+    </main>
+    <footer>SJSU Art 101 S26 — Project 1</footer>
+  </div>
+  <script src="data/discord-data.js"></script>
+  <script>
+    (function () {
+      if (typeof discordPortrait === "undefined") {
+        document.getElementById("word-list").innerHTML = "<p style='color:#b5bac1'>Data not loaded.</p>";
+        document.getElementById("chart-words").innerHTML = "";
+        return;
+      }
+      function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+      var words = discordPortrait.topWords || [];
+      var maxWord = words.length ? Math.max.apply(null, words.map(function(d) { return d.count; })) : 0;
+      maxWord = maxWord || 1;
+      document.getElementById("word-list").innerHTML = words.map(function(d) {
+        return "<span class=\"word-tag\">" + esc(d.word) + " <span>×" + d.count + "</span></span>";
+      }).join("");
+      document.getElementById("chart-words").innerHTML = words.map(function(d) {
+        var pct = (d.count / maxWord * 100);
+        return "<div class=\"bar-wrap\"><div class=\"bar-label\"><span>" + esc(d.word) + "</span><span>" + d.count + "</span></div><div class=\"bar\"><div class=\"bar-fill\" style=\"width:" + pct + "%\"></div></div></div>";
+      }).join("");
+    })();
+  </script>
+</body>
+</html>

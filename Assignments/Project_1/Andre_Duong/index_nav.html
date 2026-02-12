@@ -279,6 +279,107 @@
 
 
 main{ padding-top: 6.5rem !important; }
+
+    /* Interactions */
+    .controls{
+      margin: 0 0 1.25rem;
+      padding: 0.75rem 0.75rem 0.25rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148, 163, 184, 0.10);
+    }
+    .controls-row{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap: 0.75rem 1rem;
+    }
+    .control{
+      display:flex;
+      align-items:center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+    .control span{ letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.72rem; }
+    input[type="range"]{
+      accent-color: var(--accent-cold);
+      width: 180px;
+    }
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(18, 20, 31, 0.35);
+      color: var(--text-bright);
+      padding: 0.5rem 0.85rem;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn:hover{ filter: brightness(1.15); }
+    .btn:active{ transform: translateY(1px); }
+    .toggle{
+      display:flex; align-items:center; gap:0.45rem;
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      user-select:none;
+    }
+    .toggle input{ accent-color: var(--accent-mid); }
+    .details{
+      margin-top: 0.65rem;
+      padding: 0.6rem 0.65rem;
+      border-radius: 12px;
+      background: rgba(10, 11, 18, 0.35);
+      border: 1px solid rgba(148, 163, 184, 0.10);
+      color: rgba(226,232,240,0.9);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+    .details .muted{ color: rgba(148,163,184,0.9); font-size: 0.82rem; letter-spacing:0.06em; text-transform:uppercase; }
+    .day-bar.is-active{
+      outline: 2px solid rgba(78,205,196,0.65);
+      outline-offset: 2px;
+      filter: brightness(1.15);
+    }
+    .day-bar.is-pinned{
+      outline: 2px solid rgba(167, 139, 250, 0.75);
+      outline-offset: 2px;
+    }
+    /* Tooltip */
+    .tip{
+      position: fixed;
+      z-index: 60;
+      pointer-events:none;
+      transform: translate(10px, 10px);
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(10, 11, 18, 0.78);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--text-bright);
+      font-size: 0.85rem;
+      max-width: 260px;
+      box-shadow: 0 12px 38px rgba(0,0,0,0.35);
+      opacity: 0;
+      transition: opacity 0.08s ease;
+    }
+    .tip.show{ opacity: 1; }
+    .tip .k{ color: rgba(148,163,184,0.95); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; }
+    /* Horizon marker */
+    .horizon-dot{
+      fill: rgba(255,255,255,0.95);
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+    .horizon-dot.show{ opacity: 1; }
+    .horizon-hit{
+      fill: transparent;
+      cursor: crosshair;
+    }
+
 </style>
 </head>
 <body>
@@ -300,6 +401,20 @@ main{ padding-top: 6.5rem !important; }
 
     <section class="viz-container" aria-label="Daily high temperatures">
       <h2 class="viz-title">Each day · °F</h2>
+      <div class="controls" aria-label="Visualization controls">
+        <div class="controls-row">
+          <label class="control">
+            <span>Day</span>
+            <input id="daySlider" type="range" min="1" max="28" value="1" step="1" />
+          </label>
+          <button class="btn" id="playBtn" type="button" aria-pressed="false" title="Play / pause">Play</button>
+          <label class="toggle"><input id="showLows" type="checkbox" /> <span>Show lows</span></label>
+          <label class="toggle"><input id="pinSelection" type="checkbox" checked /> <span>Click to pin</span></label>
+          <label class="toggle"><input id="unitToggle" type="checkbox" /> <span>°C</span></label>
+        </div>
+        <div class="details" id="details" role="status" aria-live="polite"></div>
+      </div>
+
       <div class="days" id="days"></div>
     </section>
 
@@ -329,6 +444,7 @@ main{ padding-top: 6.5rem !important; }
     <p class="footer-note">Andre Duong · Project 1 · Art 101 · Data reflects typical February conditions</p>
   </main>
 
+  
   <script>
     // February 2025 — San Jose area representative daily highs (°F)
     const feb2025 = [
@@ -364,6 +480,35 @@ main{ padding-top: 6.5rem !important; }
 
     const minT = 52, maxT = 68;
 
+    const daysEl = document.getElementById('days');
+    const slider = document.getElementById('daySlider');
+    const playBtn = document.getElementById('playBtn');
+    const showLows = document.getElementById('showLows');
+    const pinSelection = document.getElementById('pinSelection');
+    const unitToggle = document.getElementById('unitToggle'); // checked => Celsius
+    const detailsEl = document.getElementById('details');
+
+    // Tooltip
+    const tip = document.createElement('div');
+    tip.className = 'tip';
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+
+    const condLabel = (c) => ({
+      sunny: 'Sunny',
+      partly: 'Partly cloudy',
+      cloudy: 'Cloudy',
+      rain: 'Rain'
+    }[c] || c);
+
+    const toC = (f) => Math.round(((f - 32) * 5/9) * 10) / 10;
+
+    function fmtTemp(f){
+      const useC = unitToggle.checked;
+      if(useC) return `${toC(f)}°C`;
+      return `${f}°F`;
+    }
+
     function tempClass(high) {
       if (high <= 55) return 'temp-cold';
       if (high <= 58) return 'temp-cool';
@@ -376,40 +521,267 @@ main{ padding-top: 6.5rem !important; }
       return 20 + ((high - minT) / (maxT - minT)) * 75;
     }
 
-    const daysEl = document.getElementById('days');
-    feb2025.forEach(d => {
-      const wrap = document.createElement('div');
-      wrap.className = 'day';
-      wrap.innerHTML = `
-        <div class="day-bar-wrap">
-          <div class="day-bar ${tempClass(d.high)}" style="height:${heightPct(d.high)}%" title="Feb ${d.day}: ${d.high}°F"></div>
-        </div>
-        <span class="day-label">${d.day}</span>
-        <span class="day-temp">${d.high}°</span>
-      `;
-      daysEl.appendChild(wrap);
-    });
+    // State
+    let hoverDay = null;      // 1..28
+    let selectedDay = 1;      // 1..28
+    let pinnedDay = null;     // 1..28
+    let playing = false;
+    let playTimer = null;
 
-    // Horizon path
+    function setDetails(dayNum){
+      const d = feb2025[dayNum-1];
+      const headline = `Feb ${d.day} · High ${fmtTemp(d.high)}${showLows.checked ? ` · Low ${fmtTemp(d.low)}` : ''}`;
+      const sub = `${condLabel(d.cond)} · San Jose`;
+      detailsEl.innerHTML = `<div>${headline}</div><div class="muted">${sub}</div>`;
+    }
+
+    function renderBars(){
+      daysEl.innerHTML = '';
+      feb2025.forEach(d => {
+        const wrap = document.createElement('div');
+        wrap.className = 'day';
+
+        const bar = document.createElement('div');
+        bar.className = `day-bar ${tempClass(d.high)}`;
+        bar.style.height = `${heightPct(d.high)}%`;
+        bar.dataset.day = d.day;
+        bar.tabIndex = 0;
+        bar.setAttribute('role','button');
+        bar.setAttribute('aria-label', `Feb ${d.day}: High ${fmtTemp(d.high)}${showLows.checked ? `, Low ${fmtTemp(d.low)}` : ''}. ${condLabel(d.cond)}.`);
+
+        const label = document.createElement('span');
+        label.className = 'day-label';
+        label.textContent = d.day;
+
+        const temp = document.createElement('span');
+        temp.className = 'day-temp';
+        temp.textContent = unitToggle.checked ? `${toC(d.high)}°` : `${d.high}°`;
+
+        const barWrap = document.createElement('div');
+        barWrap.className = 'day-bar-wrap';
+        barWrap.appendChild(bar);
+
+        // Optional low tick
+        if(showLows.checked){
+          const lowTick = document.createElement('div');
+          lowTick.style.width = '100%';
+          lowTick.style.maxWidth = '28px';
+          lowTick.style.height = '2px';
+          lowTick.style.marginTop = '6px';
+          lowTick.style.borderRadius = '999px';
+          lowTick.style.background = 'rgba(148,163,184,0.45)';
+          // Position tick inside the barWrap based on low temp
+          // (relative to the same min/max scale used for highs)
+          const lowY = 100 - heightPct(d.low);
+          lowTick.style.transform = `translateY(${(lowY/100)*160}px)`;
+          barWrap.appendChild(lowTick);
+        }
+
+        wrap.appendChild(barWrap);
+        wrap.appendChild(label);
+        wrap.appendChild(temp);
+        daysEl.appendChild(wrap);
+
+        // Active styles
+        if(d.day === selectedDay) bar.classList.add('is-active');
+        if(pinnedDay && d.day === pinnedDay) bar.classList.add('is-pinned');
+
+        // Events
+        bar.addEventListener('mousemove', (e)=>{
+          hoverDay = d.day;
+          tip.innerHTML = `<div class="k">Feb ${d.day}</div><div>High <b>${fmtTemp(d.high)}</b>${showLows.checked ? ` · Low <b>${fmtTemp(d.low)}</b>` : ''}</div><div class="k" style="margin-top:4px;">${condLabel(d.cond)}</div>`;
+          tip.style.left = `${e.clientX}px`;
+          tip.style.top = `${e.clientY}px`;
+          tip.classList.add('show');
+          highlight(d.day, false);
+        });
+        bar.addEventListener('mouseleave', ()=>{
+          hoverDay = null;
+          tip.classList.remove('show');
+          highlight(selectedDay, true);
+        });
+
+        const pick = ()=>{
+          selectedDay = d.day;
+          slider.value = String(selectedDay);
+          setDetails(selectedDay);
+          if(pinSelection.checked) pinnedDay = selectedDay;
+          highlight(selectedDay, true);
+          syncHorizonMarker(selectedDay);
+        };
+
+        bar.addEventListener('click', pick);
+        bar.addEventListener('keydown', (ev)=>{
+          if(ev.key === 'Enter' || ev.key === ' '){
+            ev.preventDefault(); pick();
+          }
+        });
+      });
+    }
+
+    function highlight(dayNum, keepPinned){
+      document.querySelectorAll('.day-bar').forEach(b=>{
+        const n = Number(b.dataset.day);
+        b.classList.toggle('is-active', n === dayNum);
+        b.classList.toggle('is-pinned', keepPinned && pinnedDay && n === pinnedDay);
+      });
+    }
+
+    // Horizon interactive overlay
     const path = document.getElementById('horizonPath');
     const glow = document.getElementById('horizonGlow');
+    const svg = document.querySelector('.horizon-svg');
+
+    // Add marker + hitbox
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    marker.setAttribute('r','5');
+    marker.setAttribute('class','horizon-dot');
+    svg.appendChild(marker);
+
+    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    hit.setAttribute('x','0');
+    hit.setAttribute('y','0');
+    hit.setAttribute('width','1000');
+    hit.setAttribute('height','180');
+    hit.setAttribute('class','horizon-hit');
+    hit.setAttribute('aria-label','Temperature curve interaction area');
+    svg.appendChild(hit);
+
     const w = 1000, h = 180, pad = 40;
-    const xScale = (1000 - 2 * pad) / (feb2025.length - 1);
+    const xScale = (w - 2 * pad) / (feb2025.length - 1);
     const yScale = (h - 2 * pad) / (maxT - minT);
 
     function x(i) { return pad + i * xScale; }
     function y(high) { return h - pad - (high - minT) * yScale; }
 
-    let d = `M ${x(0)} ${y(feb2025[0].high)}`;
-    let dGlow = d;
-    for (let i = 1; i < feb2025.length; i++) {
-      d += ` L ${x(i)} ${y(feb2025[i].high)}`;
-      dGlow += ` L ${x(i)} ${y(feb2025[i].high)}`;
+    function buildHorizonPath(){
+      let d = `M ${x(0)} ${y(feb2025[0].high)}`;
+      for (let i = 1; i < feb2025.length; i++) d += ` L ${x(i)} ${y(feb2025[i].high)}`;
+      path.setAttribute('d', d);
+      glow.setAttribute('d', d);
     }
 
-    path.setAttribute('d', d);
-    glow.setAttribute('d', d);
+    function syncHorizonMarker(dayNum){
+      const i = dayNum - 1;
+      marker.setAttribute('cx', String(x(i)));
+      marker.setAttribute('cy', String(y(feb2025[i].high)));
+      marker.classList.add('show');
+    }
+
+    function dayFromSvgX(svgX){
+      const clamped = Math.max(pad, Math.min(w - pad, svgX));
+      const i = Math.round((clamped - pad) / xScale);
+      return Math.max(1, Math.min(28, i + 1));
+    }
+
+    hit.addEventListener('mousemove', (e)=>{
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const ctm = svg.getScreenCTM();
+      if(!ctm) return;
+      const loc = pt.matrixTransform(ctm.inverse());
+      const dayNum = dayFromSvgX(loc.x);
+      syncHorizonMarker(dayNum);
+      if(!pinnedDay){
+        highlight(dayNum, false);
+      }
+    });
+
+    hit.addEventListener('mouseleave', ()=>{
+      if(!pinnedDay){
+        highlight(selectedDay, true);
+      }
+      syncHorizonMarker(selectedDay);
+    });
+
+    hit.addEventListener('click', (e)=>{
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const ctm = svg.getScreenCTM();
+      if(!ctm) return;
+      const loc = pt.matrixTransform(ctm.inverse());
+      const dayNum = dayFromSvgX(loc.x);
+      selectedDay = dayNum;
+      slider.value = String(selectedDay);
+      setDetails(selectedDay);
+      if(pinSelection.checked) pinnedDay = selectedDay;
+      highlight(selectedDay, true);
+      syncHorizonMarker(selectedDay);
+    });
+
+    // Controls
+    slider.addEventListener('input', ()=>{
+      selectedDay = Number(slider.value);
+      setDetails(selectedDay);
+      highlight(selectedDay, true);
+      if(pinSelection.checked) pinnedDay = selectedDay;
+      syncHorizonMarker(selectedDay);
+    });
+
+    pinSelection.addEventListener('change', ()=>{
+      if(!pinSelection.checked) pinnedDay = null;
+      highlight(selectedDay, true);
+    });
+
+    showLows.addEventListener('change', ()=>{
+      renderBars();
+      setDetails(selectedDay);
+    });
+
+    unitToggle.addEventListener('change', ()=>{
+      renderBars();
+      setDetails(selectedDay);
+    });
+
+    function setPlaying(on){
+      playing = on;
+      playBtn.setAttribute('aria-pressed', String(playing));
+      playBtn.textContent = playing ? 'Pause' : 'Play';
+      if(playTimer) { clearInterval(playTimer); playTimer = null; }
+      if(playing){
+        playTimer = setInterval(()=>{
+          selectedDay = (selectedDay % 28) + 1;
+          slider.value = String(selectedDay);
+          setDetails(selectedDay);
+          if(pinSelection.checked) pinnedDay = selectedDay;
+          highlight(selectedDay, true);
+          syncHorizonMarker(selectedDay);
+        }, 650);
+      }
+    }
+
+    playBtn.addEventListener('click', ()=> setPlaying(!playing));
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        pinnedDay = null;
+        setPlaying(false);
+        highlight(selectedDay, true);
+      }
+      if(e.key === 'ArrowLeft'){
+        selectedDay = Math.max(1, selectedDay - 1);
+        slider.value = String(selectedDay);
+        setDetails(selectedDay);
+        highlight(selectedDay, true);
+        syncHorizonMarker(selectedDay);
+      }
+      if(e.key === 'ArrowRight'){
+        selectedDay = Math.min(28, selectedDay + 1);
+        slider.value = String(selectedDay);
+        setDetails(selectedDay);
+        highlight(selectedDay, true);
+        syncHorizonMarker(selectedDay);
+      }
+    });
+
+    // Init
+    buildHorizonPath();
+    renderBars();
+    setDetails(selectedDay);
+    syncHorizonMarker(selectedDay);
   </script>
+
 <script>
 (function(){
   try{
