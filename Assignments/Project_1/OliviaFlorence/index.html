@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleep, Workout & Screen Time Comparison | Jan 18 – Feb 9, 2026</title>
+    <title>Time Well Spent? Or Time Wasted?</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -18,7 +18,10 @@
             --workout: #6ee7b7;
             --screen: #f59e9e;
         }
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239b59b6' d='M12 0 L14.5 9 L24 9 L17 15 L20 24 L12 19 L4 24 L7 15 L0 9 L9.5 9 Z'/%3E%3C/svg%3E") 12 12, auto;
+        }
         body {
             margin: 0;
             min-height: 100vh;
@@ -103,7 +106,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Sleep, Workout & Screen Time</h1>
+        <h1>Time Well Spent? Or Time Wasted?</h1>
         <p class="subtitle">January 18 – February 9, 2026</p>
 
         <div class="stats">
@@ -122,7 +125,7 @@
         </div>
 
         <div class="chart-container">
-            <div class="chart-title">Daily comparison (hours)</div>
+            <div class="chart-title">Daily comparison</div>
             <div class="chart-wrapper">
                 <canvas id="line-chart"></canvas>
             </div>
@@ -140,9 +143,9 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th class="sleep-col num">Sleep (hrs)</th>
-                        <th class="workout-col num">Workout (hrs)</th>
-                        <th class="screen-col num">Screen (hrs)</th>
+                        <th class="sleep-col num">Sleep</th>
+                        <th class="workout-col num">Workout</th>
+                        <th class="screen-col num">Screen</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -188,11 +191,21 @@
             return d2.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         });
 
+        // Format decimal hours as "Xh Ym"
+        const toHrsMins = (dec) => {
+            const h = Math.floor(dec);
+            const m = Math.round((dec - h) * 60);
+            if (h === 0 && m === 0) return '0h';
+            if (h === 0) return m + 'm';
+            if (m === 0) return h + 'h';
+            return h + 'h ' + m + 'm';
+        };
+
         // Summary stats
-        const avg = arr => (arr.reduce((a,b) => a+b, 0) / arr.length).toFixed(1);
-        document.getElementById('avg-sleep').textContent = avg(sleep) + ' hrs';
-        document.getElementById('avg-workout').textContent = avg(workout) + ' hrs';
-        document.getElementById('avg-screen').textContent = avg(screen) + ' hrs';
+        const avg = arr => arr.reduce((a,b) => a+b, 0) / arr.length;
+        document.getElementById('avg-sleep').textContent = toHrsMins(avg(sleep));
+        document.getElementById('avg-workout').textContent = toHrsMins(avg(workout));
+        document.getElementById('avg-screen').textContent = toHrsMins(avg(screen));
 
         // Line chart
         Chart.defaults.color = '#8a8784';
@@ -212,9 +225,21 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => ctx.dataset.label + ': ' + toHrsMins(ctx.raw)
+                        }
+                    }
+                },
                 scales: {
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (v) => toHrsMins(v)
+                        }
+                    }
                 }
             }
         });
@@ -238,10 +263,22 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => ctx.dataset.label + ': ' + toHrsMins(ctx.raw)
+                        }
+                    }
+                },
                 scales: {
                     x: { grid: { display: false } },
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (v) => toHrsMins(v)
+                        }
+                    }
                 }
             }
         });
@@ -253,9 +290,9 @@
             const fmt = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             tr.innerHTML = `
                 <td>${fmt}</td>
-                <td class="num sleep-col">${d.sleep}</td>
-                <td class="num workout-col">${d.workout}</td>
-                <td class="num screen-col">${d.screen}</td>
+                <td class="num sleep-col">${toHrsMins(d.sleep)}</td>
+                <td class="num workout-col">${toHrsMins(d.workout)}</td>
+                <td class="num screen-col">${toHrsMins(d.screen)}</td>
             `;
             tbody.appendChild(tr);
         });
