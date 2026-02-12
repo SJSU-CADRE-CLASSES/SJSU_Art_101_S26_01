@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servers — Duc Tran Data Self Portrait</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Data Self Portrait</h1>
+      <p class="subtitle">Duc Tran — Servers & communities</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="activity.html">Activity</a>
+        <a href="servers.html" class="active">Servers</a>
+        <a href="words.html">Words</a>
+        <a href="about.html">About the Data</a>
+      </nav>
+    </header>
+    <main>
+      <section class="card">
+        <h2>Where I spend my messages</h2>
+        <p style="margin:0 0 1rem 0; color:#b5bac1;">Servers and approximate message counts from my Discord data.</p>
+        <div id="chart-servers"></div>
+      </section>
+    </main>
+    <footer>SJSU Art 101 S26 — Project 1</footer>
+  </div>
+  <script src="data/discord-data.js"></script>
+  <script>
+    (function () {
+      if (typeof discordPortrait === "undefined") {
+        document.getElementById("chart-servers").innerHTML = "<p style='color:#b5bac1'>Data not loaded. Open this page from a web server or check that data/discord-data.js exists.</p>";
+        return;
+      }
+      function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+      var servers = discordPortrait.servers || [];
+      var maxServer = servers.length ? Math.max.apply(null, servers.map(function(d) { return d.messageCount; })) : 0;
+      maxServer = maxServer || 1;
+      document.getElementById("chart-servers").innerHTML = servers.map(function(d) {
+        var pct = (d.messageCount / maxServer * 100);
+        return "<div class=\"bar-wrap\"><div class=\"bar-label\"><span>" + esc(d.name) + "</span><span>" + (d.messageCount.toLocaleString ? d.messageCount.toLocaleString() : d.messageCount) + "</span></div><div class=\"bar\"><div class=\"bar-fill\" style=\"width:" + pct + "%\"></div></div></div>";
+      }).join("");
+    })();
+  </script>
+</body>
+</html>
