@@ -6,7 +6,44 @@
     <title></title>
     <link rel="stylesheet" href="style.css">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
 <body>
+    <button id="showGraphBtn">Show Graph</button>
+    <div id="graphContainer" style="display: none;">
+        <canvas id="hoursSlept" style="width:100%;max-width:600px"></canvas>
+    </div>
+
+    <script>
+        const xValues = [1,2,3,4,5,6,7,8,9,10];
+        const yValues = [7,8,8,9,9,9,10,10,10,10];
+        const barColors = ["red", "green", "blue", "orange", "brown", "purple", "pink", "gray", "black", "white"];
+        let chartCreated = false;
+
+        document.getElementById("showGraphBtn").addEventListener("click", function() {
+            document.getElementById("graphContainer").style.display = "block";
+            if (!chartCreated) {
+                new Chart("hoursSlept", {
+                    type: "bar",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                            backgroundColor: barColors,
+                            data: yValues
+                        }]
+                    },
+                    options: {
+                        legend: {display: false},
+                        title: {display: true,
+                            text: "Daily Hours Slept",
+                            font: {size: 16}
+                        }
+                    }
+                });
+                chartCreated = true;
+            }
+        });
+    </script>
     <a href="casino.html">Casino</a>
 </body>
 </html>
+
