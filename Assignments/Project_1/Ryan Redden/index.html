@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Attractor - Interactive</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1a1a;
+            color: #eee;
+            font-family: monospace;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            background-color: #000;
+        }
+
+        /* Styling the Control Panel */
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(30, 30, 30, 0.85);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            width: 250px;
+            backdrop-filter: blur(5px);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+
+        /* Custom Slider Styling */
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 8px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="controls">
+        <div style="margin-bottom: 10px; font-weight: bold; color:#fff;">Thomas Attractor</div>
+
+        <div class="control-group">
+            <label>
+                <span>Var b</span>
+                <span id="val-b">0.08</span>
+            </label>
+            <input type="range" id="slider-b" min="0.0001" max="0.3" step="0.0001" value="0.08">
+        </div>
+
+        <div class="control-group">
+            <label>
+                <span>Var dt (Speed)</span>
+                <span id="val-dt">0.01</span>
+            </label>
+            <input type="range" id="slider-dt" min="0.000001" max="3.5" step="0.000001" value="0.01">
+        </div>
+
+        <div class="control-group">
+            <label>
+                <span>Scale</span>
+                <span id="val-scale">100</span>
+            </label>
+            <input type="range" id="slider-scale" min="1" max="200" step="1" value="100">
+        </div>
+
+        <div class="control-group" style="font-size: 12px; color: #aaa; font-family: monospace;">
+            <div>X: <span id="out-x">0.000</span></div>
+            <div>Y: <span id="out-y">0.000</span></div>
+            <div>Z: <span id="out-z">0.000</span></div>
+        </div>
+
+        <button id="btn-clear" style="margin-bottom: 5px;">Clear Canvas</button>
+        <button id="btn-reset" style="background-color: #d32f2f;">Reset Simulation</button>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // References to UI elements
+        const sliderB = document.getElementById('slider-b');
+        const sliderDt = document.getElementById('slider-dt');
+        const sliderScale = document.getElementById('slider-scale');
+        const displayB = document.getElementById('val-b');
+        const displayDt = document.getElementById('val-dt');
+        const displayScale = document.getElementById('val-scale');
+        const outX = document.getElementById('out-x');
+        const outY = document.getElementById('out-y');
+        const outZ = document.getElementById('out-z');
+        const btnClear = document.getElementById('btn-clear');
+        const btnReset = document.getElementById('btn-reset');
+
+        // Resize setup
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let cx = canvas.width / 2;
+        let cy = canvas.height / 2;
+
+        // --- ALGORITHM VARIABLES ---
+        let x = 0.1;
+        let y = 0.1;
+        let z = 0.1;
+
+        // Initial values from sliders
+        let b = parseFloat(sliderB.value);
+        let dt = parseFloat(sliderDt.value);
+
+        // Background setup
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // --- EVENT LISTENERS FOR INTERACTIVITY ---
+
+        // When slider B moves
+        sliderB.addEventListener('input', (e) => {
+            b = parseFloat(e.target.value);
+            displayB.textContent = b.toFixed(4);
+        });
+
+        sliderDt.addEventListener('input', (e) => {
+            dt = parseFloat(e.target.value);
+            displayDt.textContent = dt.toFixed(6);
+        });
+
+        // When slider Scale moves
+        sliderScale.addEventListener('input', (e) => {
+            // scale variable is updated in the loop or we can update a global 'currentScale' here
+            // but let's just ready it from value in loop or update a var
+            displayScale.textContent = e.target.value;
+        });
+
+        // Clear button
+        btnClear.addEventListener('click', () => {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Optional: Reset position to center to restart the chaos cleanly?
+            // x = 0.1; y = 0.1; z = 0.1; 
+        });
+
+        // Reset button
+        btnReset.addEventListener('click', () => {
+            resetSimulation();
+        });
+
+        function resetSimulation() {
+            x = 0.1;
+            y = 0.1;
+            z = 0.1;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            cx = canvas.width / 2;
+            cy = canvas.height / 2;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+
+
+        // --- MAIN LOOP ---
+        function update() {
+            // Run just ONE step per frame to visualize the "stream" of data
+
+            // The Physics (Euler Integration)
+            let dx = (-b * x + Math.sin(y)) * dt;
+            let dy = (-b * y + Math.sin(z)) * dt;
+            let dz = (-b * z + Math.sin(x)) * dt;
+
+            let nextX = x + dx;
+            let nextY = y + dy;
+            let nextZ = z + dz;
+
+            // Safety check for NaN or Infinity (common if dt is too high)
+            if (!isFinite(nextX) || !isFinite(nextY) || !isFinite(nextZ)) {
+                // If broken, stop updating and maybe show a warning or just hold last value
+                outX.textContent = "ERR";
+                outY.textContent = "ERR";
+                outZ.textContent = "ERR";
+                return;
+            }
+
+            x = nextX;
+            y = nextY;
+            z = nextZ;
+
+            // Update coordinate display
+            outX.textContent = x.toFixed(3);
+            outY.textContent = y.toFixed(3);
+            outZ.textContent = z.toFixed(3);
+
+            // Get current scale
+            const currentScale = parseFloat(sliderScale.value);
+
+            // Drawing
+            let plotX = cx + (x * currentScale);
+            let plotY = cy + (y * currentScale);
+
+            // Dynamic Color based on Z depth
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.fillStyle = `hsla(${z * 20 + 200}, 80%, 50%, 0.1)`;
+            ctx.fillRect(plotX, plotY, 1, 1);
+
+            // Reset composite operation for next frame (performance safety)
+            ctx.globalCompositeOperation = 'source-over';
+
+            requestAnimationFrame(update);
+        }
+
+        update();
+
+    </script>
+</body>
+
+</html>
