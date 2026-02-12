@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Attractor - Modular</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(30, 30, 30, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            width: 250px;
+            pointer-events: auto;
+            color: #ccc;
+            font-family: monospace;
+            z-index: 10;
+        }
+
+        .control-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        input[type=range] {
+            width: 100%;
+        }
+
+        button {
+            width: 100%;
+            padding: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <div class="control-group">
+            <label><span>b (Chaos)</span><span id="disp-b">0.19</span></label>
+            <input type="range" id="slider-b" min="0.0001" max="0.3" step="0.0001" value="0.19">
+        </div>
+        <div class="control-group">
+            <label><span>dt (Speed)</span><span id="disp-dt">0.05</span></label>
+            <input type="range" id="slider-dt" min="0.001" max="0.5" step="0.001" value="0.05">
+        </div>
+        <div class="control-group">
+            <label><span>Scale</span><span id="disp-scale">40</span></label>
+            <input type="range" id="slider-scale" min="1" max="200" step="1" value="40">
+        </div>
+        <button id="btn-reset">Reset</button>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // UI References
+        const sliderB = document.getElementById('slider-b');
+        const sliderDt = document.getElementById('slider-dt');
+        const sliderScale = document.getElementById('slider-scale');
+        const dispB = document.getElementById('disp-b');
+        const dispDt = document.getElementById('disp-dt');
+        const dispScale = document.getElementById('disp-scale');
+        const btnReset = document.getElementById('btn-reset');
+
+        // Setup Canvas
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+
+        // Fills the background once (black)
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+        // ==========================================
+        // 1. THE ENGINE (PURE MATH LOGIC)
+        // ==========================================
+        // This function represents your Max/Gen~ patch.
+        // It takes the current state and returns the *change* (velocity).
+        function calculateThomasAttractor(x, y, z, b) {
+            // The equations:
+            // dx/dt = -b*x + sin(y)
+            // dy/dt = -b*y + sin(z)
+            // dz/dt = -b*z + sin(x)
+
+            let dx = -b * x + Math.sin(y);
+            let dy = -b * y + Math.sin(z);
+            let dz = -b * z + Math.sin(x);
+
+            return { dx, dy, dz };
+        }
+
+
+        // ==========================================
+        // 2. THE PARTICLE (THE VISUAL OBJECT)
+        // ==========================================
+        class Particle {
+            constructor() {
+                // Initial State (The "Inlets")
+                this.reset();
+            }
+
+            reset() {
+                this.x = 0.1;
+                this.y = 0.1;
+                this.z = 0.1;
+                // Clear screen on reset
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            update() {
+                // Read parameters from UI
+                this.b = parseFloat(sliderB.value);
+                this.dt = parseFloat(sliderDt.value);
+
+                // Update Displays
+                dispB.textContent = this.b.toFixed(4);
+                dispDt.textContent = this.dt.toFixed(4);
+                dispScale.textContent = sliderScale.value;
+
+                // Run the mathematics multiple times per frame for smoothness if desired
+                // or just once per frame. 
+                // For a "stream" loop logic, we can do it once or a few times to speed it up visually.
+
+                const stepsPerFrame = 1; // 1 step per frame = strict stream
+
+                for (let i = 0; i < stepsPerFrame; i++) {
+
+                    // A. CALL THE ENGINE
+                    let forces = calculateThomasAttractor(this.x, this.y, this.z, this.b);
+
+                    // B. INTEGRATE (Apply the change)
+                    // Euler integration: next_pos = current_pos + (velocity * time_step)
+                    this.x += forces.dx * this.dt;
+                    this.y += forces.dy * this.dt;
+                    this.z += forces.dz * this.dt;
+
+                    // C. INTERNAL DRAW (Or we can draw from outside)
+                    // It's often easier for the particle to know how to draw itself.
+                    this.draw();
+                }
+            }
+
+            draw() {
+                const scale = parseFloat(sliderScale.value);
+
+                // 1. Projection: Convert 3D (x,y,z) to 2D Screen (screenX, screenY)
+                let screenX = centerX + (this.x * scale);
+                let screenY = centerY + (this.y * scale);
+
+                // 2. Visuals: Map Z-depth to Color
+                // If Z is "deep", color is blue-ish. If "close", color is red-ish.
+                // We use HSLA for easy color mapping.
+                // Z typically ranges roughly -3 to 3.
+                // Map -3..3 to Hue 200..230 (Just a subtle shift) or utilize full spectrum
+                let hue = (this.z * 10) + 200;
+
+                // Use 'lighter' blend mode for glowing effect
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.fillStyle = `hsla(${hue}, 70%, 50%, 0.1)`;
+
+                // 3. Plot the point
+                ctx.fillRect(screenX, screenY, 2, 2); // 2x2 pixel for visibility
+
+                // Reset blend mode
+                ctx.globalCompositeOperation = 'source-over';
+            }
+        }
+
+        // ==========================================
+        // 3. THE MAIN SYSTEM LOOP
+        // ==========================================
+
+        // Create one particle instance
+        const myParticle = new Particle();
+
+        btnReset.addEventListener('click', () => myParticle.reset());
+
+        function loop() {
+            // Ask the particle to update and draw itself
+            myParticle.update();
+
+            // Keep looping
+            requestAnimationFrame(loop);
+        }
+
+        // Start!
+        loop();
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+
+    </script>
+</body>
+
+</html>
