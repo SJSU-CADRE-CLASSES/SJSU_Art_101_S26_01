@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Time Breakdown | Time Well Spent? Or Time Wasted?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="data.js"></script>
+    <style>
+        :root {
+            --bg: #0f0f12;
+            --surface: #1a1a1f;
+            --text: #e8e6e3;
+            --muted: #8a8784;
+            --screen: #f59e9e;
+        }
+        * {
+            box-sizing: border-box;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239b59b6' d='M12 0 L14.5 9 L24 9 L17 15 L20 24 L12 19 L4 24 L7 15 L0 9 L9.5 9 Z'/%3E%3C/svg%3E") 12 12, auto;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            padding: 2rem 1.5rem 3rem;
+        }
+        .container { max-width: 56rem; margin: 0 auto; }
+        .back-link {
+            display: inline-block;
+            color: var(--muted);
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+        }
+        .back-link:hover { color: var(--text); }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+        .chart-container {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .chart-title { font-size: 1rem; font-weight: 500; margin-bottom: 1rem; }
+        .chart-wrapper { position: relative; height: 220px; }
+        .breakdown-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 600px) {
+            .breakdown-charts { grid-template-columns: 1fr; }
+        }
+        .data-table {
+            background: var(--surface);
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 0.6rem 1rem; text-align: left; }
+        th {
+            color: var(--muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+        .breakdown-cell { font-size: 0.8rem; color: var(--muted); }
+        .date-link { color: inherit; text-decoration: none; }
+        .date-link:hover { text-decoration: underline; }
+        .breakdown-row { display: flex; justify-content: space-between; padding: 0.35rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to overview</a>
+        <a href="breakdown.html" class="back-link" id="all-days-link" style="display: none; margin-left: 1rem;">View all days</a>
+        <h1>Screen time breakdown</h1>
+        <p class="subtitle" id="subtitle">January 18 – February 9, 2026</p>
+
+        <div id="single-day-view" style="display: none;">
+            <div class="breakdown-charts">
+                <div class="chart-container">
+                    <div class="chart-title">By device</div>
+                    <div class="chart-wrapper">
+                        <canvas id="device-chart-single"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">By app</div>
+                    <div class="chart-wrapper">
+                        <canvas id="app-chart-single"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container" id="single-day-list"></div>
+        </div>
+
+        <div id="all-days-view">
+            <div class="breakdown-charts">
+                <div class="chart-container">
+                    <div class="chart-title">By device</div>
+                    <div class="chart-wrapper">
+                        <canvas id="device-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">By app</div>
+                    <div class="chart-wrapper">
+                        <canvas id="app-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Daily breakdown</div>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Devices</th>
+                                <th>Apps</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const data = window.TRACKING_DATA;
+        const toHrsMins = window.toHrsMins;
+        const chartColors = ['#7c9cf7', '#6ee7b7', '#f59e9e', '#fbbf24', '#a78bfa', '#34d399', '#f472b6'];
+
+        Chart.defaults.color = '#8a8784';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+        Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+        const params = new URLSearchParams(window.location.search);
+        const dateParam = params.get('date');
+        const dayData = dateParam ? data.find(d => d.date === dateParam) : null;
+
+        if (dayData && dayData.screenBreakdown) {
+            document.getElementById('single-day-view').style.display = 'block';
+            document.getElementById('all-days-view').style.display = 'none';
+            document.getElementById('all-days-link').style.display = 'inline-block';
+
+            const fmt = new Date(dayData.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('subtitle').textContent = fmt;
+
+            const devLabels = Object.keys(dayData.screenBreakdown.devices || {});
+            const devValues = devLabels.map(k => dayData.screenBreakdown.devices[k]);
+            const appLabels = Object.keys(dayData.screenBreakdown.apps || {});
+            const appValues = appLabels.map(k => dayData.screenBreakdown.apps[k]);
+
+            if (devLabels.length) {
+                new Chart(document.getElementById('device-chart-single'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: devLabels,
+                        datasets: [{ data: devValues, backgroundColor: chartColors }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + toHrsMins(ctx.raw) } }
+                        }
+                    }
+                });
+            }
+            if (appLabels.length) {
+                new Chart(document.getElementById('app-chart-single'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: appLabels,
+                        datasets: [{ data: appValues, backgroundColor: chartColors }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + toHrsMins(ctx.raw) } }
+                        }
+                    }
+                });
+            }
+
+            const listEl = document.getElementById('single-day-list');
+            const devList = Object.entries(dayData.screenBreakdown.devices || {}).map(([k,v]) => `<div class="breakdown-row"><span>${k}</span><span class="num">${toHrsMins(v)}</span></div>`).join('');
+            const appList = Object.entries(dayData.screenBreakdown.apps || {}).map(([k,v]) => `<div class="breakdown-row"><span>${k}</span><span class="num">${toHrsMins(v)}</span></div>`).join('');
+            listEl.innerHTML = `
+                <div class="chart-title">Devices</div>
+                <div style="margin-bottom: 1rem;">${devList || '—'}</div>
+                <div class="chart-title">Apps</div>
+                <div>${appList || '—'}</div>
+            `;
+        } else if (dayData && !dayData.screenBreakdown) {
+            document.getElementById('subtitle').textContent = new Date(dayData.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('single-day-view').style.display = 'block';
+            document.getElementById('all-days-view').style.display = 'none';
+            document.getElementById('all-days-link').style.display = 'inline-block';
+            document.querySelector('#single-day-view .breakdown-charts').style.display = 'none';
+            document.getElementById('single-day-list').innerHTML = '<p style="color: var(--muted);">No breakdown data for this date.</p>';
+        } else {
+            const deviceTotals = {};
+            const appTotals = {};
+            data.forEach(d => {
+                if (d.screenBreakdown?.devices) {
+                    Object.entries(d.screenBreakdown.devices).forEach(([k, v]) => { deviceTotals[k] = (deviceTotals[k] || 0) + v; });
+                }
+                if (d.screenBreakdown?.apps) {
+                    Object.entries(d.screenBreakdown.apps).forEach(([k, v]) => { appTotals[k] = (appTotals[k] || 0) + v; });
+            });
+            const deviceLabels = Object.keys(deviceTotals);
+            const deviceValues = deviceLabels.map(k => deviceTotals[k]);
+            const appLabels = Object.keys(appTotals);
+            const appValues = appLabels.map(k => appTotals[k]);
+
+            if (deviceLabels.length) {
+                new Chart(document.getElementById('device-chart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: deviceLabels,
+                        datasets: [{ data: deviceValues, backgroundColor: chartColors }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + toHrsMins(ctx.raw) } }
+                        }
+                    }
+                });
+            }
+            if (appLabels.length) {
+                new Chart(document.getElementById('app-chart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: appLabels,
+                        datasets: [{ data: appValues, backgroundColor: chartColors }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + toHrsMins(ctx.raw) } }
+                        }
+                    }
+                });
+            }
+
+            const tbody = document.getElementById('table-body');
+            const fmtDevices = (dev) => Object.entries(dev || {}).map(([k,v]) => `${k} ${toHrsMins(v)}`).join(', ') || '—';
+            const fmtApps = (apps) => Object.entries(apps || {}).map(([k,v]) => `${k} ${toHrsMins(v)}`).join(', ') || '—';
+
+            data.forEach(d => {
+                const tr = document.createElement('tr');
+                const fmt = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const hasBreakdown = d.screenBreakdown && (Object.keys(d.screenBreakdown.devices || {}).length || Object.keys(d.screenBreakdown.apps || {}).length);
+                tr.innerHTML = `
+                    <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
+                    <td class="breakdown-cell">${hasBreakdown ? fmtDevices(d.screenBreakdown.devices) : '—'}</td>
+                    <td class="breakdown-cell">${hasBreakdown ? fmtApps(d.screenBreakdown.apps) : '—'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>

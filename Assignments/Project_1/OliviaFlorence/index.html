@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Well Spent? Or Time Wasted?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="data.js"></script>
+    <style>
+        :root {
+            --bg: #380751;
+            --surface: #1a1a1f;
+            --text: #e8e6e3;
+            --muted: #8a8784;
+            --sleep: #7c9cf7;
+            --workout: #6ee7b7;
+            --screen: #f59e9e;
+        }
+        * {
+            box-sizing: border-box;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239b59b6' d='M12 0 L14.5 9 L24 9 L17 15 L20 24 L12 19 L4 24 L7 15 L0 9 L9.5 9 Z'/%3E%3C/svg%3E") 12 12, auto;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            padding: 2rem 1.5rem 3rem;
+        }
+        .container { max-width: 56rem; margin: 0 auto; }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1.25rem;
+            border-left: 4px solid var(--sleep);
+        }
+        .stat.workout { border-color: var(--workout); }
+        .stat.screen { border-color: var(--screen); }
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 0.25rem;
+        }
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        .chart-container {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .chart-wrapper { position: relative; height: 280px; }
+        .data-table {
+            background: var(--surface);
+            border-radius: 10px;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td { padding: 0.6rem 1rem; text-align: left; }
+        th {
+            color: var(--muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+        .date-link {
+            color: inherit;
+            text-decoration: none;
+        }
+        .date-link:hover { text-decoration: underline; }
+        .sleep-col { color: var(--sleep); }
+        .workout-col { color: var(--workout); }
+        .screen-col { color: var(--screen); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Time Well Spent? Or Time Wasted?</h1>
+        <p class="subtitle">January 18 – February 9, 2026</p>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Avg. Sleep</div>
+                <div class="stat-value" id="avg-sleep">--</div>
+            </div>
+            <div class="stat workout">
+                <div class="stat-label">Avg. Workout</div>
+                <div class="stat-value" id="avg-workout">--</div>
+            </div>
+            <div class="stat screen">
+                <div class="stat-label">Avg. Screen</div>
+                <div class="stat-value" id="avg-screen">--</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Daily comparison</div>
+            <div class="chart-wrapper">
+                <canvas id="line-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Averages by week</div>
+            <div class="chart-wrapper">
+                <canvas id="bar-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th class="sleep-col num">Sleep</th>
+                        <th class="workout-col num">Workout</th>
+                        <th class="screen-col num">Screen</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        const data = window.TRACKING_DATA;
+        const toHrsMins = window.toHrsMins;
+
+        const sleep = data.map(d => d.sleep);
+        const workout = data.map(d => d.workout);
+        const screen = data.map(d => d.screen);
+        const labels = data.map(d => {
+            const d2 = new Date(d.date);
+            return d2.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        });
+
+        // Summary stats
+        const avg = arr => arr.reduce((a,b) => a+b, 0) / arr.length;
+        document.getElementById('avg-sleep').textContent = toHrsMins(avg(sleep));
+        document.getElementById('avg-workout').textContent = toHrsMins(avg(workout));
+        document.getElementById('avg-screen').textContent = toHrsMins(avg(screen));
+
+        // Line chart
+        Chart.defaults.color = '#8a8784';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+        Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+        new Chart(document.getElementById('line-chart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Sleep', data: sleep, borderColor: '#7c9cf7', backgroundColor: 'rgba(124,156,247,0.1)', fill: true, tension: 0.3 },
+                    { label: 'Workout', data: workout, borderColor: '#6ee7b7', backgroundColor: 'rgba(110,231,183,0.1)', fill: true, tension: 0.3 },
+                    { label: 'Screen', data: screen, borderColor: '#f59e9e', backgroundColor: 'rgba(245,158,158,0.1)', fill: true, tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => ctx.dataset.label + ': ' + toHrsMins(ctx.raw)
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (v) => toHrsMins(v)
+                        }
+                    }
+                }
+            }
+        });
+
+        // Bar chart (weekly averages)
+        const week1 = data.filter(d => d.date < '2026-01-25');
+        const week2 = data.filter(d => d.date >= '2026-01-25' && d.date < '2026-02-01');
+        const week3 = data.filter(d => d.date >= '2026-02-01');
+        const weekAvg = (arr, key) => arr.length ? parseFloat((arr.reduce((a,b) => a+b[key], 0) / arr.length).toFixed(1)) : 0;
+
+        new Chart(document.getElementById('bar-chart'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan 18–24', 'Jan 25–31', 'Feb 1–9'],
+                datasets: [
+                    { label: 'Sleep', data: [weekAvg(week1,'sleep'), weekAvg(week2,'sleep'), weekAvg(week3,'sleep')], backgroundColor: '#7c9cf7' },
+                    { label: 'Workout', data: [weekAvg(week1,'workout'), weekAvg(week2,'workout'), weekAvg(week3,'workout')], backgroundColor: '#6ee7b7' },
+                    { label: 'Screen', data: [weekAvg(week1,'screen'), weekAvg(week2,'screen'), weekAvg(week3,'screen')], backgroundColor: '#f59e9e' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => ctx.dataset.label + ': ' + toHrsMins(ctx.raw)
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: (v) => toHrsMins(v)
+                        }
+                    }
+                }
+            }
+        });
+
+        // Table
+        const tbody = document.getElementById('table-body');
+        data.forEach(d => {
+            const tr = document.createElement('tr');
+            const fmt = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            tr.innerHTML = `
+                <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
+                <td class="num sleep-col">${toHrsMins(d.sleep)}</td>
+                <td class="num workout-col">${toHrsMins(d.workout)}</td>
+                <td class="num screen-col">${toHrsMins(d.screen)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    </script>
+</body>
+</html>

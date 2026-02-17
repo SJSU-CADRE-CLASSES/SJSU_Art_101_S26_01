@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Big Drama</title>
+
+<style>
+body {
+  margin: 0;
+  background: #0f1226;
+  font-family: "Comic Sans MS", "Arial", sans-serif;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* 背景 emoji */
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  font-size: 38px;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+.bg span {
+  position: absolute;
+  animation: float 8s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+/* 返回按钮 */
+.back {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  text-decoration: none;
+  color: white;
+  border: 2px solid white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  opacity: 0.7;
+  z-index: 2;
+}
+
+.back:hover {
+  opacity: 1;
+}
+
+/* 标题 */
+.title {
+  text-align: center;
+  font-size: 42px;
+  margin-top: 60px;
+  letter-spacing: 2px;
+}
+
+/* 网格 */
+.grid {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 40px auto 80px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  padding: 0 40px;
+}
+
+/* meme 卡片 */
+.card {
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.card img:hover {
+  transform: scale(1.05) rotate(-1deg);
+}
+
+.count {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.reaction {
+  font-size: 12px;
+  opacity: 0.6;
+  height: 16px;
+  margin-top: 2px;
+}
+
+.voted {
+  color: #00ff9c;
+}
+</style>
+</head>
+
+<body>
+
+<a href="index.html" class="back">← Home</a>
+
+<!-- 背景 emoji -->
+<div class="bg">
+  <span style="top:10%; left:20%;">🔥</span>
+  <span style="top:20%; left:70%;">💥</span>
+  <span style="top:35%; left:45%;">😱</span>
+  <span style="top:60%; left:80%;">🎭</span>
+  <span style="top:75%; left:25%;">👀</span>
+  <span style="top:50%; left:60%;">😵</span>
+</div>
+
+<div class="title">Big Drama</div>
+<div style="text-align:center; opacity:0.6; margin-top:6px;">
+Which meme would you send?
+You can click again.
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const files = [
+"BigDrama1.GIF",
+"BigDrama2.GIF",
+"BigDrama3.GIF",
+"BigDrama4.PNG",
+"BigDrama5.GIF",
+"BigDrama6.GIF",
+"BigDrama7.GIF",
+"BigDrama8.PNG",
+"BigDrama9.JPG",
+"BigDrama10.GIF",
+"BigDrama11.JPG",
+"BigDrama12.PNG",
+"BigDrama13.PNG",
+"BigDrama14.JPG"
+];
+
+const grid = document.getElementById("grid");
+
+files.forEach(f => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <img src="meme/${f}" onclick="vote(this)">
+    <div class="count">used 0 times</div>
+    <div class="reaction"></div>
+  `;
+  grid.appendChild(card);
+});
+
+function vote(img) {
+  const countText = img.nextElementSibling;
+  const reaction = countText.nextElementSibling;
+
+  let num = parseInt(countText.innerText.match(/\d+/)[0]);
+  num++;
+  countText.innerText = "used " + num + " times";
+  countText.classList.add("voted");
+
+  const msgs = [
+    "WHAT",
+    "no way",
+    "tell me more",
+    "omg",
+    "this is crazy",
+    "I’m screaming"
+  ];
+  reaction.innerText = msgs[Math.floor(Math.random() * msgs.length)];
+}
+</script>
+
+</body>
+</html>

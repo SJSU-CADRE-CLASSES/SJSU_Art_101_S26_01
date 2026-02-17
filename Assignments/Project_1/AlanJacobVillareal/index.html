@@ -4,8 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alan Jacob Villareal - Project 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #1a0a2e;
+            font-family: 'Press Start 2P', cursive;
+            color: #00ff88;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* CRT scanlines overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 2px,
+                rgba(0, 0, 0, 0.15) 4px
+            );
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Glowing screen frame */
+        .screen {
+            background: linear-gradient(145deg, #0d0221 0%, #1a0a2e 50%, #0d0221 100%);
+            border: 8px solid #333;
+            border-radius: 12px;
+            padding: 2.5rem;
+            max-width: 520px;
+            width: 100%;
+            box-shadow:
+                inset 0 0 60px rgba(0, 255, 136, 0.08),
+                0 0 30px rgba(255, 0, 128, 0.2),
+                0 0 60px rgba(0, 255, 136, 0.15);
+            position: relative;
+        }
+
+        .screen::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 4px solid #00ff88;
+            border-radius: 16px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ff00aa;
+            text-shadow: 0 0 10px #ff00aa, 0 0 20px #ff00aa;
+            line-height: 1.8;
+        }
+
+        .subtitle {
+            font-size: 0.5rem;
+            color: #00ff88;
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .blink {
+            font-size: 0.6rem;
+            color: #ffff00;
+            text-align: center;
+            margin: 1.5rem 0;
+            animation: blink 1s step-end infinite;
+            text-shadow: 0 0 8px #ffff00;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .stats {
+            font-size: 0.45rem;
+            color: #00ccff;
+            margin-top: 1.5rem;
+            line-height: 2.2;
+        }
+
+        .stats span {
+            color: #ffff00;
+        }
+
+        .pixel-art {
+            margin: 1.5rem auto;
+            font-size: 2rem;
+            line-height: 1.2;
+            letter-spacing: 0.2rem;
+            text-align: center;
+            color: #ff00aa;
+        }
+
+        .footer {
+            font-size: 0.35rem;
+            color: #666;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        /* Navigation - level select style */
+        nav {
+            margin-bottom: 1.5rem;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem 1.5rem;
+        }
+
+        nav a {
+            font-size: 0.45rem;
+            color: #00ff88;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border: 3px solid #00ff88;
+            border-radius: 4px;
+            background: rgba(0, 255, 136, 0.08);
+            transition: all 0.15s ease;
+            display: inline-block;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            color: #1a0a2e;
+            background: #00ff88;
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        nav .nav-label {
+            font-size: 0.4rem;
+            color: #ff00aa;
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-
+    <nav>
+        <p class="nav-label">[ MAIN MENU ]</p>
+        <ul>
+            <li><a href="#home">HOME</a></li>
+            <li><a href="#about">ABOUT</a></li>
+            <li><a href="#work">WORK</a></li>
+            <li><a href="#contact">CONTACT</a></li>
+        </ul>
+    </nav>
+    <div class="screen" id="home">
+        <h1>★ PROJECT 1 ★<br>ALAN JACOB VILLAREAL</h1>
+        <p class="subtitle">ART 101 · SJSU · 2026</p>
+        <p class="pixel-art">🎮 ◉ ◉ ◉</p>
+        <p class="blink">▶ PRESS START</p>
+        <div class="stats">
+            HIGH SCORE <span>999990</span><br>
+            CREDITS <span>2</span><br>
+            LEVEL <span>01</span>
+        </div>
+        <p class="footer">© 2026 · INSERT COIN TO CONTINUE</p>
+    </div>
 </body>
 </html>

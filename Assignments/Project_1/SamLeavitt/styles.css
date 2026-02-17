@@ -1,0 +1,45 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: system-ui, sans-serif;
+  background: #0f0f12;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+.spacer {
+  height: 900vh;
+  position: relative;
+}
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.stage-inner {
+  position: absolute;
+  inset: 0;
+}
+.points-layer {
+  position: absolute;
+  inset: 0;
+}
+.points-layer canvas {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.hint {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  opacity: 0.7;
+  transition: opacity 0.4s;
+  pointer-events: auto;
+}
+.hint.faded { opacity: 0.2; }
