@@ -44,32 +44,32 @@
 
     h1 {
       font-family: 'Great Vibes', cursive;
-      font-size: 4.5rem;
+      font-size: 7rem;
       font-weight: 400;
       text-align: center;
       color: #f2e8a8;
       letter-spacing: 0.02em;
-      /* Slightly pixelated aesthetic: no smoothing + crisp edges */
+      /* Pixelated: no smoothing + strong chunky filter */
       -webkit-font-smoothing: none;
       -moz-osx-font-smoothing: unset;
       font-smooth: never;
       text-rendering: optimizeSpeed;
       filter: url(#pixelate);
-      /* Black outline (multiple shadows) */
+      /* Black outline (thicker for larger title) */
       text-shadow:
-        -2px -2px 0 #000,
-        -2px 0 0 #000,
-        -2px 2px 0 #000,
-        0 -2px 0 #000,
-        0 2px 0 #000,
-        2px -2px 0 #000,
-        2px 0 0 #000,
-        2px 2px 0 #000,
+        -3px -3px 0 #000,
+        -3px 0 0 #000,
+        -3px 3px 0 #000,
+        0 -3px 0 #000,
+        0 3px 0 #000,
+        3px -3px 0 #000,
+        3px 0 0 #000,
+        3px 3px 0 #000,
         /* Metallic shine */
         -1px -1px 0 rgba(255,255,230,0.9),
         1px 1px 0 rgba(180,160,80,0.6),
-        0 2px 4px rgba(0,0,0,0.4),
-        0 0 24px rgba(242,232,168,0.2);
+        0 3px 6px rgba(0,0,0,0.4),
+        0 0 28px rgba(242,232,168,0.2);
       animation: titleIdle 4s ease-in-out infinite;
     }
 
@@ -107,12 +107,13 @@
       pointer-events: none;
     }
 
+    /* Same small-pixel pattern as background clouds; gradient keeps wipe panels opaque */
     .cloud-left {
       left: 0;
-      background: linear-gradient(105deg, rgba(238, 244, 252, 0.98) 0%, rgba(220, 230, 248, 0.98) 40%, rgba(200, 215, 240, 0.96) 70%, rgba(188, 202, 232, 0.95) 100%),
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='4' y='8' width='10' height='10'/%3E%3Crect x='14' y='12' width='8' height='8'/%3E%3Crect x='24' y='6' width='12' height='12'/%3E%3Crect x='38' y='14' width='10' height='10'/%3E%3Crect x='50' y='4' width='8' height='8'/%3E%3Crect x='60' y='16' width='10' height='10'/%3E%3Crect x='72' y='10' width='8' height='8'/%3E%3Crect x='82' y='20' width='10' height='10'/%3E%3Crect x='8' y='28' width='8' height='8'/%3E%3Crect x='20' y='24' width='10' height='10'/%3E%3Crect x='32' y='30' width='8' height='8'/%3E%3Crect x='44' y='26' width='12' height='12'/%3E%3Crect x='58' y='32' width='8' height='8'/%3E%3Crect x='70' y='28' width='10' height='10'/%3E%3Crect x='80' y='36' width='8' height='8'/%3E%3Crect x='2' y='42' width='10' height='10'/%3E%3Crect x='16' y='40' width='8' height='8'/%3E%3Crect x='28' y='46' width='10' height='10'/%3E%3Crect x='42' y='42' width='8' height='8'/%3E%3Crect x='54' y='48' width='10' height='10'/%3E%3Crect x='66' y='44' width='8' height='8'/%3E%3Crect x='76' y='50' width='10' height='10'/%3E%3Crect x='88' y='46' width='8' height='8'/%3E%3Crect x='10' y='58' width='8' height='8'/%3E%3Crect x='22' y='62' width='10' height='10'/%3E%3Crect x='36' y='56' width='8' height='8'/%3E%3Crect x='48' y='62' width='10' height='10'/%3E%3Crect x='62' y='58' width='8' height='8'/%3E%3Crect x='74' y='64' width='10' height='10'/%3E%3Crect x='4' y='72' width='10' height='10'/%3E%3Crect x='18' y='76' width='8' height='8'/%3E%3Crect x='30' y='70' width='8' height='8'/%3E%3Crect x='44' y='78' width='10' height='10'/%3E%3Crect x='56' y='74' width='8' height='8'/%3E%3Crect x='68' y='80' width='10' height='10'/%3E%3Crect x='82' y='72' width='8' height='8'/%3E%3Crect x='14' y='86' width='8' height='8'/%3E%3Crect x='26' y='88' width='10' height='10'/%3E%3Crect x='52' y='88' width='8' height='8'/%3E%3Crect x='78' y='86' width='10' height='10'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.15)'%3E%3Crect x='12' y='18' width='6' height='6'/%3E%3Crect x='34' y='22' width='6' height='6'/%3E%3Crect x='64' y='24' width='6' height='6'/%3E%3Crect x='18' y='52' width='6' height='6'/%3E%3Crect x='50' y='54' width='6' height='6'/%3E%3Crect x='72' y='56' width='6' height='6'/%3E%3Crect x='8' y='68' width='6' height='6'/%3E%3Crect x='40' y='72' width='6' height='6'/%3E%3Crect x='60' y='70' width='6' height='6'/%3E%3C/g%3E%3C/svg%3E");
-      background-size: auto, 96px 96px;
-      box-shadow: 0 0 80px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(105deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, 8px 8px;
+      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
       animation: partLeft 1.4s ease-in-out forwards;
       clip-path: url(#leftCloudClip);
       -webkit-clip-path: url(#leftCloudClip);
@@ -120,10 +121,10 @@
 
     .cloud-right {
       right: 0;
-      background: linear-gradient(75deg, rgba(238, 244, 252, 0.98) 0%, rgba(220, 230, 248, 0.98) 40%, rgba(200, 215, 240, 0.96) 70%, rgba(188, 202, 232, 0.95) 100%),
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='4' y='8' width='10' height='10'/%3E%3Crect x='14' y='12' width='8' height='8'/%3E%3Crect x='24' y='6' width='12' height='12'/%3E%3Crect x='38' y='14' width='10' height='10'/%3E%3Crect x='50' y='4' width='8' height='8'/%3E%3Crect x='60' y='16' width='10' height='10'/%3E%3Crect x='72' y='10' width='8' height='8'/%3E%3Crect x='82' y='20' width='10' height='10'/%3E%3Crect x='8' y='28' width='8' height='8'/%3E%3Crect x='20' y='24' width='10' height='10'/%3E%3Crect x='32' y='30' width='8' height='8'/%3E%3Crect x='44' y='26' width='12' height='12'/%3E%3Crect x='58' y='32' width='8' height='8'/%3E%3Crect x='70' y='28' width='10' height='10'/%3E%3Crect x='80' y='36' width='8' height='8'/%3E%3Crect x='2' y='42' width='10' height='10'/%3E%3Crect x='16' y='40' width='8' height='8'/%3E%3Crect x='28' y='46' width='10' height='10'/%3E%3Crect x='42' y='42' width='8' height='8'/%3E%3Crect x='54' y='48' width='10' height='10'/%3E%3Crect x='66' y='44' width='8' height='8'/%3E%3Crect x='76' y='50' width='10' height='10'/%3E%3Crect x='88' y='46' width='8' height='8'/%3E%3Crect x='10' y='58' width='8' height='8'/%3E%3Crect x='22' y='62' width='10' height='10'/%3E%3Crect x='36' y='56' width='8' height='8'/%3E%3Crect x='48' y='62' width='10' height='10'/%3E%3Crect x='62' y='58' width='8' height='8'/%3E%3Crect x='74' y='64' width='10' height='10'/%3E%3Crect x='4' y='72' width='10' height='10'/%3E%3Crect x='18' y='76' width='8' height='8'/%3E%3Crect x='30' y='70' width='8' height='8'/%3E%3Crect x='44' y='78' width='10' height='10'/%3E%3Crect x='56' y='74' width='8' height='8'/%3E%3Crect x='68' y='80' width='10' height='10'/%3E%3Crect x='82' y='72' width='8' height='8'/%3E%3Crect x='14' y='86' width='8' height='8'/%3E%3Crect x='26' y='88' width='10' height='10'/%3E%3Crect x='52' y='88' width='8' height='8'/%3E%3Crect x='78' y='86' width='10' height='10'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.15)'%3E%3Crect x='12' y='18' width='6' height='6'/%3E%3Crect x='34' y='22' width='6' height='6'/%3E%3Crect x='64' y='24' width='6' height='6'/%3E%3Crect x='18' y='52' width='6' height='6'/%3E%3Crect x='50' y='54' width='6' height='6'/%3E%3Crect x='72' y='56' width='6' height='6'/%3E%3Crect x='8' y='68' width='6' height='6'/%3E%3Crect x='40' y='72' width='6' height='6'/%3E%3Crect x='60' y='70' width='6' height='6'/%3E%3C/g%3E%3C/svg%3E");
-      background-size: auto, 96px 96px;
-      box-shadow: 0 0 80px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(75deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, 8px 8px;
+      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
       animation: partRight 1.4s ease-in-out forwards;
       clip-path: url(#rightCloudClip);
       -webkit-clip-path: url(#rightCloudClip);
@@ -148,38 +149,49 @@
 
     .bg-cloud {
       position: absolute;
-      border-radius: 50%;
       background-color: transparent;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(220,230,250,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
       background-size: 8px 8px;
+      clip-path: url(#marioCloud1);
+      -webkit-clip-path: url(#marioCloud1);
     }
 
     .bg-cloud-1 { width: 40%; height: 25%; left: -5%; top: 10%; }
-    .bg-cloud-2 { width: 35%; height: 20%; right: -8%; top: 25%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-3 { width: 50%; height: 22%; left: 25%; bottom: 15%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-4 { width: 28%; height: 18%; right: 15%; bottom: 30%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-5 { width: 22%; height: 14%; left: 10%; top: 45%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-6 { width: 30%; height: 16%; right: 25%; top: 55%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-7 { width: 38%; height: 20%; left: 40%; top: 5%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-8 { width: 25%; height: 15%; left: 5%; bottom: 40%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-2 { width: 35%; height: 20%; right: -8%; top: 25%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-3 { width: 50%; height: 22%; left: 25%; bottom: 15%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-4 { width: 28%; height: 18%; right: 15%; bottom: 30%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-5 { width: 22%; height: 14%; left: 10%; top: 45%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-6 { width: 30%; height: 16%; right: 25%; top: 55%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-7 { width: 38%; height: 20%; left: 40%; top: 5%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-8 { width: 25%; height: 15%; left: 5%; bottom: 40%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
   </style>
   <!-- Pixelate filter + scalloped cloud shapes -->
   <svg width="0" height="0" aria-hidden="true">
     <defs>
       <!-- Pixelated/chunky edge effect -->
-      <filter id="pixelate" x="-8%" y="-8%" width="116%" height="116%">
-        <feMorphology in="SourceGraphic" operator="dilate" radius="0.9"/>
+      <filter id="pixelate" x="-12%" y="-12%" width="124%" height="124%">
+        <feMorphology in="SourceGraphic" operator="dilate" radius="1.6"/>
       </filter>
-      <!-- Pixelated Chinese-style cloud swirl; rounded outer ends -->
+      <!-- Pixelated Chinese-style cloud swirl; more lumps, rounded outer ends -->
       <clipPath id="leftCloudClip" clipPathUnits="objectBoundingBox">
         <path d="M 0.02,0 L 1,0
-                 L 1,0.06 L 0.94,0.06 L 0.94,0.14 L 1,0.14 L 1,0.22 L 0.92,0.22 L 0.92,0.3 L 1,0.3 L 1,0.38 L 0.94,0.38 L 0.94,0.46 L 1,0.46 L 1,0.54 L 0.92,0.54 L 0.92,0.62 L 1,0.62 L 1,0.7 L 0.94,0.7 L 0.94,0.78 L 1,0.78 L 1,0.86 L 0.92,0.86 L 0.92,0.94 L 1,0.94 L 1,1
+                 L 1,0.04 L 0.94,0.04 L 0.94,0.09 L 1,0.09 L 1,0.15 L 0.92,0.15 L 0.92,0.21 L 1,0.21 L 1,0.28 L 0.94,0.28 L 0.94,0.35 L 1,0.35 L 1,0.42 L 0.92,0.42 L 0.92,0.5 L 1,0.5 L 1,0.57 L 0.94,0.57 L 0.94,0.64 L 1,0.64 L 1,0.71 L 0.92,0.71 L 0.92,0.78 L 1,0.78 L 1,0.85 L 0.94,0.85 L 0.94,0.91 L 1,0.91 L 1,1
                  L 0.02,1 Q -0.06,0.5 0.02,0 Z" />
       </clipPath>
       <clipPath id="rightCloudClip" clipPathUnits="objectBoundingBox">
         <path d="M 0.98,0 L 0,0
-                 L 0,0.06 L 0.06,0.06 L 0.06,0.14 L 0,0.14 L 0,0.22 L 0.08,0.22 L 0.08,0.3 L 0,0.3 L 0,0.38 L 0.06,0.38 L 0.06,0.46 L 0,0.46 L 0,0.54 L 0.08,0.54 L 0.08,0.62 L 0,0.62 L 0,0.7 L 0.06,0.7 L 0.06,0.78 L 0,0.78 L 0,0.86 L 0.08,0.86 L 0.08,0.94 L 0,0.94 L 0,1
+                 L 0,0.04 L 0.06,0.04 L 0.06,0.09 L 0,0.09 L 0,0.15 L 0.08,0.15 L 0.08,0.21 L 0,0.21 L 0,0.28 L 0.06,0.28 L 0.06,0.35 L 0,0.35 L 0,0.42 L 0.08,0.42 L 0.08,0.5 L 0,0.5 L 0,0.57 L 0.06,0.57 L 0.06,0.64 L 0,0.64 L 0,0.71 L 0.08,0.71 L 0.08,0.78 L 0,0.78 L 0,0.85 L 0.06,0.85 L 0.06,0.91 L 0,0.91 L 0,1
                  L 0.98,1 Q 1.06,0.5 0.98,0 Z" />
+      </clipPath>
+      <!-- Mario-style pixelated clouds with more lumps (multiple bumps) -->
+      <clipPath id="marioCloud1" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.55 L 0.15,0.55 L 0.15,0.35 L 0.35,0.35 L 0.35,0.1 L 0.5,0.1 L 0.5,0 L 0.65,0 L 0.65,0.1 L 0.85,0.35 L 0.85,0.55 L 1,0.55 L 1,1 Z" />
+      </clipPath>
+      <clipPath id="marioCloud2" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.6 L 0.12,0.6 L 0.12,0.35 L 0.28,0.35 L 0.28,0.15 L 0.45,0.15 L 0.45,0 L 0.55,0 L 0.55,0.15 L 0.72,0.35 L 0.72,0.6 L 0.88,0.6 L 0.88,0.35 L 1,0.35 L 1,1 Z" />
+      </clipPath>
+      <clipPath id="marioCloud3" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.5 L 0.1,0.5 L 0.1,0.25 L 0.25,0.25 L 0.25,0.05 L 0.4,0.05 L 0.4,0 L 0.6,0 L 0.6,0.05 L 0.75,0.25 L 0.75,0.5 L 0.9,0.5 L 0.9,0.25 L 1,0.25 L 1,1 Z" />
       </clipPath>
     </defs>
   </svg>
@@ -203,55 +215,68 @@
   <a href="page2.html" class="star-btn" aria-label="Start – go to next page">
     <svg viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg" width="360" height="120">
       <defs>
-        <linearGradient id="tailGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="tailGradPx" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#ffd54f"/>
-          <stop offset="50%" stop-color="#ffb300"/>
+          <stop offset="70%" stop-color="#ffb300"/>
           <stop offset="100%" stop-color="#ffb300" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="tailGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#ffeb3b" stop-opacity="0.9"/>
-          <stop offset="60%" stop-color="#ffb300" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#ffb300" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="tailGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#ffc107" stop-opacity="0.8"/>
-          <stop offset="70%" stop-color="#ff9800" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="#ff9800" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#fff59d"/>
-          <stop offset="50%" stop-color="#ffd54f"/>
-          <stop offset="100%" stop-color="#ff8f00"/>
         </linearGradient>
       </defs>
-      <!-- Tail 3 outline (top) -->
-      <path d="M 72 44 L 358 44 L 358 52 L 72 52 Z" fill="#000"/>
-      <!-- Tail 3 (top streak) -->
-      <path d="M 76 46 L 340 46 L 340 50 L 76 50 Z" fill="url(#tailGrad2)"/>
-      <!-- Tail 2 outline (upper mid) -->
-      <path d="M 72 50 L 358 50 L 358 58 L 72 58 Z" fill="#000"/>
-      <!-- Tail 2 (upper mid streak) -->
-      <path d="M 76 52 L 348 52 L 348 56 L 76 56 Z" fill="url(#tailGrad2)"/>
-      <!-- Main tail outline (center) -->
-      <path d="M 72 56 L 358 56 L 358 64 L 72 64 Z" fill="#000"/>
-      <!-- Main shooting star tail -->
-      <path d="M 76 58 L 354 58 L 354 62 L 76 62 Z" fill="url(#tailGrad)"/>
-      <!-- Tail 4 outline (lower mid) -->
-      <path d="M 72 62 L 358 62 L 358 70 L 72 70 Z" fill="#000"/>
-      <!-- Tail 4 (lower mid streak) -->
-      <path d="M 76 64 L 348 64 L 348 68 L 76 68 Z" fill="url(#tailGrad3)"/>
-      <!-- Tail 5 outline (bottom) -->
-      <path d="M 72 68 L 358 68 L 358 76 L 72 76 Z" fill="#000"/>
-      <!-- Tail 5 (bottom streak) -->
-      <path d="M 76 70 L 340 70 L 340 74 L 76 74 Z" fill="url(#tailGrad3)"/>
-      <!-- 5-point star at front (thick arcade outline) -->
-      <polygon
-        points="60,36 68,56 92,56 72,68 80,92 60,80 40,92 48,68 28,56 52,56"
-        fill="url(#starGrad)"
-        stroke="#1a1a1a"
-        stroke-width="4"
-      />
-      <!-- "Start" text – arcade style with black outline -->
+      <!-- Pixel tail: black outline then fill (each row = 8px) -->
+      <g id="tail-outline">
+        <rect x="48" y="40" width="312" height="8" fill="#000"/>
+        <rect x="48" y="48" width="312" height="8" fill="#000"/>
+        <rect x="48" y="56" width="312" height="8" fill="#000"/>
+        <rect x="48" y="64" width="312" height="8" fill="#000"/>
+        <rect x="48" y="72" width="312" height="8" fill="#000"/>
+      </g>
+      <g id="tail-fill">
+        <rect x="52" y="42" width="304" height="6" fill="url(#tailGradPx)" opacity="0.95"/>
+        <rect x="52" y="50" width="300" height="6" fill="url(#tailGradPx)" opacity="0.9"/>
+        <rect x="52" y="58" width="296" height="6" fill="url(#tailGradPx)"/>
+        <rect x="52" y="66" width="292" height="6" fill="url(#tailGradPx)" opacity="0.9"/>
+        <rect x="52" y="74" width="288" height="6" fill="url(#tailGradPx)" opacity="0.85"/>
+      </g>
+      <!-- Pixel star: 5-point star made of 8x8 blocks (outline in black, fill in gold) -->
+      <g id="star-outline">
+        <rect x="8" y="44" width="8" height="8" fill="#000"/>
+        <rect x="16" y="44" width="8" height="8" fill="#000"/>
+        <rect x="24" y="44" width="8" height="8" fill="#000"/>
+        <rect x="16" y="52" width="8" height="8" fill="#000"/>
+        <rect x="24" y="52" width="8" height="8" fill="#000"/>
+        <rect x="32" y="52" width="8" height="8" fill="#000"/>
+        <rect x="0" y="60" width="8" height="8" fill="#000"/>
+        <rect x="8" y="60" width="8" height="8" fill="#000"/>
+        <rect x="16" y="60" width="8" height="8" fill="#000"/>
+        <rect x="24" y="60" width="8" height="8" fill="#000"/>
+        <rect x="32" y="60" width="8" height="8" fill="#000"/>
+        <rect x="40" y="60" width="8" height="8" fill="#000"/>
+        <rect x="8" y="68" width="8" height="8" fill="#000"/>
+        <rect x="16" y="68" width="8" height="8" fill="#000"/>
+        <rect x="24" y="68" width="8" height="8" fill="#000"/>
+        <rect x="32" y="68" width="8" height="8" fill="#000"/>
+        <rect x="16" y="76" width="8" height="8" fill="#000"/>
+        <rect x="24" y="76" width="8" height="8" fill="#000"/>
+      </g>
+      <g id="star-fill">
+        <rect x="9" y="45" width="6" height="6" fill="#ffeb3b"/>
+        <rect x="17" y="45" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="45" width="6" height="6" fill="#ffeb3b"/>
+        <rect x="17" y="53" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="53" width="6" height="6" fill="#fff59d"/>
+        <rect x="33" y="53" width="6" height="6" fill="#ffd54f"/>
+        <rect x="9" y="61" width="6" height="6" fill="#ffd54f"/>
+        <rect x="17" y="61" width="6" height="6" fill="#fff59d"/>
+        <rect x="25" y="61" width="6" height="6" fill="#ffc107"/>
+        <rect x="33" y="61" width="6" height="6" fill="#fff59d"/>
+        <rect x="41" y="61" width="6" height="6" fill="#ffd54f"/>
+        <rect x="9" y="69" width="6" height="6" fill="#ffeb3b"/>
+        <rect x="17" y="69" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="69" width="6" height="6" fill="#fff59d"/>
+        <rect x="33" y="69" width="6" height="6" fill="#ffd54f"/>
+        <rect x="17" y="77" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="77" width="6" height="6" fill="#ffeb3b"/>
+      </g>
+      <!-- "Start" text – pixel font -->
       <text x="210" y="72" text-anchor="middle" fill="#ffeb3b" font-family="'Press Start 2P', monospace" font-size="14" font-weight="bold" stroke="#1a1a1a" stroke-width="4" paint-order="stroke">Start</text>
     </svg>
   </a>
