@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Subscriptions — Deforming Square Artpiece</title>
+<style>
+  :root{
+    --bg:#070810; --fg:#e9e9ee; --muted:rgba(233,233,238,.72);
+    --glass:rgba(255,255,255,.08); --shadow:rgba(0,0,0,.35); --radius:18px;
+    --border: rgba(255,255,255,.12);
+  }
+  html,body{height:100%;margin:0;overflow:hidden;background:
+    radial-gradient(1200px 900px at 15% 15%, rgba(0,210,255,.12), transparent 60%),
+    radial-gradient(1100px 900px at 85% 20%, rgba(120,90,255,.18), transparent 55%),
+    radial-gradient(1100px 900px at 55% 85%, rgba(255,140,0,.10), transparent 60%),
+    var(--bg);
+    color:var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  }
+  canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block;}
+  .hud{
+    position:fixed;left:16px;top:16px;right:16px;bottom:16px;z-index:10;
+    display:grid;grid-template-columns:1.1fr 1.0fr;gap:12px;pointer-events:none;
+  }
+  .card{
+    pointer-events:auto;background:linear-gradient(180deg,var(--glass),rgba(255,255,255,.03));
+    border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:0 12px 40px var(--shadow);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    padding:14px 14px 12px;
+  }
+  .title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 10px;}
+  .title h1{font-size:16px;margin:0;letter-spacing:.2px;font-weight:650;}
+  .title .meta{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64%;}
+  .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+  .kpi{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px 10px 8px;}
+  .kpi .label{font-size:11px;color:var(--muted);margin-bottom:6px;}
+  .kpi .value{font-size:16px;font-weight:700;letter-spacing:.2px;}
+  .hint{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.35;}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center;pointer-events:auto;}
+  .btn{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--fg);
+       padding:8px 10px;border-radius:999px;cursor:pointer;font-size:12px;}
+  .btn:hover{background:rgba(255,255,255,.10);} .btn:active{transform:translateY(1px);}
+  .slider{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;user-select:none;}
+  input[type="range"]{width:150px;}
+
+  .panel{display:grid;grid-template-rows:auto auto 1fr auto;gap:10px;height: calc(100% - 2px);}
+  .search{display:flex; gap:8px; align-items:center;}
+  .search input{
+    width:100%; padding:10px 12px; border-radius:12px;
+    border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06);
+    color: var(--fg); outline: none; font-size: 12px;
+  }
+  .list{overflow:auto;border-radius:14px;border:1px solid rgba(255,255,255,.10);background: rgba(255,255,255,.04);}
+  .item{display:flex; gap:10px; align-items:flex-start;padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;}
+  .item:last-child{border-bottom:none;}
+  .swatch{width:12px;height:12px;border-radius:4px;flex:0 0 auto;margin-top:3px;box-shadow: 0 0 0 1px rgba(255,255,255,.18);}
+  .item .txt{font-size:12px; color:rgba(233,233,238,.86); line-height:1.25; word-break: break-word;}
+  .item .sub{margin-top:4px;font-size:11px;color: rgba(233,233,238,.65);white-space: nowrap;overflow: hidden;text-overflow: ellipsis;max-width: 100%;}
+  .item.active{background: rgba(255,255,255,.07);}
+
+  .detail{border:1px solid rgba(255,255,255,.10);background: rgba(255,255,255,.04);border-radius:14px;padding:10px;}
+  .detail h2{margin:0 0 8px;font-size:12px;font-weight:700;}
+  .kv{display:grid;grid-template-columns: 1fr; gap:6px; max-height: 22vh; overflow:auto;}
+  .kv .row{display:grid;grid-template-columns: 120px 1fr; gap:10px; align-items:baseline;}
+  .kv .k{font-size:11px;color:rgba(233,233,238,.62);}
+  .kv .v{font-size:11px;color:rgba(233,233,238,.88); word-break: break-word;}
+  .mini{font-size:11px;color:rgba(233,233,238,.62);}
+
+  .tooltip{
+    position:fixed;pointer-events:none;z-index:20;padding:10px 10px 9px;border-radius:14px;
+    background:rgba(10,10,18,.72);border:1px solid rgba(255,255,255,.12);color:var(--fg);
+    box-shadow:0 12px 40px rgba(0,0,0,.35);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transform:translate(-50%,-120%);opacity:0;transition:opacity .10s ease;
+    max-width:min(560px, 86vw);font-size:12px;line-height:1.35;white-space:normal;
+  }
+  .tooltip strong{font-weight:700;}
+  .tooltip .muted{color:rgba(233,233,238,.72);}
+  @media (max-width: 980px){
+    .hud{grid-template-columns:1fr; grid-template-rows:auto 1fr;}
+    .kv .row{grid-template-columns: 100px 1fr;}
+  }
+
+/* --- shared nav --- */
+.site-nav{
+  position: fixed;
+  left: 16px; right: 16px; top: 16px;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(18, 20, 31, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.site-nav a{
+  color: rgba(233,233,238,0.72);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.site-nav a:hover{ color: #4ecdc4; }
+.site-nav a.active{ color: #4ecdc4; font-weight: 600; }
+
+</style>
+</head>
+<body>
+<nav class="site-nav" aria-label="Site navigation">
+  <a href="index_nav.html">Weather</a>
+  <a href="subscriptions_nav.html">YouTube Subscriptions</a>
+  <a href="steamdb_nav.html">Steam PlayTime</a>
+  <a href="page4_nav.html">Browser Sonification</a>
+</nav>
+
+<canvas id="c"></canvas>
+
+<div class="hud">
+  <div class="card">
+    <div class="title">
+      <h1>Deforming border mosaic</h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <div class="grid" id="kpis"></div>
+
+    <div class="controls">
+      <button class="btn" id="shuffle">Shuffle</button>
+      <button class="btn" id="pause">Pause</button>
+      <div class="slider">
+        <span>Zoom</span>
+        <input id="zoom" type="range" min="0.7" max="2.2" value="1.0" step="0.02"/>
+        <span id="zval">1.00</span>
+      </div>
+      <div class="slider">
+        <span>Color shift</span>
+        <input id="pulse" type="range" min="0.0" max="20.0" value="1.0" step="0.05"/>
+        <span id="pval">1.00</span>
+      </div>
+      <div class="slider">
+        <span>Deform</span>
+        <input id="def" type="range" min="0.0" max="20.0" value="1.0" step="0.05"/>
+        <span id="dval">1.00</span>
+      </div>
+      <button class="btn" id="pin">Pin: Off</button>
+    </div>
+
+    <div class="hint">
+      Interior borders wobble via a vertex displacement field; the outer perimeter stays perfectly straight.
+      Hover a tile to preview. Click to select. Press <strong>R</strong> to shuffle.
+    </div>
+  </div>
+
+  <div class="card panel">
+    <div class="title">
+      <h1>Rows</h1>
+      <div class="meta"><span id="shown"></span></div>
+    </div>
+
+    <div class="search">
+      <input id="q" placeholder="Search…" />
+      <button class="btn" id="clear">Clear</button>
+    </div>
+
+    <div class="list" id="list"></div>
+
+    <div class="detail">
+      <h2>Selected</h2>
+      <div class="mini" id="selTitle">None selected</div>
+      <div style="height:8px"></div>
+      <div class="kv" id="kv"></div>
+      <div style="height:10px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="copy">Copy label</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip" id="tip"></div>
+
+<script>
+const DATA = {"summary": {"rows": 117, "columns": ["Channel Id", "Channel Url", "Channel Title"], "name_col": "Channel Id", "amount_col": null, "category_col": null, "date_col": "Channel Url", "tiles": 117}, "rows": [{"id": 0, "label": "UC0e3QhIYukixgh5VVpKHH9Q", "full": "UC0e3QhIYukixgh5VVpKHH9Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC0e3QhIYukixgh5VVpKHH9Q", "Channel Url": "http://www.youtube.com/channel/UC0e3QhIYukixgh5VVpKHH9Q", "Channel Title": "Code Bullet"}}, {"id": 1, "label": "UC0mEc9OzI-B9HRi1v-GCVBw", "full": "UC0mEc9OzI-B9HRi1v-GCVBw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC0mEc9OzI-B9HRi1v-GCVBw", "Channel Url": "http://www.youtube.com/channel/UC0mEc9OzI-B9HRi1v-GCVBw", "Channel Title": "Malice Ch. マリス・エヴァーモア【Phase Connect】"}}, {"id": 2, "label": "UC1ucgoC_sGww_Euu5iMqpQw", "full": "UC1ucgoC_sGww_Euu5iMqpQw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC1ucgoC_sGww_Euu5iMqpQw", "Channel Url": "http://www.youtube.com/channel/UC1ucgoC_sGww_Euu5iMqpQw", "Channel Title": "凛々咲 / Ririsya"}}, {"id": 3, "label": "UC2SpC8rL9LaeQriE4YNdyzA", "full": "UC2SpC8rL9LaeQriE4YNdyzA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC2SpC8rL9LaeQriE4YNdyzA", "Channel Url": "http://www.youtube.com/channel/UC2SpC8rL9LaeQriE4YNdyzA", "Channel Title": "Zenless Zone Zero"}}, {"id": 4, "label": "UC3ROLz2rGWv24cx4tQVAq8w", "full": "UC3ROLz2rGWv24cx4tQVAq8w", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC3ROLz2rGWv24cx4tQVAq8w", "Channel Url": "http://www.youtube.com/channel/UC3ROLz2rGWv24cx4tQVAq8w", "Channel Title": "Rogurt"}}, {"id": 5, "label": "UC3n5uGu18FoCy23ggWWp8tA", "full": "UC3n5uGu18FoCy23ggWWp8tA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC3n5uGu18FoCy23ggWWp8tA", "Channel Url": "http://www.youtube.com/channel/UC3n5uGu18FoCy23ggWWp8tA", "Channel Title": "Nanashi Mumei Ch. hololive-EN"}}, {"id": 6, "label": "UC3tNpTOHsTnkmbwztCs30sA", "full": "UC3tNpTOHsTnkmbwztCs30sA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC3tNpTOHsTnkmbwztCs30sA", "Channel Url": "http://www.youtube.com/channel/UC3tNpTOHsTnkmbwztCs30sA", "Channel Title": "Northernlion"}}, {"id": 7, "label": "UC51Yl8knwYgxEG1s7tFxoVQ", "full": "UC51Yl8knwYgxEG1s7tFxoVQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC51Yl8knwYgxEG1s7tFxoVQ", "Channel Url": "http://www.youtube.com/channel/UC51Yl8knwYgxEG1s7tFxoVQ", "Channel Title": "Obi Yodi"}}, {"id": 8, "label": "UC5IKGY9nQ6sTG7Q0XOh8-TQ", "full": "UC5IKGY9nQ6sTG7Q0XOh8-TQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC5IKGY9nQ6sTG7Q0XOh8-TQ", "Channel Url": "http://www.youtube.com/channel/UC5IKGY9nQ6sTG7Q0XOh8-TQ", "Channel Title": "BluezKaito"}}, {"id": 9, "label": "UC6Ii2PPnHDkjLTJJQgOw7sQ", "full": "UC6Ii2PPnHDkjLTJJQgOw7sQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC6Ii2PPnHDkjLTJJQgOw7sQ", "Channel Url": "http://www.youtube.com/channel/UC6Ii2PPnHDkjLTJJQgOw7sQ", "Channel Title": "Jeaney Collects"}}, {"id": 10, "label": "UC6T7TJZbW6nO-qsc5coo8Pg", "full": "UC6T7TJZbW6nO-qsc5coo8Pg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC6T7TJZbW6nO-qsc5coo8Pg", "Channel Url": "http://www.youtube.com/channel/UC6T7TJZbW6nO-qsc5coo8Pg", "Channel Title": "dooby"}}, {"id": 11, "label": "UC6nSFpj9HTCZ5t-N3Rm3-HA", "full": "UC6nSFpj9HTCZ5t-N3Rm3-HA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC6nSFpj9HTCZ5t-N3Rm3-HA", "Channel Url": "http://www.youtube.com/channel/UC6nSFpj9HTCZ5t-N3Rm3-HA", "Channel Title": "Vsauce"}}, {"id": 12, "label": "UC6xZdbLoWpE07omW0xvBOBw", "full": "UC6xZdbLoWpE07omW0xvBOBw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC6xZdbLoWpE07omW0xvBOBw", "Channel Url": "http://www.youtube.com/channel/UC6xZdbLoWpE07omW0xvBOBw", "Channel Title": "Professor Lando"}}, {"id": 13, "label": "UC7Ay_bxnYWSS9ZDPpqAE1RQ", "full": "UC7Ay_bxnYWSS9ZDPpqAE1RQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC7Ay_bxnYWSS9ZDPpqAE1RQ", "Channel Url": "http://www.youtube.com/channel/UC7Ay_bxnYWSS9ZDPpqAE1RQ", "Channel Title": "The Intel Report"}}, {"id": 14, "label": "UC7MMNHR-kf9EN1rXiesMTMw", "full": "UC7MMNHR-kf9EN1rXiesMTMw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC7MMNHR-kf9EN1rXiesMTMw", "Channel Url": "http://www.youtube.com/channel/UC7MMNHR-kf9EN1rXiesMTMw", "Channel Title": "Magni Dezmond Ch. HOLOSTARS-EN"}}, {"id": 15, "label": "UC7_0grKFu3lXu78GyV6c63w", "full": "UC7_0grKFu3lXu78GyV6c63w", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC7_0grKFu3lXu78GyV6c63w", "Channel Url": "http://www.youtube.com/channel/UC7_0grKFu3lXu78GyV6c63w", "Channel Title": "itsMeanWaterfall"}}, {"id": 16, "label": "UC7_YxT-KID8kRbqZo7MyscQ", "full": "UC7_YxT-KID8kRbqZo7MyscQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC7_YxT-KID8kRbqZo7MyscQ", "Channel Url": "http://www.youtube.com/channel/UC7_YxT-KID8kRbqZo7MyscQ", "Channel Title": "Markiplier"}}, {"id": 17, "label": "UC8MX9ECowgDMTOnFTE8EUJw", "full": "UC8MX9ECowgDMTOnFTE8EUJw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC8MX9ECowgDMTOnFTE8EUJw", "Channel Url": "http://www.youtube.com/channel/UC8MX9ECowgDMTOnFTE8EUJw", "Channel Title": "HistoryMarche"}}, {"id": 18, "label": "UC8rcEBzJSleTkf_-agPM20g", "full": "UC8rcEBzJSleTkf_-agPM20g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC8rcEBzJSleTkf_-agPM20g", "Channel Url": "http://www.youtube.com/channel/UC8rcEBzJSleTkf_-agPM20g", "Channel Title": "IRyS Ch. hololive-EN"}}, {"id": 19, "label": "UC93aWyXK1NuUnRumFxU7X3w", "full": "UC93aWyXK1NuUnRumFxU7X3w", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC93aWyXK1NuUnRumFxU7X3w", "Channel Url": "http://www.youtube.com/channel/UC93aWyXK1NuUnRumFxU7X3w", "Channel Title": "YUY"}}, {"id": 20, "label": "UC94At58D7ZoFZxPPFcAGxsw", "full": "UC94At58D7ZoFZxPPFcAGxsw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC94At58D7ZoFZxPPFcAGxsw", "Channel Url": "http://www.youtube.com/channel/UC94At58D7ZoFZxPPFcAGxsw", "Channel Title": "ERB VODs Ch."}}, {"id": 21, "label": "UC9PY_s84IkOV_MJwEL70sfQ", "full": "UC9PY_s84IkOV_MJwEL70sfQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC9PY_s84IkOV_MJwEL70sfQ", "Channel Url": "http://www.youtube.com/channel/UC9PY_s84IkOV_MJwEL70sfQ", "Channel Title": "Jordan Howlett"}}, {"id": 22, "label": "UC9p_lqQ0FEDz327Vgf5JwqA", "full": "UC9p_lqQ0FEDz327Vgf5JwqA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC9p_lqQ0FEDz327Vgf5JwqA", "Channel Url": "http://www.youtube.com/channel/UC9p_lqQ0FEDz327Vgf5JwqA", "Channel Title": "Koseki Bijou Ch. hololive-EN"}}, {"id": 23, "label": "UCAlxwHEm1bWWYoe5VCSQYEg", "full": "UCAlxwHEm1bWWYoe5VCSQYEg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCAlxwHEm1bWWYoe5VCSQYEg", "Channel Url": "http://www.youtube.com/channel/UCAlxwHEm1bWWYoe5VCSQYEg", "Channel Title": "EroldStory"}}, {"id": 24, "label": "UCDHABijvPBnJm7F-KlNME3w", "full": "UCDHABijvPBnJm7F-KlNME3w", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCDHABijvPBnJm7F-KlNME3w", "Channel Url": "http://www.youtube.com/channel/UCDHABijvPBnJm7F-KlNME3w", "Channel Title": "Gigi Murin Ch. hololive-EN"}}, {"id": 25, "label": "UCDRWSO281bIHYVi-OV3iFYA", "full": "UCDRWSO281bIHYVi-OV3iFYA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCDRWSO281bIHYVi-OV3iFYA", "Channel Url": "http://www.youtube.com/channel/UCDRWSO281bIHYVi-OV3iFYA", "Channel Title": "Noir Vesper Ch. HOLOSTARS-EN"}}, {"id": 26, "label": "UCDsjT-EeCxk1tGUVWPYXK1A", "full": "UCDsjT-EeCxk1tGUVWPYXK1A", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCDsjT-EeCxk1tGUVWPYXK1A", "Channel Url": "http://www.youtube.com/channel/UCDsjT-EeCxk1tGUVWPYXK1A", "Channel Title": "IrrationalMango"}}, {"id": 27, "label": "UCE0PiuKj_QDMwqNeRimoXbQ", "full": "UCE0PiuKj_QDMwqNeRimoXbQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCE0PiuKj_QDMwqNeRimoXbQ", "Channel Url": "http://www.youtube.com/channel/UCE0PiuKj_QDMwqNeRimoXbQ", "Channel Title": "EthanOnEverything"}}, {"id": 28, "label": "UCEpYQsZI57Ng7pT7pqU6SLQ", "full": "UCEpYQsZI57Ng7pT7pqU6SLQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCEpYQsZI57Ng7pT7pqU6SLQ", "Channel Url": "http://www.youtube.com/channel/UCEpYQsZI57Ng7pT7pqU6SLQ", "Channel Title": "CSRC"}}, {"id": 29, "label": "UCFAiFyGs6oDiF1Nf-rRJpZA", "full": "UCFAiFyGs6oDiF1Nf-rRJpZA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCFAiFyGs6oDiF1Nf-rRJpZA", "Channel Url": "http://www.youtube.com/channel/UCFAiFyGs6oDiF1Nf-rRJpZA", "Channel Title": "Technoblade"}}, {"id": 30, "label": "UCFP8gNKH1Ae5dnz8Ybt_kQg", "full": "UCFP8gNKH1Ae5dnz8Ybt_kQg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCFP8gNKH1Ae5dnz8Ybt_kQg", "Channel Url": "http://www.youtube.com/channel/UCFP8gNKH1Ae5dnz8Ybt_kQg", "Channel Title": "SODAZ"}}, {"id": 31, "label": "UCGSJevmBuDyxjLLOBNaYMGA", "full": "UCGSJevmBuDyxjLLOBNaYMGA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCGSJevmBuDyxjLLOBNaYMGA", "Channel Url": "http://www.youtube.com/channel/UCGSJevmBuDyxjLLOBNaYMGA", "Channel Title": "Polygon Runway"}}, {"id": 32, "label": "UCHP4f7G2dWD4qib7BMatGAw", "full": "UCHP4f7G2dWD4qib7BMatGAw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCHP4f7G2dWD4qib7BMatGAw", "Channel Url": "http://www.youtube.com/channel/UCHP4f7G2dWD4qib7BMatGAw", "Channel Title": "Gavis Bettel Ch. HOLOSTARS-EN"}}, {"id": 33, "label": "UCHYoe8kQ-7Gn9ASOlmI0k6Q", "full": "UCHYoe8kQ-7Gn9ASOlmI0k6Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCHYoe8kQ-7Gn9ASOlmI0k6Q", "Channel Url": "http://www.youtube.com/channel/UCHYoe8kQ-7Gn9ASOlmI0k6Q", "Channel Title": "The Food Theorists"}}, {"id": 34, "label": "UCHsx4Hqa-1ORjQTh9TYDhww", "full": "UCHsx4Hqa-1ORjQTh9TYDhww", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCHsx4Hqa-1ORjQTh9TYDhww", "Channel Url": "http://www.youtube.com/channel/UCHsx4Hqa-1ORjQTh9TYDhww", "Channel Title": "Takanashi Kiara Ch. hololive-EN"}}, {"id": 35, "label": "UCI-vHWeZmN-9m5ia10ryT4Q", "full": "UCI-vHWeZmN-9m5ia10ryT4Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCI-vHWeZmN-9m5ia10ryT4Q", "Channel Url": "http://www.youtube.com/channel/UCI-vHWeZmN-9m5ia10ryT4Q", "Channel Title": "GeoExe"}}, {"id": 36, "label": "UCI1XS_GkLGDOgf8YLaaXNRA", "full": "UCI1XS_GkLGDOgf8YLaaXNRA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCI1XS_GkLGDOgf8YLaaXNRA", "Channel Url": "http://www.youtube.com/channel/UCI1XS_GkLGDOgf8YLaaXNRA", "Channel Title": "CalebCity"}}, {"id": 37, "label": "UCIfAvpeIWGHb0duCkMkmm2Q", "full": "UCIfAvpeIWGHb0duCkMkmm2Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCIfAvpeIWGHb0duCkMkmm2Q", "Channel Url": "http://www.youtube.com/channel/UCIfAvpeIWGHb0duCkMkmm2Q", "Channel Title": "Nimi Nightmare"}}, {"id": 38, "label": "UCJ4O6PWA47f6XbCgrLQNqEQ", "full": "UCJ4O6PWA47f6XbCgrLQNqEQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCJ4O6PWA47f6XbCgrLQNqEQ", "Channel Url": "http://www.youtube.com/channel/UCJ4O6PWA47f6XbCgrLQNqEQ", "Channel Title": "Rie Ch. 姫宮りえ【Phase Connect】"}}, {"id": 39, "label": "UCJFZiqLMntJufDCHc6bQixg", "full": "UCJFZiqLMntJufDCHc6bQixg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCJFZiqLMntJufDCHc6bQixg", "Channel Url": "http://www.youtube.com/channel/UCJFZiqLMntJufDCHc6bQixg", "Channel Title": "hololive ホロライブ - VTuber Group"}}, {"id": 40, "label": "UCJxZpzx4wHzEYD-eCiZPikg", "full": "UCJxZpzx4wHzEYD-eCiZPikg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCJxZpzx4wHzEYD-eCiZPikg", "Channel Url": "http://www.youtube.com/channel/UCJxZpzx4wHzEYD-eCiZPikg", "Channel Title": "HOLOSTARS English"}}, {"id": 41, "label": "UCKPzAxpw4Wc2TsArFMxftuA", "full": "UCKPzAxpw4Wc2TsArFMxftuA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCKPzAxpw4Wc2TsArFMxftuA", "Channel Url": "http://www.youtube.com/channel/UCKPzAxpw4Wc2TsArFMxftuA", "Channel Title": "Min-Maxed"}}, {"id": 42, "label": "UCKbUvb-Yq-wQvi2UeA1IeCA", "full": "UCKbUvb-Yq-wQvi2UeA1IeCA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCKbUvb-Yq-wQvi2UeA1IeCA", "Channel Url": "http://www.youtube.com/channel/UCKbUvb-Yq-wQvi2UeA1IeCA", "Channel Title": "Nano in a nutshell"}}, {"id": 43, "label": "UCKwsC0eqm1rXRxuudFhYDcg", "full": "UCKwsC0eqm1rXRxuudFhYDcg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCKwsC0eqm1rXRxuudFhYDcg", "Channel Url": "http://www.youtube.com/channel/UCKwsC0eqm1rXRxuudFhYDcg", "Channel Title": "Ugo Lord: The Modern Attorney"}}, {"id": 44, "label": "UCL_qhgtOy0dy1Agp8vkySQg", "full": "UCL_qhgtOy0dy1Agp8vkySQg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCL_qhgtOy0dy1Agp8vkySQg", "Channel Url": "http://www.youtube.com/channel/UCL_qhgtOy0dy1Agp8vkySQg", "Channel Title": "Mori Calliope Ch. hololive-EN"}}, {"id": 45, "label": "UCLd3TpRoRHMIJ0ruTaBDPqA", "full": "UCLd3TpRoRHMIJ0ruTaBDPqA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCLd3TpRoRHMIJ0ruTaBDPqA", "Channel Url": "http://www.youtube.com/channel/UCLd3TpRoRHMIJ0ruTaBDPqA", "Channel Title": "cocobrED"}}, {"id": 46, "label": "UCMBOY8SB75iImsg5UlIomNg", "full": "UCMBOY8SB75iImsg5UlIomNg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCMBOY8SB75iImsg5UlIomNg", "Channel Url": "http://www.youtube.com/channel/UCMBOY8SB75iImsg5UlIomNg", "Channel Title": "Mister Technodad"}}, {"id": 47, "label": "UCMEMbA38r9CKCuukra2Mr3Q", "full": "UCMEMbA38r9CKCuukra2Mr3Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCMEMbA38r9CKCuukra2Mr3Q", "Channel Url": "http://www.youtube.com/channel/UCMEMbA38r9CKCuukra2Mr3Q", "Channel Title": "Sellsword Arts"}}, {"id": 48, "label": "UCMfMBbR9UBNvUyN8fujbJVw", "full": "UCMfMBbR9UBNvUyN8fujbJVw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCMfMBbR9UBNvUyN8fujbJVw", "Channel Url": "http://www.youtube.com/channel/UCMfMBbR9UBNvUyN8fujbJVw", "Channel Title": "Randon the Orc "}}, {"id": 49, "label": "UCMwGHR0BTZuLsmjY_NT5Pwg", "full": "UCMwGHR0BTZuLsmjY_NT5Pwg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCMwGHR0BTZuLsmjY_NT5Pwg", "Channel Url": "http://www.youtube.com/channel/UCMwGHR0BTZuLsmjY_NT5Pwg", "Channel Title": "Ninomae Ina'nis Ch. hololive-EN"}}, {"id": 50, "label": "UCN17Z31n_ionhzAjyV7pmXw", "full": "UCN17Z31n_ionhzAjyV7pmXw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCN17Z31n_ionhzAjyV7pmXw", "Channel Url": "http://www.youtube.com/channel/UCN17Z31n_ionhzAjyV7pmXw", "Channel Title": "Nano"}}, {"id": 51, "label": "UCNAUWWq3RKyGDHzBuKgEcPg", "full": "UCNAUWWq3RKyGDHzBuKgEcPg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCNAUWWq3RKyGDHzBuKgEcPg", "Channel Url": "http://www.youtube.com/channel/UCNAUWWq3RKyGDHzBuKgEcPg", "Channel Title": "meuol"}}, {"id": 52, "label": "UCNoxM_Kxoa-_gOtoyjbux7Q", "full": "UCNoxM_Kxoa-_gOtoyjbux7Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCNoxM_Kxoa-_gOtoyjbux7Q", "Channel Url": "http://www.youtube.com/channel/UCNoxM_Kxoa-_gOtoyjbux7Q", "Channel Title": "hololive English Shorts"}}, {"id": 53, "label": "UCO_aKKYxn4tvrqPjcTzZ6EQ", "full": "UCO_aKKYxn4tvrqPjcTzZ6EQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCO_aKKYxn4tvrqPjcTzZ6EQ", "Channel Url": "http://www.youtube.com/channel/UCO_aKKYxn4tvrqPjcTzZ6EQ", "Channel Title": "Ceres Fauna Ch. hololive-EN"}}, {"id": 54, "label": "UCPHNnF9IdWTEpAvoKVhQBow", "full": "UCPHNnF9IdWTEpAvoKVhQBow", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCPHNnF9IdWTEpAvoKVhQBow", "Channel Url": "http://www.youtube.com/channel/UCPHNnF9IdWTEpAvoKVhQBow", "Channel Title": "Dunkemz"}}, {"id": 55, "label": "UCQD3awTLw9i8Xzh85FKsuJA", "full": "UCQD3awTLw9i8Xzh85FKsuJA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCQD3awTLw9i8Xzh85FKsuJA", "Channel Url": "http://www.youtube.com/channel/UCQD3awTLw9i8Xzh85FKsuJA", "Channel Title": "SovietWomble"}}, {"id": 56, "label": "UCRlZaszk84YXjRtdPCxqjvw", "full": "UCRlZaszk84YXjRtdPCxqjvw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCRlZaszk84YXjRtdPCxqjvw", "Channel Url": "http://www.youtube.com/channel/UCRlZaszk84YXjRtdPCxqjvw", "Channel Title": "Clara Ch. 歌美鳴クララ 【Phase Connect】"}}, {"id": 57, "label": "UCT_QEGH0myu6lgbE_biQPuw", "full": "UCT_QEGH0myu6lgbE_biQPuw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCT_QEGH0myu6lgbE_biQPuw", "Channel Url": "http://www.youtube.com/channel/UCT_QEGH0myu6lgbE_biQPuw", "Channel Title": "Drew Talbert"}}, {"id": 58, "label": "UCTcw8GqWQlFcc6ioeJQOMAQ", "full": "UCTcw8GqWQlFcc6ioeJQOMAQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCTcw8GqWQlFcc6ioeJQOMAQ", "Channel Url": "http://www.youtube.com/channel/UCTcw8GqWQlFcc6ioeJQOMAQ", "Channel Title": "Game Changer Shorts"}}, {"id": 59, "label": "UCTvHWSfBZgtxE4sILOaurIQ", "full": "UCTvHWSfBZgtxE4sILOaurIQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCTvHWSfBZgtxE4sILOaurIQ", "Channel Url": "http://www.youtube.com/channel/UCTvHWSfBZgtxE4sILOaurIQ", "Channel Title": "Vestia Zeta Ch. hololive-ID"}}, {"id": 60, "label": "UCV3h2_srSVaiEmjrZ8v7Qsw", "full": "UCV3h2_srSVaiEmjrZ8v7Qsw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCV3h2_srSVaiEmjrZ8v7Qsw", "Channel Url": "http://www.youtube.com/channel/UCV3h2_srSVaiEmjrZ8v7Qsw", "Channel Title": "Vaan Ch."}}, {"id": 61, "label": "UCVpankR4HtoAVtYnFDUieYA", "full": "UCVpankR4HtoAVtYnFDUieYA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCVpankR4HtoAVtYnFDUieYA", "Channel Url": "http://www.youtube.com/channel/UCVpankR4HtoAVtYnFDUieYA", "Channel Title": "Ze Frank"}}, {"id": 62, "label": "UCW5uhrG1eCBYditmhL0Ykjw", "full": "UCW5uhrG1eCBYditmhL0Ykjw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCW5uhrG1eCBYditmhL0Ykjw", "Channel Url": "http://www.youtube.com/channel/UCW5uhrG1eCBYditmhL0Ykjw", "Channel Title": "Elizabeth Rose Bloodflame Ch. hololive-EN"}}, {"id": 63, "label": "UCWBBoHrCi1jd3AgweQxmB_A", "full": "UCWBBoHrCi1jd3AgweQxmB_A", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCWBBoHrCi1jd3AgweQxmB_A", "Channel Url": "http://www.youtube.com/channel/UCWBBoHrCi1jd3AgweQxmB_A", "Channel Title": "Tbone & Solo"}}, {"id": 64, "label": "UCWzLmNWhgeh3h1j-M-Isy0g", "full": "UCWzLmNWhgeh3h1j-M-Isy0g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCWzLmNWhgeh3h1j-M-Isy0g", "Channel Url": "http://www.youtube.com/channel/UCWzLmNWhgeh3h1j-M-Isy0g", "Channel Title": "TheRussianBadger"}}, {"id": 65, "label": "UCYzPXprvl5Y-Sf0g4vX-m6g", "full": "UCYzPXprvl5Y-Sf0g4vX-m6g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCYzPXprvl5Y-Sf0g4vX-m6g", "Channel Url": "http://www.youtube.com/channel/UCYzPXprvl5Y-Sf0g4vX-m6g", "Channel Title": "jacksepticeye"}}, {"id": 66, "label": "UCYz_5n-uDuChHtLo7My1HnQ", "full": "UCYz_5n-uDuChHtLo7My1HnQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCYz_5n-uDuChHtLo7My1HnQ", "Channel Url": "http://www.youtube.com/channel/UCYz_5n-uDuChHtLo7My1HnQ", "Channel Title": "Kureiji Ollie Ch. hololive-ID"}}, {"id": 67, "label": "UCZbWCodPFwH2QQn772QnUxQ", "full": "UCZbWCodPFwH2QQn772QnUxQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCZbWCodPFwH2QQn772QnUxQ", "Channel Url": "http://www.youtube.com/channel/UCZbWCodPFwH2QQn772QnUxQ", "Channel Title": "Fire Department Chronicles"}}, {"id": 68, "label": "UC_sFNM0z0MWm9A6WlKPuMMg", "full": "UC_sFNM0z0MWm9A6WlKPuMMg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UC_sFNM0z0MWm9A6WlKPuMMg", "Channel Url": "http://www.youtube.com/channel/UC_sFNM0z0MWm9A6WlKPuMMg", "Channel Title": "Nerissa Ravencroft Ch. hololive-EN"}}, {"id": 69, "label": "UCaHT88aobpcvRFEuy4v5Clg", "full": "UCaHT88aobpcvRFEuy4v5Clg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCaHT88aobpcvRFEuy4v5Clg", "Channel Url": "http://www.youtube.com/channel/UCaHT88aobpcvRFEuy4v5Clg", "Channel Title": "Lessons in Meme Culture"}}, {"id": 70, "label": "UCbKWv2x9t6u8yZoB3KcPtnw", "full": "UCbKWv2x9t6u8yZoB3KcPtnw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCbKWv2x9t6u8yZoB3KcPtnw", "Channel Url": "http://www.youtube.com/channel/UCbKWv2x9t6u8yZoB3KcPtnw", "Channel Title": "Alan Becker"}}, {"id": 71, "label": "UCbsfyGlrjrKQC0gbzK0-EiA", "full": "UCbsfyGlrjrKQC0gbzK0-EiA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCbsfyGlrjrKQC0gbzK0-EiA", "Channel Url": "http://www.youtube.com/channel/UCbsfyGlrjrKQC0gbzK0-EiA", "Channel Title": "Jared Owen"}}, {"id": 72, "label": "UCbzZ3g3Bj_SX9UF03__ZraA", "full": "UCbzZ3g3Bj_SX9UF03__ZraA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCbzZ3g3Bj_SX9UF03__ZraA", "Channel Url": "http://www.youtube.com/channel/UCbzZ3g3Bj_SX9UF03__ZraA", "Channel Title": "noinimble"}}, {"id": 73, "label": "UCc9Zwkz_u5MelQVI-ozK5Xw", "full": "UCc9Zwkz_u5MelQVI-ozK5Xw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCc9Zwkz_u5MelQVI-ozK5Xw", "Channel Url": "http://www.youtube.com/channel/UCc9Zwkz_u5MelQVI-ozK5Xw", "Channel Title": "Jyuna"}}, {"id": 74, "label": "UCd9TUql8V7J-Xy1RNgA7MlQ", "full": "UCd9TUql8V7J-Xy1RNgA7MlQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCd9TUql8V7J-Xy1RNgA7MlQ", "Channel Url": "http://www.youtube.com/channel/UCd9TUql8V7J-Xy1RNgA7MlQ", "Channel Title": "zanny"}}, {"id": 75, "label": "UCdC0An4ZPNr_YiFiYoVbwaw", "full": "UCdC0An4ZPNr_YiFiYoVbwaw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCdC0An4ZPNr_YiFiYoVbwaw", "Channel Url": "http://www.youtube.com/channel/UCdC0An4ZPNr_YiFiYoVbwaw", "Channel Title": "Daily Dose Of Internet"}}, {"id": 76, "label": "UCdLSow8MG-5ajcxJ9MjqSUA", "full": "UCdLSow8MG-5ajcxJ9MjqSUA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCdLSow8MG-5ajcxJ9MjqSUA", "Channel Url": "http://www.youtube.com/channel/UCdLSow8MG-5ajcxJ9MjqSUA", "Channel Title": "Gildedguy"}}, {"id": 77, "label": "UCfpWrWvbA34LmrZ9h4Lbwag", "full": "UCfpWrWvbA34LmrZ9h4Lbwag", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCfpWrWvbA34LmrZ9h4Lbwag", "Channel Url": "http://www.youtube.com/channel/UCfpWrWvbA34LmrZ9h4Lbwag", "Channel Title": "HOLOEARTH ホロアース"}}, {"id": 78, "label": "UCgmPnx-EEeOrZSg5Tiw7ZRQ", "full": "UCgmPnx-EEeOrZSg5Tiw7ZRQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCgmPnx-EEeOrZSg5Tiw7ZRQ", "Channel Url": "http://www.youtube.com/channel/UCgmPnx-EEeOrZSg5Tiw7ZRQ", "Channel Title": "Hakos Baelz Ch. hololive-EN"}}, {"id": 79, "label": "UCgnfPPb9JI3e9A4cXHnWbyg", "full": "UCgnfPPb9JI3e9A4cXHnWbyg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCgnfPPb9JI3e9A4cXHnWbyg", "Channel Url": "http://www.youtube.com/channel/UCgnfPPb9JI3e9A4cXHnWbyg", "Channel Title": "Shiori Novella Ch. hololive-EN"}}, {"id": 80, "label": "UCgzg_f5HC6EnY-9q5Px1Q-g", "full": "UCgzg_f5HC6EnY-9q5Px1Q-g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCgzg_f5HC6EnY-9q5Px1Q-g", "Channel Url": "http://www.youtube.com/channel/UCgzg_f5HC6EnY-9q5Px1Q-g", "Channel Title": "Code Bullets Day Off"}}, {"id": 81, "label": "UCh9IfI45mmk59eDvSWtuuhQ", "full": "UCh9IfI45mmk59eDvSWtuuhQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCh9IfI45mmk59eDvSWtuuhQ", "Channel Url": "http://www.youtube.com/channel/UCh9IfI45mmk59eDvSWtuuhQ", "Channel Title": "Ryan George"}}, {"id": 82, "label": "UChL1xX4-aPbC4qxh4D7oYeA", "full": "UChL1xX4-aPbC4qxh4D7oYeA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UChL1xX4-aPbC4qxh4D7oYeA", "Channel Url": "http://www.youtube.com/channel/UChL1xX4-aPbC4qxh4D7oYeA", "Channel Title": "Vcap Clips"}}, {"id": 83, "label": "UChgTyjG-pdNvxxhdsXfHQ5Q", "full": "UChgTyjG-pdNvxxhdsXfHQ5Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UChgTyjG-pdNvxxhdsXfHQ5Q", "Channel Url": "http://www.youtube.com/channel/UChgTyjG-pdNvxxhdsXfHQ5Q", "Channel Title": "Pavolia Reine Ch. hololive-ID"}}, {"id": 84, "label": "UCjBcjZ6_qgTEZLnDby0DmBQ", "full": "UCjBcjZ6_qgTEZLnDby0DmBQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCjBcjZ6_qgTEZLnDby0DmBQ", "Channel Url": "http://www.youtube.com/channel/UCjBcjZ6_qgTEZLnDby0DmBQ", "Channel Title": "EthanOnLive"}}, {"id": 85, "label": "UCjK0F1DopxQ5U0sCwOlXwOg", "full": "UCjK0F1DopxQ5U0sCwOlXwOg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCjK0F1DopxQ5U0sCwOlXwOg", "Channel Url": "http://www.youtube.com/channel/UCjK0F1DopxQ5U0sCwOlXwOg", "Channel Title": "Mogul Mail"}}, {"id": 86, "label": "UCjw5fNokdr97rFM6zyI9CIg", "full": "UCjw5fNokdr97rFM6zyI9CIg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCjw5fNokdr97rFM6zyI9CIg", "Channel Url": "http://www.youtube.com/channel/UCjw5fNokdr97rFM6zyI9CIg", "Channel Title": "AkuKan"}}, {"id": 87, "label": "UCl69AEx4MdqMZH7Jtsm7Tig", "full": "UCl69AEx4MdqMZH7Jtsm7Tig", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCl69AEx4MdqMZH7Jtsm7Tig", "Channel Url": "http://www.youtube.com/channel/UCl69AEx4MdqMZH7Jtsm7Tig", "Channel Title": "Raora Panthera Ch. hololive-EN"}}, {"id": 88, "label": "UCleUzVB4UF30BvPADJEdekA", "full": "UCleUzVB4UF30BvPADJEdekA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCleUzVB4UF30BvPADJEdekA", "Channel Url": "http://www.youtube.com/channel/UCleUzVB4UF30BvPADJEdekA", "Channel Title": "Venik Hue"}}, {"id": 89, "label": "UCmbokzv5VTe9LeuzAFcDu9A", "full": "UCmbokzv5VTe9LeuzAFcDu9A", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCmbokzv5VTe9LeuzAFcDu9A", "Channel Url": "http://www.youtube.com/channel/UCmbokzv5VTe9LeuzAFcDu9A", "Channel Title": "Bibi Biscuit Ch.【Phase Connect】"}}, {"id": 90, "label": "UCmbs8T6MWqUHP1tIQvSgKrg", "full": "UCmbs8T6MWqUHP1tIQvSgKrg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCmbs8T6MWqUHP1tIQvSgKrg", "Channel Url": "http://www.youtube.com/channel/UCmbs8T6MWqUHP1tIQvSgKrg", "Channel Title": "Ouro Kronii Ch. hololive-EN"}}, {"id": 91, "label": "UCmgf8DJrAXFnU7j3u0kklUQ", "full": "UCmgf8DJrAXFnU7j3u0kklUQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCmgf8DJrAXFnU7j3u0kklUQ", "Channel Url": "http://www.youtube.com/channel/UCmgf8DJrAXFnU7j3u0kklUQ", "Channel Title": "ブルーアーカイブ-Blue Archive-"}}, {"id": 92, "label": "UCn1XB-jvmd9fXMzhiA6IR0w", "full": "UCn1XB-jvmd9fXMzhiA6IR0w", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCn1XB-jvmd9fXMzhiA6IR0w", "Channel Url": "http://www.youtube.com/channel/UCn1XB-jvmd9fXMzhiA6IR0w", "Channel Title": "Domics"}}, {"id": 93, "label": "UCnZJt7yQw5IztVwe-Dscd-Q", "full": "UCnZJt7yQw5IztVwe-Dscd-Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCnZJt7yQw5IztVwe-Dscd-Q", "Channel Url": "http://www.youtube.com/channel/UCnZJt7yQw5IztVwe-Dscd-Q", "Channel Title": "The Operations Room"}}, {"id": 94, "label": "UCoSrY_IQQVpmIRZ9Xf-y93g", "full": "UCoSrY_IQQVpmIRZ9Xf-y93g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCoSrY_IQQVpmIRZ9Xf-y93g", "Channel Url": "http://www.youtube.com/channel/UCoSrY_IQQVpmIRZ9Xf-y93g", "Channel Title": "Gawr Gura Ch. hololive-EN"}}, {"id": 95, "label": "UCo_IB5145EVNcf8hw1Kku7w", "full": "UCo_IB5145EVNcf8hw1Kku7w", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCo_IB5145EVNcf8hw1Kku7w", "Channel Url": "http://www.youtube.com/channel/UCo_IB5145EVNcf8hw1Kku7w", "Channel Title": "The Game Theorists"}}, {"id": 96, "label": "UConOhhfPfTGLXgCO5sOm4uw", "full": "UConOhhfPfTGLXgCO5sOm4uw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UConOhhfPfTGLXgCO5sOm4uw", "Channel Url": "http://www.youtube.com/channel/UConOhhfPfTGLXgCO5sOm4uw", "Channel Title": "9am"}}, {"id": 97, "label": "UCotXwY6s8pWmuWd_snKYjhg", "full": "UCotXwY6s8pWmuWd_snKYjhg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCotXwY6s8pWmuWd_snKYjhg", "Channel Url": "http://www.youtube.com/channel/UCotXwY6s8pWmuWd_snKYjhg", "Channel Title": "hololive English"}}, {"id": 98, "label": "UCp68_FLety0O-n9QU6phsgw", "full": "UCp68_FLety0O-n9QU6phsgw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCp68_FLety0O-n9QU6phsgw", "Channel Url": "http://www.youtube.com/channel/UCp68_FLety0O-n9QU6phsgw", "Channel Title": "colinfurze"}}, {"id": 99, "label": "UCq6VFHwMzcMXbuKyG7SQYIg", "full": "UCq6VFHwMzcMXbuKyG7SQYIg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCq6VFHwMzcMXbuKyG7SQYIg", "Channel Url": "http://www.youtube.com/channel/UCq6VFHwMzcMXbuKyG7SQYIg", "Channel Title": "penguinz0"}}, {"id": 100, "label": "UCrGTSXWMiAWoPlowSuMVZ4Q", "full": "UCrGTSXWMiAWoPlowSuMVZ4Q", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCrGTSXWMiAWoPlowSuMVZ4Q", "Channel Url": "http://www.youtube.com/channel/UCrGTSXWMiAWoPlowSuMVZ4Q", "Channel Title": "Clio Ch. クリオ・アイテ [Phase Connect]"}}, {"id": 101, "label": "UCrPseYLGpNygVi34QpGNqpA", "full": "UCrPseYLGpNygVi34QpGNqpA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCrPseYLGpNygVi34QpGNqpA", "Channel Url": "http://www.youtube.com/channel/UCrPseYLGpNygVi34QpGNqpA", "Channel Title": "Ludwig"}}, {"id": 102, "label": "UCsE6nIlXz03596gvNvlVr8g", "full": "UCsE6nIlXz03596gvNvlVr8g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCsE6nIlXz03596gvNvlVr8g", "Channel Url": "http://www.youtube.com/channel/UCsE6nIlXz03596gvNvlVr8g", "Channel Title": "Mystic Donut"}}, {"id": 103, "label": "UCsSsgPaZ2GSmO6il8Cb5iGA", "full": "UCsSsgPaZ2GSmO6il8Cb5iGA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCsSsgPaZ2GSmO6il8Cb5iGA", "Channel Url": "http://www.youtube.com/channel/UCsSsgPaZ2GSmO6il8Cb5iGA", "Channel Title": "DaFuq!?Boom!"}}, {"id": 104, "label": "UCsUj0dszADCGbF3gNrQEuSQ", "full": "UCsUj0dszADCGbF3gNrQEuSQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCsUj0dszADCGbF3gNrQEuSQ", "Channel Url": "http://www.youtube.com/channel/UCsUj0dszADCGbF3gNrQEuSQ", "Channel Title": "Tsukumo Sana Ch. hololive-EN"}}, {"id": 105, "label": "UCsj_CYajUSQ2ca8bYCMan9g", "full": "UCsj_CYajUSQ2ca8bYCMan9g", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCsj_CYajUSQ2ca8bYCMan9g", "Channel Url": "http://www.youtube.com/channel/UCsj_CYajUSQ2ca8bYCMan9g", "Channel Title": "It's Anime powered by REMOW"}}, {"id": 106, "label": "UCsrnDYrkovQhCCE8kwKcvKQ", "full": "UCsrnDYrkovQhCCE8kwKcvKQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCsrnDYrkovQhCCE8kwKcvKQ", "Channel Url": "http://www.youtube.com/channel/UCsrnDYrkovQhCCE8kwKcvKQ", "Channel Title": "Blue Archive"}}, {"id": 107, "label": "UCt9H_RpQzhxzlyBxFqrdHqA", "full": "UCt9H_RpQzhxzlyBxFqrdHqA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCt9H_RpQzhxzlyBxFqrdHqA", "Channel Url": "http://www.youtube.com/channel/UCt9H_RpQzhxzlyBxFqrdHqA", "Channel Title": "FUWAMOCO Ch. hololive-EN"}}, {"id": 108, "label": "UCtHaxi4GTYDpJgMSGy7AeSw", "full": "UCtHaxi4GTYDpJgMSGy7AeSw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCtHaxi4GTYDpJgMSGy7AeSw", "Channel Url": "http://www.youtube.com/channel/UCtHaxi4GTYDpJgMSGy7AeSw", "Channel Title": "Michael Reeves"}}, {"id": 109, "label": "UCuBEdI-24bquMoP_dACignQ", "full": "UCuBEdI-24bquMoP_dACignQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCuBEdI-24bquMoP_dACignQ", "Channel Url": "http://www.youtube.com/channel/UCuBEdI-24bquMoP_dACignQ", "Channel Title": "shachi too"}}, {"id": 110, "label": "UCvDIxerLblmV6RgVnW_z7Yw", "full": "UCvDIxerLblmV6RgVnW_z7Yw", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCvDIxerLblmV6RgVnW_z7Yw", "Channel Url": "http://www.youtube.com/channel/UCvDIxerLblmV6RgVnW_z7Yw", "Channel Title": "Kanauru"}}, {"id": 111, "label": "UCvN5h1ShZtc7nly3pezRayg", "full": "UCvN5h1ShZtc7nly3pezRayg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCvN5h1ShZtc7nly3pezRayg", "Channel Url": "http://www.youtube.com/channel/UCvN5h1ShZtc7nly3pezRayg", "Channel Title": "Cecilia Immergreen Ch. hololive-EN"}}, {"id": 112, "label": "UCxfr3b8IuHSzu22UHnAvHWg", "full": "UCxfr3b8IuHSzu22UHnAvHWg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCxfr3b8IuHSzu22UHnAvHWg", "Channel Url": "http://www.youtube.com/channel/UCxfr3b8IuHSzu22UHnAvHWg", "Channel Title": "MoistCr1TiKaL Gaming"}}, {"id": 113, "label": "UCxsZ6NCzjU_t4YSxQLBcM5A", "full": "UCxsZ6NCzjU_t4YSxQLBcM5A", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCxsZ6NCzjU_t4YSxQLBcM5A", "Channel Url": "http://www.youtube.com/channel/UCxsZ6NCzjU_t4YSxQLBcM5A", "Channel Title": "saba"}}, {"id": 114, "label": "UCyC6p6HRzT4o666bapXDryQ", "full": "UCyC6p6HRzT4o666bapXDryQ", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCyC6p6HRzT4o666bapXDryQ", "Channel Url": "http://www.youtube.com/channel/UCyC6p6HRzT4o666bapXDryQ", "Channel Title": "too zanny"}}, {"id": 115, "label": "UCyl1z3jo3XHR1riLFKG5UAg", "full": "UCyl1z3jo3XHR1riLFKG5UAg", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCyl1z3jo3XHR1riLFKG5UAg", "Channel Url": "http://www.youtube.com/channel/UCyl1z3jo3XHR1riLFKG5UAg", "Channel Title": "Watson Amelia Ch. hololive-EN"}}, {"id": 116, "label": "UCzA7j_ixOvBz39saDYlbRiA", "full": "UCzA7j_ixOvBz39saDYlbRiA", "cat": "Subscription", "amount": null, "ts": null, "row": {"Channel Id": "UCzA7j_ixOvBz39saDYlbRiA", "Channel Url": "http://www.youtube.com/channel/UCzA7j_ixOvBz39saDYlbRiA", "Channel Title": "Wilhelmina Ch.  ウィルヘルミナ・フロスト【Phase Connect】"}}], "tile_ids": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116]};
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+const meta=document.getElementById("meta");
+const kpis=document.getElementById("kpis");
+const tip=document.getElementById("tip");
+const shown=document.getElementById("shown");
+const listEl=document.getElementById("list");
+const qEl=document.getElementById("q");
+const clearBtn=document.getElementById("clear");
+const kvEl=document.getElementById("kv");
+const selTitle=document.getElementById("selTitle");
+const copyBtn=document.getElementById("copy");
+const pinBtn=document.getElementById("pin");
+const pauseBtn=document.getElementById("pause");
+const shuffleBtn=document.getElementById("shuffle");
+
+meta.textContent =
+  `${DATA.summary.rows.toLocaleString()} rows • tiles in art: ${DATA.summary.tiles.toLocaleString()} • label: ${DATA.summary.name_col}` +
+  (DATA.summary.amount_col ? ` • amount: ${DATA.summary.amount_col}` : ``) +
+  (DATA.summary.category_col ? ` • category: ${DATA.summary.category_col}` : ``);
+
+function money(v){
+  if(v==null) return "—";
+  const n=Number(v);
+  if(!isFinite(n)) return String(v);
+  return "$"+n.toFixed(2);
+}
+function escapeHtml(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+// Canvas
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d",{alpha:true});
+let DPR=Math.max(1,Math.min(2.5,window.devicePixelRatio||1));
+function resize(){
+  DPR=Math.max(1,Math.min(2.5,window.devicePixelRatio||1));
+  canvas.width=Math.floor(innerWidth*DPR);
+  canvas.height=Math.floor(innerHeight*DPR);
+  canvas.style.width=innerWidth+"px";
+  canvas.style.height=innerHeight+"px";
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener("resize",resize,{passive:true}); resize();
+
+// RNG
+function xmur3(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=(h<<13)|(h>>>19);}return function(){h=Math.imul(h^(h>>>16),2246822507);h=Math.imul(h^(h>>>13),3266489909);return (h^=h>>>16)>>>0;};}
+function mulberry32(a){return function(){let t=(a+=0x6D2B79F5);t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};}
+let seed = xmur3(`${DATA.summary.rows}|${DATA.summary.tiles}`)();
+let rand = mulberry32(seed);
+
+// Color per row (golden angle) + shifting hue
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){h=s=0;}
+  else{
+    const d=max-min;
+    s=l>0.5?d/(2-max-min):d/(max+min);
+    switch(max){
+      case r: h=(g-b)/d+(g<b?6:0); break;
+      case g: h=(b-r)/d+2; break;
+      case b: h=(r-g)/d+4; break;
+    }
+    h/=6;
+  }
+  return [h*360,s*100,l*100];
+}
+function hslToRgb(h, s, l){
+  s/=100; l/=100;
+  const k=n=>(n+h/30)%12;
+  const a=s*Math.min(l,1-l);
+  const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+  return [Math.round(255*f(0)),Math.round(255*f(8)),Math.round(255*f(4))];
+}
+function hslShiftRGB(base, shiftDeg){
+  const hsl = rgbToHsl(base[0], base[1], base[2]);
+  return hslToRgb((hsl[0]+shiftDeg)%360, hsl[1], hsl[2]);
+}
+function rgbStr(c,a=1){return `rgba(${c[0]},${c[1]},${c[2]},${a})`;}
+
+// Controls
+let paused=false;
+pauseBtn.addEventListener("click", ()=>{paused=!paused; pauseBtn.textContent=paused?"Resume":"Pause";});
+
+let pinMode=false;
+pinBtn.addEventListener("click", ()=>{pinMode=!pinMode; pinBtn.textContent=`Pin: ${pinMode?"On":"Off"}`; renderKpis();});
+
+let zoom=1.0, colorShift=1.0, deform=1.0;
+const zoomEl=document.getElementById("zoom");
+const zval=document.getElementById("zval");
+zoomEl.addEventListener("input", ()=>{zoom=Number(zoomEl.value); zval.textContent=zoom.toFixed(2);});
+const pulseEl=document.getElementById("pulse");
+const pval=document.getElementById("pval");
+pulseEl.addEventListener("input", ()=>{colorShift=Number(pulseEl.value); pval.textContent=colorShift.toFixed(2);});
+const defEl=document.getElementById("def");
+const dval=document.getElementById("dval");
+defEl.addEventListener("input", ()=>{deform=Number(defEl.value); dval.textContent=deform.toFixed(2);});
+
+addEventListener("keydown", (e)=>{
+  if(e.key.toLowerCase()==="r") shuffleBtn.click();
+  if(e.code==="Space"){e.preventDefault(); pauseBtn.click();}
+  if(e.key.toLowerCase()==="p") pinBtn.click();
+}, {passive:false});
+
+// Mouse
+let mouse={x:innerWidth/2,y:innerHeight/2,active:false};
+addEventListener("pointermove", (e)=>{mouse.x=e.clientX; mouse.y=e.clientY; mouse.active=true;}, {passive:true});
+addEventListener("pointerleave", ()=>{mouse.active=false; if(!pinMode) tip.style.opacity=0;}, {passive:true});
+
+// Data
+const all = DATA.rows.map((r,i)=>{
+  const base = hslToRgb((i*137.5)%360, 82, 56);
+  return ({...r, baseColor: base});
+});
+let filtered = all.slice();
+let selected = null;
+
+// Tile layout
+let tileOrder = DATA.tile_ids.slice(); // rowIds
+let tiles = []; // {rowId, gx, gy}
+let grid = {cols:0, rows:0, size:0, ox:0, oy:0};
+
+// Vertex field for border deformation
+let verts = null; // {w,h,dx,dy}
+let vertSeed = xmur3("verts")();
+
+function hash2(x,y){
+  let n = (x*374761393 + y*668265263) ^ vertSeed;
+  n = (n ^ (n>>>13)) * 1274126177;
+  n = (n ^ (n>>>16)) >>> 0;
+  return n / 4294967296;
+}
+function smoothstep(t){return t*t*(3-2*t);}
+function vnoise(x,y){
+  // value noise in [0,1]
+  const xi=Math.floor(x), yi=Math.floor(y);
+  const xf=x-xi, yf=y-yi;
+  const u=smoothstep(xf), v=smoothstep(yf);
+  const a=hash2(xi,yi), b=hash2(xi+1,yi), c=hash2(xi,yi+1), d=hash2(xi+1,yi+1);
+  const ab = a + (b-a)*u;
+  const cd = c + (d-c)*u;
+  return ab + (cd-ab)*v;
+}
+
+function computeGrid(){
+  const N = tiles.length || 1;
+  const aspect = innerWidth / innerHeight;
+  let cols = Math.ceil(Math.sqrt(N*aspect));
+  let rows = Math.ceil(N/cols);
+  const size = Math.floor(Math.min(innerWidth/(cols+2), innerHeight/(rows+2)) * 1.02 * zoom);
+  const ox = Math.floor((innerWidth - cols*size)/2);
+  const oy = Math.floor((innerHeight - rows*size)/2);
+  grid = {cols, rows, size, ox, oy};
+  // update verts buffer
+  verts = {w: cols+1, h: rows+1, dx: new Float32Array((cols+1)*(rows+1)), dy: new Float32Array((cols+1)*(rows+1))};
+}
+
+function rebuildTiles(){
+  const fset = new Set(filtered.map(r=>r.id));
+  const ids = tileOrder.filter(id => fset.has(id));
+  tiles = ids.map((rowId, i)=>({rowId, gx:0, gy:0}));
+  const N = tiles.length;
+  const aspect = innerWidth/innerHeight;
+  let cols = Math.ceil(Math.sqrt(N*aspect));
+  // serpentine assignment for a more "woven" feel
+  for(let i=0;i<N;i++){
+    const r = Math.floor(i/cols);
+    const c = i % cols;
+    const sc = (r%2===0) ? c : (cols-1-c);
+    tiles[i].gx = sc;
+    tiles[i].gy = r;
+  }
+  computeGrid();
+  shown.textContent = `${filtered.length.toLocaleString()} shown`;
+  rebuildList();
+  renderKpis();
+}
+
+function shuffle(){
+  for(let i=tileOrder.length-1;i>0;i--){
+    const j = Math.floor(rand()*(i+1));
+    const tmp=tileOrder[i]; tileOrder[i]=tileOrder[j]; tileOrder[j]=tmp;
+  }
+  // new vertex seed for a different deformation personality
+  vertSeed = xmur3(String(performance.now()))();
+  rebuildTiles();
+}
+shuffleBtn.addEventListener("click", ()=>{
+  seed = xmur3(`${DATA.summary.rows}|${Math.floor(performance.now())}`)();
+  rand = mulberry32(seed);
+  shuffle();
+});
+
+// Filtering + list
+function applyFilter(){
+  const q = (qEl.value||"").trim().toLowerCase();
+  filtered = !q ? all.slice() : all.filter(r=>{
+    if(r.full && String(r.full).toLowerCase().includes(q)) return true;
+    if(r.cat && String(r.cat).toLowerCase().includes(q)) return true;
+    const row=r.row||{};
+    return Object.values(row).some(v => v!=null && String(v).toLowerCase().includes(q));
+  });
+  rebuildTiles();
+}
+clearBtn.addEventListener("click", ()=>{ qEl.value=""; applyFilter(); });
+qEl.addEventListener("input", applyFilter);
+
+function rebuildList(){
+  const view = filtered.slice(0, 1500);
+  listEl.innerHTML = view.map(r=>`
+    <div class="item" data-id="${r.id}">
+      <div class="swatch" style="background:${rgbStr(r.baseColor,1)}"></div>
+      <div style="min-width:0;flex:1">
+        <div class="txt">${escapeHtml(r.label || "(blank)")}</div>
+        <div class="sub">${escapeHtml((r.cat ? r.cat + " • " : "") + (r.amount!=null ? money(r.amount) : ""))}</div>
+      </div>
+    </div>
+  `).join("");
+  for(const el of listEl.querySelectorAll(".item")){
+    el.addEventListener("click", ()=>{
+      const id=Number(el.getAttribute("data-id"));
+      selectById(id,true);
+      pinMode=true; pinBtn.textContent="Pin: On"; renderKpis();
+    });
+  }
+  setActiveList();
+}
+
+function setActiveList(){
+  for(const el of listEl.querySelectorAll(".item")){
+    const id=Number(el.getAttribute("data-id"));
+    el.classList.toggle("active", selected===id);
+  }
+}
+
+function renderDetail(r){
+  if(!r){
+    selTitle.textContent="None selected";
+    kvEl.innerHTML="";
+    renderKpis();
+    return;
+  }
+  selTitle.textContent = r.full || r.label || "(blank)";
+  const rows = Object.entries(r.row || {}).map(([k,v])=>{
+    const val = (v==null) ? "—" : String(v);
+    return `<div class="row"><div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(val)}</div></div>`;
+  }).join("");
+  kvEl.innerHTML = rows || `<div class="mini">No extra columns found.</div>`;
+  renderKpis();
+}
+
+function selectById(id, ensureVisible){
+  selected=id;
+  setActiveList();
+  const r = all.find(x=>x.id===id) || filtered.find(x=>x.id===id);
+  renderDetail(r);
+  if(ensureVisible){
+    const item = listEl.querySelector(`.item[data-id="${id}"]`);
+    if(item) item.scrollIntoView({block:"nearest"});
+  }
+}
+
+copyBtn.addEventListener("click", async ()=>{
+  const r = all.find(x=>x.id===selected);
+  if(!r) return;
+  const text = r.full || r.label || "";
+  try{
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent="Copied!";
+    setTimeout(()=>copyBtn.textContent="Copy label", 900);
+  }catch{
+    copyBtn.textContent="Copy failed";
+    setTimeout(()=>copyBtn.textContent="Copy label", 900);
+  }
+});
+
+// Geometry helpers
+function vIndex(x,y){ return y*verts.w + x; }
+
+function updateVerts(t){
+  if(!verts) return;
+  const w=verts.w, h=verts.h;
+  const amp = grid.size * 0.18 * deform; // interior wobble amplitude
+  const freq = 0.65; // temporal frequency
+  const s = 0.55;   // spatial scale
+  for(let j=0;j<h;j++){
+    for(let i=0;i<w;i++){
+      const idx = vIndex(i,j);
+      // perimeter is locked
+      if(i===0 || j===0 || i===w-1 || j===h-1){
+        verts.dx[idx]=0;
+        verts.dy[idx]=0;
+        continue;
+      }
+      // random-ish wobble using two noise fields + time drift
+      const n1 = vnoise(i*s + t*freq, j*s - t*freq*0.7);
+      const n2 = vnoise(i*s - t*freq*0.6, j*s + t*freq*0.8);
+      const dx = (n1-0.5) * 2 * amp;
+      const dy = (n2-0.5) * 2 * amp;
+      verts.dx[idx]=dx;
+      verts.dy[idx]=dy;
+    }
+  }
+}
+
+function vertexPos(i,j){
+  const idx = vIndex(i,j);
+  const x = grid.ox + i*grid.size + verts.dx[idx];
+  const y = grid.oy + j*grid.size + verts.dy[idx];
+  return {x,y};
+}
+
+function drawCell(i,j, fillStyle, strokeStyle, strokeWidth){
+  // cell corners: (i,j) to (i+1,j+1)
+  const p00 = vertexPos(i,j);
+  const p10 = vertexPos(i+1,j);
+  const p11 = vertexPos(i+1,j+1);
+  const p01 = vertexPos(i,j+1);
+
+  ctx.beginPath();
+  ctx.moveTo(p00.x, p00.y);
+  ctx.lineTo(p10.x, p10.y);
+  ctx.lineTo(p11.x, p11.y);
+  ctx.lineTo(p01.x, p01.y);
+  ctx.closePath();
+
+  ctx.fillStyle = fillStyle;
+  ctx.fill();
+
+  if(strokeWidth>0){
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = strokeWidth;
+    ctx.stroke();
+  }
+}
+
+// Hit test using axis-aligned cell bounds (fast + good enough)
+function cellUnderPointer(px, py){
+  // map pointer to approximate grid coord (without deformation)
+  const gx = Math.floor((px - grid.ox)/grid.size);
+  const gy = Math.floor((py - grid.oy)/grid.size);
+  if(gx<0||gy<0||gx>=grid.cols||gy>=grid.rows) return null;
+  // find tile with matching gx/gy: use index in serpentine layout
+  // since tiles are packed row-major in serpentine, we can compute approximate index:
+  const rowStart = gy*grid.cols;
+  let idx = rowStart + (gy%2===0 ? gx : (grid.cols-1-gx));
+  if(idx<0 || idx>=tiles.length) return null;
+  return {tile: tiles[idx], gx, gy};
+}
+
+canvas.addEventListener("click", (e)=>{
+  const hit = cellUnderPointer(e.clientX, e.clientY);
+  if(hit && hit.tile){
+    selectById(hit.tile.rowId, true);
+    pinMode=true; pinBtn.textContent="Pin: On"; renderKpis();
+  }
+}, {passive:true});
+
+function renderKpis(){
+  const hasAmt = !!DATA.summary.amount_col;
+  const totalAmt = hasAmt ? all.reduce((s,r)=> s + (r.amount==null?0:Number(r.amount)), 0) : null;
+  const viewAmt = hasAmt ? filtered.reduce((s,r)=> s + (r.amount==null?0:Number(r.amount)), 0) : null;
+
+  const arr = [
+    {label:"Rows", value: DATA.summary.rows.toLocaleString()},
+    {label:"Shown", value: filtered.length.toLocaleString()},
+    {label:"Tiles", value: tiles.length.toLocaleString()},
+    {label:"Pinned", value: (pinMode && selected!=null) ? "Yes" : "No"},
+  ];
+  if(hasAmt){
+    arr[0] = {label:"Sum (all)", value: money(totalAmt)};
+    arr[1] = {label:"Sum (shown)", value: money(viewAmt)};
+  }
+  kpis.innerHTML = arr.map(k=>`<div class="kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div></div>`).join("");
+}
+
+function drawVignette(){
+  const g=ctx.createRadialGradient(innerWidth/2,innerHeight/2,0,innerWidth/2,innerHeight/2,Math.max(innerWidth,innerHeight)*0.7);
+  g.addColorStop(0,"rgba(0,0,0,0)");
+  g.addColorStop(1,"rgba(0,0,0,0.55)");
+  ctx.fillStyle=g; ctx.fillRect(0,0,innerWidth,innerHeight);
+}
+
+function showTip(x,y,html){
+  tip.innerHTML=html;
+  tip.style.left=x+"px";
+  tip.style.top=y+"px";
+  tip.style.opacity=1;
+}
+
+let tt=0;
+let hovered=null;
+
+// init
+applyFilter();
+renderDetail(null);
+shuffle(); // initial shuffle so art looks mixed
+
+function frame(){
+  if(!paused) tt += 0.012;
+
+  // fade background for gentle trails
+  ctx.fillStyle="rgba(7,8,16,0.18)";
+  ctx.fillRect(0,0,innerWidth,innerHeight);
+
+  computeGrid();
+  updateVerts(tt);
+
+  hovered=null;
+
+  // Draw each tile as a quad from deformed vertices (perimeter vertices are locked)
+  const cols = grid.cols;
+  const strokeInside = "rgba(0,0,0,0.20)";
+  const strokeW = 1;
+
+  for(let idx=0; idx<tiles.length; idx++){
+    const t = tiles[idx];
+    const row = all[t.rowId];
+    if(!row) continue;
+
+    // tile grid coordinate (already serpentine packed)
+    const gx = t.gx;
+    const gy = t.gy;
+
+    // Hover detection: approximate cell under pointer
+    let isHover=false;
+    if(mouse.active){
+      const hit = cellUnderPointer(mouse.x, mouse.y);
+      if(hit && hit.tile && hit.tile.rowId===t.rowId){ isHover=true; hovered=t; }
+    }
+
+    // Random-ish time color shift per tile (feels random but stable)
+    const shift = (Math.sin(tt*0.8 + t.rowId*0.15) * 0.5 + 0.5) * 90 * colorShift;
+
+    // selection/hover brightening
+    const bump = (t.rowId===selected ? 0.20 : 0) + (isHover ? 0.16 : 0);
+
+    const col = hslShiftRGB(row.baseColor, shift);
+    const rr = clamp(Math.round(col[0]*(1.0 + bump*0.18)), 0, 255);
+    const gg = clamp(Math.round(col[1]*(1.0 + bump*0.18)), 0, 255);
+    const bb = clamp(Math.round(col[2]*(1.0 + bump*0.18)), 0, 255);
+
+    drawCell(gx, gy, `rgba(${rr},${gg},${bb},0.92)`, strokeInside, strokeW);
+  }
+
+  // Tooltip for hover or pinned selection
+  const showTile = hovered || (pinMode && selected!=null ? tiles.find(t=>t.rowId===selected) : null);
+  if(showTile){
+    const row = all[showTile.rowId];
+    const label = row?.full || row?.label || "(blank)";
+    const sub = [
+      (row?.cat ? row.cat : null),
+      (row?.amount!=null ? "amount "+money(row.amount) : null),
+      (row?.ts!=null ? new Date(row.ts*1000).toLocaleDateString() : null)
+    ].filter(Boolean).join(" • ");
+
+    const x = hovered ? mouse.x : (grid.ox + (showTile.gx+0.5)*grid.size);
+    const y = hovered ? mouse.y : (grid.oy + (showTile.gy+0.5)*grid.size);
+
+    showTip(x, y, `<div><strong>${escapeHtml(label)}</strong></div><div class="muted" style="margin-top:6px">${escapeHtml(sub || "Click to select • Press P to pin")}</div>`);
+  } else {
+    tip.style.opacity=0;
+  }
+
+  drawVignette();
+  requestAnimationFrame(frame);
+}
+
+requestAnimationFrame(frame);
+</script>
+<script>
+(function(){
+  try{
+    const path = (location.pathname || "").split("/").pop() || "index_nav.html";
+    document.querySelectorAll(".site-nav a").forEach(a=>{
+      const href = (a.getAttribute("href")||"").split("/").pop();
+      if(href === path) a.classList.add("active");
+    });
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

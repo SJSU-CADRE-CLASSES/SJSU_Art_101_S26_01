@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Art 101</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f7efe5, #f3d7c7);
+      }
+      #emoji-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      .emoji {
+        position: absolute;
+        font-size: clamp(1rem, 4vw, 3rem);
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="emoji-container"></div>
+    <script>
+      const emojis = [
+        '🎨', '🖼️', '✏️', '🖌️', '🖍️', '📐', '🌈', '⭐', '🌟', '✨',
+        '🌸', '🌺', '🌻', '🍀', '🌿', '🦋', '🐝', '🦜', '🐢', '🦎',
+        '🍎', '🍋', '🍇', '🍓', '🥑', '🌶️', '🧁', '🍩', '☕', '🍵',
+        '🎭', '🎪', '🎬', '🎤', '🎧', '🎸', '🎹', '🥁', '🎺', '🎻',
+        '🚀', '🛸', '⭐', '🌙', '☀️', '🌍', '🔥', '💧', '❄️', '🌊',
+        '❤️', '💛', '💚', '💙', '💜', '🖤', '🤍', '💖', '💫', '⚡'
+      ];
+
+      const container = document.getElementById('emoji-container');
+      const count = 80;
+
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement('span');
+        span.className = 'emoji';
+        span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        span.style.left = Math.random() * 100 + '%';
+        span.style.top = Math.random() * 100 + '%';
+        span.style.transform = `rotate(${(Math.random() - 0.5) * 60}deg)`;
+        span.style.opacity = 0.6 + Math.random() * 0.4;
+        container.appendChild(span);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Abstract SteamDB Visualization</title>
+  <style>
+    :root {
+      --bg: #070810;
+      --fg: #e9e9ee;
+      --muted: rgba(233,233,238,.72);
+      --glass: rgba(255,255,255,.08);
+      --shadow: rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: radial-gradient(1200px 900px at 20% 15%, rgba(120,90,255,.20), transparent 60%),
+                  radial-gradient(1000px 800px at 80% 20%, rgba(0,210,255,.14), transparent 55%),
+                  radial-gradient(1100px 900px at 55% 80%, rgba(255,140,0,.10), transparent 60%),
+                  var(--bg);
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow: hidden;
+    }
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+    .hud {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      right: 16px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .card {
+      pointer-events: auto;
+      background: linear-gradient(180deg, var(--glass), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 40px var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 14px 14px 12px;
+    }
+    .title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 10px;
+    }
+    .title h1 {
+      font-size: 16px;
+      margin: 0;
+      letter-spacing: .2px;
+      font-weight: 650;
+    }
+    .title .meta {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .kpi {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 10px 10px 8px;
+    }
+    .kpi .label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .kpi .value {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+      pointer-events: auto;
+    }
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--fg);
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .btn:hover { background: rgba(255,255,255,.10); }
+    .btn:active { transform: translateY(1px); }
+    .slider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      user-select: none;
+    }
+    input[type="range"] { width: 160px; }
+    .legend {
+      display: grid;
+      gap: 10px;
+    }
+    .legend h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--fg);
+    }
+    .legend .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .legend .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .legend .fill {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, rgba(0,210,255,.85), rgba(120,90,255,.95), rgba(255,140,0,.85));
+      border-radius: 999px;
+    }
+    .tooltip {
+      position: fixed;
+      pointer-events: none;
+      z-index: 20;
+      padding: 10px 10px 9px;
+      border-radius: 14px;
+      background: rgba(10,10,18,.72);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--fg);
+      box-shadow: 0 12px 40px var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translate(-50%, -120%);
+      opacity: 0;
+      transition: opacity .12s ease;
+      max-width: min(320px, 80vw);
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+    .tooltip strong { font-weight: 700; white-space: normal; }
+    .tooltip .muted { color: rgba(233,233,238,.72); }
+    @media (max-width: 920px) {
+      .hud { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      input[type="range"] { width: 140px; }
+    }
+  
+/* --- shared nav --- */
+.site-nav{
+  position: fixed;
+  left: 16px; right: 16px; top: 16px;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(18, 20, 31, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.site-nav a{
+  color: rgba(233,233,238,0.72);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.site-nav a:hover{ color: #4ecdc4; }
+.site-nav a.active{ color: #4ecdc4; font-weight: 600; }
+
+</style>
+</head>
+<body>
+<nav class="site-nav" aria-label="Site navigation">
+  <a href="index_nav.html">Weather</a>
+  <a href="subscriptions_nav.html">YouTube Subscriptions</a>
+  <a href="steamdb_nav.html">Steam PlayTime</a>
+  <a href="page4_nav.html">Browser Sonification</a>
+
+</nav>
+
+  <canvas id="c"></canvas>
+
+  <div class="hud">
+    <div class="card">
+      <div class="title">
+        <h1>Abstract library aura</h1>
+        <div class="meta" id="meta"></div>
+      </div>
+
+      <div class="grid" id="kpis"></div>
+
+      <div class="controls">
+        <button class="btn" id="regen">Regenerate</button>
+        <button class="btn" id="pause">Pause</button>
+        <div class="slider">
+          <span>Intensity</span>
+          <input id="intensity" type="range" min="0.2" max="20" value="1.0" step="0.05" />
+          <span id="ival">1.00</span>
+        </div>
+      </div>
+
+      <div class="hint">
+        Each glowing mote = a game. Size leans on playtime; brightness leans on rating; orbit radius is shaped by your time-played bins.
+        Hover bright nodes to see the top games.
+      </div>
+    </div>
+
+    <div class="card legend">
+      <h2>How to read it</h2>
+
+      <div>
+        <div class="row"><span>Played vs unplayed balance</span><span id="playedPct"></span></div>
+        <div class="bar"><div class="fill" id="playedFill"></div></div>
+      </div>
+
+      <div class="row"><span>Value spectrum (low → high)</span><span id="valueSpan"></span></div>
+      <div class="bar"><div class="fill" style="width:100%"></div></div>
+
+      <div class="row"><span>Hours on record</span><span id="hoursSpan"></span></div>
+      <div class="row"><span>Time bins influence orbit “rings”</span><span id="binsSpan"></span></div>
+
+      <div class="hint" style="margin-top:0">
+        Tip: press <strong>R</strong> to regenerate, <strong>Space</strong> to pause.
+      </div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tip"></div>
+
+  <script>
+    const DATA = {"source": "SteamDB Calculator export (offline HTML)", "player_name": "Bulbasir", "steam_level": 10, "games_owned": 111, "games_played": 81, "percent_played": 72, "hours": 2424.0, "account_value_low": 359, "account_value_med": 1795, "account_value_high": 3418, "todays_prices": [1071.0, 1899.0, 3293.0], "time_bins": {"25 or more hours": 12, "12 to 25 hours": 14, "6 to 12 hours": 15, "3 to 6 hours": 13, "2 to 3 hours": 4, "1 to 2 hours": 9, "0 to 1 hours": 14, "Never played": 30}, "cost_bins": {"$55.00 and higher": 2, "$40.00 – $54.99": 2, "$25.00 – $39.99": 9, "$10.00 – $24.99": 17, "$6.00 – $9.99": 23, "$2.00 – $5.99": 10, "$0.01 – $1.99": 1, "No price": 52}, "top_games": [{"name": "Foxhole", "hours": 541.2, "price": 17.99, "rating": 82.65}, {"name": "HELLDIVERS™ 2", "hours": 481.1, "price": 29.99, "rating": 76.87}, {"name": "BattleBit Remastered", "hours": 187.3, "price": 14.99, "rating": 81.2}, {"name": "Eden Eternal", "hours": 160.4, "price": null, "rating": 52.62}, {"name": "Kingdom Come: Deliverance II", "hours": 139.1, "price": 59.99, "rating": 93.17}, {"name": "Lethal Company", "hours": 137.0, "price": 9.99, "rating": 96.16}, {"name": "Deep Rock Galactic", "hours": 110.8, "price": 29.99, "rating": 96.22}, {"name": "Ready or Not", "hours": 46.4, "price": 29.99, "rating": 76.07}, {"name": "Umamusume: Pretty Derby", "hours": 46.0, "price": null, "rating": 92.22}, {"name": "Unturned", "hours": 34.8, "price": null, "rating": 90.32}, {"name": "The Technomancer", "hours": 32.9, "price": 9.99, "rating": 66.3}, {"name": "Doki Doki Literature Club", "hours": 28.9, "price": null, "rating": 95.32}, {"name": "Company of Heroes", "hours": 24.4, "price": 19.99, "rating": 92.0}, {"name": "GOD EATER 3", "hours": 22.1, "price": 59.99, "rating": 77.38}, {"name": "GTFO", "hours": 21.3, "price": 39.99, "rating": 82.93}, {"name": "Warhammer: Vermintide 2", "hours": 19.6, "price": 29.99, "rating": 84.04}, {"name": "HoloCafe", "hours": 18.1, "price": 4.99, "rating": 80.79}, {"name": "Dispatch", "hours": 17.6, "price": 29.99, "rating": 96.47}, {"name": "Zombie Army Trilogy", "hours": 16.7, "price": 44.99, "rating": 84.13}, {"name": "Marvel Rivals", "hours": 16.5, "price": null, "rating": 76.77}, {"name": "ACE COMBAT™7: SKIES UNKNOWN", "hours": 16.4, "price": 9.59, "rating": 86.34}, {"name": "Alien Swarm: Reactive Drop", "hours": 14.9, "price": null, "rating": 92.75}, {"name": "Holo vs Robo", "hours": 14.5, "price": 6.99, "rating": 89.59}, {"name": "Tom Clancy's Rainbow Six® Siege X", "hours": 14.5, "price": null, "rating": 82.19}, {"name": "Project Wingman", "hours": 14.4, "price": 24.99, "rating": 91.6}, {"name": "Attack of the Earthlings", "hours": 13.6, "price": 14.99, "rating": 78.88}, {"name": "OBS Studio", "hours": 12.5, "price": null, "rating": 93.46}, {"name": "HoloCure - Save the Fans!", "hours": 11.9, "price": null, "rating": 97.01}, {"name": "MultiVersus", "hours": 11.8, "price": null, "rating": 75.35}, {"name": "Metro: Last Light Complete Edition", "hours": 10.8, "price": 49.99, "rating": null}, {"name": "Metro 2033 Redux", "hours": 10.7, "price": 15.57, "rating": 90.77}, {"name": "WEBFISHING", "hours": 10.5, "price": 4.99, "rating": 95.88}, {"name": "D1AL-ogue", "hours": 10.4, "price": null, "rating": 89.3}, {"name": "ROUTINE", "hours": 10.4, "price": 24.99, "rating": 89.49}, {"name": "Is This Seat Taken?", "hours": 8.5, "price": 7.99, "rating": 94.22}, {"name": "Find Love or Die Trying", "hours": 8.4, "price": 4.99, "rating": 93.9}, {"name": "Bongo Cat", "hours": 8.0, "price": null, "rating": 96.08}, {"name": "Brawlhalla", "hours": 7.1, "price": null, "rating": 80.09}, {"name": "Crab Game", "hours": 6.8, "price": null, "rating": 90.28}, {"name": "Content Warning", "hours": 6.7, "price": 7.99, "rating": 92.97}, {"name": "Idol Showdown", "hours": 6.6, "price": null, "rating": 90.7}, {"name": "PICO PARK 2", "hours": 6.3, "price": 8.99, "rating": 85.64}, {"name": "Puzzle Together", "hours": 5.3, "price": null, "rating": 81.9}, {"name": "Left 4 Dead 2", "hours": 5.3, "price": 9.99, "rating": 96.79}, {"name": "Holo X Break", "hours": 4.8, "price": null, "rating": 82.88}, {"name": "Fractured Space", "hours": 4.7, "price": 4.99, "rating": null}, {"name": "Warframe", "hours": 4.6, "price": null, "rating": 86.58}, {"name": "RuneScape", "hours": 4.4, "price": null, "rating": 80.99}, {"name": "PlanetSide 2", "hours": 4.3, "price": null, "rating": 79.6}, {"name": "Fallen Hero: Rebirth", "hours": 4.0, "price": 6.99, "rating": 89.26}]};
+
+    // ---------- small helpers ----------
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const fmtInt = (n) => (n ?? 0).toLocaleString();
+    const fmtMoney = (n) => n == null ? "—" : "$" + Number(n).toLocaleString();
+    const fmtHours = (h) => (h == null ? "—" : (Number(h).toLocaleString() + "h"));
+
+    // ---------- UI ----------
+    const meta = document.getElementById("meta");
+    const kpis = document.getElementById("kpis");
+    const playedPct = document.getElementById("playedPct");
+    const playedFill = document.getElementById("playedFill");
+    const valueSpan = document.getElementById("valueSpan");
+    const hoursSpan = document.getElementById("hoursSpan");
+    const binsSpan = document.getElementById("binsSpan");
+
+    meta.textContent = `${DATA.player_name ?? "Profile"} • Steam Level ${DATA.steam_level ?? "—"} • ${fmtInt(DATA.games_owned)} games`;
+
+    const KPI_LIST = [
+      { label: "Games owned", value: fmtInt(DATA.games_owned) },
+      { label: "Games played", value: fmtInt(DATA.games_played) },
+      { label: "Played %", value: (DATA.percent_played ?? "—") + "%" },
+      { label: "Hours", value: fmtHours(DATA.hours) },
+      { label: "Value (low)", value: fmtMoney(DATA.account_value_low) },
+      { label: "Value (med)", value: fmtMoney(DATA.account_value_med) },
+      { label: "Value (high)", value: fmtMoney(DATA.account_value_high) },
+      { label: "Today's (low)", value: fmtMoney(DATA.todays_prices?.[0]) },
+    ];
+
+    kpis.innerHTML = KPI_LIST.map(k => `
+      <div class="kpi">
+        <div class="label">${k.label}</div>
+        <div class="value">${k.value}</div>
+      </div>
+    `).join("");
+
+    const pct = clamp((DATA.percent_played ?? 0) / 100, 0, 1);
+    playedPct.textContent = `${DATA.games_played ?? "—"} / ${DATA.games_owned ?? "—"} (${Math.round(pct*100)}%)`;
+    playedFill.style.width = `${Math.round(pct*100)}%`;
+    valueSpan.textContent = `${fmtMoney(DATA.account_value_low)} → ${fmtMoney(DATA.account_value_high)}`;
+    hoursSpan.textContent = fmtHours(DATA.hours);
+    binsSpan.textContent = `${Object.keys(DATA.time_bins ?? {}).length} bands`;
+
+    // ---------- canvas setup ----------
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d", { alpha: true });
+    const tip = document.getElementById("tip");
+
+    let DPR = Math.max(1, Math.min(2.5, window.devicePixelRatio || 1));
+    function resize() {
+      DPR = Math.max(1, Math.min(2.5, window.devicePixelRatio || 1));
+      canvas.width = Math.floor(innerWidth * DPR);
+      canvas.height = Math.floor(innerHeight * DPR);
+      canvas.style.width = innerWidth + "px";
+      canvas.style.height = innerHeight + "px";
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    window.addEventListener("resize", resize, { passive: true });
+    resize();
+
+    // ---------- deterministic RNG from profile ----------
+    function xmur3(str) {
+      let h = 1779033703 ^ str.length;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+      }
+      return function() {
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+    function mulberry32(a) {
+      return function() {
+        let t = (a += 0x6D2B79F5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    const seedStr = `${DATA.player_name ?? "profile"}|${DATA.games_owned ?? 0}|${DATA.hours ?? 0}`;
+    let seed = xmur3(seedStr)();
+    let rand = mulberry32(seed);
+
+    // ---------- noise (cheap value noise) ----------
+    function hash2(x, y) {
+      let n = (x * 374761393 + y * 668265263) ^ seed;
+      n = (n ^ (n >>> 13)) * 1274126177;
+      n = (n ^ (n >>> 16)) >>> 0;
+      return n / 4294967296;
+    }
+    function smoothstep(t) { return t * t * (3 - 2 * t); }
+    function noise2(x, y) {
+      const xi = Math.floor(x), yi = Math.floor(y);
+      const xf = x - xi, yf = y - yi;
+      const u = smoothstep(xf), v = smoothstep(yf);
+      const a = hash2(xi, yi);
+      const b = hash2(xi + 1, yi);
+      const c = hash2(xi, yi + 1);
+      const d = hash2(xi + 1, yi + 1);
+      return lerp(lerp(a, b, u), lerp(c, d, u), v);
+    }
+
+    // ---------- derive visual parameters from stats ----------
+    const owned = Math.max(1, DATA.games_owned ?? 1);
+    const played = Math.max(0, DATA.games_played ?? 0);
+    const hours = Math.max(1, DATA.hours ?? 1);
+
+    const vLow = Number(DATA.account_value_low ?? 0);
+    const vHigh = Number(DATA.account_value_high ?? 1);
+
+    const C1 = [0, 210, 255];
+    const C2 = [120, 90, 255];
+    const C3 = [255, 140, 0];
+
+    function mixRGB(a, b, t) {
+      return [Math.round(lerp(a[0], b[0], t)), Math.round(lerp(a[1], b[1], t)), Math.round(lerp(a[2], b[2], t))];
+    }
+    function rgbStr(c, alpha=1) { return `rgba(${c[0]},${c[1]},${c[2]},${alpha})`; }
+
+    const BIN_KEYS = Object.keys(DATA.time_bins ?? {});
+    const BIN_TOTAL = BIN_KEYS.reduce((s,k) => s + (DATA.time_bins[k] ?? 0), 0) || 1;
+    const rings = BIN_KEYS.map((k) => {
+      const count = DATA.time_bins[k] ?? 0;
+      const w = count / BIN_TOTAL;
+      return { key: k, weight: w, count };
+    });
+
+    function pickRing() {
+      const r = rand();
+      let acc = 0;
+      for (const ring of rings) {
+        acc += ring.weight;
+        if (r <= acc) return ring;
+      }
+      return rings[rings.length - 1] || { key: "All", weight: 1, count: owned };
+    }
+
+    const beaconsRaw = (DATA.top_games ?? []).filter(g => g.hours != null).slice(0, 18);
+    const beaconMaxH = Math.max(...beaconsRaw.map(g => g.hours || 0), 1);
+
+    let intensity = 1.0;
+    const intensityEl = document.getElementById("intensity");
+    const ival = document.getElementById("ival");
+    intensityEl.addEventListener("input", () => {
+      intensity = Number(intensityEl.value);
+      ival.textContent = intensity.toFixed(2);
+    });
+
+    let paused = false;
+    const pauseBtn = document.getElementById("pause");
+    pauseBtn.addEventListener("click", () => {
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+    });
+
+    document.getElementById("regen").addEventListener("click", regenerate);
+    window.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "r") regenerate();
+      if (e.code === "Space") {
+        e.preventDefault();
+        paused = !paused;
+        pauseBtn.textContent = paused ? "Resume" : "Pause";
+      }
+    }, { passive: false });
+
+    let motes = [];
+    let beacons = [];
+    let t = 0;
+
+    function regenerate() {
+      seed = xmur3(seedStr + "|" + Math.floor(performance.now()))();
+      rand = mulberry32(seed);
+      motes = [];
+      beacons = [];
+
+      const cx = innerWidth / 2;
+      const cy = innerHeight / 2;
+
+      const cohesion = clamp(0.25 + pct * 0.9, 0.25, 1.15);
+      const N = Math.min(owned, 900);
+      const moneyBias = clamp((vLow / (vHigh || 1)) * 0.8 + 0.1, 0, 1);
+
+      for (let i = 0; i < N; i++) {
+        const ring = pickRing();
+        const ringIdx = Math.max(0, BIN_KEYS.indexOf(ring.key));
+        const ringBase = lerp(50, Math.min(cx, cy) * 0.42, (ringIdx + 0.6) / Math.max(1, BIN_KEYS.length));
+        const ringJitter = lerp(12, 60, rand());
+        const radius = ringBase + ringJitter;
+
+        const ang = rand() * Math.PI * 2;
+        const x = cx + Math.cos(ang) * radius;
+        const y = cy + Math.sin(ang) * radius;
+
+        const isPlayed = (i / N) < pct ? 1 : 0;
+
+        const w1 = clamp(0.55 + 0.35 * (1 - moneyBias), 0, 1);
+        const w3 = clamp(0.15 + 0.45 * moneyBias, 0, 1);
+        const w2 = clamp(1 - w1 - w3, 0, 1);
+
+        const cA = mixRGB(C1, C2, clamp(w2/(w1+w2+1e-6), 0, 1));
+        const cB = mixRGB(C2, C3, clamp(w3/(w2+w3+1e-6), 0, 1));
+        const col = mixRGB(cA, cB, clamp(moneyBias, 0, 1));
+
+        const size = lerp(0.8, 2.4, rand()) * (isPlayed ? lerp(1.05, 1.6, rand()) : lerp(0.85, 1.15, rand()));
+        const alpha = lerp(0.18, 0.55, rand()) * (isPlayed ? 1.0 : 0.75);
+
+        motes.push({
+          x, y,
+          vx: (rand() - 0.5) * 0.25,
+          vy: (rand() - 0.5) * 0.25,
+          size,
+          isPlayed,
+          ringKey: ring.key,
+          col,
+          alpha,
+          glow: lerp(0.4, 1.0, rand()),
+          cohesion
+        });
+      }
+
+      const B = beaconsRaw.length;
+      for (let i = 0; i < B; i++) {
+        const g = beaconsRaw[i];
+        const hNorm = (g.hours || 0) / beaconMaxH;
+
+        const r = lerp(Math.min(cx, cy) * 0.12, Math.min(cx, cy) * 0.48, Math.pow(hNorm, 0.55));
+        const ang = (i / B) * Math.PI * 2 + (rand() - 0.5) * 0.35;
+
+        const x = cx + Math.cos(ang) * r;
+        const y = cy + Math.sin(ang) * r;
+
+        const rating = clamp((g.rating ?? 75) / 100, 0, 1);
+        const col = mixRGB(C1, C3, clamp(0.15 + rating * 0.85, 0, 1));
+
+        beacons.push({
+          x, y, baseX: x, baseY: y,
+          r: lerp(9, 18, hNorm),
+          col,
+          alpha: lerp(0.55, 0.95, rating),
+          game: g
+        });
+      }
+    }
+
+    regenerate();
+
+    let mouse = { x: innerWidth / 2, y: innerHeight / 2, active: false };
+    window.addEventListener("pointermove", (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    }, { passive: true });
+    window.addEventListener("pointerleave", () => {
+      mouse.active = false;
+      tip.style.opacity = 0;
+    }, { passive: true });
+
+    function showTip(x, y, html) {
+      tip.innerHTML = html;
+      tip.style.left = x + "px";
+      tip.style.top = y + "px";
+      tip.style.opacity = 1;
+    }
+
+    function drawBackground() {
+      const g = ctx.createRadialGradient(innerWidth/2, innerHeight/2, 0, innerWidth/2, innerHeight/2, Math.max(innerWidth, innerHeight)*0.7);
+      g.addColorStop(0, "rgba(0,0,0,0)");
+      g.addColorStop(1, "rgba(0,0,0,0.55)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,innerWidth,innerHeight);
+    }
+
+    function drawRings() {
+      const cx = innerWidth/2, cy = innerHeight/2;
+      const maxR = Math.min(cx, cy) * 0.54;
+      const ringCount = Math.max(3, BIN_KEYS.length);
+      for (let i = 1; i <= ringCount; i++) {
+        const r = (i / ringCount) * maxR;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI*2);
+        ctx.strokeStyle = `rgba(255,255,255,${0.035})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    function frame() {
+      if (!paused) t += 0.010 * intensity;
+
+      ctx.fillStyle = "rgba(7,8,16,0.18)";
+      ctx.fillRect(0,0,innerWidth,innerHeight);
+
+      drawRings();
+
+      const cx = innerWidth/2, cy = innerHeight/2;
+      const maxR = Math.min(cx, cy) * 0.62;
+
+      const scale = 0.0065;
+      const swirl = 1.35 * intensity;
+      const pull = 0.0009 * intensity;
+
+      for (let i = 0; i < motes.length; i++) {
+        const p = motes[i];
+
+        const nx = p.x * scale;
+        const ny = p.y * scale;
+        const n = noise2(nx + t*0.6, ny - t*0.5);
+
+        const ang = n * Math.PI * 2.2;
+        const fx = Math.cos(ang) * swirl;
+        const fy = Math.sin(ang) * swirl;
+
+        const dx = cx - p.x;
+        const dy = cy - p.y;
+        const dist = Math.hypot(dx, dy) + 0.0001;
+        const grav = pull * p.cohesion * (p.isPlayed ? 1.25 : 0.85);
+
+        p.vx += fx * 0.03 + (dx / dist) * grav * dist;
+        p.vy += fy * 0.03 + (dy / dist) * grav * dist;
+
+        if (mouse.active) {
+          const mdx = mouse.x - p.x;
+          const mdy = mouse.y - p.y;
+          const md = Math.hypot(mdx, mdy) + 0.0001;
+          const influence = clamp(1 - md / 220, 0, 1);
+          const repel = (p.isPlayed ? 1 : 0.7) * 0.85 * influence * intensity;
+          p.vx -= (mdx / md) * repel * 0.08;
+          p.vy -= (mdy / md) * repel * 0.08;
+        }
+
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        const r = Math.hypot(p.x - cx, p.y - cy);
+        if (r > maxR) {
+          const over = r - maxR;
+          p.x -= (p.x - cx) / r * over;
+          p.y -= (p.y - cy) / r * over;
+          p.vx *= 0.72;
+          p.vy *= 0.72;
+        }
+
+        const col = p.col;
+        const a = p.alpha * (p.isPlayed ? 1.0 : 0.82);
+        ctx.beginPath();
+        ctx.fillStyle = rgbStr(col, a);
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fill();
+
+        if (p.glow > 0.7) {
+          ctx.beginPath();
+          ctx.fillStyle = rgbStr(col, a * 0.16);
+          ctx.arc(p.x, p.y, p.size * 5.0, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+
+      let hovered = null;
+      for (const b of beacons) {
+        if (!paused) {
+          const wob = noise2(b.baseX*0.01 + t*0.9, b.baseY*0.01 - t*0.8) - 0.5;
+          b.x = b.baseX + wob * 18 * intensity;
+          b.y = b.baseY + (0.5 - wob) * 12 * intensity;
+        }
+
+        ctx.beginPath();
+        ctx.fillStyle = rgbStr(b.col, 0.10);
+        ctx.arc(b.x, b.y, b.r * 3.6, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = rgbStr(b.col, b.alpha);
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = rgbStr([255,255,255], 0.20);
+        ctx.lineWidth = 1;
+        ctx.arc(b.x, b.y, b.r * 1.6, 0, Math.PI*2);
+        ctx.stroke();
+
+        if (mouse.active) {
+          const d = Math.hypot(mouse.x - b.x, mouse.y - b.y);
+          if (d < b.r * 2.0) hovered = b;
+        }
+      }
+
+      if (hovered) {
+        const g = hovered.game;
+        showTip(mouse.x, mouse.y, `
+          <div><strong>${g.name}</strong></div>
+          <div class="muted">Playtime: ${fmtHours(g.hours)} • Rating: ${g.rating != null ? g.rating.toFixed(2) + "%" : "—"} • Price: ${g.price != null ? "$" + g.price.toFixed(2) : "Free/—"}</div>
+        `);
+      } else {
+        tip.style.opacity = 0;
+      }
+
+      drawBackground();
+      requestAnimationFrame(frame);
+    }
+
+    ctx.fillStyle = "rgba(7,8,16,1)";
+    ctx.fillRect(0,0,innerWidth,innerHeight);
+    requestAnimationFrame(frame);
+  </script>
+<script>
+(function(){
+  try{
+    const path = (location.pathname || "").split("/").pop() || "index_nav.html";
+    document.querySelectorAll(".site-nav a").forEach(a=>{
+      const href = (a.getAttribute("href")||"").split("/").pop();
+      if(href === path) a.classList.add("active");
+    });
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
