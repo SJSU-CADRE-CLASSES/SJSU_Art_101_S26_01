@@ -1,8 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap");
 
-html, body{
-  height:100%;
-}
+html, body { height: 100%; }
 
 body{
   margin:0;
@@ -11,120 +9,105 @@ body{
   font-weight:700;
   text-transform:uppercase;
   letter-spacing:1px;
-  color:#121212;
-  background:#ffffff;
+  color:#111;
+  background:#fff;
   overflow-x:hidden;
   position:relative;
 }
 
-/* BASE ORBS (static layer so the whole page always has blobs) */
-body{
-  background-image:
-    radial-gradient(circle at 15% 25%, rgba(120,190,255,.35) 0%, rgba(120,190,255,0) 45%),
-    radial-gradient(circle at 70% 20%, rgba(190,130,255,.30) 0%, rgba(190,130,255,0) 48%),
-    radial-gradient(circle at 55% 55%, rgba(255,140,220,.22) 0%, rgba(255,140,220,0) 52%),
-    radial-gradient(circle at 25% 80%, rgba(120,110,255,.20) 0%, rgba(120,110,255,0) 55%),
-    radial-gradient(circle at 85% 78%, rgba(90,220,255,.18) 0%, rgba(90,220,255,0) 50%);
-  background-repeat:no-repeat;
-  background-size: 70vmax 70vmax, 64vmax 64vmax, 60vmax 60vmax, 58vmax 58vmax, 54vmax 54vmax;
-}
-
-/* MOVING LAVA LAYERS (no “screen sliding” because we never reveal edges) */
-body::before,
-body::after{
+/* FULL-SCREEN LAVA LAMP LAYER (covers entire page, never crops) */
+body::before{
   content:"";
   position:fixed;
-  left:50%;
-  top:50%;
-  width:220vmax;
-  height:220vmax;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
+  inset:-30vmax;            /* extra bleed so edges never show */
   z-index:-1;
-  filter: blur(28px);
-  opacity:0.85;
-}
+  pointer-events:none;
+  background-color:#ffffff;
 
-body::before{
-  background:
-    radial-gradient(circle, rgba(70,170,255,.45) 0%, rgba(70,170,255,0) 52%),
-    radial-gradient(circle, rgba(150,90,255,.42) 0%, rgba(150,90,255,0) 55%),
-    radial-gradient(circle, rgba(255,120,210,.30) 0%, rgba(255,120,210,0) 58%),
-    radial-gradient(circle, rgba(0,210,255,.22) 0%, rgba(0,210,255,0) 50%),
-    radial-gradient(circle, rgba(220,160,255,.22) 0%, rgba(220,160,255,0) 55%);
+  /* MANY SMALL + MEDIUM ORBS */
+  background-image:
+    radial-gradient(circle, rgba(120,190,255,.55) 0%, rgba(120,190,255,0) 55%),
+    radial-gradient(circle, rgba(170,120,255,.50) 0%, rgba(170,120,255,0) 58%),
+    radial-gradient(circle, rgba(255,120,220,.42) 0%, rgba(255,120,220,0) 60%),
+    radial-gradient(circle, rgba(80,220,255,.35) 0%, rgba(80,220,255,0) 58%),
+    radial-gradient(circle, rgba(210,160,255,.34) 0%, rgba(210,160,255,0) 62%),
+
+    radial-gradient(circle, rgba(120,190,255,.35) 0%, rgba(120,190,255,0) 55%),
+    radial-gradient(circle, rgba(170,120,255,.33) 0%, rgba(170,120,255,0) 58%),
+    radial-gradient(circle, rgba(255,120,220,.28) 0%, rgba(255,120,220,0) 60%),
+    radial-gradient(circle, rgba(80,220,255,.22) 0%, rgba(80,220,255,0) 58%),
+    radial-gradient(circle, rgba(210,160,255,.22) 0%, rgba(210,160,255,0) 62%);
+
   background-repeat:no-repeat;
+
+  /* orb sizes */
   background-size:
-    40vmax 40vmax,
+    46vmax 46vmax,
+    38vmax 38vmax,
     34vmax 34vmax,
-    30vmax 30vmax,
-    24vmax 24vmax,
-    20vmax 20vmax;
-  background-position:
-    18% 30%,
-    78% 28%,
-    55% 78%,
-    88% 60%,
-    28% 70%;
-  animation: lavaA 1.9s ease-in-out infinite alternate;
-}
-
-body::after{
-  background:
-    radial-gradient(circle, rgba(255,140,230,.28) 0%, rgba(255,140,230,0) 55%),
-    radial-gradient(circle, rgba(90,170,255,.26) 0%, rgba(90,170,255,0) 55%),
-    radial-gradient(circle, rgba(180,110,255,.24) 0%, rgba(180,110,255,0) 55%),
-    radial-gradient(circle, rgba(0,200,255,.18) 0%, rgba(0,200,255,0) 50%),
-    radial-gradient(circle, rgba(255,80,190,.18) 0%, rgba(255,80,190,0) 50%);
-  background-repeat:no-repeat;
-  background-size:
     28vmax 28vmax,
-    24vmax 24vmax,
+    26vmax 26vmax,
+
     22vmax 22vmax,
+    20vmax 20vmax,
     18vmax 18vmax,
-    16vmax 16vmax;
+    16vmax 16vmax,
+    14vmax 14vmax;
+
+  /* start positions */
   background-position:
-    30% 40%,
-    80% 78%,
-    40% 22%,
-    90% 28%,
-    14% 88%;
-  animation: lavaB 1.5s ease-in-out infinite alternate;
-  mix-blend-mode:multiply;
+    12% 20%,
+    78% 18%,
+    55% 60%,
+    88% 72%,
+    24% 78%,
+
+    35% 35%,
+    70% 48%,
+    18% 62%,
+    92% 40%,
+    60% 85%;
+
+  filter: blur(26px) saturate(1.2);
+  animation: lavaMove 6s ease-in-out infinite alternate;
 }
 
-@keyframes lavaA{
-  0%   { transform:translate(-50%,-50%) scale(1.02) rotate(-2deg); }
-  100% { transform:translate(-50%,-50%) scale(1.06) rotate(2deg); }
+/* animate POSITIONS so blobs “float” instead of the whole page sliding */
+@keyframes lavaMove{
+  0%{
+    background-position:
+      12% 20%,
+      78% 18%,
+      55% 60%,
+      88% 72%,
+      24% 78%,
+
+      35% 35%,
+      70% 48%,
+      18% 62%,
+      92% 40%,
+      60% 85%;
+  }
+  100%{
+    background-position:
+      22% 28%,
+      68% 26%,
+      62% 52%,
+      80% 64%,
+      18% 70%,
+
+      42% 44%,
+      62% 56%,
+      26% 54%,
+      84% 48%,
+      52% 76%;
+  }
 }
 
-@keyframes lavaB{
-  0%   { transform:translate(-50%,-50%) scale(1.01) rotate(2deg); }
-  100% { transform:translate(-50%,-50%) scale(1.05) rotate(-2deg); }
-}
+/* CONTENT */
+h1{ margin:0 0 24px 0; }
+#viz{ margin-top:20px; max-width:900px; }
 
-/* TEXT + VIZ */
-h1{
-  margin:0 0 24px 0;
-}
-
-#viz{
-  margin-top:20px;
-  max-width:900px;
-}
-
-.day{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:10px 0;
-}
-
-.label{
-  width:70px;
-}
-
-.bar{
-  height:18px;
-  background:#121212;
-  border-radius:4px;
-}
+.day{ display:flex; align-items:center; gap:10px; margin:10px 0; }
+.label{ width:70px; }
+.bar{ height:18px; background:#111; border-radius:4px; }
