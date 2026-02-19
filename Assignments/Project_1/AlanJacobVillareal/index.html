@@ -172,6 +172,38 @@
             margin-bottom: 0.75rem;
             text-align: center;
         }
+
+        /* Chibi image bottom-left, swaps on hover */
+        .chibi-corner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 20;
+            width: 360px;
+            height: 360px;
+            cursor: pointer;
+        }
+        .chibi-corner img {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: opacity 0.2s ease;
+        }
+        .chibi-corner img.chibi-default {
+            opacity: 1;
+        }
+        .chibi-corner img.chibi-hover {
+            opacity: 0;
+        }
+        .chibi-corner:hover img.chibi-default {
+            opacity: 0;
+        }
+        .chibi-corner:hover img.chibi-hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -195,6 +227,10 @@
             LEVEL <span>01</span>
         </div>
         <p class="footer">© 2026 · INSERT COIN TO CONTINUE</p>
+    </div>
+    <div class="chibi-corner" title="">
+        <img class="chibi-default" src="Twin_Turbo_Chibi1.png" alt="Twin Turbo Chibi">
+        <img class="chibi-hover" src="Twin_Turbo_Chibi2.png" alt="Twin Turbo Chibi (hover)">
     </div>
 </body>
 </html>
