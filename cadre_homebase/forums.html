@@ -7,56 +7,228 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    .forum-post {
+    .forum-topbar {
       display: flex;
-      gap: 12px;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-bottom: none;
-      background: var(--bg);
-      transition: border-color var(--theme-duration) var(--theme-ease), background-color var(--theme-duration) var(--theme-ease);
-    }
-    .forum-post:last-of-type { border-bottom: 1px solid var(--border); }
-    .forum-post:hover { background: rgba(128, 128, 128, 0.06); }
-    .forum-votes {
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 2px;
-      min-width: 28px;
+      gap: 12px;
+      padding: 8px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
     }
-    .forum-votes button {
+    .forum-search {
+      flex: 1;
+      max-width: 400px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+    .forum-search::placeholder { color: var(--dim); }
+    .forum-search:focus { outline: none; border-color: var(--dim); }
+    .forum-ask {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color var(--theme-duration), color var(--theme-duration);
+    }
+    .forum-ask:hover { border-color: var(--fg); color: var(--fg); }
+
+    .forum-layout {
+      display: flex;
+      flex: 1;
+      min-width: 0;
+    }
+    .forum-feed {
+      flex: 1;
+      min-width: 0;
+      padding: 16px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .forum-sidebar {
+      width: 280px;
+      min-width: 280px;
+      padding: 16px 20px;
+    }
+
+    .forum-filter {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .forum-filter select {
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .forum-filter .icon-btn {
       background: none;
       border: none;
-      padding: 0;
-      font: inherit;
+      padding: 4px;
       color: var(--dim);
       cursor: pointer;
-      line-height: 1;
       font-size: 14px;
-      transition: color var(--theme-duration) var(--theme-ease);
     }
-    .forum-votes button:hover { color: var(--fg); }
-    .forum-votes .score {
+    .forum-filter .icon-btn:hover { color: var(--fg); }
+
+    .forum-post {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: var(--bg);
+      transition: border-color var(--theme-duration);
+    }
+    .forum-post:hover { border-color: var(--dim); }
+    .forum-post-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+    }
+    .forum-post-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .forum-post-meta {
+      flex: 1;
+      min-width: 0;
       font-size: 12px;
       color: var(--dim);
-      font-weight: 700;
     }
-    .forum-body { flex: 1; min-width: 0; }
-    .forum-title {
-      font-weight: 700;
-      margin: 0 0 4px 0;
-      color: var(--fg);
+    .forum-post-meta a { color: var(--dim); }
+    .forum-post-meta a:hover { color: var(--fg); }
+    .forum-post-menu {
+      background: none;
+      border: none;
+      padding: 4px;
+      color: var(--dim);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
     }
-    .forum-title a { text-decoration: none; }
-    .forum-title a:hover { text-decoration: underline; }
-    .forum-meta {
+    .forum-post-menu:hover { color: var(--fg); }
+    .forum-post-title {
+      padding: 0 16px 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+    .forum-post-title a { text-decoration: none; color: var(--fg); }
+    .forum-post-title a:hover { text-decoration: underline; }
+    .forum-post-content {
+      padding: 0 16px 12px;
+    }
+    .forum-post-content img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 4px;
+      display: block;
+    }
+    .forum-post-content p {
+      margin: 0 0 8px;
+      color: var(--dim);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .forum-post-link {
+      padding: 8px 16px 12px;
       font-size: 11px;
       color: var(--dim);
     }
-    .forum-meta a { color: var(--dim); }
-    .forum-meta a:hover { color: var(--fg); }
-    .forum-list { max-width: 720px; }
+    .forum-post-link a { color: var(--dim); }
+    .forum-post-link a:hover { color: var(--fg); }
+
+    .forum-feed.grid-view .forum-posts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .forum-feed.grid-view .forum-post {
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .forum-feed.grid-view .forum-post-content img {
+      max-height: 180px;
+    }
+    .forum-feed.grid-view .forum-post-link { margin-top: auto; }
+    .forum-filter .icon-btn.active { color: var(--fg); }
+    .forum-popular-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--fg);
+      margin-bottom: 16px;
+    }
+    .forum-community {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .forum-community:last-of-type { border-bottom: none; }
+    .forum-community-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      background: var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .forum-community-info { flex: 1; min-width: 0; }
+    .forum-community-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fg);
+    }
+    .forum-community-name a { color: inherit; text-decoration: none; }
+    .forum-community-name a:hover { text-decoration: underline; }
+    .forum-topic-members {
+      font-size: 11px;
+      color: var(--dim);
+    }
+    .forum-see-more {
+      display: block;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--dim);
+    }
+    .forum-see-more:hover { color: var(--fg); }
+
+    @media (max-width: 850px) {
+      .forum-topbar { padding: 8px 20px; flex-wrap: wrap; }
+      .forum-search { max-width: none; }
+      .forum-layout { flex-direction: column; }
+      .forum-sidebar { width: 100%; min-width: 0; }
+      .forum-feed { border-right: none; padding: 16px 20px; }
+    }
   </style>
 </head>
 <body>
@@ -113,65 +285,145 @@
         </nav>
       </header>
 
-      <main class="main">
-        <div class="columns">
-          <section class="left-col">
-            <h2>Forums</h2>
-            <p>Discussion board for CADRE students, faculty, and visitors.</p>
-          </section>
+      <div class="forum-topbar">
+        <input type="search" id="forum-search" class="forum-search" placeholder="Find anything" aria-label="Search forums">
+        <button type="button" class="forum-ask">Ask</button>
+      </div>
 
-          <section class="right-col">
-            <div class="forum-list">
-              <article class="forum-post">
-                <div class="forum-votes">
-                  <button type="button" aria-label="Upvote">▲</button>
-                  <span class="score">12</span>
-                  <button type="button" aria-label="Downvote">▼</button>
-                </div>
-                <div class="forum-body">
-                  <h3 class="forum-title"><a href="#">Spring Show setup volunteers?</a></h3>
-                  <div class="forum-meta">posted by <a href="#">dma_student</a> · 2h ago · <a href="#">8 comments</a></div>
-                </div>
-              </article>
+      <main class="main forum-layout">
+        <div class="forum-feed">
+          <div class="forum-filter">
+            <select aria-label="Sort by">
+              <option>Best</option>
+              <option>Hot</option>
+              <option>New</option>
+              <option>Top</option>
+            </select>
+            <select aria-label="Where">
+              <option>Everywhere</option>
+              <option>This topic</option>
+            </select>
+            <button type="button" class="icon-btn" aria-label="Date">◷</button>
+            <button type="button" class="icon-btn" id="view-toggle" aria-label="Toggle grid view" title="Individual / Grid view">⊞</button>
+          </div>
 
-              <article class="forum-post">
-                <div class="forum-votes">
-                  <button type="button" aria-label="Upvote">▲</button>
-                  <span class="score">7</span>
-                  <button type="button" aria-label="Downvote">▼</button>
-                </div>
-                <div class="forum-body">
-                  <h3 class="forum-title"><a href="#">Processing vs p5.js for intro?</a></h3>
-                  <div class="forum-meta">posted by <a href="#">faculty_art</a> · 5h ago · <a href="#">23 comments</a></div>
-                </div>
-              </article>
-
-              <article class="forum-post">
-                <div class="forum-votes">
-                  <button type="button" aria-label="Upvote">▲</button>
-                  <span class="score">4</span>
-                  <button type="button" aria-label="Downvote">▼</button>
-                </div>
-                <div class="forum-body">
-                  <h3 class="forum-title"><a href="#">Laser cutter booking this week</a></h3>
-                  <div class="forum-meta">posted by <a href="#">lab_tech</a> · 1d ago · <a href="#">3 comments</a></div>
-                </div>
-              </article>
-
-              <article class="forum-post">
-                <div class="forum-votes">
-                  <button type="button" aria-label="Upvote">▲</button>
-                  <span class="score">2</span>
-                  <button type="button" aria-label="Downvote">▼</button>
-                </div>
-                <div class="forum-body">
-                  <h3 class="forum-title"><a href="#">MFA thesis show call for proposals</a></h3>
-                  <div class="forum-meta">posted by <a href="#">grad_coord</a> · 2d ago · <a href="#">0 comments</a></div>
-                </div>
-              </article>
+          <div class="forum-posts">
+          <article class="forum-post" data-search="equipment laser cutter booking slots week sign-up M/W/F files">
+            <div class="forum-post-header">
+              <div class="forum-post-avatar">◉</div>
+              <div class="forum-post-meta">
+                <a href="#">t/equipment</a> · 8 hr. ago
+              </div>
+              <button type="button" class="forum-post-menu" aria-label="Options">⋯</button>
             </div>
-          </section>
+            <h3 class="forum-post-title">
+              <a href="#">Laser cutter booking slots open for this week</a>
+            </h3>
+            <div class="forum-post-content">
+              <p>Sign-up sheet is posted. First-come for M/W/F afternoon blocks. Bring your files ready.</p>
+            </div>
+            <div class="forum-post-link">
+              <a href="#">laser_cutter_booking_slots_open/</a>
+            </div>
+          </article>
+
+          <article class="forum-post" data-search="events spring show volunteers setup gallery">
+            <div class="forum-post-header">
+              <div class="forum-post-avatar">◆</div>
+              <div class="forum-post-meta">
+                <a href="#">t/events</a> · 12 hr. ago
+              </div>
+              <button type="button" class="forum-post-menu" aria-label="Options">⋯</button>
+            </div>
+            <h3 class="forum-post-title">
+              <a href="#">Spring Show setup volunteers needed</a>
+            </h3>
+            <div class="forum-post-content">
+              <img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=600&h=300&fit=crop" alt="Gallery setup">
+            </div>
+            <div class="forum-post-link">
+              <a href="#">spring_show_setup_volunteers_needed/</a>
+            </div>
+          </article>
+
+          <article class="forum-post" data-search="dma processing p5.js intro course Java beginners">
+            <div class="forum-post-header">
+              <div class="forum-post-avatar">▣</div>
+              <div class="forum-post-meta">
+                <a href="#">t/dma</a> · 1d ago
+              </div>
+              <button type="button" class="forum-post-menu" aria-label="Options">⋯</button>
+            </div>
+            <h3 class="forum-post-title">
+              <a href="#">Processing vs p5.js for intro course?</a>
+            </h3>
+            <div class="forum-post-content">
+              <p>Curious what folks are using now. We've been on Processing (Java) for years but p5 seems more approachable for beginners. Thoughts?</p>
+            </div>
+            <div class="forum-post-link">
+              <a href="#">processing_vs_p5js_for_intro/</a>
+            </div>
+          </article>
+
+          <article class="forum-post" data-search="mfa thesis show proposals deadline March grad coordinator">
+            <div class="forum-post-header">
+              <div class="forum-post-avatar">◎</div>
+              <div class="forum-post-meta">
+                <a href="#">t/mfa</a> · 2d ago
+              </div>
+              <button type="button" class="forum-post-menu" aria-label="Options">⋯</button>
+            </div>
+            <h3 class="forum-post-title">
+              <a href="#">MFA thesis show call for proposals</a>
+            </h3>
+            <div class="forum-post-content">
+              <p>Deadline March 15. Submit via the internal portal. Questions to grad coordinator.</p>
+            </div>
+            <div class="forum-post-link">
+              <a href="#">mfa_thesis_show_call_for_proposals/</a>
+            </div>
+          </article>
         </div>
+
+        <aside class="forum-sidebar">
+          <h3 class="forum-popular-title">POPULAR TOPICS</h3>
+          <div class="forum-community">
+            <div class="forum-community-icon">◉</div>
+            <div class="forum-community-info">
+              <div class="forum-community-name"><a href="#">t/equipment</a></div>
+              <div class="forum-topic-members">142 members</div>
+            </div>
+          </div>
+          <div class="forum-community">
+            <div class="forum-community-icon">◆</div>
+            <div class="forum-community-info">
+              <div class="forum-community-name"><a href="#">t/events</a></div>
+              <div class="forum-topic-members">89 members</div>
+            </div>
+          </div>
+          <div class="forum-community">
+            <div class="forum-community-icon">▣</div>
+            <div class="forum-community-info">
+              <div class="forum-community-name"><a href="#">t/dma</a></div>
+              <div class="forum-topic-members">256 members</div>
+            </div>
+          </div>
+          <div class="forum-community">
+            <div class="forum-community-icon">◎</div>
+            <div class="forum-community-info">
+              <div class="forum-community-name"><a href="#">t/mfa</a></div>
+              <div class="forum-topic-members">34 members</div>
+            </div>
+          </div>
+          <div class="forum-community">
+            <div class="forum-community-icon">◇</div>
+            <div class="forum-community-info">
+              <div class="forum-community-name"><a href="#">t/bfa</a></div>
+              <div class="forum-topic-members">312 members</div>
+            </div>
+          </div>
+          <a href="#" class="forum-see-more">See more</a>
+        </aside>
       </main>
 
       <footer class="footer">
@@ -215,6 +467,29 @@
 
       var saved = localStorage.getItem(KEY);
       if (saved === 'light' || saved === 'dark') applyTheme(saved);
+    })();
+
+    (function() {
+      var viewToggle = document.getElementById('view-toggle');
+      var feed = document.querySelector('.forum-feed');
+      if (viewToggle && feed) {
+        viewToggle.addEventListener('click', function() {
+          feed.classList.toggle('grid-view');
+          viewToggle.classList.toggle('active', feed.classList.contains('grid-view'));
+        });
+      }
+
+      var searchInput = document.getElementById('forum-search');
+      var posts = document.querySelectorAll('.forum-post');
+      if (searchInput && posts.length) {
+        searchInput.addEventListener('input', function() {
+          var q = (this.value || '').trim().toLowerCase();
+          posts.forEach(function(post) {
+            var text = (post.getAttribute('data-search') || '').toLowerCase();
+            post.style.display = q === '' || text.indexOf(q) !== -1 ? '' : 'none';
+          });
+        });
+      }
     })();
   </script>
 </body>
