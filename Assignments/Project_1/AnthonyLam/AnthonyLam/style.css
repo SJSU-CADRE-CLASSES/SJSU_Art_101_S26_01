@@ -1,5 +1,5 @@
 body{
-  font-family:"Bungee Tint",sans-serif;
+  font-family:"Doto",sans-serif;
   font-weight:700;
   text-transform:uppercase;
   margin:40px;
@@ -18,9 +18,9 @@ body{
     radial-gradient(circle at 28% 85%, rgba(255,70,70,.35) 0%, rgba(255,70,70,0) 24%),
     radial-gradient(circle at 92% 52%, rgba(255,0,0,.32) 0%, rgba(255,0,0,0) 22%);
   background-repeat:no-repeat;
-  background-size:160% 160%;
+  background-size:auto;
   background-attachment:fixed;
-  animation:blobMove 2s ease-in-out infinite alternate;
+  animation:blobMove 4s ease-in-out infinite alternate;
 }
 
 h1{
@@ -54,12 +54,28 @@ h1{
 @keyframes blobMove{
   0%{
     background-position:
-      0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%,
-      0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+      22% 18%,
+      78% 30%,
+      48% 68%,
+      12% 72%,
+      88% 78%,
+      35% 35%,
+      62% 18%,
+      70% 58%,
+      28% 85%,
+      92% 52%;
   }
   100%{
     background-position:
-      40px -60px, -60px 40px, 80px -30px, -40px -80px, 60px 60px,
-      -70px 20px, 50px -40px, -30px 70px, 90px -50px, -80px 30px;
+      28% 26%,
+      70% 22%,
+      54% 76%,
+      18% 62%,
+      82% 86%,
+      42% 28%,
+      56% 26%,
+      64% 50%,
+      36% 78%,
+      86% 46%;
   }
 }
