@@ -6,25 +6,37 @@ body{
   letter-spacing:1px;
 
   background-color:#ffffff;
+
   background-image:
-    radial-gradient(circle at 22% 18%, rgba(255,0,0,.85) 0%, rgba(255,0,0,0) 55%),
-    radial-gradient(circle at 78% 30%, rgba(255,40,40,.75) 0%, rgba(255,40,40,0) 60%),
-    radial-gradient(circle at 48% 68%, rgba(255,0,0,.6) 0%, rgba(255,0,0,0) 50%),
-    radial-gradient(circle at 12% 72%, rgba(255,90,90,.55) 0%, rgba(255,90,90,0) 48%),
-    radial-gradient(circle at 88% 78%, rgba(255,20,20,.55) 0%, rgba(255,20,20,0) 52%),
-    radial-gradient(circle at 35% 35%, rgba(255,0,0,.45) 0%, rgba(255,0,0,0) 30%),
-    radial-gradient(circle at 62% 18%, rgba(255,110,110,.4) 0%, rgba(255,110,110,0) 28%),
-    radial-gradient(circle at 70% 58%, rgba(255,40,40,.38) 0%, rgba(255,40,40,0) 26%),
-    radial-gradient(circle at 28% 85%, rgba(255,70,70,.35) 0%, rgba(255,70,70,0) 24%),
-    radial-gradient(circle at 92% 52%, rgba(255,0,0,.32) 0%, rgba(255,0,0,0) 22%);
+    radial-gradient(circle at 12% 18%, rgba(0,140,255,.55) 0%, rgba(0,140,255,0) 34%),
+    radial-gradient(circle at 28% 72%, rgba(120,70,255,.45) 0%, rgba(120,70,255,0) 38%),
+    radial-gradient(circle at 52% 22%, rgba(255,70,200,.40) 0%, rgba(255,70,200,0) 32%),
+    radial-gradient(circle at 78% 34%, rgba(70,210,255,.38) 0%, rgba(70,210,255,0) 36%),
+    radial-gradient(circle at 88% 78%, rgba(160,90,255,.40) 0%, rgba(160,90,255,0) 40%),
+    radial-gradient(circle at 18% 48%, rgba(255,120,220,.30) 0%, rgba(255,120,220,0) 26%),
+    radial-gradient(circle at 42% 86%, rgba(90,160,255,.28) 0%, rgba(90,160,255,0) 28%),
+    radial-gradient(circle at 66% 64%, rgba(200,90,255,.26) 0%, rgba(200,90,255,0) 30%),
+    radial-gradient(circle at 92% 52%, rgba(255,110,180,.22) 0%, rgba(255,110,180,0) 24%),
+    radial-gradient(circle at 60% 44%, rgba(0,190,255,.20) 0%, rgba(0,190,255,0) 22%);
+
   background-repeat:no-repeat;
-  background-size:auto;
-  background-attachment:fixed;
-  animation:blobMove 4s ease-in-out infinite alternate;
+  background-size:
+    520px 520px,
+    560px 560px,
+    480px 480px,
+    520px 520px,
+    600px 600px,
+    340px 340px,
+    360px 360px,
+    380px 380px,
+    300px 300px,
+    280px 280px;
+
+  animation: blobMove 1.8s ease-in-out infinite alternate;
 }
 
 h1{
-  color:#8b0000;
+  color:#1a1a1a;
   margin:0 0 24px 0;
 }
 
@@ -42,40 +54,40 @@ h1{
 
 .label{
   width:70px;
-  color:#8b0000;
+  color:#1a1a1a;
 }
 
 .bar{
   height:18px;
-  background:#8b0000;
+  background:#1a1a1a;
   border-radius:4px;
 }
 
 @keyframes blobMove{
   0%{
     background-position:
-      22% 18%,
-      78% 30%,
-      48% 68%,
-      12% 72%,
+      12% 18%,
+      28% 72%,
+      52% 22%,
+      78% 34%,
       88% 78%,
-      35% 35%,
-      62% 18%,
-      70% 58%,
-      28% 85%,
-      92% 52%;
+      18% 48%,
+      42% 86%,
+      66% 64%,
+      92% 52%,
+      60% 44%;
   }
   100%{
     background-position:
-      28% 26%,
-      70% 22%,
-      54% 76%,
-      18% 62%,
-      82% 86%,
-      42% 28%,
-      56% 26%,
-      64% 50%,
+      18% 28%,
+      20% 62%,
+      60% 16%,
+      72% 44%,
+      80% 70%,
+      26% 56%,
       36% 78%,
-      86% 46%;
+      58% 72%,
+      84% 44%,
+      66% 36%;
   }
 }
