@@ -133,10 +133,22 @@ h1{
 
 #blob-stage{
   position: relative;
-  width: min(1100px, 92vw);
-  height: 62vh;
-  margin: 30px auto 0;
-  overflow: hidden;
+  width: 100vw;       
+  height: 70vh;
+  margin: 24px 0 0;
+  overflow: visible; 
+}
+
+.blob{
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(16px) saturate(2);
+  opacity: 0.92;
+
+  mix-blend-mode: normal; 
+  isolation: isolate;     
+
+  animation: floaty 5s ease-in-out infinite alternate;
 }
 
 .blob{
