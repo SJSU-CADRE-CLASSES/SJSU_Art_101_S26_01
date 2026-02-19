@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE — Visualization</title>
-  <link rel="stylesheet" href="./style.css?v=1004">
+  <link rel="stylesheet" href="./style.css?v=1005">
 </head>
 
 <body data-page="viz">
@@ -16,7 +16,7 @@
 <div id="blob-stage"></div>
 <div id="tip" class="tip"></div>
 
-<script src="./data.js?v=1004"></script>
+<script src="./data.js?v=1005"></script>
 
 <script>
 const stage = document.getElementById("blob-stage");
@@ -76,12 +76,12 @@ if (!ITEMS.length) {
     const a = blobs.find(o => o.el === activeBlob);
     if (!a) return;
 
-    const strength = 170;   // higher = stronger push
-    const extraGap  = 90;   // higher = more space around active blob
+    const strength = 170;
+    const extraGap  = 90;
 
     blobs.forEach(o => {
       if (o.el === activeBlob) {
-        o.el.style.transform = `translate(0px, 0px) scale(1.32)`;
+        o.el.style.transform = `translate(0px, 0px)`;
         return;
       }
 
@@ -91,11 +91,11 @@ if (!ITEMS.length) {
 
       const radius = (a.size/2) + (o.size/2) + extraGap;
       if (dist > radius) {
-        o.el.style.transform = `translate(0px, 0px) scale(0.90)`;
+        o.el.style.transform = `translate(0px, 0px)`;
         return;
       }
 
-      const t = 1 - (dist / radius);   // 0..1
+      const t = 1 - (dist / radius);
       const push = strength * t;
 
       const ux = dx / dist;
@@ -104,7 +104,7 @@ if (!ITEMS.length) {
       const tx = ux * push;
       const ty = uy * push;
 
-      o.el.style.transform = `translate(${tx}px, ${ty}px) scale(0.88)`;
+      o.el.style.transform = `translate(${tx}px, ${ty}px)`;
     });
   }
 
@@ -114,7 +114,7 @@ if (!ITEMS.length) {
       .forEach(b => b.classList.remove("dim","active"));
 
     blobs.forEach(o => {
-      o.el.style.transform = `translate(0px, 0px) scale(1)`;
+      o.el.style.transform = `translate(0px, 0px)`;
     });
   }
 
@@ -137,6 +137,11 @@ if (!ITEMS.length) {
       `radial-gradient(circle,
         ${item.color} 0%,
         rgba(255,255,255,0) 72%)`;
+
+    /* faster + bigger motion per blob */
+    blob.style.setProperty("--speed", (1.1 + Math.random()*1.0).toFixed(2) + "s");
+    blob.style.setProperty("--mx", (80 + Math.random()*160).toFixed(0) + "px");
+    blob.style.setProperty("--my", (-60 - Math.random()*160).toFixed(0) + "px");
 
     stage.appendChild(blob);
 
