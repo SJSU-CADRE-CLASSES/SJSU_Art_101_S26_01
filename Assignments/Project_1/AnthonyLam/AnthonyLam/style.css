@@ -136,6 +136,7 @@ h1{
   width: min(1100px, 92vw);
   height: 62vh;
   margin: 30px auto 0;
+  overflow: hidden;
 }
 
 .blob{
