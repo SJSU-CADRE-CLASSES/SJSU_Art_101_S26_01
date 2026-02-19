@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8" />
-  <title>SCREEN TIME VISUALIZATION</title>
+  <title>DIGITAL RESIDUE — Visualization</title>
 
-  <!-- STYLE -->
-  <link rel="stylesheet" href="style.css">
-
+  <!-- your existing style -->
+  <link rel="stylesheet" href="./style.css?v=999">
 </head>
 
-<body>
+<body data-page="viz">
 
-<h1>MY SCREEN TIME</h1>
+<a class="back" href="./index.html">← BACK</a>
 
-<div id="viz"></div>
+<h1 class="viz-title">MY SCREEN TIME</h1>
+<p class="viz-sub">Hover a day. Click a blob.</p>
 
-<!-- SCRIPTS -->
-<script src="data.js"></script>
-<script src="script.js"></script>
+<!-- THIS is where the floating blobs appear -->
+<div id="viz" class="viz-area"></div>
+
+<!-- tooltip -->
+<div id="tip" class="tip"></div>
+
+<!-- IMPORTANT: order matters -->
+<script src="./data.js?v=999"></script>
+<script src="./script.js?v=999"></script>
 
 </body>
 </html>
