@@ -3,627 +3,309 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join Our Team | Amara Carrier</title>
+  <title>Spirimal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0f1419;
-      --surface: #1a222c;
-      --accent: #e8b86d;
-      --accent-soft: rgba(232, 184, 109, 0.15);
-      --text: #e6edf3;
-      --text-muted: #8b9aab;
-      --border: #2d3a47;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 2rem;
+      font-family: 'Press Start 2P', monospace;
+      background-color: #87ceeb;
+      background-image:
+        linear-gradient(180deg, #4a90c4 0%, #6ba3d4 35%, #87ceeb 70%, #b8e0f5 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'%3E%3Cg fill='%23fff' fill-opacity='0.9'%3E%3Crect x='8' y='12' width='2' height='2'/%3E%3Crect x='24' y='6' width='2' height='2'/%3E%3Crect x='48' y='18' width='2' height='2'/%3E%3Crect x='72' y='4' width='2' height='2'/%3E%3Crect x='96' y='14' width='2' height='2'/%3E%3Crect x='16' y='32' width='2' height='2'/%3E%3Crect x='56' y='28' width='2' height='2'/%3E%3Crect x='88' y='36' width='2' height='2'/%3E%3Crect x='4' y='48' width='2' height='2'/%3E%3Crect x='40' y='52' width='2' height='2'/%3E%3Crect x='64' y='44' width='2' height='2'/%3E%3Crect x='112' y='50' width='2' height='2'/%3E%3Crect x='20' y='64' width='2' height='2'/%3E%3Crect x='80' y='70' width='2' height='2'/%3E%3Crect x='32' y='82' width='2' height='2'/%3E%3Crect x='100' y='78' width='2' height='2'/%3E%3Crect x='12' y='96' width='2' height='2'/%3E%3Crect x='52' y='102' width='2' height='2'/%3E%3Crect x='68' y='88' width='2' height='2'/%3E%3Crect x='116' y='94' width='2' height='2'/%3E%3Crect x='44' y='112' width='2' height='2'/%3E%3C/g%3E%3Cg fill='%23e8e8ff' fill-opacity='0.5'%3E%3Crect x='36' y='8' width='1' height='1'/%3E%3Crect x='60' y='22' width='1' height='1'/%3E%3Crect x='92' y='40' width='1' height='1'/%3E%3Crect x='18' y='56' width='1' height='1'/%3E%3Crect x='76' y='58' width='1' height='1'/%3E%3Crect x='6' y='72' width='1' height='1'/%3E%3Crect x='104' y='66' width='1' height='1'/%3E%3Crect x='28' y='92' width='1' height='1'/%3E%3Crect x='84' y='108' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, 128px 128px;
+      color: #eee;
       overflow-x: hidden;
     }
 
-    /* Subtle grid background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(232, 184, 109, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232, 184, 109, 0.03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
+    .content {
       position: relative;
       z-index: 1;
-    }
-
-    /* Header */
-    header {
-      padding: 1.5rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* Hero */
-    .hero {
-      padding: 5rem 0 6rem;
-      text-align: center;
-    }
-
-    .hero .tag {
-      display: inline-block;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      margin-bottom: 1rem;
-    }
-
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 700;
-      line-height: 1.15;
-      margin-bottom: 1.25rem;
-      color: var(--text);
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      max-width: 520px;
-      margin: 0 auto 2.5rem;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 0.9rem 2rem;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(232, 184, 109, 0.35);
-    }
-
-    /* Section common */
-    section {
-      padding: 4rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    section:last-of-type {
-      border-bottom: none;
-    }
-
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin-bottom: 2rem;
-      color: var(--text);
-    }
-
-    /* Why join */
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .why-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.75rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .why-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 20px var(--accent-soft);
-    }
-
-    .why-card h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--accent);
-    }
-
-    .why-card p {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-
-    /* Open roles */
-    .roles-list {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-    }
-
-    .role-item {
-      display: flex;
       align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-      padding: 1.25rem 1.5rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      transition: border-color 0.2s;
+      gap: 2rem;
+      opacity: 0;
+      animation: revealContent 1.2s ease-out 0.5s forwards;
     }
 
-    .role-item:hover {
-      border-color: var(--accent);
+    @keyframes revealContent {
+      to { opacity: 1; }
     }
 
-    .role-info h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .role-info span {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .role-item .btn {
-      padding: 0.5rem 1.25rem;
-      font-size: 0.9rem;
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-
-    .role-item .btn:hover {
-      background: var(--accent-soft);
-    }
-
-    /* Benefits */
-    .benefits {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-    }
-
-    .benefits ul {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .benefits li {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-
-    .benefits li::before {
-      content: '✓';
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    /* CTA */
-    .cta {
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 7rem;
+      font-weight: 400;
       text-align: center;
-      padding: 5rem 0;
+      color: #f2e8a8;
+      letter-spacing: 0.02em;
+      /* Pixelated: no smoothing + strong chunky filter */
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: unset;
+      font-smooth: never;
+      text-rendering: optimizeSpeed;
+      filter: url(#pixelate);
+      /* Black outline (thicker for larger title) */
+      text-shadow:
+        -3px -3px 0 #000,
+        -3px 0 0 #000,
+        -3px 3px 0 #000,
+        0 -3px 0 #000,
+        0 3px 0 #000,
+        3px -3px 0 #000,
+        3px 0 0 #000,
+        3px 3px 0 #000,
+        /* Metallic shine */
+        -1px -1px 0 rgba(255,255,230,0.9),
+        1px 1px 0 rgba(180,160,80,0.6),
+        0 3px 6px rgba(0,0,0,0.4),
+        0 0 28px rgba(242,232,168,0.2);
+      animation: titleIdle 4s ease-in-out infinite;
     }
 
-    .cta h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
+    @keyframes titleIdle {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.02); }
     }
 
-    .cta p {
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-    }
-
-    /* Footer */
-    footer {
-      padding: 2rem 0;
-      text-align: center;
-      border-top: 1px solid var(--border);
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    footer a {
-      color: var(--accent);
+    .star-btn {
+      display: block;
+      width: 360px;
+      height: 120px;
+      transition: transform 0.15s;
       text-decoration: none;
+      filter: drop-shadow(0 4px 0 rgba(0,0,0,0.5)) drop-shadow(0 6px 12px rgba(0,0,0,0.4));
     }
 
-    footer a:hover {
-      text-decoration: underline;
+    .star-btn:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 4px 0 rgba(0,0,0,0.5)) drop-shadow(0 8px 16px rgba(0,0,0,0.5)) drop-shadow(0 0 20px rgba(255,220,100,0.4));
     }
 
-    /* Ad popup */
-    .ad-overlay {
+    .star-btn:focus {
+      outline: 3px solid #ffd700;
+      outline-offset: 4px;
+    }
+
+    /* Cloud panels that part on load – rounded scalloped shape */
+    .cloud {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 60%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Same small-pixel pattern as background clouds; gradient keeps wipe panels opaque */
+    .cloud-left {
+      left: 0;
+      background: linear-gradient(105deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, 8px 8px;
+      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
+      animation: partLeft 1.4s ease-in-out forwards;
+      clip-path: url(#leftCloudClip);
+      -webkit-clip-path: url(#leftCloudClip);
+    }
+
+    .cloud-right {
+      right: 0;
+      background: linear-gradient(75deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, 8px 8px;
+      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
+      animation: partRight 1.4s ease-in-out forwards;
+      clip-path: url(#rightCloudClip);
+      -webkit-clip-path: url(#rightCloudClip);
+    }
+
+    @keyframes partLeft {
+      to { transform: translateX(-100%); }
+    }
+
+    @keyframes partRight {
+      to { transform: translateX(100%); }
+    }
+
+    /* Layered transparent background clouds – small pixel pattern */
+    .bg-clouds {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
     }
 
-    .ad-overlay.is-visible {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .ad-popup {
-      position: relative;
-      background: linear-gradient(145deg, #1a0a0a 0%, #2d1515 100%);
-      border: 2px solid #ff3333;
-      border-radius: 16px;
-      padding: 2rem;
-      max-width: 420px;
-      width: 90%;
-      box-shadow: 0 0 40px rgba(255, 51, 51, 0.3), 0 20px 60px rgba(0, 0, 0, 0.5);
-    }
-
-    .ad-popup-close {
+    .bg-cloud {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      font-size: 1.25rem;
-      line-height: 1;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
+      background-color: transparent;
+      background-size: 8px 8px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(220,230,250,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      clip-path: url(#marioCloud1);
+      -webkit-clip-path: url(#marioCloud1);
+      animation: cloudDriftR 45s ease-in-out infinite;
     }
 
-    .ad-popup-close:hover {
-      background: rgba(255, 255, 255, 0.2);
+    @keyframes cloudDriftR {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(6%) translateY(1%); }
+    }
+    @keyframes cloudDriftL {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-5%) translateY(-0.5%); }
+    }
+    @keyframes cloudDriftR2 {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      33% { transform: translateX(4%) translateY(0.5%); }
+      66% { transform: translateX(-2%) translateY(-0.5%); }
+    }
+    @keyframes cloudDriftL2 {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      33% { transform: translateX(-4%) translateY(0); }
+      66% { transform: translateX(2%) translateY(0.5%); }
     }
 
-    .ad-popup .ad-badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: #ff6666;
-      margin-bottom: 0.75rem;
-    }
-
-    .ad-popup h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    .ad-popup .ad-brand {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.5rem;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      line-height: 1;
-      color: #fff;
-      text-transform: uppercase;
-      text-shadow:
-        0 0 20px rgba(255, 51, 51, 0.8),
-        0 0 40px rgba(255, 51, 51, 0.4),
-        0 2px 0 #cc0000,
-        0 4px 8px rgba(0, 0, 0, 0.6);
-      margin-bottom: 0.5rem;
-      -webkit-text-stroke: 1px rgba(255, 51, 51, 0.5);
-    }
-
-    .ad-popup .ad-tagline {
-      font-size: 1.1rem;
-      color: #ff9999;
-      font-weight: 600;
-      margin-bottom: 1.25rem;
-    }
-
-    .ad-popup .ad-drink-image {
-      display: block;
-      width: 100%;
-      max-width: 140px;
-      height: auto;
-      margin: 0 auto 1.25rem;
-    }
-
-    .ad-popup ul {
-      list-style: none;
-      margin-bottom: 1.5rem;
-    }
-
-    .ad-popup li {
-      padding: 0.5rem 0;
-      padding-left: 1.5rem;
-      position: relative;
-      color: #e0e0e0;
-      font-size: 0.95rem;
-    }
-
-    .ad-popup li::before {
-      content: '⚡';
-      position: absolute;
-      left: 0;
-    }
-
-    .ad-popup .btn-buy {
-      display: block;
-      width: 100%;
-      padding: 1rem 1.5rem;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      background: linear-gradient(180deg, #ff3333 0%, #cc0000 100%);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .ad-popup .btn-buy:hover {
-      transform: scale(1.02);
-      box-shadow: 0 4px 20px rgba(255, 51, 51, 0.5);
-    }
+    .bg-cloud-1 { width: 38%; height: 24%; left: -4%; top: 8%; clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 50s; animation-delay: 0s; }
+    .bg-cloud-2 { width: 32%; height: 19%; right: -6%; top: 22%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 55s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-3 { width: 48%; height: 21%; left: 22%; bottom: 12%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 60s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-4 { width: 26%; height: 17%; right: 12%; bottom: 28%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 48s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-5 { width: 20%; height: 13%; left: 8%; top: 42%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 52s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-6 { width: 28%; height: 15%; right: 22%; top: 52%; clip-path: url(#marioCloud1); animation-name: cloudDriftL; animation-duration: 58s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-7 { width: 36%; height: 19%; left: 38%; top: 4%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftR2; animation-duration: 42s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-8 { width: 24%; height: 14%; left: 4%; bottom: 38%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftL2; animation-duration: 50s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
   </style>
+  <!-- Pixelate filter + scalloped cloud shapes -->
+  <svg width="0" height="0" aria-hidden="true">
+    <defs>
+      <!-- Pixelated/chunky edge effect -->
+      <filter id="pixelate" x="-12%" y="-12%" width="124%" height="124%">
+        <feMorphology in="SourceGraphic" operator="dilate" radius="1.6"/>
+      </filter>
+      <!-- Parting clouds: more lump steps and varied depths for variation -->
+      <clipPath id="leftCloudClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0.02,0 L 1,0
+                 L 1,0.03 L 0.96,0.03 L 0.96,0.07 L 0.92,0.07 L 0.92,0.12 L 1,0.12 L 1,0.18 L 0.94,0.18 L 0.94,0.24 L 0.9,0.24 L 0.9,0.3 L 1,0.3 L 1,0.36 L 0.93,0.36 L 0.93,0.42 L 0.88,0.42 L 0.88,0.48 L 1,0.48 L 1,0.54 L 0.92,0.54 L 0.92,0.6 L 0.96,0.6 L 0.96,0.66 L 1,0.66 L 1,0.72 L 0.94,0.72 L 0.94,0.78 L 0.9,0.78 L 0.9,0.84 L 1,0.84 L 1,0.9 L 0.94,0.9 L 0.94,0.96 L 1,0.96 L 1,1
+                 L 0.02,1 Q -0.06,0.5 0.02,0 Z" />
+      </clipPath>
+      <clipPath id="rightCloudClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0.98,0 L 0,0
+                 L 0,0.03 L 0.04,0.03 L 0.04,0.07 L 0.08,0.07 L 0.08,0.12 L 0,0.12 L 0,0.18 L 0.06,0.18 L 0.06,0.24 L 0.1,0.24 L 0.1,0.3 L 0,0.3 L 0,0.36 L 0.07,0.36 L 0.07,0.42 L 0.12,0.42 L 0.12,0.48 L 0,0.48 L 0,0.54 L 0.08,0.54 L 0.08,0.6 L 0.04,0.6 L 0.04,0.66 L 0,0.66 L 0,0.72 L 0.06,0.72 L 0.06,0.78 L 0.1,0.78 L 0.1,0.84 L 0,0.84 L 0,0.9 L 0.06,0.9 L 0.06,0.96 L 0,0.96 L 0,1
+                 L 0.98,1 Q 1.06,0.5 0.98,0 Z" />
+      </clipPath>
+      <!-- Mario-style pixelated clouds with more lumps (multiple bumps) -->
+      <clipPath id="marioCloud1" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.55 L 0.15,0.55 L 0.15,0.35 L 0.35,0.35 L 0.35,0.1 L 0.5,0.1 L 0.5,0 L 0.65,0 L 0.65,0.1 L 0.85,0.35 L 0.85,0.55 L 1,0.55 L 1,1 Z" />
+      </clipPath>
+      <clipPath id="marioCloud2" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.6 L 0.12,0.6 L 0.12,0.35 L 0.28,0.35 L 0.28,0.15 L 0.45,0.15 L 0.45,0 L 0.55,0 L 0.55,0.15 L 0.72,0.35 L 0.72,0.6 L 0.88,0.6 L 0.88,0.35 L 1,0.35 L 1,1 Z" />
+      </clipPath>
+      <clipPath id="marioCloud3" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.5 L 0.1,0.5 L 0.1,0.25 L 0.25,0.25 L 0.25,0.05 L 0.4,0.05 L 0.4,0 L 0.6,0 L 0.6,0.05 L 0.75,0.25 L 0.75,0.5 L 0.9,0.5 L 0.9,0.25 L 1,0.25 L 1,1 Z" />
+      </clipPath>
+      <clipPath id="marioCloud4" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.5 L 0.08,0.5 L 0.08,0.3 L 0.22,0.3 L 0.22,0.08 L 0.38,0.08 L 0.38,0 L 0.5,0 L 0.5,0.08 L 0.62,0.08 L 0.62,0.3 L 0.78,0.3 L 0.78,0.5 L 1,0.5 L 1,1 Z" />
+      </clipPath>
+      <clipPath id="marioCloud5" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1 L 0,0.55 L 0.12,0.55 L 0.12,0.32 L 0.28,0.32 L 0.28,0.12 L 0.48,0.12 L 0.48,0 L 0.52,0 L 0.52,0.12 L 0.72,0.32 L 0.72,0.55 L 0.88,0.55 L 0.88,0.32 L 1,0.32 L 1,1 Z" />
+      </clipPath>
+    </defs>
+  </svg>
 </head>
 <body>
-  <!-- Energy drink ad popup -->
-  <div class="ad-overlay" id="adPopup" role="dialog" aria-label="Advertisement">
-    <div class="ad-popup">
-      <button type="button" class="ad-popup-close" id="adClose" aria-label="Close">×</button>
-      <span class="ad-badge">New</span>
-      <h2 class="ad-brand">24HR ENERGY</h2>
-      <p class="ad-tagline">Stay awake. Stay ahead.</p>
-      <svg class="ad-drink-image" viewBox="0 0 90 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <!-- Shadow -->
-          <filter id="canShadow" x="-20%" y="-10%" width="140%" height="120%">
-            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
-          </filter>
-          <!-- Body: vertical gradient (light top, dark bottom) -->
-          <linearGradient id="canBody" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#e85555"/>
-            <stop offset="15%" stop-color="#dd3333"/>
-            <stop offset="50%" stop-color="#b30000"/>
-            <stop offset="85%" stop-color="#8c0000"/>
-            <stop offset="100%" stop-color="#660000"/>
-          </linearGradient>
-          <!-- Curved highlight (center of can) -->
-          <linearGradient id="canHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#000" stop-opacity="0.25"/>
-            <stop offset="35%" stop-color="#fff" stop-opacity="0.35"/>
-            <stop offset="50%" stop-color="#fff" stop-opacity="0.5"/>
-            <stop offset="65%" stop-color="#fff" stop-opacity="0.25"/>
-            <stop offset="100%" stop-color="#000" stop-opacity="0.15"/>
-          </linearGradient>
-          <!-- Rim top (bright edge) -->
-          <linearGradient id="rimTop" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#e8e8e8"/>
-            <stop offset="40%" stop-color="#c0c0c0"/>
-            <stop offset="100%" stop-color="#707070"/>
-          </linearGradient>
-          <!-- Rim underside -->
-          <linearGradient id="rimUnder" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#505050"/>
-            <stop offset="100%" stop-color="#202020"/>
-          </linearGradient>
-          <!-- Label base with slight gradient -->
-          <linearGradient id="labelBg" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#fff" stop-opacity="0.12"/>
-            <stop offset="50%" stop-color="#fff" stop-opacity="0.08"/>
-            <stop offset="100%" stop-color="#fff" stop-opacity="0.05"/>
-          </linearGradient>
-          <!-- Pull tab metal -->
-          <linearGradient id="tabMetal" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#9a9a9a"/>
-            <stop offset="50%" stop-color="#6a6a6a"/>
-            <stop offset="100%" stop-color="#3a3a3a"/>
-          </linearGradient>
-        </defs>
-        <!-- Ground shadow -->
-        <ellipse cx="45" cy="212" rx="28" ry="6" fill="#000" opacity="0.25"/>
-        <!-- Can body (rounded rectangle for front face of cylinder) -->
-        <path d="M22 38 L68 38 L70 42 L70 198 L20 198 L20 42 Z" fill="url(#canBody)" filter="url(#canShadow)"/>
-        <!-- Curved highlight overlay -->
-        <path d="M22 38 L68 38 L70 42 L70 198 L20 198 L20 42 Z" fill="url(#canHighlight)"/>
-        <!-- Top rim (beveled) - top ellipse -->
-        <ellipse cx="45" cy="40" rx="24" ry="6" fill="url(#rimTop)"/>
-        <!-- Rim thickness (dark band under lip) -->
-        <path d="M21 44 L69 44 L70 48 L20 48 Z" fill="url(#rimUnder)"/>
-        <!-- Label area (slightly inset) -->
-        <path d="M26 72 L64 72 L65 76 L65 168 L25 168 L25 76 Z" fill="url(#labelBg)" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
-        <text x="45" y="102" text-anchor="middle" fill="#fff" font-family="Arial Black, sans-serif" font-size="16" font-weight="bold" letter-spacing="0.5">24HR</text>
-        <text x="45" y="120" text-anchor="middle" fill="#fff" font-family="Arial Black, sans-serif" font-size="16" font-weight="bold" letter-spacing="0.5">ENERGY</text>
-        <!-- Pull tab (on lid) -->
-        <path d="M38 50 L52 50 L52 54 L55 54 L55 64 L35 64 L35 54 L38 54 Z" fill="url(#tabMetal)" stroke="#444" stroke-width="0.5"/>
-        <ellipse cx="45" cy="52" rx="4" ry="2" fill="#555" stroke="#333" stroke-width="0.5"/>
-      </svg>
-      <ul>
-        <li><strong>24 hours of focus</strong> — No crash, no excuses.</li>
-        <li><strong>No more getting yelled at by the boss</strong> — Show up sharp every shift.</li>
-        <li><strong>More time to make money</strong> — Work longer, earn more.</li>
-      </ul>
-      <a href="#" class="btn-buy">Try it now</a>
-    </div>
+  <div class="bg-clouds" aria-hidden="true">
+    <div class="bg-cloud bg-cloud-1"></div>
+    <div class="bg-cloud bg-cloud-2"></div>
+    <div class="bg-cloud bg-cloud-3"></div>
+    <div class="bg-cloud bg-cloud-4"></div>
+    <div class="bg-cloud bg-cloud-5"></div>
+    <div class="bg-cloud bg-cloud-6"></div>
+    <div class="bg-cloud bg-cloud-7"></div>
+    <div class="bg-cloud bg-cloud-8"></div>
   </div>
+  <div class="cloud cloud-left" aria-hidden="true"></div>
+  <div class="cloud cloud-right" aria-hidden="true"></div>
 
-  <header>
-    <div class="container">
-      <span class="logo">S.L.M.B.U.R.</span>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="container">
-        <p class="tag">Join Us</p>
-        <h1>Sleep Could Be Yours</h1>
-        <p>If you are looking for a way to finally rest and help others, join us.</p>
-        <a href="#roles" class="btn btn-primary">View Open Positions</a>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <h2 class="section-title">Who Are We?</h2>
-        <div class="why-grid">
-          <div class="why-card">
-            <h3>Just Like You</h3>
-            <p>We, at S.L.M.B.U.R., believe that sleep is a right, not a privilege. We are a team of sleep enthusiasts who are dedicated to helping others get the sleep they need.</p>
-          </div>
-          <div class="why-card">
-            <h3>Guilt-free Sleep</h3>
-            <p> </p>
-          </div>
-          <div class="why-card">
-            <h3>Work that matters</h3>
-            <p>Contribute to projects that have real impact. We care about quality, integrity, and making a difference.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="roles">
-      <div class="container">
-        <h2 class="section-title">Open positions</h2>
-        <div class="roles-list">
-          <div class="role-item">
-            <div class="role-info">
-              <h3>Design Lead</h3>
-              <span>Design · Full-time · San Jose</span>
-            </div>
-            <a href="#" class="btn">Apply</a>
-          </div>
-          <div class="role-item">
-            <div class="role-info">
-              <h3>Front-End Developer</h3>
-              <span>Engineering · Full-time · Remote</span>
-            </div>
-            <a href="#" class="btn">Apply</a>
-          </div>
-          <div class="role-item">
-            <div class="role-info">
-              <h3>Project Coordinator</h3>
-              <span>Operations · Full-time · Hybrid</span>
-            </div>
-            <a href="#" class="btn">Apply</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <h2 class="section-title">Benefits & perks</h2>
-        <div class="benefits">
-          <ul>
-            <li>Health, dental & vision insurance</li>
-            <li>Flexible hours & remote options</li>
-            <li>Paid time off & holidays</li>
-            <li>Professional development budget</li>
-            <li>401(k) with company match</li>
-            <li>Team events & wellness programs</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta">
-      <div class="container">
-        <h2>Don't see the right fit?</h2>
-        <p>We're always interested in meeting talented people. Send us your resume and tell us what you're looking for.</p>
-        <a href="mailto:careers@amaracarrier.com" class="btn btn-primary">Get in touch</a>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>© 2026 S.L.M.B.U.R. <a href="#">Privacy</a> · <a href="#">Contact</a></p>
-    </div>
-  </footer>
-
-  <script>
-    (function () {
-      var popup = document.getElementById('adPopup');
-      var closeBtn = document.getElementById('adClose');
-
-      function showPopup() {
-        popup.classList.add('is-visible');
-      }
-
-      function hidePopup() {
-        popup.classList.remove('is-visible');
-      }
-
-      setTimeout(showPopup, 800);
-
-      closeBtn.addEventListener('click', hidePopup);
-      popup.addEventListener('click', function (e) {
-        if (e.target === popup) hidePopup();
-      });
-    })();
-  </script>
+  <div class="content">
+  <h1>Spirimal</h1>
+  <a href="page2.html" class="star-btn" aria-label="Start – go to next page">
+    <svg viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg" width="360" height="120">
+      <defs>
+        <linearGradient id="tailGradPx" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ffd54f"/>
+          <stop offset="70%" stop-color="#ffb300"/>
+          <stop offset="100%" stop-color="#ffb300" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Pixel tail: black outline then fill (each row = 8px) -->
+      <g id="tail-outline">
+        <rect x="48" y="40" width="312" height="8" fill="#000"/>
+        <rect x="48" y="48" width="312" height="8" fill="#000"/>
+        <rect x="48" y="56" width="312" height="8" fill="#000"/>
+        <rect x="48" y="64" width="312" height="8" fill="#000"/>
+        <rect x="48" y="72" width="312" height="8" fill="#000"/>
+      </g>
+      <g id="tail-fill">
+        <rect x="52" y="42" width="304" height="6" fill="url(#tailGradPx)" opacity="0.95"/>
+        <rect x="52" y="50" width="300" height="6" fill="url(#tailGradPx)" opacity="0.9"/>
+        <rect x="52" y="58" width="296" height="6" fill="url(#tailGradPx)"/>
+        <rect x="52" y="66" width="292" height="6" fill="url(#tailGradPx)" opacity="0.9"/>
+        <rect x="52" y="74" width="288" height="6" fill="url(#tailGradPx)" opacity="0.85"/>
+      </g>
+      <!-- Pixel star: 5-point star made of 8x8 blocks (outline in black, fill in gold) -->
+      <g id="star-outline">
+        <rect x="8" y="44" width="8" height="8" fill="#000"/>
+        <rect x="16" y="44" width="8" height="8" fill="#000"/>
+        <rect x="24" y="44" width="8" height="8" fill="#000"/>
+        <rect x="16" y="52" width="8" height="8" fill="#000"/>
+        <rect x="24" y="52" width="8" height="8" fill="#000"/>
+        <rect x="32" y="52" width="8" height="8" fill="#000"/>
+        <rect x="0" y="60" width="8" height="8" fill="#000"/>
+        <rect x="8" y="60" width="8" height="8" fill="#000"/>
+        <rect x="16" y="60" width="8" height="8" fill="#000"/>
+        <rect x="24" y="60" width="8" height="8" fill="#000"/>
+        <rect x="32" y="60" width="8" height="8" fill="#000"/>
+        <rect x="40" y="60" width="8" height="8" fill="#000"/>
+        <rect x="8" y="68" width="8" height="8" fill="#000"/>
+        <rect x="16" y="68" width="8" height="8" fill="#000"/>
+        <rect x="24" y="68" width="8" height="8" fill="#000"/>
+        <rect x="32" y="68" width="8" height="8" fill="#000"/>
+        <rect x="16" y="76" width="8" height="8" fill="#000"/>
+        <rect x="24" y="76" width="8" height="8" fill="#000"/>
+      </g>
+      <g id="star-fill">
+        <rect x="9" y="45" width="6" height="6" fill="#ffeb3b"/>
+        <rect x="17" y="45" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="45" width="6" height="6" fill="#ffeb3b"/>
+        <rect x="17" y="53" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="53" width="6" height="6" fill="#fff59d"/>
+        <rect x="33" y="53" width="6" height="6" fill="#ffd54f"/>
+        <rect x="9" y="61" width="6" height="6" fill="#ffd54f"/>
+        <rect x="17" y="61" width="6" height="6" fill="#fff59d"/>
+        <rect x="25" y="61" width="6" height="6" fill="#ffc107"/>
+        <rect x="33" y="61" width="6" height="6" fill="#fff59d"/>
+        <rect x="41" y="61" width="6" height="6" fill="#ffd54f"/>
+        <rect x="9" y="69" width="6" height="6" fill="#ffeb3b"/>
+        <rect x="17" y="69" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="69" width="6" height="6" fill="#fff59d"/>
+        <rect x="33" y="69" width="6" height="6" fill="#ffd54f"/>
+        <rect x="17" y="77" width="6" height="6" fill="#ffd54f"/>
+        <rect x="25" y="77" width="6" height="6" fill="#ffeb3b"/>
+      </g>
+      <!-- "Start" text – pixel font -->
+      <text x="210" y="72" text-anchor="middle" fill="#ffeb3b" font-family="'Press Start 2P', monospace" font-size="14" font-weight="bold" stroke="#1a1a1a" stroke-width="4" paint-order="stroke">Start</text>
+    </svg>
+  </a>
+  </div>
 </body>
 </html>

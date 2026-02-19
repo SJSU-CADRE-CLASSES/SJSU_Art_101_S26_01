@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="data.js"></script>
     <style>
         :root {
-            --bg: #0f0f12;
+            --bg: #380751;
             --surface: #1a1a1f;
             --text: #e8e6e3;
             --muted: #8a8784;
@@ -99,6 +100,11 @@
         }
         tr:nth-child(even) { background: rgba(255,255,255,0.02); }
         td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+        .date-link {
+            color: inherit;
+            text-decoration: none;
+        }
+        .date-link:hover { text-decoration: underline; }
         .sleep-col { color: var(--sleep); }
         .workout-col { color: var(--workout); }
         .screen-col { color: var(--screen); }
@@ -151,37 +157,12 @@
                 <tbody id="table-body"></tbody>
             </table>
         </div>
+
     </div>
 
     <script>
-        // —— Edit your data here ——
-        // Add your daily numbers. Sleep & screen in HOURS; workout in HOURS.
-        // Replace the sample values with your real data.
-        const data = [
-            { date: "2026-01-18", sleep: 7.5, workout: 0.5, screen: 5.2 },
-            { date: "2026-01-19", sleep: 6.5, workout: 1, screen: 6.8 },
-            { date: "2026-01-20", sleep: 8, workout: 0, screen: 4.5 },
-            { date: "2026-01-21", sleep: 7, workout: 0.75, screen: 6 },
-            { date: "2026-01-22", sleep: 7.5, workout: 0.5, screen: 5.5 },
-            { date: "2026-01-23", sleep: 6, workout: 1.25, screen: 7.2 },
-            { date: "2026-01-24", sleep: 8.5, workout: 0, screen: 4 },
-            { date: "2026-01-25", sleep: 7, workout: 1, screen: 5.8 },
-            { date: "2026-01-26", sleep: 7.5, workout: 0.5, screen: 6.2 },
-            { date: "2026-01-27", sleep: 6.5, workout: 0.75, screen: 5.5 },
-            { date: "2026-01-28", sleep: 8, workout: 1, screen: 4.8 },
-            { date: "2026-01-29", sleep: 7, workout: 0.5, screen: 6.5 },
-            { date: "2026-01-30", sleep: 7.5, workout: 0, screen: 5 },
-            { date: "2026-01-31", sleep: 6.5, workout: 1.5, screen: 6 },
-            { date: "2026-02-01", sleep: 8, workout: 0.5, screen: 5.2 },
-            { date: "2026-02-02", sleep: 7, workout: 1, screen: 5.5 },
-            { date: "2026-02-03", sleep: 7.5, workout: 0, screen: 4.8 },
-            { date: "2026-02-04", sleep: 6.5, workout: 0.75, screen: 6.2 },
-            { date: "2026-02-05", sleep: 7.5, workout: 0.5, screen: 5.8 },
-            { date: "2026-02-06", sleep: 7, workout: 1.25, screen: 5 },
-            { date: "2026-02-07", sleep: 8, workout: 0.5, screen: 4.5 },
-            { date: "2026-02-08", sleep: 7, workout: 1, screen: 5.5 },
-            { date: "2026-02-09", sleep: 7.5, workout: 0.75, screen: 5.2 }
-        ];
+        const data = window.TRACKING_DATA;
+        const toHrsMins = window.toHrsMins;
 
         const sleep = data.map(d => d.sleep);
         const workout = data.map(d => d.workout);
@@ -190,16 +171,6 @@
             const d2 = new Date(d.date);
             return d2.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         });
-
-        // Format decimal hours as "Xh Ym"
-        const toHrsMins = (dec) => {
-            const h = Math.floor(dec);
-            const m = Math.round((dec - h) * 60);
-            if (h === 0 && m === 0) return '0h';
-            if (h === 0) return m + 'm';
-            if (m === 0) return h + 'h';
-            return h + 'h ' + m + 'm';
-        };
 
         // Summary stats
         const avg = arr => arr.reduce((a,b) => a+b, 0) / arr.length;
@@ -289,7 +260,7 @@
             const tr = document.createElement('tr');
             const fmt = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             tr.innerHTML = `
-                <td>${fmt}</td>
+                <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
                 <td class="num sleep-col">${toHrsMins(d.sleep)}</td>
                 <td class="num workout-col">${toHrsMins(d.workout)}</td>
                 <td class="num screen-col">${toHrsMins(d.screen)}</td>
