@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arm reveal — scroll to see it take shape</title>
+  <link href="https://fonts.cdnfonts.com/css/vcr-osd-mono" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,7 +14,7 @@
       <div class="points-layer" id="pointsLayer"></div>
     </div>
   </div>
-  <p class="hint" id="hint">Scroll down to watch the points form the shape</p>
+  <p class="hint" id="hint">Scroll down</p>
 
   <!-- Phase 2: explanation layout (fades in at bottom of scroll) -->
   <div class="phase2" id="phase2">
@@ -30,16 +31,22 @@
     </div>
     <div class="charts" id="charts">
       <div class="chart-card">
-        <h4>Exercise type vs. weekly frequency</h4>
-        <div class="bar-chart" id="barChart"></div>
+        <h4 class="chart-title">Exercise type vs. weekly frequency</h4>
+        <div class="chart-wrapper">
+          <div class="bar-chart" id="barChart"></div>
+        </div>
       </div>
       <div class="chart-card">
-        <h4>Progress over 12 weeks</h4>
-        <div class="line-chart" id="lineChart"></div>
+        <h4 class="chart-title">Progress over 12 weeks</h4>
+        <div class="chart-wrapper">
+          <div class="line-chart" id="lineChart"></div>
+        </div>
       </div>
       <div class="chart-card">
-        <h4>Intensity vs. duration correlation</h4>
-        <div class="scatter-chart" id="scatterChart"></div>
+        <h4 class="chart-title">Intensity vs. duration correlation</h4>
+        <div class="chart-wrapper">
+          <div class="scatter-chart" id="scatterChart"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -53,6 +60,13 @@
         <feTile result="a"/>
         <feComposite in="SourceGraphic" in2="a" operator="in"/>
         <feMorphology operator="dilate" radius="3"/>
+      </filter>
+      <filter id="pixelate-subtle" x="0" y="0">
+        <feFlood x="0" y="0" height="1" width="1"/>
+        <feComposite width="4" height="4"/>
+        <feTile result="a"/>
+        <feComposite in="SourceGraphic" in2="a" operator="in"/>
+        <feMorphology operator="dilate" radius="1"/>
       </filter>
     </defs>
   </svg>

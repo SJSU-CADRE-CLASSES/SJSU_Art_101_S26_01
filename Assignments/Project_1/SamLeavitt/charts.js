@@ -15,16 +15,17 @@
   function drawBarChart() {
     const el = document.getElementById('barChart');
     if (!el) return;
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    if (w <= 0 || h <= 0) return;
     const dpr = window.devicePixelRatio || 1;
-    const canvas = document.createElement('canvas');
+    let canvas = el.querySelector('canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+    }
     canvas.width = w * dpr;
     canvas.height = h * dpr;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    el.innerHTML = '';
-    el.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -47,16 +48,17 @@
   function drawLineChart() {
     const el = document.getElementById('lineChart');
     if (!el) return;
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    if (w <= 0 || h <= 0) return;
     const dpr = window.devicePixelRatio || 1;
-    const canvas = document.createElement('canvas');
+    let canvas = el.querySelector('canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+    }
     canvas.width = w * dpr;
     canvas.height = h * dpr;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    el.innerHTML = '';
-    el.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -98,16 +100,17 @@
   function drawScatterChart() {
     const el = document.getElementById('scatterChart');
     if (!el) return;
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    if (w <= 0 || h <= 0) return;
     const dpr = window.devicePixelRatio || 1;
-    const canvas = document.createElement('canvas');
+    let canvas = el.querySelector('canvas');
+    if (!canvas) {
+      canvas = document.createElement('canvas');
+      el.appendChild(canvas);
+    }
     canvas.width = w * dpr;
     canvas.height = h * dpr;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    el.innerHTML = '';
-    el.appendChild(canvas);
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -129,10 +132,21 @@
     });
   }
 
-  function init() {
+  function redrawAll() {
     drawBarChart();
     drawLineChart();
     drawScatterChart();
+  }
+
+  function init() {
+    redrawAll();
+    const chartIds = ['barChart', 'lineChart', 'scatterChart'];
+    chartIds.forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const ro = new ResizeObserver(redrawAll);
+      ro.observe(el);
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -141,9 +155,9 @@
     init();
   }
 
-  window.addEventListener('resize', function () {
-    drawBarChart();
-    drawLineChart();
-    drawScatterChart();
-  });
+  window.addEventListener('resize', redrawAll);
+  window.addEventListener('scroll', function () {
+    const sh = document.documentElement.scrollHeight - window.innerHeight;
+    if (sh > 0 && window.scrollY / sh > 0.88) redrawAll();
+  }, { passive: true });
 })();
