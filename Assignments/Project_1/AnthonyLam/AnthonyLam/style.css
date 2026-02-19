@@ -106,10 +106,21 @@ h1{
   line-height:1.5;
   opacity:.6;
 }
-.enter-link{
-  display:block;
+.enter{
+  display:block;         
+  width:fit-content;
+  margin:60px auto;      
   text-align:center;
-  margin-top:40px;
+
+  font-size:64px;       
+  letter-spacing:3px;
+
+  color:#111;              
+  text-decoration:none;    
+}
+
+.enter:hover{
+  opacity:.6;
 }
 
 .day{ display:flex; align-items:center; gap:10px; margin:10px 0; }
