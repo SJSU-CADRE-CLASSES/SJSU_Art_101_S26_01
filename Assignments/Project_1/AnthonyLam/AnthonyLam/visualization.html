@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE — Visualization</title>
-  <link rel="stylesheet" href="./style.css?v=1005">
+  <link rel="stylesheet" href="./style.css?v=1006">
 </head>
 
 <body data-page="viz">
@@ -16,143 +16,126 @@
 <div id="blob-stage"></div>
 <div id="tip" class="tip"></div>
 
-<script src="./data.js?v=1005"></script>
+<script src="./data.js?v=1006"></script>
 
 <script>
 const stage = document.getElementById("blob-stage");
 const tip = document.getElementById("tip");
-
 const ITEMS = (typeof APPS !== "undefined") ? APPS : [];
 
 if (!ITEMS.length) {
   stage.innerHTML = `<p style="opacity:.7">No APPS data found in data.js.</p>`;
 } else {
 
+  // ===== TUNING (change these if needed) =====
+  const PAD = 40;            // keeps blobs away from stage edges
+  const GAP = 170;           // BIGGER = more separation (prevents blur-touch)
+  const REPEL = 0.018;       // stronger push-apart
+  const DAMP = 0.975;        // closer to 1 = slower movement
+  const BOUNCE = 0.90;       // wall bounce energy
+  const DRIFT = 0.040;       // smooth lava drift amount
+  const ACTIVE_REPEL = 1.55; // extra repel when one is active
+
   const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
-  const placed = [];
+
   const blobs = [];
+  const placed = [];
 
-  // ---------- placement (keeps them initially apart) ----------
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+  // ---------- initial placement (more strict so they start apart) ----------
   function tryPlace(sizePx){
-    const stageRect = stage.getBoundingClientRect();
-    const maxX = stageRect.width - sizePx;
-    const maxY = stageRect.height - sizePx;
+    const rect = stage.getBoundingClientRect();
+    const r = sizePx/2;
 
-    for (let attempt = 0; attempt < 700; attempt++){
-      const x = Math.random() * Math.max(maxX,1);
-      const y = Math.random() * Math.max(maxY,1);
+    const minX = PAD;
+    const minY = PAD;
+    const maxX = rect.width  - sizePx - PAD;
+    const maxY = rect.height - sizePx - PAD;
 
-      const cx = x + sizePx/2;
-      const cy = y + sizePx/2;
+    for (let attempt = 0; attempt < 1600; attempt++){
+      const x = minX + Math.random() * Math.max(maxX - minX, 1);
+      const y = minY + Math.random() * Math.max(maxY - minY, 1);
+
+      const cx = x + r;
+      const cy = y + r;
 
       let ok = true;
-      for(const p of placed){
-        const dist = Math.hypot(cx-p.cx, cy-p.cy);
-        const minDist = (sizePx/2)+(p.size/2)+110; // bigger spacing so less merging
-        if(dist < minDist){ ok=false; break; }
+      for (const p of placed){
+        const dist = Math.hypot(cx - p.cx, cy - p.cy);
+        const minDist = r + p.r + GAP;
+        if (dist < minDist){ ok=false; break; }
       }
 
-      if(ok){
-        placed.push({cx,cy,size:sizePx});
-        return {x,y,cx,cy};
+      if (ok){
+        placed.push({cx, cy, r});
+        return {x, y};
       }
     }
 
-    // fallback
-    const stageRect2 = stage.getBoundingClientRect();
-    const x = Math.random() * Math.max(stageRect2.width - sizePx, 1);
-    const y = Math.random() * Math.max(stageRect2.height - sizePx, 1);
-    return {x,y,cx:x+sizePx/2, cy:y+sizePx/2};
+    // fallback (physics will still separate them)
+    const x = minX + Math.random() * Math.max(maxX - minX, 1);
+    const y = minY + Math.random() * Math.max(maxY - minY, 1);
+    return {x, y};
   }
 
-  // ---------- active “push aside” (your original behavior) ----------
-  function setActive(activeBlob, labelText){
-    if (labelText){
-      tip.textContent = labelText;
-      tip.style.opacity = "1";
-    }
+  // ---------- active behavior (push others away + dim) ----------
+  let activeIndex = -1;
+
+  function setActive(idx, labelText){
+    activeIndex = idx;
+
+    tip.textContent = labelText;
+    tip.style.opacity = "1";
 
     document.querySelectorAll(".blob").forEach(b => b.classList.add("dim"));
-    activeBlob.classList.remove("dim");
-    activeBlob.classList.add("active");
-
-    const a = blobs.find(o => o.el === activeBlob);
-    if (!a) return;
-
-    const strength = 170;
-    const extraGap  = 90;
-
-    blobs.forEach(o => {
-      if (o.el === activeBlob) return;
-
-      const dx = o.cx - a.cx;
-      const dy = o.cy - a.cy;
-      const dist = Math.max(Math.hypot(dx, dy), 0.001);
-
-      const radius = (a.size/2) + (o.size/2) + extraGap;
-      if (dist > radius) return;
-
-      const t = 1 - (dist / radius);
-      const push = strength * t;
-
-      const ux = dx / dist;
-      const uy = dy / dist;
-
-      o.vx += ux * push * 0.02;
-      o.vy += uy * push * 0.02;
-    });
+    blobs[idx].el.classList.remove("dim");
+    blobs[idx].el.classList.add("active");
   }
 
   function clearActive(){
+    activeIndex = -1;
     tip.style.opacity = "0";
-    document.querySelectorAll(".blob")
-      .forEach(b => b.classList.remove("dim","active"));
+    document.querySelectorAll(".blob").forEach(b => b.classList.remove("dim","active"));
   }
 
   // ---------- build blobs ----------
-  ITEMS.forEach(item => {
-
-    const blob = document.createElement("div");
-    blob.className = "blob";
-
+  ITEMS.forEach((item, idx) => {
     const h = Number(item.hours || 0);
-    const size = 260 + (h/maxH)*420;
 
-    blob.style.width = size+"px";
-    blob.style.height = size+"px";
+    // keep big, but feasible to separate
+    const size = 240 + (h/maxH) * 360;
+    const r = size/2;
+
+    const el = document.createElement("div");
+    el.className = "blob";
+    el.style.width = size + "px";
+    el.style.height = size + "px";
+    el.style.background = `radial-gradient(circle, ${item.color} 0%, rgba(255,255,255,0) 72%)`;
+
+    stage.appendChild(el);
 
     const pos = tryPlace(size);
 
-    blob.style.left = "0px";
-    blob.style.top  = "0px";
-
-    blob.style.background =
-      `radial-gradient(circle,
-        ${item.color} 0%,
-        rgba(255,255,255,0) 72%)`;
-
-    stage.appendChild(blob);
-
-    // store physics state
     blobs.push({
-      el: blob,
+      el,
       size,
+      r,
       x: pos.x,
       y: pos.y,
-      cx: pos.cx,
-      cy: pos.cy,
-      vx: (Math.random()-0.5)*0.5,   // slow start
-      vy: (Math.random()-0.5)*0.5,
+      vx: (Math.random()-0.5) * 0.9,
+      vy: (Math.random()-0.5) * 0.9,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.006 + Math.random() * 0.010,
       label: `${item.app} — ${h.toFixed(1)} HOURS`
     });
 
-    const show = () => setActive(blob, `${item.app} — ${h.toFixed(1)} HOURS`);
+    const show = () => setActive(idx, blobs[idx].label);
 
-    blob.addEventListener("mouseenter", show);
-    blob.addEventListener("click", show);
-    blob.addEventListener("touchstart", (e)=>{ e.preventDefault(); show(); }, {passive:false});
-
-    blob.addEventListener("mouseleave", clearActive);
+    el.addEventListener("mouseenter", show);
+    el.addEventListener("click", show);
+    el.addEventListener("touchstart", (e)=>{ e.preventDefault(); show(); }, {passive:false});
+    el.addEventListener("mouseleave", clearActive);
   });
 
   // ---------- tooltip follows mouse ----------
@@ -161,35 +144,40 @@ if (!ITEMS.length) {
     tip.style.top =(e.clientY+14)+"px";
   });
 
-  stage.addEventListener("click", (e)=>{
+  stage.addEventListener("click",(e)=>{
     if (e.target === stage) clearActive();
   });
 
-  // ---------- repel physics (prevents merging) ----------
-  const GAP = 90;        // increase = more spacing between blobs
-  const REPEL = 0.02;    // increase = stronger repel
-  const DAMP = 0.965;    // closer to 1 = slower float
-  const WANDER = 0.02;   // tiny randomness (no “sway”)
-
+  // ---------- physics loop (repel ALWAYS + smooth drift + wall bounce) ----------
   function animate(){
     const rect = stage.getBoundingClientRect();
 
+    // smooth drift (lava feel, not sway)
+    blobs.forEach(o => {
+      o.phase += o.speed;
+      o.vx += Math.cos(o.phase) * DRIFT;
+      o.vy += Math.sin(o.phase * 1.07) * DRIFT;
+    });
+
     // repel all pairs
-    for (let i=0;i<blobs.length;i++){
-      for (let j=i+1;j<blobs.length;j++){
+    for (let i=0; i<blobs.length; i++){
+      for (let j=i+1; j<blobs.length; j++){
         const a = blobs[i];
         const b = blobs[j];
 
-        const ax = a.x + a.size/2;
-        const ay = a.y + a.size/2;
-        const bx = b.x + b.size/2;
-        const by = b.y + b.size/2;
+        const ax = a.x + a.r;
+        const ay = a.y + a.r;
+        const bx = b.x + b.r;
+        const by = b.y + b.r;
 
-        const dx = bx - ax;
-        const dy = by - ay;
-        const dist = Math.max(Math.hypot(dx,dy), 0.001);
+        let dx = bx - ax;
+        let dy = by - ay;
+        let dist = Math.hypot(dx,dy) || 0.0001;
 
-        const minDist = (a.size/2) + (b.size/2) + GAP;
+        const activeBoost =
+          (i === activeIndex || j === activeIndex) ? ACTIVE_REPEL : 1;
+
+        const minDist = a.r + b.r + GAP * activeBoost;
 
         if (dist < minDist){
           const overlap = (minDist - dist);
@@ -206,32 +194,25 @@ if (!ITEMS.length) {
       }
     }
 
-    // update motion
-    blobs.forEach(o => {
-      // tiny random drift (organic, not swaying)
-      o.vx += (Math.random()-0.5) * WANDER;
-      o.vy += (Math.random()-0.5) * WANDER;
-
-      // damping (slows down)
+    // integrate + damping + walls
+    blobs.forEach((o, idx) => {
       o.vx *= DAMP;
       o.vy *= DAMP;
 
       o.x += o.vx;
       o.y += o.vy;
 
-      // keep inside stage
-      const maxX = Math.max(rect.width - o.size, 1);
-      const maxY = Math.max(rect.height - o.size, 1);
+      const minX = PAD;
+      const minY = PAD;
+      const maxX = rect.width  - o.size - PAD;
+      const maxY = rect.height - o.size - PAD;
 
-      if (o.x < 0){ o.x = 0; o.vx *= -0.6; }
-      if (o.y < 0){ o.y = 0; o.vy *= -0.6; }
-      if (o.x > maxX){ o.x = maxX; o.vx *= -0.6; }
-      if (o.y > maxY){ o.y = maxY; o.vy *= -0.6; }
+      if (o.x < minX){ o.x = minX; o.vx = Math.abs(o.vx) * BOUNCE; }
+      if (o.x > maxX){ o.x = maxX; o.vx = -Math.abs(o.vx) * BOUNCE; }
+      if (o.y < minY){ o.y = minY; o.vy = Math.abs(o.vy) * BOUNCE; }
+      if (o.y > maxY){ o.y = maxY; o.vy = -Math.abs(o.vy) * BOUNCE; }
 
-      // keep stored centers updated (for active push)
-      o.cx = o.x + o.size/2;
-      o.cy = o.y + o.size/2;
-
+      // render with transform (smooth)
       o.el.style.transform = `translate(${o.x}px, ${o.y}px)`;
     });
 
