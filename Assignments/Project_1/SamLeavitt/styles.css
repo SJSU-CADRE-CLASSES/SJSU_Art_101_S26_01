@@ -1,7 +1,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: system-ui, sans-serif;
+  font-family: 'VCR OSD Mono', monospace;
   background: #0f0f12;
   color: #e0e0e0;
   min-height: 100vh;
@@ -44,6 +44,12 @@ body {
   pointer-events: auto;
 }
 .hint.faded { opacity: 0.2; }
+.hint.hint-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
 
 /* Phase 2: explanation layout */
 .phase2 {
@@ -54,14 +60,14 @@ body {
   transition: opacity 0.5s ease;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0 2rem;
+  align-items: stretch;
+  padding: 0 1.5rem;
   box-sizing: border-box;
 }
 
 .legend {
   flex-shrink: 0;
-  margin-top: 28vh;
+  margin-top: 42vh;
   text-align: center;
   opacity: var(--legend-opacity, 0);
   transition: opacity 0.5s ease 0.1s;
@@ -100,8 +106,8 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  max-width: 900px;
-  margin-top: 2rem;
+  width: 100%;
+  margin-top: 2.5rem;
   padding-bottom: 3rem;
   opacity: var(--charts-opacity, 0);
   transition: opacity 0.5s ease 0.3s;
@@ -111,20 +117,35 @@ body {
   background: rgba(30, 30, 36, 0.9);
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.chart-card h4 {
+.chart-title {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #a0a0a0;
+  color: #e0e0e0;
   margin-bottom: 0.75rem;
   text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-wrapper {
+  filter: url(#pixelate-subtle);
+  overflow: hidden;
+  border-radius: 4px;
 }
 
 .bar-chart, .line-chart, .scatter-chart {
-  height: 120px;
+  height: 180px;
+  width: 100%;
+  min-width: 0;
   position: relative;
+}
+
+.bar-chart canvas, .line-chart canvas, .scatter-chart canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 @media (max-width: 700px) {

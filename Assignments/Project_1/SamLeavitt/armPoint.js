@@ -6,8 +6,11 @@
   const phase2 = document.getElementById('phase2');
   const numPoints = 500;
 
-  const PHASE2_START = 0.85;
-  const PHASE2_FULL = 0.95;
+  const PHASE2_START = 0.90;
+  const PHASE2_FULL = 0.98;
+  const BLINK_DUR = 200;
+  const RIPPLE_DUR = 280;
+  const RIPPLE_PIXEL = 6;
 
   const totalLength = pathEl.getTotalLength();
   const pathX = [];
@@ -46,7 +49,9 @@
       brightness: 0.35 + 0.65 * ((size - 2) / 5),
       appearAt: Math.random() * 0.70,
       delay: Math.random() * 0.12,
-      colorIndex: i % colors.length  // cycles through exercise types
+      colorIndex: i % colors.length,
+      blinkStart: null,
+      isLarge: largeStart
     });
   }
 
@@ -72,7 +77,7 @@
 
   function draw() {
     const raw = getScrollProgress();
-    const moveRaw = Math.max(0, Math.min(1, (raw - 0.78) / 0.17));
+    const moveRaw = Math.max(0, Math.min(1, (raw - 0.78) / 0.10));
     const p = easeOutCubic(moveRaw);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -112,18 +117,95 @@
 
       const drawSize = pt.startSize + (pt.size - pt.startSize) * q;
       const alpha = visible * pt.brightness;
-      const [r, g, b] = colors[pt.colorIndex];
+      let r, g, b;
+      const atFullOpacity = visible >= 0.9 && q < 0.05;
+      if (atFullOpacity) {
+        if (pt.blinkStart === null) pt.blinkStart = performance.now();
+        const elapsed = performance.now() - pt.blinkStart;
+        if (elapsed < BLINK_DUR) {
+          const peak = BLINK_DUR * 0.3;
+          const mix = elapsed < peak
+            ? elapsed / peak
+            : Math.max(0, 1 - (elapsed - peak) / (BLINK_DUR - peak));
+          const [cr, cg, cb] = colors[pt.colorIndex];
+          r = mix * 255 + (1 - mix) * cr;
+          g = mix * 255 + (1 - mix) * cg;
+          b = mix * 255 + (1 - mix) * cb;
+        } else {
+          [r, g, b] = colors[pt.colorIndex];
+        }
+      } else {
+        [r, g, b] = colors[pt.colorIndex];
+      }
       ctx.beginPath();
       ctx.arc(x, y, drawSize / 2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+      ctx.fillStyle = 'rgba(' + Math.round(r) + ',' + Math.round(g) + ',' + Math.round(b) + ',' + alpha + ')';
       ctx.fill();
     }
 
-    hint.classList.toggle('faded', p > 0.85 || phase2Eased > 0.3);
+    var now = performance.now();
+    for (var i = 0; i < numPoints; i++) {
+      var pt = points[i];
+      if (!pt.isLarge || pt.blinkStart === null) continue;
+      var elapsed = now - pt.blinkStart;
+      if (elapsed >= RIPPLE_DUR) continue;
+      var visible = raw >= pt.appearAt ? Math.min(1, (raw - pt.appearAt) / 0.15) : 0;
+      if (visible <= 0) continue;
+      var q = Math.max(0, Math.min(1, (p - pt.delay) / (1 - pt.delay)));
+      var ex = ox + pathX[i] * scale;
+      var ey = oy + pathY[i] * scale;
+      var x = pt.startX * w + (ex - pt.startX * w) * q;
+      var y = pt.startY * h + (ey - pt.startY * h) * q;
+      var drawSize = pt.startSize + (pt.size - pt.startSize) * q;
+      var baseRadius = drawSize / 2;
+      var rippleProgress = elapsed / RIPPLE_DUR;
+      var rippleRadius = baseRadius + rippleProgress * baseRadius * 3;
+      var rippleAlpha = (1 - rippleProgress) * 0.9 * visible * pt.brightness;
+      var px = RIPPLE_PIXEL;
+      ctx.fillStyle = 'rgba(255,255,255,' + rippleAlpha + ')';
+      for (var a = 0; a < Math.PI * 2; a += 0.15) {
+        var rx = x + Math.cos(a) * rippleRadius;
+        var ry = y + Math.sin(a) * rippleRadius;
+        var cellX = Math.floor(rx / px) * px;
+        var cellY = Math.floor(ry / px) * px;
+        ctx.fillRect(cellX, cellY, px, px);
+      }
+    }
+
+    if (!hint.classList.contains('hint-hidden')) {
+      hint.classList.toggle('faded', p > 0.85 || phase2Eased > 0.3);
+    }
+
   }
 
   let raf = null;
+  let hintHideScheduled = false;
+  let animating = false;
+  function tick() {
+    draw();
+    var raw = getScrollProgress();
+    var anyBlinking = points.some(function (pt) {
+      return pt.blinkStart !== null && (performance.now() - pt.blinkStart) < Math.max(BLINK_DUR, RIPPLE_DUR);
+    });
+    if ((raw >= 0.7 && raw <= 0.95) || anyBlinking) {
+      requestAnimationFrame(tick);
+    } else {
+      animating = false;
+    }
+  }
   function onScroll() {
+    if (!hintHideScheduled && window.scrollY > 10) {
+      hintHideScheduled = true;
+      setTimeout(function () {
+        hint.classList.add('hint-hidden');
+      }, 3000);
+    }
+    var raw = getScrollProgress();
+    var inFormationZone = raw >= 0.5 && raw <= 0.95;
+    if (inFormationZone && !animating) {
+      animating = true;
+      tick();
+    }
     if (raf) return;
     raf = requestAnimationFrame(function () {
       raf = null;
