@@ -36,6 +36,16 @@ app.get('/', (req, res) => {
 // Serve other static files from the "public" folder (e.g. /index.html, /style.css)
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+// Listen on all interfaces (0.0.0.0) so connections work on Windows
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running. Open in your browser:`);
+  console.log(`  http://localhost:${PORT}`);
+  console.log(`  http://127.0.0.1:${PORT}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Try: set PORT=8080 && npm start`);
+  } else {
+    console.error('Server error:', err.message);
+  }
+  process.exit(1);
 });
