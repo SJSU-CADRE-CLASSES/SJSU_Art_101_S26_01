@@ -1,4 +1,6 @@
-/* ---- GLOBAL STYLE ---- */
+/* =========================
+   GLOBAL STYLE
+========================= */
 
 body{
   font-family:"Bungee Tint", sans-serif;
@@ -7,31 +9,42 @@ body{
   margin:40px;
   letter-spacing:1px;
 
-  /* RED LAVA BLOBS ON WHITE */
-  background:
-    radial-gradient(circle at 20% 30%, #ff2a2a, transparent 45%),
-    radial-gradient(circle at 80% 60%, #ff0033, transparent 45%),
-    radial-gradient(circle at 50% 80%, #ff5c5c, transparent 40%),
-    #ffffff;
+  /* WHITE BASE + RED LAVA BLOBS */
+  background-color:#ffffff;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255,0,40,.95) 0%, rgba(255,0,40,0) 55%),
+    radial-gradient(circle at 70% 35%, rgba(255,60,60,.85) 0%, rgba(255,60,60,0) 60%),
+    radial-gradient(circle at 40% 78%, rgba(255,0,0,.75) 0%, rgba(255,0,0,0) 62%),
+    radial-gradient(circle at 88% 80%, rgba(255,120,120,.65) 0%, rgba(255,120,120,0) 58%);
 
-  background-size:200% 200%;
-  animation:lavaMove 18s ease-in-out infinite;
+  /* prevents repeating seams */
+  background-repeat:no-repeat;
+  background-size:140% 140%;
+  background-attachment:fixed;
+
+  animation:blobMove 16s ease-in-out infinite alternate;
 }
 
 
-/* title */
+/* =========================
+   TITLE + LAYOUT
+========================= */
+
 h1{
-  color:#F5A458;
+  color:#8b0000;
   margin:0 0 24px 0;
 }
 
-/* main viz container */
 #viz{
   margin-top:20px;
   max-width:900px;
 }
 
-/* each day row */
+
+/* =========================
+   DAY ROWS + BARS
+========================= */
+
 .day{
   display:flex;
   align-items:center;
@@ -39,16 +52,44 @@ h1{
   margin:10px 0;
 }
 
-/* day label */
 .label{
   width:70px;
-  color:#7a2200;
+  color:#8b0000;
 }
 
-/* bars */
 .bar{
   height:18px;
-  background:#8c2f00;
+  background:#8b0000;
   border-radius:4px;
-  transition:all 0.3s ease;
+}
+
+
+/* =========================
+   ANIMATION (MOVING BLOBS)
+========================= */
+
+@keyframes blobMove{
+  0%{
+    background-position:
+      0% 0%,
+      100% 0%,
+      20% 100%,
+      100% 100%;
+  }
+
+  50%{
+    background-position:
+      20% 10%,
+      80% 20%,
+      40% 80%,
+      90% 90%;
+  }
+
+  100%{
+    background-position:
+      10% 25%,
+      70% 10%,
+      30% 90%,
+      80% 70%;
+  }
 }
