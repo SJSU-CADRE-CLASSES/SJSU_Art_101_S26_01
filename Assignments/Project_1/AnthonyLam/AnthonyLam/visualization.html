@@ -29,17 +29,34 @@ if (!ITEMS.length) {
 
   // ===== TUNING =====
   const PAD = 24;            // keeps blobs away from stage edges
-  const GAP = 220;           // BIGGER = more separation (prevents blur-touch)
-  const REPEL = 0.020;       // stronger push-apart
+  const GAP = 260;           // BIGGER = more separation (prevents blur-touch)
+  const REPEL = 0.022;       // stronger push-apart
   const DAMP = 0.988;        // closer to 1 = floatier + keeps momentum
   const BOUNCE = 0.98;       // wall bounce energy
   const DRIFT = 0.075;       // larger drift = they roam more
   const ACTIVE_REPEL = 1.70; // extra repel when one is active
+  const SOLVER_PASSES = 7;   // NEW: more passes = MUCH less touching
 
   const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
 
   const blobs = [];
   const placed = [];
+
+  // ---------- helpers ----------
+  function showTip(text, clientX, clientY){
+    tip.textContent = text;
+    tip.style.opacity = "1";
+
+    // NEW: make tooltip usable on phone taps too
+    if (typeof clientX === "number" && typeof clientY === "number") {
+      tip.style.left = (clientX + 14) + "px";
+      tip.style.top  = (clientY + 14) + "px";
+    }
+  }
+
+  function hideTip(){
+    tip.style.opacity = "0";
+  }
 
   // ---------- initial placement (starts apart) ----------
   function tryPlace(sizePx){
@@ -51,7 +68,7 @@ if (!ITEMS.length) {
     const maxX = rect.width  - sizePx - PAD;
     const maxY = rect.height - sizePx - PAD;
 
-    for (let attempt = 0; attempt < 2000; attempt++){
+    for (let attempt = 0; attempt < 2200; attempt++){
       const x = minX + Math.random() * Math.max(maxX - minX, 1);
       const y = minY + Math.random() * Math.max(maxY - minY, 1);
 
@@ -80,11 +97,10 @@ if (!ITEMS.length) {
   // ---------- active behavior (push others away + dim) ----------
   let activeIndex = -1;
 
-  function setActive(idx, labelText){
+  function setActive(idx, labelText, clientX, clientY){
     activeIndex = idx;
 
-    tip.textContent = labelText;
-    tip.style.opacity = "1";
+    showTip(labelText, clientX, clientY);
 
     document.querySelectorAll(".blob").forEach(b => b.classList.add("dim"));
     blobs[idx].el.classList.remove("dim");
@@ -93,7 +109,7 @@ if (!ITEMS.length) {
 
   function clearActive(){
     activeIndex = -1;
-    tip.style.opacity = "0";
+    hideTip();
     document.querySelectorAll(".blob").forEach(b => b.classList.remove("dim","active"));
   }
 
@@ -120,81 +136,101 @@ if (!ITEMS.length) {
       r,
       x: pos.x,
       y: pos.y,
-      vx: (Math.random()-0.5) * 1.6,     // more roaming
-      vy: (Math.random()-0.5) * 1.6,
+      vx: (Math.random()-0.5) * 1.9,     // slightly more roaming
+      vy: (Math.random()-0.5) * 1.9,
       phase: Math.random() * Math.PI * 2,
       speed: 0.004 + Math.random() * 0.010,
       label: `${item.app} — ${h.toFixed(1)} HOURS`
     });
 
-    const show = () => setActive(idx, blobs[idx].label);
+    // Desktop hover (optional)
+    el.addEventListener("mouseenter", (e) => setActive(idx, blobs[idx].label, e.clientX, e.clientY));
 
-    el.addEventListener("mouseenter", show);
-    el.addEventListener("click", show);
-    el.addEventListener("touchstart", (e)=>{ e.preventDefault(); show(); }, {passive:false});
+    // Desktop click
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setActive(idx, blobs[idx].label, e.clientX, e.clientY);
+    });
+
+    // Mobile tap
+    el.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const t = e.touches[0];
+      setActive(idx, blobs[idx].label, t.clientX, t.clientY);
+    }, {passive:false});
+
     el.addEventListener("mouseleave", clearActive);
   });
 
-  // ---------- tooltip follows mouse ----------
+  // ---------- tooltip follows mouse (desktop) ----------
   document.addEventListener("mousemove",(e)=>{
+    if (tip.style.opacity !== "1") return;
     tip.style.left=(e.clientX+14)+"px";
     tip.style.top =(e.clientY+14)+"px";
   });
 
+  // clear when clicking empty area
   stage.addEventListener("click",(e)=>{
     if (e.target === stage) clearActive();
   });
 
-  // ---------- physics loop (repel ALWAYS + smooth drift + wall bounce) ----------
+  stage.addEventListener("touchstart",(e)=>{
+    if (e.target === stage) clearActive();
+  }, {passive:true});
+
+  // ---------- physics loop ----------
   function animate(){
     const rect = stage.getBoundingClientRect();
 
-    // smooth drift (lava feel, not “sway in place”)
+    // drift (keeps everyone moving)
     blobs.forEach(o => {
       o.phase += o.speed;
       o.vx += Math.cos(o.phase) * DRIFT;
       o.vy += Math.sin(o.phase * 1.23) * DRIFT;
     });
 
-    // repel all pairs (WITH POSITION SEPARATION => prevents touching)
-    for (let i=0; i<blobs.length; i++){
-      for (let j=i+1; j<blobs.length; j++){
-        const a = blobs[i];
-        const b = blobs[j];
+    // NEW: multiple solver passes per frame (this stops touching)
+    for (let pass = 0; pass < SOLVER_PASSES; pass++){
+      for (let i=0; i<blobs.length; i++){
+        for (let j=i+1; j<blobs.length; j++){
+          const a = blobs[i];
+          const b = blobs[j];
 
-        const ax = a.x + a.r;
-        const ay = a.y + a.r;
-        const bx = b.x + b.r;
-        const by = b.y + b.r;
+          const ax = a.x + a.r;
+          const ay = a.y + a.r;
+          const bx = b.x + b.r;
+          const by = b.y + b.r;
 
-        const dx = bx - ax;
-        const dy = by - ay;
-        const dist = Math.hypot(dx,dy) || 0.0001;
+          const dx = bx - ax;
+          const dy = by - ay;
+          const dist = Math.hypot(dx,dy) || 0.0001;
 
-        const activeBoost =
-          (i === activeIndex || j === activeIndex) ? ACTIVE_REPEL : 1;
+          const activeBoost =
+            (i === activeIndex || j === activeIndex) ? ACTIVE_REPEL : 1;
 
-        const minDist = a.r + b.r + GAP * activeBoost;
+          const minDist = a.r + b.r + GAP * activeBoost;
 
-        if (dist < minDist){
-          const overlap = (minDist - dist);
+          if (dist < minDist){
+            const overlap = (minDist - dist);
 
-          const ux = dx / dist;
-          const uy = dy / dist;
+            const ux = dx / dist;
+            const uy = dy / dist;
 
-          // 1) POSITION SEPARATION (guarantees no touching)
-          const sep = overlap * 0.55;
-          a.x -= ux * sep;
-          a.y -= uy * sep;
-          b.x += ux * sep;
-          b.y += uy * sep;
+            // 1) POSITION separation (hard no-touch)
+            const sep = overlap * 0.55;
+            a.x -= ux * sep;
+            a.y -= uy * sep;
+            b.x += ux * sep;
+            b.y += uy * sep;
 
-          // 2) VELOCITY REPULSION (keeps them apart)
-          const force = overlap * REPEL;
-          a.vx -= ux * force;
-          a.vy -= uy * force;
-          b.vx += ux * force;
-          b.vy += uy * force;
+            // 2) VELOCITY repulsion
+            const force = overlap * REPEL;
+            a.vx -= ux * force;
+            a.vy -= uy * force;
+            b.vx += ux * force;
+            b.vy += uy * force;
+          }
         }
       }
     }
