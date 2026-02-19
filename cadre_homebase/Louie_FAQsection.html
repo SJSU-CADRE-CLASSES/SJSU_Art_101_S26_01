@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Louie FAQ Section</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="page">
+
+    <aside class="sidebar">
+      <a href="index.html" class="home" aria-label="Home">⌂</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">☾</button>
+      <div class="vertical">homebase</div>
+    </aside>
+
+    <div class="content">
+      <header class="mobile-header">
+        <div class="logo-wrap">
+          <a href="index.html" class="logo">
+            <pre class="logo-ascii" aria-label="CADRE">
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/             
+            </pre>
+            <span class="logo-sub">Laboratory for New Media</span>
+          </a>
+          <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+        </div>
+        <nav class="nav-top">
+          <button type="button" class="theme-toggle theme-toggle-mobile" aria-label="Switch to light mode">☾</button>
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+        </nav>
+      </header>
+
+      <header class="header">
+        <div class="logo-wrap">
+          <a href="index.html" class="logo">
+            <pre class="logo-ascii" aria-label="CADRE">
+
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/ 
+            </pre>
+            <span class="logo-sub">Laboratory for New Media</span>
+          </a>
+          <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+        </div>
+        <nav class="nav-top">
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+        </nav>
+      </header>
+
+      <main class="main">
+        <section class="columns">
+          <h2>FAQ</h2>
+          <p>Frequently asked questions section. Add your questions and answers here.</p>
+          <!-- Add FAQ items as needed -->
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div>
+          <code class="binary-name">01000011 01000001 01000100 01010010 01000101</code><br>
+          San José State University · Department of Art & Art History<br>
+          One Washington Square, San José, CA 95192
+        </div>
+        <div>
+          <a href="https://www.facebook.com/sjsucadre" target="_blank" rel="noopener">fb</a>
+          <a href="https://twitter.com/cadre_sjsu" target="_blank" rel="noopener">tw</a>
+          <a href="https://www.instagram.com/cadre_sjsu/" target="_blank" rel="noopener">ig</a>
+        </div>
+      </footer>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      var KEY = 'cadre-homebase-theme';
+      var html = document.documentElement;
+      var toggles = document.querySelectorAll('.theme-toggle');
+
+      function applyTheme(theme) {
+        theme = theme || 'dark';
+        html.setAttribute('data-theme', theme);
+        toggles.forEach(function(btn) {
+          btn.textContent = theme === 'light' ? '☀' : '☾';
+          btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        });
+        try { localStorage.setItem(KEY, theme); } catch (e) {}
+      }
+
+      toggles.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          applyTheme(next);
+        });
+      });
+
+      var saved = localStorage.getItem(KEY);
+      if (saved === 'light' || saved === 'dark') applyTheme(saved);
+    })();
+  </script>
+</body>
+</html>
