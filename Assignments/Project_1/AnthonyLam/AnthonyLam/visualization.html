@@ -16,18 +16,18 @@
 <p class="viz-sub">Hover a day. Click a blob. test</p>
 
 <div id="blob-stage"></div>
-  
+<div id="viz" class="viz-area"></div>  
 <!-- tooltip -->
 <div id="tip" class="tip"></div>
 
-<!-- IMPORTANT: order matters -->
 <script src="./data.js?v=999"></script>
 <script src="./script.js?v=999"></script>
 
 <script>
 const stage = document.getElementById("blob-stage");
 
-const DAYS = [
+// use DAYS from data.js if it exists, otherwise fallback demo data
+const BLOB_DAYS = (typeof DAYS !== "undefined") ? DAYS : [
   {day:"MON", hours:5},
   {day:"TUE", hours:3},
   {day:"WED", hours:7},
@@ -37,22 +37,23 @@ const DAYS = [
   {day:"SUN", hours:2}
 ];
 
-DAYS.forEach(d => {
+BLOB_DAYS.forEach(d => {
   const blob = document.createElement("div");
   blob.className = "blob";
 
-  const size = 60 + d.hours * 18;
+  const h = Number(d.hours ?? d.hour ?? 0);   // uses d.hours if you have it
+  const size = 80 + h * 22;
 
   blob.style.width = size + "px";
   blob.style.height = size + "px";
 
-  blob.style.left = Math.random()*80 + "%";
-  blob.style.top = Math.random()*70 + "%";
+  blob.style.left = (Math.random() * 85) + "%";
+  blob.style.top  = (Math.random() * 75) + "%";
 
   blob.style.background =
     `radial-gradient(circle,
-      hsla(${200 + d.hours*20},80%,70%,0.75),
-      transparent 70%)`;
+      hsla(${200 + h*18}, 95%, 70%, 0.95),
+      transparent 68%)`;
 
   stage.appendChild(blob);
 });
