@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Helldiver - Cole Louie</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+<body class="page-helldiver">
+  <div class="crt-screen">
+    <div class="crt-scanlines"></div>
+    <div id="helldiver-boot" class="helldiver-boot">
+      <div class="boot-line">&gt; SUPER EARTH COMMAND SYSTEM v2.4</div>
+      <div class="boot-line">&gt; INITIALIZING...</div>
+      <div class="boot-line">&gt; CONNECTING TO STRATAGEM NETWORK...</div>
+      <div class="boot-line">&gt; AUTHENTICATING HELLDIVER...</div>
+      <div class="boot-line">&gt; READY.</div>
+      <div class="boot-line boot-cursor">&gt;_</div>
+    </div>
+    <div id="helldiver-main" class="crt-content helldiver-main-hidden">
+      <header class="crt-header"></header>
+      <div class="crt-body">
+        <section class="crt-title-area">
+          <h1 class="crt-main-title"><span id="helldiver-typewriter"></span><span class="helldiver-cursor">|</span></h1>
+          <div id="stratagem-arrows" class="stratagem-arrows">
+            <svg class="arrow arrow-down" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,0 20,0 20,18 24,18 12,32 0,18 4,18" fill="currentColor"/></svg>
+            <svg class="arrow arrow-right" viewBox="0 0 32 24" width="36" height="28"><polygon points="0,4 14,4 14,0 32,12 14,24 14,20 0,20" fill="currentColor"/></svg>
+            <svg class="arrow arrow-up" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,32 20,32 20,14 24,14 12,0 0,14 4,14" fill="currentColor"/></svg>
+            <svg class="arrow arrow-up" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,32 20,32 20,14 24,14 12,0 0,14 4,14" fill="currentColor"/></svg>
+            <svg class="arrow arrow-up" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,32 20,32 20,14 24,14 12,0 0,14 4,14" fill="currentColor"/></svg>
+          </div>
+        </section>
+      </div>
+      <footer class="crt-footer">SELECT..... ENTER</footer>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var bootLines = document.querySelectorAll('.helldiver-boot .boot-line');
+      var bootEl = document.getElementById('helldiver-boot');
+      var mainEl = document.getElementById('helldiver-main');
+      var typewriterEl = document.getElementById('helldiver-typewriter');
+      var cursorEl = mainEl.querySelector('.helldiver-cursor');
+      var message = "Welcome Helldiver, Please initiate identification code";
+      function showLine(idx) {
+        if (idx < bootLines.length - 1) {
+          bootLines[idx].classList.add('boot-visible');
+          setTimeout(function() { showLine(idx + 1); }, 350);
+        } else {
+          bootLines[idx].classList.add('boot-visible');
+          setTimeout(function() {
+            bootEl.classList.add('boot-fade-out');
+            setTimeout(function() {
+              bootEl.style.display = 'none';
+              mainEl.classList.remove('helldiver-main-hidden');
+              startTypewriter();
+            }, 400);
+          }, 600);
+        }
+      }
+      function startTypewriter() {
+        var i = 0;
+        function typeChar() {
+          if (i < message.length) {
+            typewriterEl.textContent += message[i];
+            i++;
+            setTimeout(typeChar, 90);
+          } else {
+            if (cursorEl) cursorEl.style.display = 'none';
+            startBlink();
+            setTimeout(function() {
+              var arrowsEl = document.getElementById('stratagem-arrows');
+              if (arrowsEl) arrowsEl.classList.add('stratagem-arrows-visible');
+            }, 800);
+          }
+        }
+        setTimeout(typeChar, 300);
+      }
+      function startBlink() {
+        var titleArea = mainEl.querySelector('.crt-title-area');
+        function doBlink() {
+          titleArea.classList.add('crt-blink');
+          setTimeout(function() {
+            titleArea.classList.remove('crt-blink');
+          }, 120);
+        }
+        function scheduleBlink() {
+          var delay = 2500 + Math.random() * 3500;
+          setTimeout(function() {
+            doBlink();
+            scheduleBlink();
+          }, delay);
+        }
+        scheduleBlink();
+      }
+      setTimeout(function() { showLine(0); }, 400);
+    })();
+  </script>
+</body>
+</html>

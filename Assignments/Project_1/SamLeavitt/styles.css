@@ -7,7 +7,7 @@ body {
   min-height: 100vh;
 }
 .spacer {
-  height: 900vh;
+  height: 1400vh;
   position: relative;
 }
 .stage {
@@ -17,6 +17,7 @@ body {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  filter: url(#pixelate);
 }
 .stage-inner {
   position: absolute;
@@ -43,3 +44,91 @@ body {
   pointer-events: auto;
 }
 .hint.faded { opacity: 0.2; }
+
+/* Phase 2: explanation layout */
+.phase2 {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--phase2-opacity, 0);
+  transition: opacity 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+.legend {
+  flex-shrink: 0;
+  margin-top: 28vh;
+  text-align: center;
+  opacity: var(--legend-opacity, 0);
+  transition: opacity 0.5s ease 0.1s;
+}
+
+.legend h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 0.75rem;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #b0b0b0;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 900px;
+  margin-top: 2rem;
+  padding-bottom: 3rem;
+  opacity: var(--charts-opacity, 0);
+  transition: opacity 0.5s ease 0.3s;
+}
+
+.chart-card {
+  background: rgba(30, 30, 36, 0.9);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chart-card h4 {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #a0a0a0;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.bar-chart, .line-chart, .scatter-chart {
+  height: 120px;
+  position: relative;
+}
+
+@media (max-width: 700px) {
+  .charts {
+    grid-template-columns: 1fr;
+  }
+}
