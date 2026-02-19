@@ -3,7 +3,11 @@
   const pathEl = document.getElementById('outlinePath');
   const layer = document.getElementById('pointsLayer');
   const hint = document.getElementById('hint');
+  const phase2 = document.getElementById('phase2');
   const numPoints = 500;
+
+  const PHASE2_START = 0.85;
+  const PHASE2_FULL = 0.95;
 
   const totalLength = pathEl.getTotalLength();
   const pathX = [];
@@ -19,6 +23,16 @@
   layer.innerHTML = '';
   layer.appendChild(canvas);
 
+  // Color palette: saturated rainbow (one per exercise type)
+  const colors = [
+    [255, 50, 50],    // red
+    [255, 140, 0],    // orange
+    [255, 220, 0],    // yellow
+    [50, 255, 80],    // green
+    [50, 150, 255],   // blue
+    [180, 80, 255]    // violet
+  ];
+
   const points = [];
   for (let i = 0; i < numPoints; i++) {
     const size = 2 + Math.random() * 5;
@@ -31,11 +45,10 @@
       startSize: startSize,
       brightness: 0.35 + 0.65 * ((size - 2) / 5),
       appearAt: Math.random() * 0.70,
-      delay: Math.random() * 0.12
+      delay: Math.random() * 0.12,
+      colorIndex: i % colors.length  // cycles through exercise types
     });
   }
-
-  const color = [248, 210, 181];
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
@@ -64,9 +77,25 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    const scale = Math.min(w / viewBox.w, h / viewBox.h);
-    const ox = (w - viewBox.w * scale) / 2;
-    const oy = (h - viewBox.h * scale) / 2;
+    const phase2Progress = Math.max(0, Math.min(1, (raw - PHASE2_START) / (PHASE2_FULL - PHASE2_START)));
+    const phase2Eased = easeOutCubic(phase2Progress);
+
+    const scaleFull = Math.min(w / viewBox.w, h / viewBox.h);
+    const scaleCompact = Math.min(w / viewBox.w, (h * 0.25) / viewBox.h);
+    const scale = scaleFull + (scaleCompact - scaleFull) * phase2Eased;
+
+    const oxFull = (w - viewBox.w * scaleFull) / 2;
+    const oyFull = (h - viewBox.h * scaleFull) / 2;
+    const oxCompact = (w - viewBox.w * scaleCompact) / 2;
+    const oyCompact = (h * 0.25 - viewBox.h * scaleCompact) / 2;
+    const ox = oxFull + (oxCompact - oxFull) * phase2Eased;
+    const oy = oyFull + (oyCompact - oyFull) * phase2Eased;
+
+    if (phase2) {
+      phase2.style.setProperty('--phase2-opacity', phase2Eased);
+      phase2.style.setProperty('--legend-opacity', Math.max(0, (phase2Eased - 0.2) / 0.8));
+      phase2.style.setProperty('--charts-opacity', Math.max(0, (phase2Eased - 0.4) / 0.6));
+    }
 
     ctx.clearRect(0, 0, w, h);
 
@@ -83,13 +112,14 @@
 
       const drawSize = pt.startSize + (pt.size - pt.startSize) * q;
       const alpha = visible * pt.brightness;
+      const [r, g, b] = colors[pt.colorIndex];
       ctx.beginPath();
       ctx.arc(x, y, drawSize / 2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(248,210,181,' + alpha + ')';
+      ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
       ctx.fill();
     }
 
-    hint.classList.toggle('faded', p > 0.85);
+    hint.classList.toggle('faded', p > 0.85 || phase2Eased > 0.3);
   }
 
   let raf = null;
