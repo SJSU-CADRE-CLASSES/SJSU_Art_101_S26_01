@@ -146,28 +146,41 @@ h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
   width:100vw;
   height:70vh;
   margin:24px 0 0;
-  overflow:visible;
+  overflow:hidden;
+  isolation:isolate;
 }
 
 .blob{
   position:absolute;
   border-radius:50%;
-  filter:blur(16px) saturate(2);
-  opacity:0.92;
+  opacity:0.88;
+  filter:blur(10px) saturate(2.4);
   mix-blend-mode:normal;
-  isolation:isolate;
-  transition:transform 200ms ease, opacity 200ms ease, filter 200ms ease;
-  animation:floaty var(--speed,6s) ease-in-out infinite alternate;
+  animation:floaty var(--speed,2.2s) ease-in-out infinite alternate;
+  will-change:transform;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease,
+    opacity 180ms ease;
 }
 
 .blob:hover{
   opacity:1;
-  transform:scale(1.12);
+  filter:blur(9px) saturate(2.8);
+  transform:scale(1.22);
+  z-index:10;
+}
+
+.blob.active{
+  opacity:1;
+  filter:blur(8px) saturate(3.0);
+  transform:scale(1.35);
+  z-index:20;
 }
 
 @keyframes floaty{
-  0%{transform:translate(0,0) scale(1);}
-  100%{transform:translate(var(--dx,40px),var(--dy,-35px)) scale(1.02);}
+  0%{ transform:translate(0,0) scale(1); }
+  100%{ transform:translate(var(--mx,90px),var(--my,-70px)) scale(1.02); }
 }
 
 /* TOOLTIP */
