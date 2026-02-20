@@ -58,7 +58,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s;
+      transition: transform 0.25s ease;
     }
     .box svg {
       width: 100%;
@@ -80,11 +80,19 @@
     .box-option:hover .box {
       transform: translateY(-4px);
     }
+    .box-option input:checked + .cube-wrapper {
+      z-index: 10;
+    }
     .box-option input:checked + .cube-wrapper .box,
     .box-option input:focus-visible + .cube-wrapper .box {
+      transform: scale(1.45);
       outline: 3px solid rgba(255,255,255,0.95);
       outline-offset: 4px;
       border-radius: 4px;
+    }
+    .box-option input:checked:hover + .cube-wrapper .box,
+    .box-option input:focus-visible:hover + .cube-wrapper .box {
+      transform: scale(1.45) translateY(-4px);
     }
     /* Pastel colors per box – SVG paths: (1) front, (2) top, (3) right */
     .box-option:nth-child(1) .box path:nth-child(1) { fill: #FFB5C2; }
