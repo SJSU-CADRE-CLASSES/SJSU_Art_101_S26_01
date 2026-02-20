@@ -28,6 +28,14 @@
       margin: 0 0 0.5rem 0;
       color: #5a4a6a;
     }
+    .truck {
+      display: inline-block;
+      animation: truckMove 2s ease-in-out infinite;
+    }
+    @keyframes truckMove {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(8px); }
+    }
     .quiz {
       width: 100%;
       max-width: 420px;
@@ -140,7 +148,7 @@
   </style>
 </head>
 <body>
-  <h1>Shipping Info</h1>
+  <h1>Shipping Info <span class="truck" aria-hidden="true">🚚</span></h1>
   <form class="quiz" id="quiz">
     <div class="field">
       <label for="frequency">1. How often would you like to purchase a blindbox per month?</label>
