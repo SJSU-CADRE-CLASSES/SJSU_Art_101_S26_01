@@ -47,23 +47,30 @@
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
     }
     .cube-wrapper {
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       position: relative;
       cursor: pointer;
+      perspective: 420px;
+      perspective-origin: 50% 50%;
+    }
+    .cube-wrapper,
+    .cube {
+      transform-style: preserve-3d;
     }
     .cube {
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 140px;
-      height: 160px;
-      margin-left: -70px;
-      margin-top: -80px;
+      width: 70px;
+      height: 90px;
+      margin-left: -35px;
+      margin-top: -45px;
+      transform: rotateX(-22deg) rotateY(28deg);
       transition: transform 0.2s;
     }
     .box-option:hover .cube {
-      transform: translateY(-6px);
+      transform: rotateX(-22deg) rotateY(28deg) translateZ(10px);
     }
     .box-option input:focus-visible + .cube-wrapper .cube .face.front {
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
@@ -74,41 +81,45 @@
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
+      backface-visibility: hidden;
     }
     .face.top,
     .face.right {
       border: 1px solid rgba(255,255,255,0.4);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
     }
-    /* Isometric box: front 70×90, depth 70 (same as front width). Right and top drawn with skew so sides are clearly visible. */
+    /* 3D rectangular box: width 70, height 90, depth 70. All faces centered at origin. */
     .face.front {
       width: 70px;
       height: 90px;
-      left: 0;
-      top: 0;
+      left: 50%;
+      top: 50%;
+      margin-left: -35px;
+      margin-top: -45px;
+      transform: translateZ(35px);
       border: 1px solid rgba(0,0,0,0.12);
       font-size: 1.5rem;
       font-weight: 700;
       color: rgba(0,0,0,0.5);
       font-family: 'Barlow', sans-serif;
     }
-    /* Top face: 70×70 (same width as front, depth = 70). Skewed so it clearly recedes. */
     .face.top {
       width: 70px;
       height: 70px;
-      left: 0;
-      top: -70px;
-      transform: skewX(-30deg);
-      transform-origin: bottom left;
+      left: 50%;
+      top: 50%;
+      margin-left: -35px;
+      margin-top: -35px;
+      transform: rotateX(-90deg) translateZ(45px);
     }
-    /* Right face: 70×90 (depth 70, same height as front). Skewed so it clearly recedes. */
     .face.right {
       width: 70px;
       height: 90px;
-      left: 70px;
-      top: 0;
-      transform: skewY(30deg);
-      transform-origin: top left;
+      left: 50%;
+      top: 50%;
+      margin-left: -35px;
+      margin-top: -45px;
+      transform: rotateY(90deg) translateZ(35px);
     }
     /* Pastel colors: front (base), top (brighter so it reads on dark bg), right (darker but still vivid) */
     .box-option:nth-child(1) .face.front { background: #FFB5C2; }
