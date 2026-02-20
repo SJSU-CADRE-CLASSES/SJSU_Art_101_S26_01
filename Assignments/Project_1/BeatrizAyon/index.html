@@ -81,6 +81,11 @@
       border: 1px solid rgba(0,0,0,0.12);
       box-sizing: border-box;
     }
+    .face.top,
+    .face.right {
+      border: 1px solid rgba(255,255,255,0.35);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
     /* Box dimensions: 70×90 (front), depth 48px. All faces centered on cube origin. */
     .face.front {
       width: 70px;
@@ -113,22 +118,22 @@
       margin-top: -45px;
       transform: rotateY(90deg) translateZ(35px);
     }
-    /* Pastel colors: front (base), top (lighter), right (darker) */
+    /* Pastel colors: front (base), top (brighter so it reads on dark bg), right (darker but still vivid) */
     .box-option:nth-child(1) .face.front { background: #FFB5C2; }
-    .box-option:nth-child(1) .face.top   { background: #FFC9D3; }
-    .box-option:nth-child(1) .face.right{ background: #E89AAA; }
+    .box-option:nth-child(1) .face.top   { background: #FFD6DE; }
+    .box-option:nth-child(1) .face.right { background: #F0A0B0; }
     .box-option:nth-child(2) .face.front { background: #B5EAD7; }
-    .box-option:nth-child(2) .face.top   { background: #C9F2E3; }
-    .box-option:nth-child(2) .face.right { background: #9DD9C4; }
+    .box-option:nth-child(2) .face.top   { background: #D4F5E9; }
+    .box-option:nth-child(2) .face.right { background: #9DDFCB; }
     .box-option:nth-child(3) .face.front { background: #C7CEEA; }
-    .box-option:nth-child(3) .face.top   { background: #D6DCF0; }
-    .box-option:nth-child(3) .face.right { background: #AEB8DD; }
+    .box-option:nth-child(3) .face.top   { background: #E0E4F5; }
+    .box-option:nth-child(3) .face.right { background: #B0B8E0; }
     .box-option:nth-child(4) .face.front { background: #FFDAC1; }
-    .box-option:nth-child(4) .face.top   { background: #FFE4D0; }
-    .box-option:nth-child(4) .face.right { background: #E8C4A8; }
+    .box-option:nth-child(4) .face.top   { background: #FFE8D8; }
+    .box-option:nth-child(4) .face.right { background: #F5C9A8; }
     .box-option:nth-child(5) .face.front { background: #A8D8EA; }
-    .box-option:nth-child(5) .face.top   { background: #BFE3F0; }
-    .box-option:nth-child(5) .face.right { background: #8FC9DD; }
+    .box-option:nth-child(5) .face.top   { background: #C8E8F2; }
+    .box-option:nth-child(5) .face.right { background: #8FCCE0; }
   </style>
 </head>
 <body>
