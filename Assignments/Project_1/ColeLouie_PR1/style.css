@@ -1,0 +1,264 @@
+/* Cole Louie - Project 1 styles */
+
+@font-face {
+  font-family: 'Oswald';
+  src: url('Oswald/Oswald-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 300; /* light */
+  margin: 0;
+  padding: 1rem;
+  background-color: #F7FAFF;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  transform: translate(150px, -100px);
+}
+
+body.page-marine-biologist {
+  background-color: #F7FAFF;
+  background-image: url('AdobeStock_101721700.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+h1.intro-block {
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+h1 .intro-text {
+  flex-shrink: 0;
+}
+
+.cole-name {
+  font-size: 2em;
+}
+
+.cycle-scroll {
+  display: inline-block;
+  vertical-align: middle;
+  height: 2em;
+  overflow-y: auto;
+  font-size: calc(2em + 0rem);
+  scroll-behavior: smooth;
+  transform: translateY(25px);
+  border: 3px solid transparent;
+  border-radius: 4px;
+  padding: 0 0.15em;
+  background: transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cycle-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cycle-word {
+  display: block;
+  height: 2em;
+  line-height: 2em;
+  opacity: 0.35;
+  transition: opacity 0.25s ease;
+}
+
+.cycle-word.active {
+  opacity: 1;
+}
+
+.cycle-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cycle-link:hover {
+  text-decoration: underline;
+}
+
+/* CRT / Terminal style - Helldiver page */
+body.page-helldiver {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #001a00;
+  display: block;
+  transform: none;
+  font-family: 'VT323', 'Courier New', monospace;
+  overflow: hidden;
+}
+
+body.page-helldiver .crt-screen {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  background: #001a00;
+  overflow: hidden;
+}
+
+body.page-helldiver .crt-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+body.page-helldiver .crt-content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem;
+  color: #00ff00;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+}
+
+body.page-helldiver .crt-header {
+  height: 24px;
+  background: #00ff00;
+  margin: -0.5rem -0.5rem 1rem -0.5rem;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
+}
+
+body.page-helldiver .crt-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.page-helldiver .crt-title-area {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  transform: translateY(-100px);
+}
+
+body.page-helldiver .crt-main-title {
+  font-size: 3rem;
+  margin: 0;
+  color: #00ff00;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 16px rgba(0, 255, 0, 0.8);
+}
+
+body.page-helldiver .crt-subtitle {
+  font-size: 1rem;
+  color: rgba(0, 255, 0, 0.6);
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+
+body.page-helldiver .crt-footer {
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(0, 255, 0, 0.6);
+  letter-spacing: 0.05em;
+}
+
+/* Helldiver boot sequence */
+body.page-helldiver .helldiver-boot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2rem 2.5rem;
+  color: #00ff00;
+  font-size: 1.4rem;
+  line-height: 2.2;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+  z-index: 5;
+}
+
+body.page-helldiver .boot-line {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+body.page-helldiver .boot-line.boot-visible {
+  opacity: 1;
+}
+
+body.page-helldiver .boot-cursor {
+  animation: helldiver-blink 0.8s step-end infinite;
+}
+
+@keyframes helldiver-blink {
+  50% { opacity: 0; }
+}
+
+body.page-helldiver .boot-fade-out {
+  animation: helldiver-fade-out 0.4s ease forwards;
+}
+
+@keyframes helldiver-fade-out {
+  to { opacity: 0; }
+}
+
+body.page-helldiver .helldiver-main-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+body.page-helldiver .helldiver-cursor {
+  animation: helldiver-blink 0.8s step-end infinite;
+}
+
+body.page-helldiver .crt-title-area.crt-blink {
+  animation: crt-flicker 0.12s ease;
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+/* Stratagem arrows - Down, Right, Up, Up, Up */
+body.page-helldiver .stratagem-arrows {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+body.page-helldiver .stratagem-arrows.stratagem-arrows-visible {
+  opacity: 0.35;
+}
+
+body.page-helldiver .stratagem-arrows .arrow {
+  flex-shrink: 0;
+  color: #c9b896;
+}

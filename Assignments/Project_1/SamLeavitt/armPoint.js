@@ -1,0 +1,223 @@
+(function () {
+  const viewBox = { w: 286.03, h: 301.53 };
+  const pathEl = document.getElementById('outlinePath');
+  const layer = document.getElementById('pointsLayer');
+  const hint = document.getElementById('hint');
+  const phase2 = document.getElementById('phase2');
+  const numPoints = 500;
+
+  const PHASE2_START = 0.90;
+  const PHASE2_FULL = 0.98;
+  const BLINK_DUR = 200;
+  const RIPPLE_DUR = 280;
+  const RIPPLE_PIXEL = 6;
+
+  const totalLength = pathEl.getTotalLength();
+  const pathX = [];
+  const pathY = [];
+  for (let i = 0; i < numPoints; i++) {
+    const pt = pathEl.getPointAtLength((i / (numPoints - 1)) * totalLength);
+    pathX.push(pt.x);
+    pathY.push(pt.y);
+  }
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  layer.innerHTML = '';
+  layer.appendChild(canvas);
+
+  // Color palette: saturated rainbow (one per exercise type)
+  const colors = [
+    [255, 50, 50],    // red
+    [255, 140, 0],    // orange
+    [255, 220, 0],    // yellow
+    [50, 255, 80],    // green
+    [50, 150, 255],   // blue
+    [180, 80, 255]    // violet
+  ];
+
+  const points = [];
+  for (let i = 0; i < numPoints; i++) {
+    const size = 2 + Math.random() * 5;
+    const largeStart = Math.random() < 0.2;
+    const startSize = largeStart ? size * (2.5 + Math.random() * 2.5) : size;
+    points.push({
+      startX: Math.random(),
+      startY: Math.random(),
+      size: size,
+      startSize: startSize,
+      brightness: 0.35 + 0.65 * ((size - 2) / 5),
+      appearAt: Math.random() * 0.70,
+      delay: Math.random() * 0.12,
+      colorIndex: i % colors.length,
+      blinkStart: null,
+      isLarge: largeStart
+    });
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function getScrollProgress() {
+    const sh = document.documentElement.scrollHeight - window.innerHeight;
+    return sh <= 0 ? 1 : Math.min(1, Math.max(0, window.scrollY / sh));
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function draw() {
+    const raw = getScrollProgress();
+    const moveRaw = Math.max(0, Math.min(1, (raw - 0.78) / 0.10));
+    const p = easeOutCubic(moveRaw);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    const phase2Progress = Math.max(0, Math.min(1, (raw - PHASE2_START) / (PHASE2_FULL - PHASE2_START)));
+    const phase2Eased = easeOutCubic(phase2Progress);
+
+    const scaleFull = Math.min(w / viewBox.w, h / viewBox.h);
+    const scaleCompact = Math.min(w / viewBox.w, (h * 0.25) / viewBox.h);
+    const scale = scaleFull + (scaleCompact - scaleFull) * phase2Eased;
+
+    const oxFull = (w - viewBox.w * scaleFull) / 2;
+    const oyFull = (h - viewBox.h * scaleFull) / 2;
+    const oxCompact = (w - viewBox.w * scaleCompact) / 2;
+    const oyCompact = (h * 0.25 - viewBox.h * scaleCompact) / 2;
+    const ox = oxFull + (oxCompact - oxFull) * phase2Eased;
+    const oy = oyFull + (oyCompact - oyFull) * phase2Eased;
+
+    if (phase2) {
+      phase2.style.setProperty('--phase2-opacity', phase2Eased);
+      phase2.style.setProperty('--legend-opacity', Math.max(0, (phase2Eased - 0.2) / 0.8));
+      phase2.style.setProperty('--charts-opacity', Math.max(0, (phase2Eased - 0.4) / 0.6));
+    }
+
+    ctx.clearRect(0, 0, w, h);
+
+    for (let i = 0; i < numPoints; i++) {
+      const pt = points[i];
+      const visible = raw >= pt.appearAt ? Math.min(1, (raw - pt.appearAt) / 0.15) : 0;
+      if (visible <= 0) continue;
+
+      const q = Math.max(0, Math.min(1, (p - pt.delay) / (1 - pt.delay)));
+      const ex = ox + pathX[i] * scale;
+      const ey = oy + pathY[i] * scale;
+      const x = pt.startX * w + (ex - pt.startX * w) * q;
+      const y = pt.startY * h + (ey - pt.startY * h) * q;
+
+      const drawSize = pt.startSize + (pt.size - pt.startSize) * q;
+      const alpha = visible * pt.brightness;
+      let r, g, b;
+      const atFullOpacity = visible >= 0.9 && q < 0.05;
+      if (atFullOpacity) {
+        if (pt.blinkStart === null) pt.blinkStart = performance.now();
+        const elapsed = performance.now() - pt.blinkStart;
+        if (elapsed < BLINK_DUR) {
+          const peak = BLINK_DUR * 0.3;
+          const mix = elapsed < peak
+            ? elapsed / peak
+            : Math.max(0, 1 - (elapsed - peak) / (BLINK_DUR - peak));
+          const [cr, cg, cb] = colors[pt.colorIndex];
+          r = mix * 255 + (1 - mix) * cr;
+          g = mix * 255 + (1 - mix) * cg;
+          b = mix * 255 + (1 - mix) * cb;
+        } else {
+          [r, g, b] = colors[pt.colorIndex];
+        }
+      } else {
+        [r, g, b] = colors[pt.colorIndex];
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, drawSize / 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + Math.round(r) + ',' + Math.round(g) + ',' + Math.round(b) + ',' + alpha + ')';
+      ctx.fill();
+    }
+
+    var now = performance.now();
+    for (var i = 0; i < numPoints; i++) {
+      var pt = points[i];
+      if (!pt.isLarge || pt.blinkStart === null) continue;
+      var elapsed = now - pt.blinkStart;
+      if (elapsed >= RIPPLE_DUR) continue;
+      var visible = raw >= pt.appearAt ? Math.min(1, (raw - pt.appearAt) / 0.15) : 0;
+      if (visible <= 0) continue;
+      var q = Math.max(0, Math.min(1, (p - pt.delay) / (1 - pt.delay)));
+      var ex = ox + pathX[i] * scale;
+      var ey = oy + pathY[i] * scale;
+      var x = pt.startX * w + (ex - pt.startX * w) * q;
+      var y = pt.startY * h + (ey - pt.startY * h) * q;
+      var drawSize = pt.startSize + (pt.size - pt.startSize) * q;
+      var baseRadius = drawSize / 2;
+      var rippleProgress = elapsed / RIPPLE_DUR;
+      var rippleRadius = baseRadius + rippleProgress * baseRadius * 3;
+      var rippleAlpha = (1 - rippleProgress) * 0.9 * visible * pt.brightness;
+      var px = RIPPLE_PIXEL;
+      ctx.fillStyle = 'rgba(255,255,255,' + rippleAlpha + ')';
+      for (var a = 0; a < Math.PI * 2; a += 0.15) {
+        var rx = x + Math.cos(a) * rippleRadius;
+        var ry = y + Math.sin(a) * rippleRadius;
+        var cellX = Math.floor(rx / px) * px;
+        var cellY = Math.floor(ry / px) * px;
+        ctx.fillRect(cellX, cellY, px, px);
+      }
+    }
+
+    if (!hint.classList.contains('hint-hidden')) {
+      hint.classList.toggle('faded', p > 0.85 || phase2Eased > 0.3);
+    }
+
+  }
+
+  let raf = null;
+  let hintHideScheduled = false;
+  let animating = false;
+  function tick() {
+    draw();
+    var raw = getScrollProgress();
+    var anyBlinking = points.some(function (pt) {
+      return pt.blinkStart !== null && (performance.now() - pt.blinkStart) < Math.max(BLINK_DUR, RIPPLE_DUR);
+    });
+    if ((raw >= 0.7 && raw <= 0.95) || anyBlinking) {
+      requestAnimationFrame(tick);
+    } else {
+      animating = false;
+    }
+  }
+  function onScroll() {
+    if (!hintHideScheduled && window.scrollY > 10) {
+      hintHideScheduled = true;
+      setTimeout(function () {
+        hint.classList.add('hint-hidden');
+      }, 3000);
+    }
+    var raw = getScrollProgress();
+    var inFormationZone = raw >= 0.5 && raw <= 0.95;
+    if (inFormationZone && !animating) {
+      animating = true;
+      tick();
+    }
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      draw();
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', function () {
+    resize();
+    draw();
+  });
+  resize();
+  draw();
+})();

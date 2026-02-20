@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Sonification — Andre Duong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0b12;
+      --bg-mid: #12141f;
+      --accent: #4ecdc4;
+      --accent2: #a78bfa;
+      --accent3: #ff6b6b;
+      --text-soft: #94a3b8;
+      --text-bright: #e2e8f0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-deep);
+      min-height: 100vh;
+      color: var(--text-bright);
+      overflow-x: hidden;
+    }
+    .sky {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 60% at 50% -10%, rgba(78, 205, 196, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 80% at 90% 50%, rgba(167, 139, 250, 0.1) 0%, transparent 45%),
+        linear-gradient(180deg, #0a0b12 0%, #12141f 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    nav a {
+      color: var(--text-soft);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    nav a:hover { color: var(--accent); }
+    nav a.active { color: var(--accent); font-weight: 500; }
+    header { text-align: center; margin-bottom: 2rem; }
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 400;
+      color: var(--text-bright);
+      margin-bottom: 0.25rem;
+    }
+    .subtitle { font-size: 0.85rem; color: var(--text-soft); letter-spacing: 0.15em; text-transform: uppercase; }
+    .upload-zone {
+      background: rgba(18, 20, 31, 0.8);
+      border: 2px dashed rgba(78, 205, 196, 0.35);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(78, 205, 196, 0.06); }
+    .upload-zone input[type="file"] { display: none; }
+    .upload-zone label {
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .upload-zone p { color: var(--text-soft); font-size: 0.85rem; margin-top: 0.5rem; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .controls button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(18, 20, 31, 0.9);
+      color: var(--text-bright);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .controls button:hover { background: rgba(78, 205, 196, 0.15); border-color: var(--accent); }
+    .controls button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .controls .status { font-size: 0.8rem; color: var(--text-soft); }
+    .viz-container {
+      background: rgba(18, 20, 31, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    .viz-title { font-size: 0.75rem; color: var(--text-soft); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; }
+    #canvasWrap {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.2);
+    }
+    #canvas { display: block; width: 100%; height: 100%; }
+    .footer-note { text-align: center; font-size: 0.75rem; color: var(--text-soft); opacity: 0.8; margin-top: 1.5rem; }
+  
+/* --- shared nav --- */
+.site-nav{
+  position: fixed;
+  left: 16px; right: 16px; top: 16px;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(18, 20, 31, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.site-nav a{
+  color: rgba(233,233,238,0.72);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.site-nav a:hover{ color: #4ecdc4; }
+.site-nav a.active{ color: #4ecdc4; font-weight: 600; }
+
+
+main{ padding-top: 6.5rem !important; }
+</style>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Site navigation">
+  <a href="index.html">Weather</a>
+  <a href="subscriptions_nav.html">YouTube Subscriptions</a>
+  <a href="steamdb_nav.html">Steam PlayTime</a>
+  <a href="page4_nav.html">Browser Sonification</a>
+</nav>
+  <main>
+    
+    <header>
+      <h1 class="title">Browser Sonification</h1>
+      <p class="subtitle">Data → Sound &amp; Image · Andre Duong</p>
+    </header>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept=".csv" />
+      <label for="fileInput">Choose browser history CSV</label>
+      <p>Or drag and drop <code>BrowserHistory_2_10_26.csv</code> here</p>
+    </div>
+    <div class="controls" id="controls" style="display: none;">
+      <button type="button" id="playBtn">Play sonification</button>
+      <button type="button" id="stopBtn">Stop</button>
+      <span class="status" id="status"></span>
+    </div>
+    <section class="viz-container" id="vizSection" style="display: none;">
+      <h2 class="viz-title">Timeline · each visit = one note in time</h2>
+      <div id="canvasWrap">
+        <canvas id="canvas"></canvas>
+      </div>
+    </section>
+    <p class="footer-note">Andre Duong · Project 1 · Art 101 · Load your CSV to visualize and hear your browsing as music</p>
+  </main>
+
+  <script>
+    (function () {
+      const fileInput = document.getElementById('fileInput');
+      const uploadZone = document.getElementById('uploadZone');
+      const controls = document.getElementById('controls');
+      const vizSection = document.getElementById('vizSection');
+      const playBtn = document.getElementById('playBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const status = document.getElementById('status');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      let parsed = [];
+      let audioCtx = null;
+      let scheduledTime = 0;
+      let stopPlayback = false;
+
+      uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+      uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const f = e.dataTransfer.files[0];
+        if (f && f.name.endsWith('.csv')) readFile(f);
+      });
+      fileInput.addEventListener('change', () => { const f = fileInput.files[0]; if (f) readFile(f); });
+
+      function parseCSVLine(line) {
+        const out = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const c = line[i];
+          if (c === '"') inQuotes = !inQuotes;
+          else if ((c === ',' && !inQuotes) || c === '\n' || c === '\r') {
+            out.push(cur.trim());
+            cur = '';
+            if (c !== ',') break;
+          } else cur += c;
+        }
+        if (cur.length) out.push(cur.trim());
+        return out;
+      }
+
+      function readFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target.result;
+          const lines = text.split(/\r?\n/).filter(l => l.trim());
+          if (lines.length < 2) { status.textContent = 'CSV needs a header and at least one row.'; return; }
+          const header = parseCSVLine(lines[0]);
+          const data = [];
+          for (let i = 1; i < lines.length; i++) {
+            const cells = parseCSVLine(lines[i]);
+            if (cells.length >= 2) {
+              const dateStr = cells[0];
+              const ts = new Date(dateStr).getTime();
+              if (!isNaN(ts)) data.push({ ts, url: cells[1] || '', title: cells[2] || '' });
+            }
+          }
+          data.sort((a, b) => a.ts - b.ts);
+          const step = Math.max(1, Math.floor(data.length / 520));
+          parsed = data.filter((_, i) => i % step === 0).slice(0, 520);
+          status.textContent = parsed.length + ' visits loaded.';
+          controls.style.display = 'flex';
+          vizSection.style.display = 'block';
+          draw();
+        };
+        reader.readAsText(file, 'UTF-8');
+      }
+
+      function draw() {
+        if (!parsed.length) return;
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.parentElement.offsetWidth;
+        const h = canvas.parentElement.offsetHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.scale(dpr, dpr);
+        const minT = parsed[0].ts;
+        const maxT = parsed[parsed.length - 1].ts;
+        const span = maxT - minT || 1;
+        const pad = 8;
+        const chartW = w - 2 * pad;
+        const chartH = h - 2 * pad;
+
+        for (let i = 0; i < parsed.length; i++) {
+          const t = parsed[i].ts;
+          const x = pad + ((t - minT) / span) * chartW;
+          const hour = new Date(t).getHours();
+          const hue = 180 + (hour / 24) * 120;
+          const alpha = 0.35 + (hour / 24) * 0.4;
+          ctx.fillStyle = `hsla(${hue}, 70%, 65%, ${alpha})`;
+          const barH = 4 + (hour / 24) * 14;
+          ctx.fillRect(x, h - pad - barH, Math.max(2, chartW / parsed.length * 1.2), barH);
+        }
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.15)';
+        ctx.fillRect(pad, h - pad - 2, chartW, 2);
+      }
+
+      window.addEventListener('resize', () => { if (parsed.length) draw(); });
+
+      function getPitchFromHour(hour) {
+        const scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+        return scale[hour % scale.length] * Math.pow(2, Math.floor(hour / 24));
+      }
+
+      function playSonification() {
+        if (!parsed.length || !window.AudioContext && !window.webkitAudioContext) {
+          status.textContent = 'No data or Web Audio not supported.';
+          return;
+        }
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        stopPlayback = false;
+        playBtn.disabled = true;
+        status.textContent = 'Playing…';
+        const startWall = audioCtx.currentTime;
+        scheduledTime = 0;
+        const baseGap = 0.08;
+        const maxGap = 0.5;
+        let prevT = parsed[0].ts;
+
+        function scheduleNext(i) {
+          if (stopPlayback || i >= parsed.length) {
+            playBtn.disabled = false;
+            status.textContent = parsed.length + ' visits loaded.';
+            return;
+          }
+          const row = parsed[i];
+          const gap = (row.ts - prevT) / 1000;
+          const clamped = Math.min(maxGap, Math.max(baseGap, gap * 0.12));
+          prevT = row.ts;
+          scheduledTime += clamped;
+          const when = startWall + scheduledTime;
+          const hour = new Date(row.ts).getHours();
+          const freq = getPitchFromHour(hour);
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.frequency.value = freq;
+          osc.type = 'sine';
+          gain.gain.setValueAtTime(0.12, when);
+          gain.gain.exponentialRampToValueAtTime(0.001, when + 0.15);
+          osc.start(when);
+          osc.stop(when + 0.15);
+          setTimeout(() => scheduleNext(i + 1), clamped * 1000 * 0.95);
+        }
+        scheduleNext(0);
+      }
+
+      function stopSonification() {
+        stopPlayback = true;
+        status.textContent = 'Stopped.';
+      }
+
+      playBtn.addEventListener('click', playSonification);
+      stopBtn.addEventListener('click', stopSonification);
+    })();
+  </script>
+<script>
+(function(){
+  try{
+    const path = (location.pathname || "").split("/").pop() || "index_nav.html";
+    document.querySelectorAll(".site-nav a").forEach(a=>{
+      const href = (a.getAttribute("href")||"").split("/").pop();
+      if(href === path) a.classList.add("active");
+    });
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

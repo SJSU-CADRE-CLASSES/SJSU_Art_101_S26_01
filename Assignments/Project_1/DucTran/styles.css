@@ -1,0 +1,77 @@
+/* Data Self Portrait — Discord theme */
+* { box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  margin: 0;
+  background: #313338;
+  color: #dbdee1;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+.wrap {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+header {
+  border-bottom: 1px solid #404249;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+h1 { margin: 0 0 0.25rem 0; font-size: 1.75rem; color: #fff; }
+.subtitle { margin: 0; font-size: 0.95rem; color: #b5bac1; }
+nav {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+nav a {
+  color: #5865f2;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+nav a:hover { background: #5865f2; color: #fff; }
+nav a.active { background: #4752c4; color: #fff; }
+main section { margin-bottom: 2rem; }
+.card {
+  background: #2b2d31;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.card h2 { margin: 0 0 0.75rem 0; font-size: 1.1rem; color: #fff; }
+.bar-wrap { margin-bottom: 0.75rem; }
+.bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.25rem; color: #b5bac1; }
+.bar {
+  height: 1.5rem;
+  background: #404249;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5865f2, #7289da);
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.5s ease;
+}
+.word-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.word-tag {
+  background: #404249;
+  color: #dbdee1;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+.word-tag span { color: #b5bac1; margin-left: 0.25rem; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #404249; font-size: 0.85rem; color: #80848e; }
+.about p { margin: 0 0 1rem 0; }
+.about a { color: #5865f2; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.stat { text-align: center; padding: 1rem; background: #2b2d31; border-radius: 8px; }
+.stat-num { font-size: 1.75rem; font-weight: 700; color: #5865f2; }
+.stat-label { font-size: 0.85rem; color: #b5bac1; }
+code { background: #404249; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
