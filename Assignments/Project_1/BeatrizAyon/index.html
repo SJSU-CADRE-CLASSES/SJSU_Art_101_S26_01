@@ -33,7 +33,6 @@
       flex-wrap: wrap;
       gap: 2rem;
       justify-content: center;
-      perspective: 600px;
     }
     .box-option {
       position: relative;
@@ -43,100 +42,65 @@
       opacity: 0;
       pointer-events: none;
     }
-    .box-option input:checked + .cube-wrapper .cube .face.front {
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
-    }
     .cube-wrapper {
-      width: 180px;
-      height: 180px;
+      width: 210px;
+      height: 160px;
       position: relative;
       cursor: pointer;
-      perspective: 420px;
-      perspective-origin: 50% 50%;
-    }
-    .cube-wrapper,
-    .cube {
-      transform-style: preserve-3d;
-    }
-    .cube {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 70px;
-      height: 90px;
-      margin-left: -35px;
-      margin-top: -45px;
-      transform: rotateX(-22deg) rotateY(28deg);
-      transition: transform 0.2s;
-    }
-    .box-option:hover .cube {
-      transform: rotateX(-22deg) rotateY(28deg) translateZ(10px);
-    }
-    .box-option input:focus-visible + .cube-wrapper .cube .face.front {
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
-    }
-    .face {
-      position: absolute;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-sizing: border-box;
-      backface-visibility: hidden;
     }
-    .face.top,
-    .face.right {
-      border: 1px solid rgba(255,255,255,0.4);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
-    }
-    /* 3D rectangular box: width 70, height 90, depth 70. All faces centered at origin. */
-    .face.front {
+    /* One .box = front face. Right side = box-shadow. Top side = ::before. No 3D – sides always visible. */
+    .box {
+      position: relative;
       width: 70px;
       height: 90px;
-      left: 50%;
-      top: 50%;
-      margin-left: -35px;
-      margin-top: -45px;
-      transform: translateZ(35px);
-      border: 1px solid rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 1.5rem;
       font-weight: 700;
       color: rgba(0,0,0,0.5);
       font-family: 'Barlow', sans-serif;
+      border: 1px solid rgba(0,0,0,0.1);
+      transition: transform 0.2s;
     }
-    .face.top {
+    .box::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: -70px;
       width: 70px;
       height: 70px;
-      left: 50%;
-      top: 50%;
-      margin-left: -35px;
-      margin-top: -35px;
-      transform: rotateX(-90deg) translateZ(45px);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-sizing: border-box;
+      z-index: -1;
     }
-    .face.right {
-      width: 70px;
-      height: 90px;
-      left: 50%;
-      top: 50%;
-      margin-left: -35px;
-      margin-top: -45px;
-      transform: rotateY(90deg) translateZ(35px);
+    .box-option:hover .box {
+      transform: translateY(-4px);
     }
-    /* Pastel colors: front (base), top (brighter so it reads on dark bg), right (darker but still vivid) */
-    .box-option:nth-child(1) .face.front { background: #FFB5C2; }
-    .box-option:nth-child(1) .face.top   { background: #FFD6DE; }
-    .box-option:nth-child(1) .face.right { background: #F0A0B0; }
-    .box-option:nth-child(2) .face.front { background: #B5EAD7; }
-    .box-option:nth-child(2) .face.top   { background: #D4F5E9; }
-    .box-option:nth-child(2) .face.right { background: #9DDFCB; }
-    .box-option:nth-child(3) .face.front { background: #C7CEEA; }
-    .box-option:nth-child(3) .face.top   { background: #E0E4F5; }
-    .box-option:nth-child(3) .face.right { background: #B0B8E0; }
-    .box-option:nth-child(4) .face.front { background: #FFDAC1; }
-    .box-option:nth-child(4) .face.top   { background: #FFE8D8; }
-    .box-option:nth-child(4) .face.right { background: #F5C9A8; }
-    .box-option:nth-child(5) .face.front { background: #A8D8EA; }
-    .box-option:nth-child(5) .face.top   { background: #C8E8F2; }
-    .box-option:nth-child(5) .face.right { background: #8FCCE0; }
+    .box-option input:checked + .cube-wrapper .box,
+    .box-option input:focus-visible + .cube-wrapper .box {
+      box-shadow: 70px 0 0 0 var(--right), 0 0 0 3px rgba(255,255,255,0.95);
+    }
+    /* Pastel: front (main bg), top (::before), right (box-shadow) */
+    .box-option:nth-child(1) .box { background: #FFB5C2; --right: #F0A0B0; }
+    .box-option:nth-child(1) .box::before { background: #FFD6DE; }
+    .box-option:nth-child(2) .box { background: #B5EAD7; --right: #9DDFCB; }
+    .box-option:nth-child(2) .box::before { background: #D4F5E9; }
+    .box-option:nth-child(3) .box { background: #C7CEEA; --right: #B0B8E0; }
+    .box-option:nth-child(3) .box::before { background: #E0E4F5; }
+    .box-option:nth-child(4) .box { background: #FFDAC1; --right: #F5C9A8; }
+    .box-option:nth-child(4) .box::before { background: #FFE8D8; }
+    .box-option:nth-child(5) .box { background: #A8D8EA; --right: #8FCCE0; }
+    .box-option:nth-child(5) .box::before { background: #C8E8F2; }
+    /* Default box-shadow (right side) when not selected */
+    .box-option:nth-child(1) .box { box-shadow: 70px 0 0 0 #F0A0B0; }
+    .box-option:nth-child(2) .box { box-shadow: 70px 0 0 0 #9DDFCB; }
+    .box-option:nth-child(3) .box { box-shadow: 70px 0 0 0 #B0B8E0; }
+    .box-option:nth-child(4) .box { box-shadow: 70px 0 0 0 #F5C9A8; }
+    .box-option:nth-child(5) .box { box-shadow: 70px 0 0 0 #8FCCE0; }
   </style>
 </head>
 <body>
@@ -145,51 +109,31 @@
     <label class="box-option">
       <input type="radio" name="blindbox" value="1" aria-label="Blindbox 1">
       <div class="cube-wrapper">
-        <div class="cube">
-          <div class="face front">1</div>
-          <div class="face top"></div>
-          <div class="face right"></div>
-        </div>
+        <div class="box">1</div>
       </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="2" aria-label="Blindbox 2">
       <div class="cube-wrapper">
-        <div class="cube">
-          <div class="face front">2</div>
-          <div class="face top"></div>
-          <div class="face right"></div>
-        </div>
+        <div class="box">2</div>
       </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="3" aria-label="Blindbox 3">
       <div class="cube-wrapper">
-        <div class="cube">
-          <div class="face front">3</div>
-          <div class="face top"></div>
-          <div class="face right"></div>
-        </div>
+        <div class="box">3</div>
       </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="4" aria-label="Blindbox 4">
       <div class="cube-wrapper">
-        <div class="cube">
-          <div class="face front">4</div>
-          <div class="face top"></div>
-          <div class="face right"></div>
-        </div>
+        <div class="box">4</div>
       </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="5" aria-label="Blindbox 5">
       <div class="cube-wrapper">
-        <div class="cube">
-          <div class="face front">5</div>
-          <div class="face top"></div>
-          <div class="face right"></div>
-        </div>
+        <div class="box">5</div>
       </div>
     </label>
   </div>
