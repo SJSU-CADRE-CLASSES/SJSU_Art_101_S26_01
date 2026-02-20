@@ -142,11 +142,50 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
+    .buy-more {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .buy-more p {
+      font-size: 1.1rem;
+      color: #5a4a6a;
+      margin: 0 0 0.75rem 0;
+    }
+    .buy-more-btns {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .buy-more-btns a {
+      display: inline-block;
+      padding: 0.6rem 1.25rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #FFB5C2 0%, #C7CEEA 100%);
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(255, 181, 194, 0.35);
+    }
+    .buy-more-btns a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255, 181, 194, 0.45);
+    }
   </style>
 </head>
 <body>
   <h1>Money spent</h1>
   <div class="viz" id="viz"></div>
+  <div class="buy-more">
+    <p>Anyways.. Buy more blindboxes?</p>
+    <div class="buy-more-btns">
+      <a href="index.html">Yes</a>
+      <a href="index.html">Yes</a>
+    </div>
+  </div>
   <a href="unbox-more.html" class="back">← Back to questionnaire</a>
   <script>
     (function() {
