@@ -19,17 +19,23 @@
       gap: 1.5rem;
       padding: 2rem;
       font-family: 'Barlow', system-ui, sans-serif;
-      background: #1a1a1a;
-      color: #fff;
+      background: linear-gradient(160deg, #FFF0F5 0%, #E8F4F8 45%, #F0E6FA 100%);
+      color: #3d3d5c;
     }
     h1 {
       font-size: 2rem;
       font-weight: 600;
       margin: 0 0 0.5rem 0;
+      color: #5a4a6a;
     }
     .quiz {
       width: 100%;
       max-width: 420px;
+      padding: 1.75rem;
+      background: rgba(255,255,255,0.75);
+      border-radius: 20px;
+      border: 2px solid rgba(199, 206, 234, 0.4);
+      box-shadow: 0 8px 32px rgba(181, 234, 215, 0.2);
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
@@ -42,22 +48,23 @@
     .field label, .field legend {
       font-size: 1rem;
       font-weight: 600;
-      color: rgba(255,255,255,0.95);
+      color: #5a4a6a;
     }
     .field input[type="number"],
     .field select {
-      padding: 0.6rem 0.75rem;
+      padding: 0.65rem 0.85rem;
       font-size: 1rem;
       font-family: inherit;
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
+      border: 2px solid rgba(199, 206, 234, 0.5);
+      border-radius: 12px;
+      background: #fff;
+      color: #3d3d5c;
     }
     .field input[type="number"]:focus,
     .field select:focus {
       outline: none;
-      border-color: rgba(255,255,255,0.5);
+      border-color: #C7CEEA;
+      box-shadow: 0 0 0 3px rgba(199, 206, 234, 0.25);
     }
     .checkboxes {
       display: flex;
@@ -70,34 +77,38 @@
       gap: 0.5rem;
       font-weight: 400;
       cursor: pointer;
+      color: #3d3d5c;
     }
     .checkboxes input[type="checkbox"] {
-      width: 1.1rem;
-      height: 1.1rem;
-      accent-color: #C7CEEA;
+      width: 1.2rem;
+      height: 1.2rem;
+      accent-color: #FFB5C2;
     }
     button[type="submit"] {
-      padding: 0.75rem 1.5rem;
+      padding: 0.85rem 1.5rem;
       font-size: 1rem;
       font-family: inherit;
       font-weight: 600;
-      color: #1a1a1a;
-      background: #C7CEEA;
+      color: #fff;
+      background: linear-gradient(135deg, #FFB5C2 0%, #C7CEEA 100%);
       border: none;
-      border-radius: 8px;
+      border-radius: 14px;
       cursor: pointer;
       margin-top: 0.5rem;
+      box-shadow: 0 4px 14px rgba(255, 181, 194, 0.4);
     }
     button[type="submit"]:hover {
-      background: #B0B8E0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 181, 194, 0.5);
     }
     a.choose {
       font-size: 0.95rem;
-      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+      color: #6b5b7a;
       text-decoration: none;
     }
     a.choose:hover {
-      color: #fff;
+      color: #5a4a6a;
     }
   </style>
 </head>

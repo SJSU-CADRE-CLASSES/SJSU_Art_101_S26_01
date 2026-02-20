@@ -19,14 +19,15 @@
       gap: 2.5rem;
       padding: 2rem;
       font-family: 'Barlow', system-ui, sans-serif;
-      background: #1a1a1a;
-      color: #fff;
+      background: linear-gradient(160deg, #FFF0F5 0%, #E8F4F8 45%, #F0E6FA 100%);
+      color: #3d3d5c;
     }
     h1 {
       font-size: 1.75rem;
       font-weight: 600;
       margin: 0;
       text-align: center;
+      color: #5a4a6a;
     }
     .boxes {
       display: flex;
@@ -86,9 +87,10 @@
     .box-option input:checked + .cube-wrapper .box,
     .box-option input:focus-visible + .cube-wrapper .box {
       transform: scale(1.45);
-      outline: 3px solid rgba(255,255,255,0.95);
+      outline: 3px solid #C7CEEA;
       outline-offset: 4px;
-      border-radius: 4px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(199, 206, 234, 0.4);
     }
     .box-option input:checked:hover + .cube-wrapper .box,
     .box-option input:focus-visible:hover + .cube-wrapper .box {
