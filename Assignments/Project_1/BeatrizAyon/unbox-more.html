@@ -50,8 +50,7 @@
       font-weight: 600;
       color: #5a4a6a;
     }
-    .field input[type="number"],
-    .field select {
+    .field input[type="number"] {
       padding: 0.65rem 0.85rem;
       font-size: 1rem;
       font-family: inherit;
@@ -61,10 +60,27 @@
       color: #3d3d5c;
     }
     .field input[type="number"]:focus,
-    .field select:focus {
+    .field input[type="text"]:focus {
       outline: none;
       border-color: #C7CEEA;
       box-shadow: 0 0 0 3px rgba(199, 206, 234, 0.25);
+    }
+    .spend-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .spend-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .spend-row label {
+      flex: 0 0 140px;
+      font-weight: 400;
+    }
+    .spend-row input {
+      width: 80px;
     }
     .checkboxes {
       display: flex;
@@ -117,33 +133,51 @@
   <form class="quiz" id="quiz">
     <div class="field">
       <label for="frequency">1. How often would you like to purchase a blindbox per month?</label>
-      <select id="frequency" name="frequency" required>
-        <option value="">Select…</option>
-        <option value="1">1 time</option>
-        <option value="2">2 times</option>
-        <option value="3">3 times</option>
-        <option value="4">4 times</option>
-        <option value="5">5 or more</option>
-      </select>
+      <input type="number" id="frequency" name="frequency" min="1" step="1" placeholder="e.g. 2" required>
     </div>
     <div class="field">
       <legend>2. What series would you like to collect? (select all that apply)</legend>
       <div class="checkboxes">
-        <label><input type="checkbox" name="series" value="Littlest Pet Shop"> Littlest Pet Shop</label>
-        <label><input type="checkbox" name="series" value="Labubu"> Labubu</label>
-        <label><input type="checkbox" name="series" value="Hirono"> Hirono</label>
-        <label><input type="checkbox" name="series" value="Smiski"> Smiski</label>
-        <label><input type="checkbox" name="series" value="Skullpanda"> Skullpanda</label>
+        <label><input type="checkbox" name="series" value="Littlest Pet Shop" data-series="Littlest Pet Shop"> Littlest Pet Shop</label>
+        <label><input type="checkbox" name="series" value="Labubu" data-series="Labubu"> Labubu</label>
+        <label><input type="checkbox" name="series" value="Hirono" data-series="Hirono"> Hirono</label>
+        <label><input type="checkbox" name="series" value="Smiski" data-series="Smiski"> Smiski</label>
+        <label><input type="checkbox" name="series" value="Skullpanda" data-series="Skullpanda"> Skullpanda</label>
       </div>
     </div>
-    <div class="field">
-      <label for="spend">3. How much do you think you will spend? ($)</label>
-      <input type="number" id="spend" name="spend" min="0" step="any" placeholder="e.g. 50" required>
+    <div class="field" id="spendSection" style="display: none;">
+      <legend>3. Money spent on each box ($)</legend>
+      <div class="spend-inputs" id="spendInputs"></div>
     </div>
     <button type="submit">Submit</button>
   </form>
   <a href="index.html" class="choose">← Choose another box</a>
   <script>
+    function spendKey(seriesName) {
+      return 'spend_' + seriesName.replace(/\s+/g, '_');
+    }
+    function updateSpendInputs() {
+      var checked = document.querySelectorAll('input[name="series"]:checked');
+      var section = document.getElementById('spendSection');
+      var container = document.getElementById('spendInputs');
+      container.innerHTML = '';
+      if (checked.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+      checked.forEach(function(cb) {
+        var name = cb.value;
+        var key = spendKey(name);
+        var row = document.createElement('div');
+        row.className = 'spend-row';
+        row.innerHTML = '<label for="' + key + '">' + name + '</label><input type="number" id="' + key + '" name="' + key + '" min="0" step="any" placeholder="0" required>';
+        container.appendChild(row);
+      });
+    }
+    document.querySelectorAll('input[name="series"]').forEach(function(cb) {
+      cb.addEventListener('change', updateSpendInputs);
+    });
     document.getElementById('quiz').addEventListener('submit', function(e) {
       var checkboxes = document.querySelectorAll('input[name="series"]:checked');
       if (checkboxes.length === 0) {
@@ -154,8 +188,11 @@
       e.preventDefault();
       var params = new URLSearchParams();
       params.set('frequency', document.getElementById('frequency').value);
-      params.set('spend', document.getElementById('spend').value);
       checkboxes.forEach(function(cb) { params.append('series', cb.value); });
+      checkboxes.forEach(function(cb) {
+        var input = document.getElementById(spendKey(cb.value));
+        if (input) params.set(spendKey(cb.value), input.value.trim() === '' ? '0' : input.value);
+      });
       window.location.href = 'results.html?' + params.toString();
     });
   </script>
