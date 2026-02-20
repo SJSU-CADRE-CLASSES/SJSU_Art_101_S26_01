@@ -82,6 +82,17 @@
     .spend-row input {
       width: 80px;
     }
+    .count-total {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .count-total.valid {
+      color: #5a9a6e;
+    }
+    .count-total.invalid {
+      color: #b85c5c;
+    }
     .checkboxes {
       display: flex;
       flex-direction: column;
@@ -146,8 +157,9 @@
       </div>
     </div>
     <div class="field" id="countSection" style="display: none;">
-      <legend>3. How many of each series would you like?</legend>
+      <legend>3. How many of each series would you like? (total must equal your answer to question 1)</legend>
       <div class="spend-inputs" id="countInputs"></div>
+      <p class="count-total invalid" id="countTotal">Total: 0 / —</p>
     </div>
     <button type="submit">Submit</button>
   </form>
@@ -156,13 +168,31 @@
     function countKey(seriesName) {
       return 'count_' + seriesName.replace(/\s+/g, '_');
     }
+    function getFrequency() {
+      var n = parseInt(document.getElementById('frequency').value, 10);
+      return (isNaN(n) || n < 1) ? 1 : n;
+    }
+    function getCountTotal() {
+      var total = 0;
+      document.querySelectorAll('#countInputs input[type="number"]').forEach(function(input) {
+        var val = parseInt(input.value, 10);
+        if (!isNaN(val) && val > 0) total += val;
+      });
+      return total;
+    }
+    function updateCountTotalDisplay() {
+      var total = getCountTotal();
+      var target = getFrequency();
+      var el = document.getElementById('countTotal');
+      if (!el) return;
+      el.textContent = 'Total: ' + total + ' / ' + target;
+      el.className = 'count-total ' + (total === target ? 'valid' : 'invalid');
+    }
     function updateCountInputs() {
       var checked = document.querySelectorAll('input[name="series"]:checked');
       var section = document.getElementById('countSection');
       var container = document.getElementById('countInputs');
-      var frequencyInput = document.getElementById('frequency');
-      var maxPerSeries = parseInt(frequencyInput.value, 10);
-      if (isNaN(maxPerSeries) || maxPerSeries < 1) maxPerSeries = 1;
+      var target = getFrequency();
       container.innerHTML = '';
       if (checked.length === 0) {
         section.style.display = 'none';
@@ -174,27 +204,32 @@
         var key = countKey(name);
         var row = document.createElement('div');
         row.className = 'spend-row';
-        row.innerHTML = '<label for="' + key + '">' + name + '</label><input type="number" id="' + key + '" name="' + key + '" min="0" max="' + maxPerSeries + '" step="1" placeholder="0" title="Max ' + maxPerSeries + ' (from purchases/month)">';
+        row.innerHTML = '<label for="' + key + '">' + name + '</label><input type="number" id="' + key + '" name="' + key + '" min="0" step="1" placeholder="0">';
         container.appendChild(row);
       });
+      container.querySelectorAll('input').forEach(function(input) {
+        input.addEventListener('input', updateCountTotalDisplay);
+      });
+      updateCountTotalDisplay();
     }
     document.querySelectorAll('input[name="series"]').forEach(function(cb) {
       cb.addEventListener('change', updateCountInputs);
     });
     document.getElementById('frequency').addEventListener('input', function() {
       updateCountInputs();
-      var maxPerSeries = parseInt(this.value, 10);
-      if (isNaN(maxPerSeries) || maxPerSeries < 1) return;
-      document.querySelectorAll('#countInputs input[type="number"]').forEach(function(input) {
-        var val = parseInt(input.value, 10);
-        if (!isNaN(val) && val > maxPerSeries) input.value = maxPerSeries;
-      });
     });
     document.getElementById('quiz').addEventListener('submit', function(e) {
       var checkboxes = document.querySelectorAll('input[name="series"]:checked');
       if (checkboxes.length === 0) {
         e.preventDefault();
         alert('Please select at least one series.');
+        return;
+      }
+      var total = getCountTotal();
+      var target = getFrequency();
+      if (total !== target) {
+        e.preventDefault();
+        alert('The total for all series must equal ' + target + ' (your answer to question 1). Right now the total is ' + total + '.');
         return;
       }
       e.preventDefault();
