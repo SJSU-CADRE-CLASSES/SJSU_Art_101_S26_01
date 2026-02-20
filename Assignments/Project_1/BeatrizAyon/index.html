@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beatriz Ayon — Art 101 Project 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body {
@@ -13,9 +16,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2rem;
+      gap: 2.5rem;
       padding: 2rem;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: 'Barlow', system-ui, sans-serif;
       background: #1a1a1a;
       color: #fff;
     }
@@ -28,9 +31,9 @@
     .boxes {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.25rem;
+      gap: 1.5rem;
       justify-content: center;
-      max-width: 480px;
+      perspective: 500px;
     }
     .box-option {
       position: relative;
@@ -40,35 +43,82 @@
       opacity: 0;
       pointer-events: none;
     }
-    .box-option input:checked + .box {
-      outline: 3px solid #7c3aed;
-      outline-offset: 4px;
-      background: #2d2d3a;
-      box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.4);
+    .box-option input:checked + .cube-wrapper .cube .face.front {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
     }
-    .box {
-      width: 90px;
-      height: 90px;
-      background: #2a2a35;
-      border: 2px solid #444;
-      border-radius: 12px;
+    .cube-wrapper {
+      width: 100px;
+      height: 115px;
+      position: relative;
+      transform-style: preserve-3d;
+      perspective: 320px;
+      cursor: pointer;
+    }
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(-18deg) rotateY(22deg);
+      transition: outline 0.2s, transform 0.2s;
+    }
+    .box-option:hover .cube {
+      transform: rotateX(-18deg) rotateY(22deg) translateZ(6px);
+    }
+    .box-option input:focus-visible + .cube-wrapper .cube .face.front {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
+    }
+    .face {
+      position: absolute;
       display: flex;
       align-items: center;
       justify-content: center;
+      backface-visibility: hidden;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    .face.front {
+      width: 70px;
+      height: 90px;
+      left: 0;
+      top: 0;
+      transform: translateZ(14px);
       font-size: 1.5rem;
       font-weight: 700;
-      color: rgba(255,255,255,0.5);
-      cursor: pointer;
-      transition: outline 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
+      color: rgba(0,0,0,0.45);
+      font-family: 'Barlow', sans-serif;
     }
-    .box:hover {
-      background: #333340;
-      transform: translateY(-2px);
+    .face.top {
+      width: 70px;
+      height: 28px;
+      left: 0;
+      top: 0;
+      transform: rotateX(-90deg) translateZ(14px);
+      transform-origin: top center;
     }
-    .box-option input:focus-visible + .box {
-      outline: 3px solid #7c3aed;
-      outline-offset: 4px;
+    .face.right {
+      width: 28px;
+      height: 90px;
+      left: 70px;
+      top: 0;
+      transform: rotateY(90deg) translateZ(14px);
+      transform-origin: left center;
     }
+    /* Pastel colors: front (base), top (lighter), right (darker) */
+    .box-option:nth-child(1) .face.front { background: #FFB5C2; }
+    .box-option:nth-child(1) .face.top   { background: #FFC9D3; }
+    .box-option:nth-child(1) .face.right{ background: #E89AAA; }
+    .box-option:nth-child(2) .face.front { background: #B5EAD7; }
+    .box-option:nth-child(2) .face.top   { background: #C9F2E3; }
+    .box-option:nth-child(2) .face.right { background: #9DD9C4; }
+    .box-option:nth-child(3) .face.front { background: #C7CEEA; }
+    .box-option:nth-child(3) .face.top   { background: #D6DCF0; }
+    .box-option:nth-child(3) .face.right { background: #AEB8DD; }
+    .box-option:nth-child(4) .face.front { background: #FFDAC1; }
+    .box-option:nth-child(4) .face.top   { background: #FFE4D0; }
+    .box-option:nth-child(4) .face.right { background: #E8C4A8; }
+    .box-option:nth-child(5) .face.front { background: #A8D8EA; }
+    .box-option:nth-child(5) .face.top   { background: #BFE3F0; }
+    .box-option:nth-child(5) .face.right { background: #8FC9DD; }
   </style>
 </head>
 <body>
@@ -76,23 +126,53 @@
   <div class="boxes" role="group" aria-label="Blindbox selection">
     <label class="box-option">
       <input type="radio" name="blindbox" value="1" aria-label="Blindbox 1">
-      <span class="box">1</span>
+      <div class="cube-wrapper">
+        <div class="cube">
+          <div class="face front">1</div>
+          <div class="face top"></div>
+          <div class="face right"></div>
+        </div>
+      </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="2" aria-label="Blindbox 2">
-      <span class="box">2</span>
+      <div class="cube-wrapper">
+        <div class="cube">
+          <div class="face front">2</div>
+          <div class="face top"></div>
+          <div class="face right"></div>
+        </div>
+      </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="3" aria-label="Blindbox 3">
-      <span class="box">3</span>
+      <div class="cube-wrapper">
+        <div class="cube">
+          <div class="face front">3</div>
+          <div class="face top"></div>
+          <div class="face right"></div>
+        </div>
+      </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="4" aria-label="Blindbox 4">
-      <span class="box">4</span>
+      <div class="cube-wrapper">
+        <div class="cube">
+          <div class="face front">4</div>
+          <div class="face top"></div>
+          <div class="face right"></div>
+        </div>
+      </div>
     </label>
     <label class="box-option">
       <input type="radio" name="blindbox" value="5" aria-label="Blindbox 5">
-      <span class="box">5</span>
+      <div class="cube-wrapper">
+        <div class="cube">
+          <div class="face front">5</div>
+          <div class="face top"></div>
+          <div class="face right"></div>
+        </div>
+      </div>
     </label>
   </div>
 </body>
