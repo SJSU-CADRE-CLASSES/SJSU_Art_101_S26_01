@@ -49,9 +49,19 @@
       height: 100%;
       display: block;
     }
+    .congrats {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #5a4a6a;
+      letter-spacing: 0.1em;
+      margin: 0;
+      text-align: center;
+      width: 100%;
+    }
     .reveal-wrap {
       width: 280px;
       height: 350px;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -59,6 +69,30 @@
       border-radius: 20px;
       border: 2px solid rgba(199, 206, 234, 0.5);
       box-shadow: 0 8px 32px rgba(181, 234, 215, 0.25);
+      overflow: hidden;
+    }
+    .confetti-wrap {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      animation: confettiFall 3s ease-in forwards;
+    }
+    @keyframes confettiFall {
+      0% {
+        opacity: 1;
+        transform: translateY(-10px) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(360px) translateX(var(--dx)) rotate(720deg);
+      }
     }
     .reveal-wrap img {
       max-width: 100%;
@@ -86,6 +120,7 @@
   </style>
 </head>
 <body>
+  <p class="congrats">CONGRATS!</p>
   <div class="page-content">
     <div class="box-wrap">
       <div class="box" id="boxEl">
@@ -96,7 +131,8 @@
         </svg>
       </div>
     </div>
-    <div class="reveal-wrap">
+    <div class="reveal-wrap" id="revealWrap">
+      <div class="confetti-wrap" id="confettiWrap"></div>
       <img id="revealImg" src="" alt="Your blindbox reveal">
     </div>
   </div>
@@ -119,6 +155,24 @@
       document.getElementById('p3').setAttribute('fill', c.right);
       document.getElementById('revealImg').src = images[box] || images['1'];
       document.getElementById('revealImg').alt = 'Your blindbox reveal';
+
+      function startConfetti() {
+        var colors = ['#FFB5C2', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#A8D8EA', '#FFD6DE', '#E0E4F5'];
+        var wrap = document.getElementById('confettiWrap');
+        var count = 55;
+        for (var i = 0; i < count; i++) {
+          var piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          piece.style.left = Math.random() * 100 + '%';
+          piece.style.animationDelay = (Math.random() * 0.8) + 's';
+          piece.style.animationDuration = (2.2 + Math.random() * 1.2) + 's';
+          piece.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          wrap.appendChild(piece);
+        }
+      }
+      document.getElementById('revealImg').onload = startConfetti;
+      if (document.getElementById('revealImg').complete) startConfetti();
     })();
   </script>
 </body>
