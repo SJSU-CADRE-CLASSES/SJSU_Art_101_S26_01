@@ -22,38 +22,49 @@
       background: #1a1a1a;
       color: #fff;
     }
+    .page-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+    }
     .box-wrap {
-      width: 320px;
-      height: 400px;
+      width: 200px;
+      height: 250px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .box-wrap .box {
-      width: 280px;
-      height: 350px;
+      width: 160px;
+      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .box-wrap .box img {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      display: block;
     }
     .box-wrap .box svg {
       width: 100%;
       height: 100%;
       display: block;
     }
-    .box-wrap .box.has-image img {
-      display: block;
+    .reveal-wrap {
+      width: 280px;
+      height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
-    .box-wrap .box.has-image svg.fallback {
-      display: none;
+    .reveal-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
     }
     a.back {
       font-size: 0.95rem;
@@ -66,14 +77,18 @@
   </style>
 </head>
 <body>
-  <div class="box-wrap" id="boxWrap">
-    <div class="box" id="boxEl">
-      <img id="boxImage" src="" alt="Your blindbox reveal" style="display: none;">
-      <svg class="fallback" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path id="p1" d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
-        <path id="p2" opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
-        <path id="p3" opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
-      </svg>
+  <div class="page-content">
+    <div class="box-wrap">
+      <div class="box" id="boxEl">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path id="p1" d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
+          <path id="p2" opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
+          <path id="p3" opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="reveal-wrap">
+      <img id="revealImg" src="" alt="Your blindbox reveal">
     </div>
   </div>
   <a href="index.html" class="back">← Choose another box</a>
@@ -81,8 +96,7 @@
     (function() {
       var params = new URLSearchParams(window.location.search);
       var box = params.get('box') || '1';
-      var img = document.getElementById('boxImage');
-      var boxEl = document.getElementById('boxEl');
+      var images = { '1': 'hirono.png', '2': 'lps.png', '3': 'labubu.png', '4': 'skullpanda.png', '5': 'smiski.png' };
       var colors = {
         '1': { front: '#FFB5C2', top: '#FFD6DE', right: '#F0A0B0' },
         '2': { front: '#B5EAD7', top: '#D4F5E9', right: '#9DDFCB' },
@@ -94,14 +108,8 @@
       document.getElementById('p1').setAttribute('fill', c.front);
       document.getElementById('p2').setAttribute('fill', c.top);
       document.getElementById('p3').setAttribute('fill', c.right);
-      img.src = 'box' + box + '.png';
-      img.onload = function() {
-        boxEl.classList.add('has-image');
-        img.style.display = 'block';
-      };
-      img.onerror = function() {
-        img.style.display = 'none';
-      };
+      document.getElementById('revealImg').src = images[box] || images['1'];
+      document.getElementById('revealImg').alt = 'Your blindbox reveal';
     })();
   </script>
 </body>

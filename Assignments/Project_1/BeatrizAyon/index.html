@@ -110,42 +110,10 @@
     .box-option:nth-child(5) .box path:nth-child(1) { fill: #A8D8EA; }
     .box-option:nth-child(5) .box path:nth-child(2) { fill: #C8E8F2; }
     .box-option:nth-child(5) .box path:nth-child(3) { fill: #8FCCE0; }
-    .main {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 3rem;
-      max-width: 900px;
-    }
-    .reveal {
-      width: 260px;
-      height: 320px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.04);
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .reveal img {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      transform: translateX(-120%);
-      transition: transform 0.5s ease-out;
-    }
-    .reveal.is-open img {
-      transform: translateX(0);
-    }
   </style>
 </head>
 <body>
   <h1>Choose a blindbox to open!</h1>
-  <div class="main">
   <div class="boxes" role="group" aria-label="Blindbox selection">
     <label class="box-option">
       <input type="radio" name="blindbox" value="1" aria-label="Blindbox 1">
@@ -213,35 +181,14 @@
       </div>
     </label>
   </div>
-  <div class="reveal" id="reveal" aria-live="polite">
-    <img id="revealImg" src="" alt="">
-  </div>
-  </div>
   <script>
-    (function() {
-      var images = { '1': 'hirono.png', '2': 'lps.png', '3': 'labubu.png', '4': 'skullpanda.png', '5': 'smiski.png' };
-      var reveal = document.getElementById('reveal');
-      var revealImg = document.getElementById('revealImg');
-      function updateReveal() {
-        var checked = document.querySelector('input[name="blindbox"]:checked');
-        if (checked && images[checked.value]) {
-          reveal.classList.remove('is-open');
-          revealImg.alt = 'Reveal';
-          revealImg.onload = function() {
-            reveal.classList.add('is-open');
-          };
-          revealImg.src = images[checked.value];
-        } else {
-          reveal.classList.remove('is-open');
-          revealImg.src = '';
-          revealImg.onload = null;
+    document.querySelectorAll('input[name="blindbox"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        if (this.checked) {
+          window.location.href = 'open.html?box=' + this.value;
         }
-      }
-      document.querySelectorAll('input[name="blindbox"]').forEach(function(radio) {
-        radio.addEventListener('change', updateReveal);
       });
-      updateReveal();
-    })();
+    });
   </script>
 </body>
 </html>
