@@ -153,13 +153,13 @@
   </form>
   <a href="index.html" class="choose">← Choose another box</a>
   <script>
-    function spendKey(seriesName) {
-      return 'spend_' + seriesName.replace(/\s+/g, '_');
+    function countKey(seriesName) {
+      return 'count_' + seriesName.replace(/\s+/g, '_');
     }
-    function updateSpendInputs() {
+    function updateCountInputs() {
       var checked = document.querySelectorAll('input[name="series"]:checked');
-      var section = document.getElementById('spendSection');
-      var container = document.getElementById('spendInputs');
+      var section = document.getElementById('countSection');
+      var container = document.getElementById('countInputs');
       container.innerHTML = '';
       if (checked.length === 0) {
         section.style.display = 'none';
@@ -168,15 +168,15 @@
       section.style.display = 'block';
       checked.forEach(function(cb) {
         var name = cb.value;
-        var key = spendKey(name);
+        var key = countKey(name);
         var row = document.createElement('div');
         row.className = 'spend-row';
-        row.innerHTML = '<label for="' + key + '">' + name + '</label><input type="number" id="' + key + '" name="' + key + '" min="0" step="any" placeholder="0" required>';
+        row.innerHTML = '<label for="' + key + '">' + name + '</label><input type="number" id="' + key + '" name="' + key + '" min="0" step="1" placeholder="0">';
         container.appendChild(row);
       });
     }
     document.querySelectorAll('input[name="series"]').forEach(function(cb) {
-      cb.addEventListener('change', updateSpendInputs);
+      cb.addEventListener('change', updateCountInputs);
     });
     document.getElementById('quiz').addEventListener('submit', function(e) {
       var checkboxes = document.querySelectorAll('input[name="series"]:checked');
@@ -190,8 +190,8 @@
       params.set('frequency', document.getElementById('frequency').value);
       checkboxes.forEach(function(cb) { params.append('series', cb.value); });
       checkboxes.forEach(function(cb) {
-        var input = document.getElementById(spendKey(cb.value));
-        if (input) params.set(spendKey(cb.value), input.value.trim() === '' ? '0' : input.value);
+        var input = document.getElementById(countKey(cb.value));
+        if (input) params.set(countKey(cb.value), input.value.trim() === '' ? '0' : input.value);
       });
       window.location.href = 'results.html?' + params.toString();
     });
