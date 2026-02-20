@@ -181,5 +181,14 @@
       </div>
     </label>
   </div>
+  <script>
+    document.querySelectorAll('input[name="blindbox"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        if (this.checked) {
+          window.location.href = 'open.html?box=' + this.value;
+        }
+      });
+    });
+  </script>
 </body>
 </html>
