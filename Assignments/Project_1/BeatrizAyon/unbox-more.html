@@ -119,6 +119,13 @@
       height: 1.2rem;
       accent-color: #FFB5C2;
     }
+    .checkboxes .series-thumb {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
     button[type="submit"] {
       padding: 0.85rem 1.5rem;
       font-size: 1rem;
@@ -157,11 +164,11 @@
     <div class="field">
       <legend>2. What series would you like to collect? (select all that apply)</legend>
       <div class="checkboxes">
-        <label><input type="checkbox" name="series" value="Littlest Pet Shop" data-series="Littlest Pet Shop"> Littlest Pet Shop</label>
-        <label><input type="checkbox" name="series" value="Labubu" data-series="Labubu"> Labubu</label>
-        <label><input type="checkbox" name="series" value="Hirono" data-series="Hirono"> Hirono</label>
-        <label><input type="checkbox" name="series" value="Smiski" data-series="Smiski"> Smiski</label>
-        <label><input type="checkbox" name="series" value="Skullpanda" data-series="Skullpanda"> Skullpanda</label>
+        <label><input type="checkbox" name="series" value="Littlest Pet Shop" data-series="Littlest Pet Shop"><img src="lps.png" alt="" class="series-thumb"> Littlest Pet Shop</label>
+        <label><input type="checkbox" name="series" value="Labubu" data-series="Labubu"><img src="labubu.png" alt="" class="series-thumb"> Labubu</label>
+        <label><input type="checkbox" name="series" value="Hirono" data-series="Hirono"><img src="hirono.png" alt="" class="series-thumb"> Hirono</label>
+        <label><input type="checkbox" name="series" value="Smiski" data-series="Smiski"><img src="smiski.png" alt="" class="series-thumb"> Smiski</label>
+        <label><input type="checkbox" name="series" value="Skullpanda" data-series="Skullpanda"><img src="skullpanda.png" alt="" class="series-thumb"> Skullpanda</label>
       </div>
     </div>
     <div class="field" id="countSection" style="display: none;">

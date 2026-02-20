@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your estimate — Art 101 Project 1</title>
+  <title>Money spent — Art 101 Project 1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
@@ -117,7 +117,7 @@
   </style>
 </head>
 <body>
-  <h1>Your estimated cost</h1>
+  <h1>Money spent</h1>
   <div class="viz" id="viz"></div>
   <a href="unbox-more.html" class="back">← Back to questionnaire</a>
   <script>
@@ -149,29 +149,32 @@
         if (subtotal > maxSubtotal) maxSubtotal = subtotal;
       }
       if (maxSubtotal === 0) maxSubtotal = 1;
-      var monthsToCollect = frequency > 0 && totalBoxes > 0 ? Math.ceil(totalBoxes / frequency) : 0;
+      var monthlySpent = totalCost;
+      var yearTotal = totalCost * 12;
+      var maxBar = Math.max(monthlySpent, yearTotal, maxSubtotal, 1);
 
       var colors = ['#FFB5C2', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#A8D8EA'];
-      var maxBar = Math.max(totalCost, maxSubtotal, 1);
 
       var html = '';
 
       html += '<div class="card">';
-      html += '<h2>Estimated total to collect</h2>';
-      html += '<p class="big-number">$' + totalCost + '</p>';
-      html += '<p class="big-number sub">' + totalBoxes + ' box(es) total</p>';
-      html += '<div class="bar-wrap"><div class="bar-row">';
-      html += '<span class="bar-label">Total cost</span>';
-      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (totalCost / maxBar * 100) + '%;background:#C7CEEA"></div></div>';
-      html += '<span class="bar-value">$' + totalCost + '</span></div></div>';
-      if (monthsToCollect > 0) {
-        html += '<p class="summary">At ' + frequency + ' box(es)/month, about ' + monthsToCollect + ' month(s) to collect</p>';
-      }
+      html += '<h2>Money spent</h2>';
+      html += '<div class="bar-wrap">';
+      html += '<div class="bar-row">';
+      html += '<span class="bar-label">Per month</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (monthlySpent / maxBar * 100) + '%;background:#C7CEEA"></div></div>';
+      html += '<span class="bar-value">$' + monthlySpent + '</span></div>';
+      html += '<div class="bar-row">';
+      html += '<span class="bar-label">Year total</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (yearTotal / maxBar * 100) + '%;background:#B5EAD7"></div></div>';
+      html += '<span class="bar-value">$' + yearTotal + '</span></div>';
+      html += '</div>';
+      html += '<p class="summary">Based on ' + totalBoxes + ' box(es) this month ($' + monthlySpent + ') × 12 months</p>';
       html += '</div>';
 
       if (seriesData.length) {
         html += '<div class="card">';
-        html += '<h2>Cost by series (qty × $/box)</h2>';
+        html += '<h2>Money spent by series (qty × $/box)</h2>';
         html += '<div class="bar-wrap">';
         for (var i = 0; i < seriesData.length; i++) {
           var item = seriesData[i];
