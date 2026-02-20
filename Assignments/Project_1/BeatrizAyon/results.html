@@ -122,52 +122,73 @@
   <a href="unbox-more.html" class="back">← Back to questionnaire</a>
   <script>
     (function() {
+      var prices = {
+        'Hirono': 15,
+        'Skullpanda': 17,
+        'Labubu': 24,
+        'Smiski': 11,
+        'Littlest Pet Shop': 6
+      };
+
       var params = new URLSearchParams(window.location.search);
       var frequency = parseInt(params.get('frequency'), 10) || 1;
-      var spend = parseFloat(params.get('spend'), 10) || 0;
+      var budget = parseFloat(params.get('spend'), 10) || 0;
       var series = params.getAll('series');
       if (series.length === 0) series = ['No series selected'];
 
-      var monthly = spend;
-      var annual = monthly * 12;
-      var perSeries = series.length ? (monthly / series.length) : 0;
+      var totalPriceSelected = 0;
+      var seriesWithPrices = [];
+      for (var s = 0; s < series.length; s++) {
+        var name = series[s];
+        var p = prices[name] !== undefined ? prices[name] : 0;
+        totalPriceSelected += p;
+        seriesWithPrices.push({ name: name, price: p });
+      }
+      var avgPrice = seriesWithPrices.length ? (totalPriceSelected / seriesWithPrices.length) : 0;
+      var estimatedMonthly = Math.round(frequency * avgPrice);
+      var estimatedAnnual = estimatedMonthly * 12;
+      var maxPrice = 24;
 
       var colors = ['#FFB5C2', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#A8D8EA'];
-      var maxBar = Math.max(annual, monthly, perSeries, 1);
+      var maxBar = Math.max(estimatedAnnual, estimatedMonthly, budget * 12, 1);
 
       var html = '';
+
       html += '<div class="card">';
-      html += '<h2>Monthly budget</h2>';
-      html += '<p class="big-number">$' + monthly.toFixed(0) + '</p>';
-      html += '<p class="big-number sub">~' + frequency + ' purchase(s) per month</p>';
+      html += '<h2>Estimated monthly cost</h2>';
+      html += '<p class="big-number">$' + estimatedMonthly + '</p>';
+      html += '<p class="big-number sub">' + frequency + ' box(es) per month × avg $' + avgPrice.toFixed(0) + '/box from your series</p>';
       html += '<div class="bar-wrap"><div class="bar-row">';
-      html += '<span class="bar-label">This month</span>';
-      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (monthly / maxBar * 100) + '%;background:#C7CEEA"></div></div>';
-      html += '<span class="bar-value">$' + monthly.toFixed(0) + '</span></div></div>';
+      html += '<span class="bar-label">Est. monthly</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (estimatedMonthly / maxBar * 100) + '%;background:#C7CEEA"></div></div>';
+      html += '<span class="bar-value">$' + estimatedMonthly + '</span></div></div>';
+      if (budget > 0) {
+        html += '<p class="summary">Your budget: $' + budget.toFixed(0) + '/month</p>';
+      }
       html += '</div>';
 
       html += '<div class="card">';
       html += '<h2>Estimated annual spend</h2>';
-      html += '<p class="big-number">$' + annual.toFixed(0) + '</p>';
+      html += '<p class="big-number">$' + estimatedAnnual + '</p>';
       html += '<div class="bar-wrap"><div class="bar-row">';
       html += '<span class="bar-label">Year total</span>';
-      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (annual / maxBar * 100) + '%;background:#B5EAD7"></div></div>';
-      html += '<span class="bar-value">$' + annual.toFixed(0) + '</span></div></div>';
-      html += '<p class="summary">Based on $' + monthly.toFixed(0) + '/month × 12 months</p>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (estimatedAnnual / maxBar * 100) + '%;background:#B5EAD7"></div></div>';
+      html += '<span class="bar-value">$' + estimatedAnnual + '</span></div></div>';
+      html += '<p class="summary">$' + estimatedMonthly + '/month × 12 months</p>';
       html += '</div>';
 
-      if (series.length && series[0] !== 'No series selected') {
+      if (seriesWithPrices.length) {
         html += '<div class="card">';
-        html += '<h2>Budget per series (' + series.length + ' selected)</h2>';
-        html += '<p class="big-number sub">~$' + perSeries.toFixed(0) + ' per series per month</p>';
+        html += '<h2>Cost per box by series</h2>';
         html += '<div class="bar-wrap">';
-        for (var i = 0; i < series.length; i++) {
+        for (var i = 0; i < seriesWithPrices.length; i++) {
+          var item = seriesWithPrices[i];
           var c = colors[i % colors.length];
-          var pct = maxBar > 0 ? (perSeries / maxBar * 100) : 0;
+          var pct = maxPrice > 0 ? (item.price / maxPrice * 100) : 0;
           html += '<div class="bar-row">';
-          html += '<span class="bar-label">' + series[i] + '</span>';
+          html += '<span class="bar-label">' + item.name + '</span>';
           html += '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + c + '"></div></div>';
-          html += '<span class="bar-value">$' + perSeries.toFixed(0) + '</span></div>';
+          html += '<span class="bar-value">$' + item.price + '</span></div>';
         }
         html += '</div></div>';
       }
