@@ -31,9 +31,9 @@
     .boxes {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.5rem;
+      gap: 2rem;
       justify-content: center;
-      perspective: 500px;
+      perspective: 600px;
     }
     .box-option {
       position: relative;
@@ -47,23 +47,27 @@
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
     }
     .cube-wrapper {
-      width: 100px;
-      height: 115px;
+      width: 130px;
+      height: 140px;
       position: relative;
       transform-style: preserve-3d;
-      perspective: 320px;
+      perspective: 400px;
       cursor: pointer;
     }
     .cube {
-      width: 100%;
-      height: 100%;
-      position: relative;
+      width: 70px;
+      height: 90px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -35px;
+      margin-top: -45px;
       transform-style: preserve-3d;
-      transform: rotateX(-18deg) rotateY(22deg);
-      transition: outline 0.2s, transform 0.2s;
+      transform: rotateX(-28deg) rotateY(32deg);
+      transition: transform 0.2s;
     }
     .box-option:hover .cube {
-      transform: rotateX(-18deg) rotateY(22deg) translateZ(6px);
+      transform: rotateX(-28deg) rotateY(32deg) translateZ(8px);
     }
     .box-option input:focus-visible + .cube-wrapper .cube .face.front {
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
@@ -74,34 +78,40 @@
       align-items: center;
       justify-content: center;
       backface-visibility: hidden;
-      border: 1px solid rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.12);
+      box-sizing: border-box;
     }
+    /* Box dimensions: 70×90 (front), depth 48px. All faces centered on cube origin. */
     .face.front {
       width: 70px;
       height: 90px;
-      left: 0;
-      top: 0;
-      transform: translateZ(14px);
+      left: 50%;
+      top: 50%;
+      margin-left: -35px;
+      margin-top: -45px;
+      transform: translateZ(24px);
       font-size: 1.5rem;
       font-weight: 700;
-      color: rgba(0,0,0,0.45);
+      color: rgba(0,0,0,0.5);
       font-family: 'Barlow', sans-serif;
     }
     .face.top {
       width: 70px;
-      height: 28px;
-      left: 0;
-      top: 0;
-      transform: rotateX(-90deg) translateZ(14px);
-      transform-origin: top center;
+      height: 48px;
+      left: 50%;
+      top: 50%;
+      margin-left: -35px;
+      margin-top: -24px;
+      transform: rotateX(-90deg) translateZ(45px);
     }
     .face.right {
-      width: 28px;
+      width: 48px;
       height: 90px;
-      left: 70px;
-      top: 0;
-      transform: rotateY(90deg) translateZ(14px);
-      transform-origin: left center;
+      left: 50%;
+      top: 50%;
+      margin-left: -24px;
+      margin-top: -45px;
+      transform: rotateY(90deg) translateZ(35px);
     }
     /* Pastel colors: front (base), top (lighter), right (darker) */
     .box-option:nth-child(1) .face.front { background: #FFB5C2; }
