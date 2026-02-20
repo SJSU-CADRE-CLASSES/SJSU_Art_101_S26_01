@@ -47,27 +47,23 @@
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
     }
     .cube-wrapper {
-      width: 165px;
-      height: 155px;
+      width: 200px;
+      height: 200px;
       position: relative;
-      transform-style: preserve-3d;
-      perspective: 400px;
       cursor: pointer;
     }
     .cube {
-      width: 70px;
-      height: 90px;
       position: absolute;
       left: 50%;
       top: 50%;
-      margin-left: -35px;
-      margin-top: -45px;
-      transform-style: preserve-3d;
-      transform: rotateX(-28deg) rotateY(32deg);
+      width: 140px;
+      height: 160px;
+      margin-left: -70px;
+      margin-top: -80px;
       transition: transform 0.2s;
     }
     .box-option:hover .cube {
-      transform: rotateX(-28deg) rotateY(32deg) translateZ(8px);
+      transform: translateY(-6px);
     }
     .box-option input:focus-visible + .cube-wrapper .cube .face.front {
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
@@ -77,46 +73,42 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      backface-visibility: hidden;
-      border: 1px solid rgba(0,0,0,0.12);
       box-sizing: border-box;
     }
     .face.top,
     .face.right {
-      border: 1px solid rgba(255,255,255,0.35);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
     }
-    /* Box dimensions: 70×90 (front), depth 70px (same as front width). All faces centered on cube origin. */
+    /* Isometric box: front 70×90, depth 70 (same as front width). Right and top drawn with skew so sides are clearly visible. */
     .face.front {
       width: 70px;
       height: 90px;
-      left: 50%;
-      top: 50%;
-      margin-left: -35px;
-      margin-top: -45px;
-      transform: translateZ(35px);
+      left: 0;
+      top: 0;
+      border: 1px solid rgba(0,0,0,0.12);
       font-size: 1.5rem;
       font-weight: 700;
       color: rgba(0,0,0,0.5);
       font-family: 'Barlow', sans-serif;
     }
+    /* Top face: 70×70 (same width as front, depth = 70). Skewed so it clearly recedes. */
     .face.top {
       width: 70px;
       height: 70px;
-      left: 50%;
-      top: 50%;
-      margin-left: -35px;
-      margin-top: -35px;
-      transform: rotateX(-90deg) translateZ(45px);
+      left: 0;
+      top: -70px;
+      transform: skewX(-30deg);
+      transform-origin: bottom left;
     }
+    /* Right face: 70×90 (depth 70, same height as front). Skewed so it clearly recedes. */
     .face.right {
       width: 70px;
       height: 90px;
-      left: 50%;
-      top: 50%;
-      margin-left: -35px;
-      margin-top: -45px;
-      transform: rotateY(90deg) translateZ(35px);
+      left: 70px;
+      top: 0;
+      transform: skewY(30deg);
+      transform-origin: top left;
     }
     /* Pastel colors: front (base), top (brighter so it reads on dark bg), right (darker but still vivid) */
     .box-option:nth-child(1) .face.front { background: #FFB5C2; }
