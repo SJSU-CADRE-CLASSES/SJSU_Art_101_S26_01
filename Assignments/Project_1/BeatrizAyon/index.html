@@ -4,7 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beatriz Ayon — Art 101 Project 1</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0;
+      text-align: center;
+    }
+    .boxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+      max-width: 480px;
+    }
+    .box-option {
+      position: relative;
+    }
+    .box-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .box-option input:checked + .box {
+      outline: 3px solid #7c3aed;
+      outline-offset: 4px;
+      background: #2d2d3a;
+      box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.4);
+    }
+    .box {
+      width: 90px;
+      height: 90px;
+      background: #2a2a35;
+      border: 2px solid #444;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: outline 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .box:hover {
+      background: #333340;
+      transform: translateY(-2px);
+    }
+    .box-option input:focus-visible + .box {
+      outline: 3px solid #7c3aed;
+      outline-offset: 4px;
+    }
+  </style>
 </head>
 <body>
+  <h1>Choose a blindbox to open!</h1>
+  <div class="boxes" role="group" aria-label="Blindbox selection">
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="1" aria-label="Blindbox 1">
+      <span class="box">1</span>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="2" aria-label="Blindbox 2">
+      <span class="box">2</span>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="3" aria-label="Blindbox 3">
+      <span class="box">3</span>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="4" aria-label="Blindbox 4">
+      <span class="box">4</span>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="5" aria-label="Blindbox 5">
+      <span class="box">5</span>
+    </label>
+  </div>
 </body>
 </html>
