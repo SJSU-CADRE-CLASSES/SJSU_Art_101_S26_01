@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your estimate — Art 101 Project 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      font-family: 'Barlow', system-ui, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0 0 2rem 0;
+    }
+    .viz {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      margin: 0 0 1rem 0;
+    }
+    .big-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #C7CEEA;
+      margin: 0 0 0.5rem 0;
+    }
+    .big-number.sub {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+    }
+    .bar-wrap {
+      margin-top: 0.75rem;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-label {
+      flex: 0 0 120px;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.9);
+    }
+    .bar-track {
+      flex: 1;
+      height: 24px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.6s ease;
+    }
+    .bar-value {
+      flex: 0 0 60px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: right;
+      color: rgba(255,255,255,0.9);
+    }
+    .summary {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 1rem;
+    }
+    a.back {
+      display: inline-block;
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+    }
+    a.back:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Your estimated cost</h1>
+  <div class="viz" id="viz"></div>
+  <a href="unbox-more.html" class="back">← Back to questionnaire</a>
+  <script>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var frequency = parseInt(params.get('frequency'), 10) || 1;
+      var spend = parseFloat(params.get('spend'), 10) || 0;
+      var series = params.getAll('series');
+      if (series.length === 0) series = ['No series selected'];
+
+      var monthly = spend;
+      var annual = monthly * 12;
+      var perSeries = series.length ? (monthly / series.length) : 0;
+
+      var colors = ['#FFB5C2', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#A8D8EA'];
+      var maxBar = Math.max(annual, monthly, perSeries, 1);
+
+      var html = '';
+      html += '<div class="card">';
+      html += '<h2>Monthly budget</h2>';
+      html += '<p class="big-number">$' + monthly.toFixed(0) + '</p>';
+      html += '<p class="big-number sub">~' + frequency + ' purchase(s) per month</p>';
+      html += '<div class="bar-wrap"><div class="bar-row">';
+      html += '<span class="bar-label">This month</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (monthly / maxBar * 100) + '%;background:#C7CEEA"></div></div>';
+      html += '<span class="bar-value">$' + monthly.toFixed(0) + '</span></div></div>';
+      html += '</div>';
+
+      html += '<div class="card">';
+      html += '<h2>Estimated annual spend</h2>';
+      html += '<p class="big-number">$' + annual.toFixed(0) + '</p>';
+      html += '<div class="bar-wrap"><div class="bar-row">';
+      html += '<span class="bar-label">Year total</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (annual / maxBar * 100) + '%;background:#B5EAD7"></div></div>';
+      html += '<span class="bar-value">$' + annual.toFixed(0) + '</span></div></div>';
+      html += '<p class="summary">Based on $' + monthly.toFixed(0) + '/month × 12 months</p>';
+      html += '</div>';
+
+      if (series.length && series[0] !== 'No series selected') {
+        html += '<div class="card">';
+        html += '<h2>Budget per series (' + series.length + ' selected)</h2>';
+        html += '<p class="big-number sub">~$' + perSeries.toFixed(0) + ' per series per month</p>';
+        html += '<div class="bar-wrap">';
+        for (var i = 0; i < series.length; i++) {
+          var c = colors[i % colors.length];
+          var pct = maxBar > 0 ? (perSeries / maxBar * 100) : 0;
+          html += '<div class="bar-row">';
+          html += '<span class="bar-label">' + series[i] + '</span>';
+          html += '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + c + '"></div></div>';
+          html += '<span class="bar-value">$' + perSeries.toFixed(0) + '</span></div>';
+        }
+        html += '</div></div>';
+      }
+
+      document.getElementById('viz').innerHTML = html;
+    })();
+  </script>
+</body>
+</html>

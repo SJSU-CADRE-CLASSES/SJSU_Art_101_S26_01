@@ -16,7 +16,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2rem;
+      gap: 1.5rem;
       padding: 2rem;
       font-family: 'Barlow', system-ui, sans-serif;
       background: #1a1a1a;
@@ -25,24 +25,128 @@
     h1 {
       font-size: 2rem;
       font-weight: 600;
-      margin: 0;
+      margin: 0 0 0.5rem 0;
+    }
+    .quiz {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .field label, .field legend {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+    }
+    .field input[type="number"],
+    .field select {
+      padding: 0.6rem 0.75rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .field input[type="number"]:focus,
+    .field select:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.5);
+    }
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    .checkboxes input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      accent-color: #C7CEEA;
+    }
+    button[type="submit"] {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: #1a1a1a;
+      background: #C7CEEA;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    button[type="submit"]:hover {
+      background: #B0B8E0;
     }
     a.choose {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.8);
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.7);
       text-decoration: none;
-      padding: 0.5rem 1rem;
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 8px;
     }
     a.choose:hover {
       color: #fff;
-      border-color: rgba(255,255,255,0.5);
     }
   </style>
 </head>
 <body>
   <h1>Unbox more</h1>
+  <form class="quiz" id="quiz">
+    <div class="field">
+      <label for="frequency">1. How often would you like to purchase a blindbox per month?</label>
+      <select id="frequency" name="frequency" required>
+        <option value="">Select…</option>
+        <option value="1">1 time</option>
+        <option value="2">2 times</option>
+        <option value="3">3 times</option>
+        <option value="4">4 times</option>
+        <option value="5">5 or more</option>
+      </select>
+    </div>
+    <div class="field">
+      <legend>2. What series would you like to collect? (select all that apply)</legend>
+      <div class="checkboxes">
+        <label><input type="checkbox" name="series" value="Littlest Pet Shop"> Littlest Pet Shop</label>
+        <label><input type="checkbox" name="series" value="Labubu"> Labubu</label>
+        <label><input type="checkbox" name="series" value="Hirono"> Hirono</label>
+        <label><input type="checkbox" name="series" value="Smiski"> Smiski</label>
+        <label><input type="checkbox" name="series" value="Skullpanda"> Skullpanda</label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="spend">3. How much do you think you will spend? ($)</label>
+      <input type="number" id="spend" name="spend" min="0" step="5" placeholder="e.g. 50" required>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
   <a href="index.html" class="choose">← Choose another box</a>
+  <script>
+    document.getElementById('quiz').addEventListener('submit', function(e) {
+      var checkboxes = document.querySelectorAll('input[name="series"]:checked');
+      if (checkboxes.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one series.');
+        return;
+      }
+      e.preventDefault();
+      var params = new URLSearchParams();
+      params.set('frequency', document.getElementById('frequency').value);
+      params.set('spend', document.getElementById('spend').value);
+      checkboxes.forEach(function(cb) { params.append('series', cb.value); });
+      window.location.href = 'results.html?' + params.toString();
+    });
+  </script>
 </body>
 </html>
