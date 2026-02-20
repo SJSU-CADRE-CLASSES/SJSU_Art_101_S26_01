@@ -3,47 +3,317 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beatriz Ayon — Data Self Portrait | Art 101 Project 1</title>
+  <title>Beatriz Ayon — Bay Area Map | Art 101 Project 1</title>
   <style>
     * { box-sizing: border-box; }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      margin: 0;
-      padding: 2rem;
-      max-width: 60rem;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.5;
-      color: #222;
+    html {
+      scroll-behavior: smooth;
     }
-    h1 { margin-top: 0; }
-    .portrait-container {
-      margin: 2rem 0;
-      min-height: 200px;
-      background: #f5f5f5;
-      border-radius: 8px;
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #000;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header, footer {
+      padding: 0.75rem 1rem;
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .scroll-hint {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .map-scroll {
+      position: relative;
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      -webkit-overflow-scrolling: touch;
+    }
+    .map-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+    .map-scroll::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+    .map-scroll::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 4px;
+    }
+    .map-scroll::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+    .map-track {
+      width: 200vw;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .map-wrap {
+      width: 200vw;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #666;
+      flex-shrink: 0;
+      aspect-ratio: 2.3 / 1.95;
     }
-    footer { margin-top: 3rem; font-size: 0.9rem; color: #666; }
+    #worldCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      image-rendering: auto;
+      image-rendering: -webkit-optimize-contrast;
+      display: block;
+      vertical-align: bottom;
+    }
+    .zoom-controls {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 10;
+    }
+    .zoom-controls button {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .zoom-controls button:hover {
+      background: rgba(255,255,255,0.25);
+    }
+    .zoom-controls button:active {
+      background: rgba(255,255,255,0.35);
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Data Self Portrait</h1>
-    <p><strong>Beatriz Ayon</strong> — Art 101 S26 — Project 1</p>
+    <strong>Beatriz Ayon</strong> — Art 101 S26 — Project 1
   </header>
 
-  <main>
-    <section class="portrait-container" aria-label="Data self portrait">
-      <!-- Add your data self portrait here -->
-    </section>
-  </main>
+  <div class="map-scroll" id="mapScroll">
+    <div class="map-track" id="mapTrack">
+      <div class="map-wrap" id="mapWrap">
+        <canvas id="worldCanvas" aria-label="Bay Area map — scroll to pan, use buttons or Ctrl+scroll to zoom"></canvas>
+      </div>
+    </div>
+    <div class="zoom-controls" aria-label="Zoom controls">
+      <button type="button" id="zoomIn" title="Zoom in">+</button>
+      <button type="button" id="zoomOut" title="Zoom out">−</button>
+    </div>
+  </div>
 
   <footer>
-    SJSU Art 101 S26 — Project 1
+    Bay Area — SJSU Art 101 S26
+    <p class="scroll-hint">Scroll to pan · Use + / − or Ctrl+scroll to zoom</p>
   </footer>
+
+  <script>
+    (function() {
+      var canvas = document.getElementById('worldCanvas');
+      var lonMin = -123.5, lonMax = -121.2, latMin = 36.85, latMax = 38.8;
+      var lonSpan = lonMax - lonMin, latSpan = latMax - latMin;
+      var W = 1024;
+      var H = Math.round(W * latSpan / lonSpan);
+      canvas.width = W;
+      canvas.height = H;
+      var ctx = canvas.getContext('2d');
+
+      var BAY_AREA_FIPS = ['06001','06013','06041','06055','06075','06081','06085','06095','06097'];
+
+      function lonLatToXY(lon, lat, round) {
+        var x = (lon - lonMin) / lonSpan * W;
+        var y = (latMax - lat) / latSpan * H;
+        if (round) return [Math.round(x), Math.round(y)];
+        return [x, y];
+      }
+
+      function drawRing(ring, round) {
+        if (ring.length < 3) return;
+        var p = lonLatToXY(ring[0][0], ring[0][1], round);
+        ctx.moveTo(p[0], p[1]);
+        for (var i = 1; i < ring.length; i++) {
+          p = lonLatToXY(ring[i][0], ring[i][1], round);
+          ctx.lineTo(p[0], p[1]);
+        }
+        ctx.closePath();
+      }
+
+      function drawGeoJSON(geojson) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(26, 26, 32, 0.95)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+
+        geojson.features.forEach(function(f) {
+          var geom = f.geometry;
+          if (!geom) return;
+          var coords = geom.coordinates;
+          if (geom.type === 'Polygon') {
+            coords.forEach(function(ring, i) {
+              ctx.beginPath();
+              drawRing(ring, false);
+              ctx.fill();
+              ctx.stroke();
+            });
+          } else if (geom.type === 'MultiPolygon') {
+            coords.forEach(function(polygon) {
+              polygon.forEach(function(ring) {
+                ctx.beginPath();
+                drawRing(ring, false);
+                ctx.fill();
+                ctx.stroke();
+              });
+            });
+          }
+        });
+      }
+
+      function drawFallback() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(26, 26, 32, 0.95)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        var ring = [[lonMin, latMin], [lonMax, latMin], [lonMax, latMax], [lonMin, latMax], [lonMin, latMin]];
+        ctx.beginPath();
+        var p = lonLatToXY(ring[0][0], ring[0][1], false);
+        ctx.moveTo(p[0], p[1]);
+        for (var i = 1; i < ring.length; i++) {
+          p = lonLatToXY(ring[i][0], ring[i][1], false);
+          ctx.lineTo(p[0], p[1]);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.font = '18px system-ui, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.textAlign = 'center';
+        ctx.fillText('Bay Area bounds', W / 2, H / 2 - 8);
+        ctx.font = '14px system-ui, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.45)';
+        ctx.fillText('Open via a local server to load full county map', W / 2, H / 2 + 20);
+      }
+
+      function tryLoad(u) {
+        return fetch(u).then(function(r) {
+          if (!r.ok) throw new Error('fetch failed');
+          return r.json();
+        });
+      }
+
+      var mapScroll = document.getElementById('mapScroll');
+      var mapTrack = document.getElementById('mapTrack');
+      var mapWrap = document.getElementById('mapWrap');
+      var baseWidthVw = 200;
+      var zoom = 1;
+      var minZoom = 0.5;
+      var maxZoom = 3;
+      var zoomStep = 0.25;
+
+      function applyZoom(newZoom, preserveCenter) {
+        var scrollEl = mapScroll;
+        var viewportWidth = scrollEl.clientWidth;
+        var contentWidth = scrollEl.scrollWidth;
+        var centerRatio = preserveCenter && contentWidth > 0
+          ? (scrollEl.scrollLeft + viewportWidth / 2) / contentWidth
+          : 0.5;
+
+        zoom = Math.max(minZoom, Math.min(maxZoom, newZoom));
+        var widthVw = baseWidthVw * zoom;
+        mapTrack.style.width = widthVw + 'vw';
+        mapWrap.style.width = widthVw + 'vw';
+
+        if (preserveCenter) {
+          requestAnimationFrame(function() {
+            var newContentWidth = scrollEl.scrollWidth;
+            var newScroll = centerRatio * newContentWidth - viewportWidth / 2;
+            scrollEl.scrollLeft = Math.max(0, Math.min(newScroll, newContentWidth - viewportWidth));
+          });
+        }
+      }
+
+      document.getElementById('zoomIn').addEventListener('click', function() {
+        applyZoom(zoom + zoomStep, true);
+      });
+      document.getElementById('zoomOut').addEventListener('click', function() {
+        applyZoom(zoom - zoomStep, true);
+      });
+
+      mapScroll.addEventListener('wheel', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          var delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+          applyZoom(zoom + delta, true);
+        }
+      }, { passive: false });
+
+      applyZoom(zoom, false);
+
+      function filterBayArea(geojson) {
+        if (!geojson || !geojson.features) return null;
+        var filtered = geojson.features.filter(function(f) {
+          var id = f.id;
+          if (id == null && f.properties) {
+            var s = (f.properties.STATE || '').toString(), c = (f.properties.COUNTY || '').toString();
+            id = (s.length === 1 ? '0' + s : s) + (c.length === 1 ? '00' + c : c.length === 2 ? '0' + c : c);
+          }
+          return id != null && BAY_AREA_FIPS.indexOf(String(id)) !== -1;
+        });
+        return filtered.length ? { type: 'FeatureCollection', features: filtered } : null;
+      }
+
+      var drawn = false;
+      var countiesUrl = 'https://cdn.jsdelivr.net/gh/plotly/datasets@master/geojson-counties-fips.json';
+      tryLoad('bay_area_counties.geojson')
+        .then(function(geojson) {
+          if (geojson && geojson.features && geojson.features.length) {
+            drawGeoJSON(geojson);
+            drawn = true;
+            return null;
+          }
+          return tryLoad(countiesUrl);
+        })
+        .catch(function() { return tryLoad(countiesUrl); })
+        .then(function(geojson) {
+          if (drawn || !geojson) { if (!drawn) drawFallback(); return; }
+          var bay = filterBayArea(geojson);
+          if (bay) drawGeoJSON(bay);
+          else drawFallback();
+        })
+        .catch(function() { if (!drawn) drawFallback(); });
+    })();
+  </script>
 </body>
 </html>
