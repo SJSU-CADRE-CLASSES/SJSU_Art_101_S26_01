@@ -47,8 +47,8 @@
       box-shadow: 0 0 0 3px rgba(255,255,255,0.95);
     }
     .cube-wrapper {
-      width: 130px;
-      height: 140px;
+      width: 165px;
+      height: 155px;
       position: relative;
       transform-style: preserve-3d;
       perspective: 400px;
@@ -86,7 +86,7 @@
       border: 1px solid rgba(255,255,255,0.35);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
     }
-    /* Box dimensions: 70×90 (front), depth 48px. All faces centered on cube origin. */
+    /* Box dimensions: 70×90 (front), depth 70px (same as front width). All faces centered on cube origin. */
     .face.front {
       width: 70px;
       height: 90px;
@@ -94,7 +94,7 @@
       top: 50%;
       margin-left: -35px;
       margin-top: -45px;
-      transform: translateZ(24px);
+      transform: translateZ(35px);
       font-size: 1.5rem;
       font-weight: 700;
       color: rgba(0,0,0,0.5);
@@ -102,19 +102,19 @@
     }
     .face.top {
       width: 70px;
-      height: 48px;
+      height: 70px;
       left: 50%;
       top: 50%;
       margin-left: -35px;
-      margin-top: -24px;
+      margin-top: -35px;
       transform: rotateX(-90deg) translateZ(45px);
     }
     .face.right {
-      width: 48px;
+      width: 70px;
       height: 90px;
       left: 50%;
       top: 50%;
-      margin-left: -24px;
+      margin-left: -35px;
       margin-top: -45px;
       transform: rotateY(90deg) translateZ(35px);
     }
