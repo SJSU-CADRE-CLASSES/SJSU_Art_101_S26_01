@@ -160,7 +160,7 @@ h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
   mix-blend-mode:normal;
 
   /* IMPORTANT: JS controls transform (movement). */
-  animation:none;
+  animation:none !important;
 
   will-change:transform;
   transition:
