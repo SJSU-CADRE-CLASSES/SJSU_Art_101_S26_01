@@ -115,6 +115,31 @@
 
     const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
 
+    // =========================
+    // FIX: AUTO-FIT SIZES so blobs can actually be separated + float
+    // (keeps the same relative sizing, just scales down if stage is too small)
+    // =========================
+    const rect0 = stage.getBoundingClientRect();
+    const stageArea = Math.max(rect0.width * rect0.height, 1);
+
+    const BASE_SIZE  = 240; // your original base
+    const RANGE_SIZE = 360; // your original range
+
+    let sumArea = 0;
+    for (const item of ITEMS){
+      const h = Number(item.hours || 0);
+      const rawSize = BASE_SIZE + (h / maxH) * RANGE_SIZE;
+      const r = rawSize * 0.5;
+      sumArea += Math.PI * r * r;
+    }
+
+    const TARGET_FILL = 0.32; // lower = more space between blobs
+    const SCALE = Math.min(1, Math.sqrt((stageArea * TARGET_FILL) / Math.max(sumArea, 1)));
+
+    // scale gaps too (but keep a sane minimum)
+    const PHYS_GAP_S   = Math.max(40, PHYS_GAP * SCALE);
+    const VISUAL_GAP_S = Math.max(40, VISUAL_GAP * SCALE);
+
     const blobs = [];
     const placed = [];
 
@@ -180,7 +205,7 @@
         let ok = true;
         for (const p of placed){
           const dist = Math.hypot(cx - p.cx, cy - p.cy);
-          const minDist = r + p.r + PHYS_GAP + VISUAL_GAP;
+          const minDist = r + p.r + PHYS_GAP_S + VISUAL_GAP_S;
           if (dist < minDist){ ok = false; break; }
         }
         if (ok){
@@ -206,7 +231,7 @@
     ITEMS.forEach((item, idx) => {
       const h = Number(item.hours || 0);
 
-      const size = 240 + (h / maxH) * 360; // keep sizing
+      const size = (240 + (h / maxH) * 360) * SCALE; // FIX: auto-fit
       const r = size / 2;
 
       const wrap = document.createElement("div");
@@ -263,13 +288,12 @@
 
     function animate(){
       const b = getBounds();
+      const t = performance.now();
 
       // 1) drift (keeps them moving) — smooth "lava lamp" push (not jittery)
       blobs.forEach(o => {
-        const t = performance.now();
-
-        o.vx += Math.sin(t * 0.0007 + o.r)    * DRIFT * 0.22;
-        o.vy += Math.cos(t * 0.0006 + o.size) * DRIFT * 0.22;
+        o.vx += Math.sin(t * 0.0007 + o.r)     * DRIFT * 0.22;
+        o.vy += Math.cos(t * 0.0006 + o.size)  * DRIFT * 0.22;
 
         // tiny randomness so paths aren’t identical
         o.vx += (Math.random() - 0.5) * DRIFT * 0.10;
@@ -299,7 +323,7 @@
             const dx = bx - ax, dy = by - ay;
             const dist = Math.hypot(dx, dy) || 0.0001;
 
-            const minDist = (a.r + c.r) + PHYS_GAP + VISUAL_GAP;
+            const minDist = (a.r + c.r) + PHYS_GAP_S + VISUAL_GAP_S;
 
             if (dist < minDist){
               const overlap = (minDist - dist);
