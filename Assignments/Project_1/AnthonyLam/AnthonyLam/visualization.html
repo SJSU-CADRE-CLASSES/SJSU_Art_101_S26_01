@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE — Visualization</title>
-  <link rel="stylesheet" href="./style.css?v=1009">
+  <link rel="stylesheet" href="./style.css?v=1010">
 </head>
 
 <body data-page="viz">
@@ -16,7 +16,7 @@
 <div id="blob-stage"></div>
 <div id="tip" class="tip"></div>
 
-<script src="./data.js?v=1009"></script>
+<script src="./data.js?v=1010"></script>
 
 <script>
 const stage = document.getElementById("blob-stage");
@@ -30,24 +30,29 @@ if (!ITEMS.length) {
   // ===== TUNING =====
   const PAD = 24;
 
-  // Keeps blobs from visually “touching” even with blur
-  const GAP = 220;                 // spacing between blobs
-  const VISUAL_GAP = 32;           // extra spacing for blur/soft edges
+  // Separation (bigger = farther apart; VISUAL_GAP accounts for blur)
+  const GAP = 320;
+  const VISUAL_GAP = 48;
 
-  // Solver stability (prevents overlap)
-  const SOLVER_PASSES = 14;        // more passes = less chance to touch
-  const SEPARATE_RATIO = 0.62;     // lower = less “snappy” separation
+  // Solver (higher = less touching)
+  const SOLVER_PASSES = 26;
+  const SEPARATE_RATIO = 0.85;   // stronger hard-separation (prevents “near touching”)
 
-  // Motion: screensaver bounce + steady movement
-  const DRIFT = 0.060;             // adds organic drifting
-  const DAMP = 0.995;              // keeps momentum
-  const BOUNCE = 0.995;            // screensaver-ish wall bounce
-  const MAX_SPEED = 4.6;           // prevents jitter / darting
-  const MIN_SPEED = 0.85;          // prevents “stuck / barely moving”
-  const WANDER = 0.020;            // tiny randomness so it doesn’t loop
+  // Motion (screensaver vibe)
+  const DRIFT = 0.16;            // more roaming force
+  const WANDER = 0.06;           // more randomness
+  const DAMP = 0.996;            // keeps momentum
+  const BOUNCE = 1.02;           // a little extra bounce so it keeps moving
 
-  // Repulsion force (how strongly velocity pushes apart)
-  const REPEL = 0.018;             // keep moderate to avoid “darting”
+  // Speed control
+  const MIN_SPEED = 2.2;         // ensures they don't “sit”
+  const MAX_SPEED = 9.0;         // lava lamp / screensaver speed (cap)
+
+  // Repulsion (lower than before to avoid “darting”, but enough to stay apart)
+  const REPEL = 0.010;
+
+  // Tooltip timing
+  const TIP_MS = 3000;
 
   const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
 
@@ -55,20 +60,33 @@ if (!ITEMS.length) {
   const placed = [];
   let activeIndex = -1;
 
-  // ---------- tooltip helpers (CLICK ONLY) ----------
+  let tipTimer = null;
   function showTip(text, x, y){
+    // reset any old timer
+    if (tipTimer) { clearTimeout(tipTimer); tipTimer = null; }
+
     tip.textContent = text;
     tip.style.opacity = "1";
+
     if (typeof x === "number" && typeof y === "number"){
       tip.style.left = (x + 14) + "px";
       tip.style.top  = (y + 14) + "px";
     }
+
+    // auto-hide after 3s
+    tipTimer = setTimeout(() => {
+      tip.style.opacity = "0";
+      activeIndex = -1;
+      document.querySelectorAll(".blob").forEach(b => b.classList.remove("dim","active"));
+      tipTimer = null;
+    }, TIP_MS);
   }
-  function hideTip(){
+
+  function clearTip(){
+    if (tipTimer) { clearTimeout(tipTimer); tipTimer = null; }
     tip.style.opacity = "0";
   }
 
-  // ---------- initial placement (starts apart) ----------
   function tryPlace(sizePx){
     const rect = stage.getBoundingClientRect();
     const r = sizePx/2;
@@ -78,7 +96,9 @@ if (!ITEMS.length) {
     const maxX = rect.width  - sizePx - PAD;
     const maxY = rect.height - sizePx - PAD;
 
-    for (let attempt = 0; attempt < 2600; attempt++){
+    // NOTE: if your screen is small + many blobs, a huge GAP can make placement hard.
+    // Solver will still enforce separation after.
+    for (let attempt = 0; attempt < 3200; attempt++){
       const x = minX + Math.random() * Math.max(maxX - minX, 1);
       const y = minY + Math.random() * Math.max(maxY - minY, 1);
 
@@ -98,16 +118,15 @@ if (!ITEMS.length) {
       }
     }
 
-    // fallback (solver will separate anyway)
     return {
       x: minX + Math.random() * Math.max(maxX - minX, 1),
       y: minY + Math.random() * Math.max(maxY - minY, 1),
     };
   }
 
-  // ---------- active behavior (VISUAL ONLY — no physics “shove”) ----------
   function setActive(idx, clientX, clientY){
     activeIndex = idx;
+
     showTip(blobs[idx].label, clientX, clientY);
 
     document.querySelectorAll(".blob").forEach(b => b.classList.add("dim"));
@@ -115,17 +134,11 @@ if (!ITEMS.length) {
     blobs[idx].el.classList.add("active");
   }
 
-  function clearActive(){
-    activeIndex = -1;
-    hideTip();
-    document.querySelectorAll(".blob").forEach(b => b.classList.remove("dim","active"));
-  }
-
-  // ---------- build blobs ----------
+  // build blobs
   ITEMS.forEach((item, idx) => {
     const h = Number(item.hours || 0);
 
-    // KEEP YOUR SIZE (unchanged)
+    // KEEP SIZE
     const size = 240 + (h/maxH) * 360;
     const r = size/2;
 
@@ -133,31 +146,26 @@ if (!ITEMS.length) {
     el.className = "blob";
     el.style.width = size + "px";
     el.style.height = size + "px";
-
-    // slightly tighter falloff to reduce blending
     el.style.background = `radial-gradient(circle, ${item.color} 0%, rgba(255,255,255,0) 68%)`;
 
     stage.appendChild(el);
 
     const pos = tryPlace(size);
 
-    // initial velocity: give real screensaver movement
-    const angle = Math.random() * Math.PI * 2;
-    const speed = MIN_SPEED + Math.random() * 1.8;
+    // give each blob a strong initial velocity so it immediately roams
+    const ang = Math.random() * Math.PI * 2;
+    const sp  = MIN_SPEED + Math.random() * 3.2;
 
     blobs.push({
-      el,
-      size,
-      r,
-      x: pos.x,
-      y: pos.y,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
+      el, size, r,
+      x: pos.x, y: pos.y,
+      vx: Math.cos(ang) * sp,
+      vy: Math.sin(ang) * sp,
       phase: Math.random() * Math.PI * 2,
       label: `${item.app} — ${h.toFixed(1)} HOURS`
     });
 
-    // CLICK/TAP ONLY (no hover)
+    // click/tap only
     el.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -165,70 +173,67 @@ if (!ITEMS.length) {
     });
   });
 
-  // click/tap empty area to clear text
+  // click/tap empty area clears immediately
   stage.addEventListener("pointerdown", (e)=>{
-    if (e.target === stage) clearActive();
+    if (e.target === stage){
+      activeIndex = -1;
+      clearTip();
+      document.querySelectorAll(".blob").forEach(b => b.classList.remove("dim","active"));
+    }
   });
 
-  // ---------- physics loop ----------
   function animate(){
     const rect = stage.getBoundingClientRect();
 
-    // drift + wander (keeps motion organic and prevents “stuck in one spot”)
+    // drift + wander + enforce min/max speed
     blobs.forEach(o => {
-      o.phase += 0.010;
+      o.phase += 0.018;
+
       o.vx += Math.cos(o.phase) * DRIFT;
-      o.vy += Math.sin(o.phase * 1.17) * DRIFT;
+      o.vy += Math.sin(o.phase * 1.21) * DRIFT;
 
       o.vx += (Math.random() - 0.5) * WANDER;
       o.vy += (Math.random() - 0.5) * WANDER;
 
-      // keep minimum movement so they never “settle”
-      const sp = Math.hypot(o.vx, o.vy);
-      if (sp < MIN_SPEED){
-        const boost = (MIN_SPEED - sp);
-        const a = Math.random() * Math.PI * 2;
-        o.vx += Math.cos(a) * boost;
-        o.vy += Math.sin(a) * boost;
+      // clamp max speed
+      let sp = Math.hypot(o.vx, o.vy);
+      if (sp > MAX_SPEED){
+        const s = MAX_SPEED / sp;
+        o.vx *= s; o.vy *= s;
+        sp = MAX_SPEED;
       }
 
-      // clamp max speed (prevents jitter / darting)
-      const sp2 = Math.hypot(o.vx, o.vy);
-      if (sp2 > MAX_SPEED){
-        const s = MAX_SPEED / sp2;
+      // enforce min speed (keeps them roaming)
+      if (sp < MIN_SPEED){
+        const s = MIN_SPEED / Math.max(sp, 0.0001);
         o.vx *= s; o.vy *= s;
       }
     });
 
-    // collision solver (multi-pass, NO TOUCH)
+    // multi-pass separation solver (hard no-touch)
     for (let pass = 0; pass < SOLVER_PASSES; pass++){
       for (let i=0; i<blobs.length; i++){
         for (let j=i+1; j<blobs.length; j++){
-          const a = blobs[i];
-          const b = blobs[j];
+          const a = blobs[i], b = blobs[j];
 
-          const ax = a.x + a.r;
-          const ay = a.y + a.r;
-          const bx = b.x + b.r;
-          const by = b.y + b.r;
+          const ax = a.x + a.r, ay = a.y + a.r;
+          const bx = b.x + b.r, by = b.y + b.r;
 
-          const dx = bx - ax;
-          const dy = by - ay;
+          const dx = bx - ax, dy = by - ay;
           const dist = Math.hypot(dx,dy) || 0.0001;
 
           const minDist = (a.r + b.r) + GAP + VISUAL_GAP;
 
           if (dist < minDist){
             const overlap = (minDist - dist);
-            const ux = dx / dist;
-            const uy = dy / dist;
+            const ux = dx / dist, uy = dy / dist;
 
-            // smooth separation (less “snap”)
+            // Strong position separation (prevents “next to each other”)
             const sep = overlap * SEPARATE_RATIO * 0.5;
             a.x -= ux * sep; a.y -= uy * sep;
             b.x += ux * sep; b.y += uy * sep;
 
-            // mild velocity repulsion (prevents re-colliding)
+            // Mild velocity repulsion (keeps them from drifting back together)
             const force = overlap * REPEL;
             a.vx -= ux * force; a.vy -= uy * force;
             b.vx += ux * force; b.vy += uy * force;
@@ -237,7 +242,7 @@ if (!ITEMS.length) {
       }
     }
 
-    // integrate + damping + wall bounce
+    // integrate + walls
     blobs.forEach(o => {
       o.vx *= DAMP;
       o.vy *= DAMP;
