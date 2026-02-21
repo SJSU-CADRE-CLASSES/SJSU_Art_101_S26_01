@@ -4,6 +4,33 @@
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE — Visualization</title>
   <link rel="stylesheet" href="./style.css?v=1013">
+
+  <!-- Pulse overlay (doesn't interfere with moving blobs) -->
+  <style>
+    #pulse-overlay{
+      position:fixed;
+      left:0; top:0;
+      width:140px; height:140px;
+      border-radius:50%;
+      pointer-events:none;
+      opacity:0;
+      z-index:9999;
+      filter: blur(16px) saturate(2.4);
+      transform: translate(-9999px, -9999px) scale(1);
+      will-change: transform, opacity;
+    }
+    #pulse-overlay.on{
+      animation: pulseFill 650ms ease-out 1;
+    }
+    @keyframes pulseFill{
+      0%   { opacity:0.95; transform: translate(var(--px), var(--py)) scale(1); }
+      55%  { opacity:0.95; transform: translate(var(--px), var(--py)) scale(10); }
+      100% { opacity:0;    transform: translate(var(--px), var(--py)) scale(10); }
+    }
+    @media (prefers-reduced-motion: reduce){
+      #pulse-overlay.on{ animation:none; opacity:0; }
+    }
+  </style>
 </head>
 
 <body data-page="viz">
@@ -16,12 +43,16 @@
 <div id="blob-stage"></div>
 <div id="tip" class="tip"></div>
 
+<!-- NEW: pulse layer -->
+<div id="pulse-overlay"></div>
+
 <script src="./data.js?v=1013"></script>
 
 <script>
 (() => {
   const stage = document.getElementById("blob-stage");
   const tip = document.getElementById("tip");
+  const pulse = document.getElementById("pulse-overlay");
   const ITEMS = (typeof APPS !== "undefined") ? APPS : [];
 
   if (!ITEMS.length) {
@@ -35,32 +66,38 @@
     // ===== TUNING =====
     const PAD = 24;
 
-    // FIX: increase spacing so blobs don't touch / blur-blend
-    const GAP = 240;         // physics spacing between circles
-    const VISUAL_GAP = 90;   // extra spacing for blur so they don't "blend"
+    // keep them apart (including blur)
+    const GAP = 230;          // circle spacing
+    const VISUAL_GAP = 110;   // blur buffer (bigger = less blending)
 
-    const SOLVER_PASSES = 14;
-    const SEPARATE_RATIO = 0.65;
+    // stronger solver so they don't merge
+    const SOLVER_PASSES = 26;
+    const SEPARATE_RATIO = 0.90;
 
-    const DAMP = 0.992;
+    // add gentle velocity repulsion so they don't "stick"
+    const REPEL = 0.012;
+
+    // motion
+    const DAMP = 0.996;       // glide
     const BOUNCE = 1.01;
-    const MAX_SPEED = 10.5;
-    const MIN_SPEED = 4.8;
-    const STEER = 0.085;
+    const MAX_SPEED = 8.2;
+    const MIN_SPEED = 4.6;
+    const STEER = 0.090;
 
-    const RETARGET_MS = 1600;
-    const ARRIVE = 260;
+    // roaming targets
+    const RETARGET_MS = 1500;
+    const ARRIVE = 320;
 
-    const NOISE = 0.10;
+    // tiny organic drift so it never looks frozen
+    const WOBBLE = 0.045;
 
-    // FIX: tooltip fade to 1s
+    // tooltip timing (your request)
     const TIP_MS = 1000;
 
     const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
 
     const blobs = [];
     const placed = [];
-
     let tipTimer = null;
 
     function showTip(text, x, y){
@@ -115,7 +152,7 @@
       const maxX = Math.max(b.maxXFor(sizePx), b.minX);
       const maxY = Math.max(b.maxYFor(sizePx), b.minY);
 
-      for (let attempt = 0; attempt < 2400; attempt++){
+      for (let attempt = 0; attempt < 2600; attempt++){
         const x = b.minX + Math.random() * Math.max(maxX - b.minX, 1);
         const y = b.minY + Math.random() * Math.max(maxY - b.minY, 1);
 
@@ -140,41 +177,17 @@
       };
     }
 
-    // FIX: pulse should never leave a blob blocking clicks / stuck on top
-    function triggerPulse(el, x, y){
-      // clear any existing pulses
-      document.querySelectorAll(".blob.pulse-on").forEach(b => {
-        b.classList.remove("pulse-on");
-        b.style.pointerEvents = "";
-      });
-
-      el.style.setProperty("--x", `${x}px`);
-      el.style.setProperty("--y", `${y}px`);
-
-      // temporarily ignore clicks while pulsing
-      el.style.pointerEvents = "none";
-
-      // restart animation reliably
-      el.classList.remove("pulse-on");
-      void el.offsetWidth;
-      el.classList.add("pulse-on");
-
-      // IMPORTANT: always restore after the pulse ends (even if animation gets interrupted)
-      const cleanup = () => {
-        el.classList.remove("pulse-on");
-        el.style.pointerEvents = "";
-        el.removeEventListener("animationend", cleanup);
-        el.removeEventListener("animationcancel", cleanup);
-      };
-
-      el.addEventListener("animationend", cleanup);
-      el.addEventListener("animationcancel", cleanup);
-
-      // failsafe (in case animationend doesn't fire)
-      setTimeout(cleanup, 900);
+    // pulse on overlay (always works, never blocks)
+    function triggerPulseOverlay(color, x, y){
+      pulse.style.background = `radial-gradient(circle, ${color} 0%, rgba(255,255,255,0) 62%)`;
+      pulse.style.setProperty("--px", `${x}px`);
+      pulse.style.setProperty("--py", `${y}px`);
+      pulse.classList.remove("on");
+      void pulse.offsetWidth;
+      pulse.classList.add("on");
     }
 
-    // build
+    // build blobs
     ITEMS.forEach((item, idx) => {
       const h = Number(item.hours || 0);
 
@@ -185,15 +198,15 @@
       el.className = "blob";
       el.style.width = size + "px";
       el.style.height = size + "px";
-
       el.style.background = `radial-gradient(circle, ${item.color} 0%, rgba(255,255,255,0) 52%)`;
 
       stage.appendChild(el);
 
       const pos = tryPlace(size);
 
+      // start with real velocity so it's visibly moving immediately
       const ang = Math.random() * Math.PI * 2;
-      const sp  = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED) * 0.35;
+      const sp  = MIN_SPEED + Math.random() * 2.0;
 
       const t = randTarget(size);
 
@@ -204,7 +217,9 @@
         vy: Math.sin(ang) * sp,
         tx: t.tx, ty: t.ty,
         nextTargetAt: performance.now() + (Math.random() * RETARGET_MS),
-        label: `${item.app} — ${h.toFixed(1)} HOURS`
+        phase: Math.random() * Math.PI * 2,
+        label: `${item.app} — ${h.toFixed(1)} HOURS`,
+        color: item.color
       });
 
       el.addEventListener("pointerdown", (e) => {
@@ -214,15 +229,20 @@
         document.querySelectorAll(".blob").forEach(b => b.classList.remove("active"));
         el.classList.add("active");
 
-        triggerPulse(el, blobs[idx].x, blobs[idx].y);
-        showTip(blobs[idx].label, e.clientX, e.clientY);
+        // overlay pulse at the blob's CURRENT sim position (not mouse)
+        const o = blobs[idx];
+        triggerPulseOverlay(o.color, o.x, o.y);
+
+        showTip(o.label, e.clientX, e.clientY);
       });
     });
 
+    // click empty area clears tip
     stage.addEventListener("pointerdown", (e)=>{
       if (e.target === stage) clearTip();
     });
 
+    // resize: re-target so movement stays healthy
     window.addEventListener("resize", () => {
       blobs.forEach(o => {
         const t = randTarget(o.size);
@@ -234,6 +254,7 @@
     function animate(now){
       const b = getBounds();
 
+      // 1) steering + wobble (ensures constant drift)
       blobs.forEach(o => {
         if (now >= o.nextTargetAt){
           const t = randTarget(o.size);
@@ -249,24 +270,29 @@
         const ux = dx / dist;
         const uy = dy / dist;
 
-        const desiredVx = ux * desiredSpeed + (Math.random()-0.5) * NOISE;
-        const desiredVy = uy * desiredSpeed + (Math.random()-0.5) * NOISE;
+        const desiredVx = ux * desiredSpeed;
+        const desiredVy = uy * desiredSpeed;
 
         o.vx += (desiredVx - o.vx) * STEER;
         o.vy += (desiredVy - o.vy) * STEER;
 
-        const sp = Math.hypot(o.vx, o.vy);
+        // wobble keeps it alive (prevents "stuck" look)
+        o.phase += 0.02;
+        o.vx += Math.cos(o.phase) * WOBBLE;
+        o.vy += Math.sin(o.phase * 1.13) * WOBBLE;
+
+        // clamp min/max speed
+        const sp = Math.hypot(o.vx, o.vy) || 0.0001;
         if (sp > MAX_SPEED){
           const s = MAX_SPEED / sp;
           o.vx *= s; o.vy *= s;
-        }
-
-        if (sp < MIN_SPEED){
-          const s = MIN_SPEED / Math.max(sp, 0.0001);
+        } else if (sp < MIN_SPEED){
+          const s = MIN_SPEED / sp;
           o.vx *= s; o.vy *= s;
         }
       });
 
+      // 2) collision solver (position + velocity repel)
       for (let pass = 0; pass < SOLVER_PASSES; pass++){
         for (let i=0; i<blobs.length; i++){
           for (let j=i+1; j<blobs.length; j++){
@@ -287,11 +313,17 @@
               const sep = overlap * SEPARATE_RATIO * 0.5;
               a.x -= ux * sep; a.y -= uy * sep;
               c.x += ux * sep; c.y += uy * sep;
+
+              // gentle repel so they stop re-clumping
+              const force = overlap * REPEL;
+              a.vx -= ux * force; a.vy -= uy * force;
+              c.vx += ux * force; c.vy += uy * force;
             }
           }
         }
       }
 
+      // 3) integrate + walls
       blobs.forEach(o => {
         o.vx *= DAMP;
         o.vy *= DAMP;
