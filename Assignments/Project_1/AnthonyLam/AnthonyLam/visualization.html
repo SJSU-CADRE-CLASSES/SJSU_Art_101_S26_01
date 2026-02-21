@@ -125,7 +125,8 @@
     const rect0 = stage.getBoundingClientRect();
     const stageArea = Math.max(rect0.width * rect0.height, 1);
 
-    const BASE_SIZE  = 240;
+    // FIX: slightly bigger blobs
+    const BASE_SIZE  = 280;  // was 240
     const RANGE_SIZE = 360;
 
     let sumArea = 0;
@@ -232,7 +233,8 @@
     ITEMS.forEach((item, idx) => {
       const h = Number(item.hours || 0);
 
-      const size = (240 + (h / maxH) * 360) * SCALE;
+      // FIX: slightly bigger blobs (matches BASE_SIZE bump)
+      const size = (BASE_SIZE + (h / maxH) * RANGE_SIZE) * SCALE;
       const r = size / 2;
 
       const wrap = document.createElement("div");
@@ -267,7 +269,7 @@
         tx: t0.x,
         ty: t0.y,
         nextTargetAt: performance.now() + (600 + Math.random() * RETARGET_MS),
-        seed: Math.random() * 1000, // NEW: unique float pattern per blob
+        seed: Math.random() * 1000, // unique float pattern per blob
         baseZ: 10 + idx,
         label: `${item.app} — ${h.toFixed(1)} HOURS`
       });
@@ -317,7 +319,7 @@
         o.vx += (desiredVx - o.vx) * STEER;
         o.vy += (desiredVy - o.vy) * STEER;
 
-        // NEW: continuous dreamy wave drift (guarantees "lava lamp" motion)
+        // continuous dreamy wave drift (guarantees "lava lamp" motion)
         const tt = now * 0.001;
         o.vx += Math.sin(tt * 0.55 + o.seed) * WAVE_PUSH;
         o.vy += Math.cos(tt * 0.48 + o.seed) * WAVE_PUSH;
