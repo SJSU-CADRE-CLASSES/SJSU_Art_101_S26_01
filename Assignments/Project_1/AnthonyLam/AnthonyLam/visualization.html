@@ -92,8 +92,8 @@
     const PAD = 24;
 
     // Separation buffers: (forcefield smaller)
-    const PHYS_GAP   = 110;  // was 130
-    const VISUAL_GAP = 90;   // was 110
+    const PHYS_GAP   = 70;   // was 110
+    const VISUAL_GAP = 55;   // was 90
 
     // Solver stability (kept the same loosened feel)
     const SOLVER_PASSES  = 42;
@@ -125,8 +125,8 @@
     const rect0 = stage.getBoundingClientRect();
     const stageArea = Math.max(rect0.width * rect0.height, 1);
 
-    // slightly bigger blobs
-    const BASE_SIZE  = 420;  // was 380
+    // bigger blobs
+    const BASE_SIZE  = 520;  // was 420
     const RANGE_SIZE = 360;
 
     let sumArea = 0;
@@ -137,13 +137,14 @@
       sumArea += Math.PI * r * r;
     }
 
-    // keep the same flowy spacing behavior
-    const TARGET_FILL = 0.26;
+    // keep the same flowy spacing behavior (but less downscaling)
+    const TARGET_FILL = 0.32; // was 0.26
 
     const SCALE = Math.min(1, Math.sqrt((stageArea * TARGET_FILL) / Math.max(sumArea, 1)));
 
-    const PHYS_GAP_S   = Math.max(40, PHYS_GAP * SCALE);
-    const VISUAL_GAP_S = Math.max(40, VISUAL_GAP * SCALE);
+    // smaller "forcefield" clamp so they can get closer when needed
+    const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);   // was 40
+    const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE); // was 40
 
     const blobs = [];
     const placed = [];
