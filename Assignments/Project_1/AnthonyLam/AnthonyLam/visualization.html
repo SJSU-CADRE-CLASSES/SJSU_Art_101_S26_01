@@ -468,6 +468,14 @@
     requestAnimationFrame(animate);
   }
 })();
+  const music = document.getElementById("bg-music");
+
+document.addEventListener("pointerdown", () => {
+  if (music && music.paused) {
+    music.volume = 0.65;
+    music.play().catch(()=>{});
+  }
+}, { once:true });
 </script>
 
 </body>
