@@ -140,17 +140,21 @@ h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
   transform:translateX(6px);
 }
 
+/* ✅ FIX: give the simulation a REAL canvas (no 100vw overflow weirdness)
+   - bigger usable area = blobs can be larger AND still float
+   - overflow hidden prevents “invisible pinning” feel when huge */
 #blob-stage{
   position:relative;
-  width:100vw;
+  width:100%;
   height: calc(100vh - 220px);
-  min-height: 520px;
-  margin: 0;
-  overflow: visible;
+  min-height: 560px;
+  margin: 0 auto;
+  overflow: hidden;          /* was visible */
   isolation:isolate;
+  border-radius: 24px;       /* subtle framing */
 }
 
-/* BLOBS */
+/* BLOBS (legacy class - safe to keep) */
 .blob{
   position:absolute;
   border-radius:50%;
@@ -158,10 +162,9 @@ h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
   filter:blur(10px) saturate(2.4);
   mix-blend-mode:normal;
 
-  /* IMPORTANT: JS controls transform translate() for movement */
   animation:none !important;
-
   will-change:transform;
+
   transition:
     filter 180ms ease,
     opacity 180ms ease;
@@ -192,39 +195,34 @@ h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
 }
 
 /* =========================
-   FIXED: click "page fill" pulse
-   (pulse runs on ::after so it NEVER overrides JS translate)
+   PULSE (legacy .blob version)
    ========================= */
 .blob::after{
   content:"";
   position:absolute;
   inset:0;
   border-radius:50%;
-  background: inherit;        /* uses the same radial-gradient you set in JS */
-  filter: inherit;            /* matches blur/saturation */
-  opacity:0;                  /* off by default */
-  pointer-events:none;        /* never blocks clicking other blobs */
+  background: inherit;
+  filter: inherit;
+  opacity:0;
+  pointer-events:none;
   transform: scale(1);
   transform-origin:center;
 }
 
-.blob.pulse-on{
-  z-index:60;                 /* above others during pulse */
-}
+.blob.pulse-on{ z-index:60; }
 
-/* animate ONLY the pseudo-element */
+/* ✅ FIX: pulse lasts longer */
 .blob.pulse-on::after{
-  animation: blobPulseFill 650ms ease-out forwards;
+  animation: blobPulseFill 1100ms ease-out forwards; /* was 650ms */
 }
 
-/* expands fast, then fades out */
 @keyframes blobPulseFill{
   0%   { opacity:0.92; transform: scale(1); }
   55%  { opacity:0.98; transform: scale(9.5); }
   100% { opacity:0;    transform: scale(9.5); }
 }
 
-/* accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce){
   .blob.pulse-on::after{ animation:none !important; opacity:0.92; transform: scale(1); }
 }
