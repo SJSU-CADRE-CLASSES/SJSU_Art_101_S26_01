@@ -4,6 +4,19 @@
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE — Visualization</title>
   <link rel="stylesheet" href="./style.css?v=1012">
+
+  <!-- NEW: click pulse (expands to fill page, then returns) -->
+  <style>
+    .blob.pulse-on{
+      animation: blobPulse 650ms ease-out 1;
+      z-index: 9999;
+    }
+    @keyframes blobPulse{
+      0%   { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0.92; }
+      45%  { transform: translate(var(--tx), var(--ty)) scale(7.5); opacity: 0.55; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0.88; }
+    }
+  </style>
 </head>
 
 <body data-page="viz">
@@ -191,6 +204,13 @@
 
         document.querySelectorAll(".blob").forEach(b => b.classList.remove("active"));
         el.classList.add("active");
+
+        // NEW: pulse expand (without breaking JS transform movement)
+        el.style.setProperty("--tx", `${blobs[idx].x}px`);
+        el.style.setProperty("--ty", `${blobs[idx].y}px`);
+        el.classList.remove("pulse-on");
+        void el.offsetWidth; // restart animation reliably
+        el.classList.add("pulse-on");
 
         showTip(blobs[idx].label, e.clientX, e.clientY);
       });
