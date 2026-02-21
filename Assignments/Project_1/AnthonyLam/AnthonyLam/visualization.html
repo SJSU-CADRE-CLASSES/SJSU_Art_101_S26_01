@@ -25,6 +25,9 @@
       pointer-events: none; /* clicks go to wrap */
       transition: filter 180ms ease, opacity 180ms ease;
       position: relative;
+
+      /* === NEW: burst tuning knob === */
+      --burst-scale: 13; /* increase to 15/18 if you want even bigger */
     }
 
     .blob-core.active{
@@ -32,7 +35,7 @@
       filter: blur(8px) saturate(3.0);
     }
 
-    /* small local pulse (kept subtle to avoid square artifacts) */
+    /* pulse lives on ::after so it NEVER overwrites translate() */
     .blob-core::after{
       content:"";
       position:absolute;
@@ -46,43 +49,41 @@
       pointer-events:none;
     }
 
-    .blob-core.pulse-local::after{
-      animation: blobLocalPulse 520ms ease-out forwards;
+    /* Keep tooltip above the burst */
+    #tip.tip{
+      position: fixed;
+      z-index: 999999; /* NEW */
     }
 
-    @keyframes blobLocalPulse{
-      0%   { opacity:0.65; transform: scale(1); }
-      70%  { opacity:0.25; transform: scale(1.25); }
-      100% { opacity:0;    transform: scale(1.25); }
+    /* ===== HOLD INTERACTION PULSE ===== */
+    .blob-core.pulse-in::after{
+      animation: blobPulseIn 240ms ease-out forwards;
+    }
+
+    .blob-core.hold::after{
+      opacity:0.98;
+      transform: scale(var(--burst-scale));
+    }
+
+    .blob-core.pulse-out::after{
+      animation: blobPulseOut 1100ms ease-out forwards;
+    }
+
+    @keyframes blobPulseIn{
+      0%   { opacity:0.00; transform: scale(1); }
+      100% { opacity:0.98; transform: scale(var(--burst-scale)); }
+    }
+
+    @keyframes blobPulseOut{
+      0%   { opacity:0.98; transform: scale(var(--burst-scale)); }
+      60%  { opacity:0.78; transform: scale(calc(var(--burst-scale) * 0.72)); }
+      100% { opacity:0.00; transform: scale(1.0); }
     }
 
     @media (prefers-reduced-motion: reduce){
-      .blob-core.pulse-local::after{ animation:none; opacity:0; }
-    }
-
-    /* ===== FULLSCREEN HOLD-PULSE OVERLAY (prevents square cutout) ===== */
-    #pulse-overlay{
-      position: fixed;
-      left: var(--px, 50vw);
-      top:  var(--py, 50vh);
-      width: var(--ps, 140vmax);
-      height: var(--ps, 140vmax);
-      transform: translate(-50%, -50%) scale(var(--pk, 0));
-      opacity: var(--po, 0);
-      border-radius: 9999px;
-      pointer-events: none;
-      z-index: 9998;
-      filter: blur(10px) saturate(2.4);
-      will-change: transform, opacity;
-    }
-
-    #pulse-overlay.pulse-in{
-      transition: transform 450ms ease-out, opacity 250ms ease-out;
-    }
-
-    /* slower linger + retract + fade */
-    #pulse-overlay.pulse-out{
-      transition: transform 1100ms ease-in-out, opacity 1300ms ease-in-out;
+      .blob-core.pulse-in::after,
+      .blob-core.pulse-out::after{ animation:none; opacity:0; }
+      .blob-core.hold::after{ opacity:0; transform: scale(1); }
     }
   </style>
 </head>
@@ -97,16 +98,12 @@
 <div id="blob-stage"></div>
 <div id="tip" class="tip"></div>
 
-<!-- NEW: fullscreen overlay for hold pulse -->
-<div id="pulse-overlay"></div>
-
 <script src="./data.js?v=1016"></script>
 
 <script>
 (() => {
   const stage = document.getElementById("blob-stage");
   const tip = document.getElementById("tip");
-  const pulse = document.getElementById("pulse-overlay");
   const ITEMS = (typeof APPS !== "undefined") ? APPS : [];
 
   if (!ITEMS.length) {
@@ -120,11 +117,11 @@
     // ===== TUNING =====
     const PAD = 24;
 
-    // Separation buffers: (forcefield smaller)
-    const PHYS_GAP   = 70;   // was 110
-    const VISUAL_GAP = 55;   // was 90
+    // Separation buffers
+    const PHYS_GAP   = 70;
+    const VISUAL_GAP = 55;
 
-    // Solver stability (kept the same loosened feel)
+    // Solver stability
     const SOLVER_PASSES  = 42;
     const SEPARATE_RATIO = 0.86;
 
@@ -149,13 +146,12 @@
     const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
 
     // =========================
-    // AUTO-FIT SIZES so blobs can actually be separated + float
+    // AUTO-FIT SIZES
     // =========================
     const rect0 = stage.getBoundingClientRect();
     const stageArea = Math.max(rect0.width * rect0.height, 1);
 
-    // bigger blobs
-    const BASE_SIZE  = 520;  // was 420
+    const BASE_SIZE  = 520;
     const RANGE_SIZE = 360;
 
     let sumArea = 0;
@@ -166,14 +162,11 @@
       sumArea += Math.PI * r * r;
     }
 
-    // keep the same flowy spacing behavior (but less downscaling)
-    const TARGET_FILL = 0.32; // was 0.26
-
+    const TARGET_FILL = 0.32;
     const SCALE = Math.min(1, Math.sqrt((stageArea * TARGET_FILL) / Math.max(sumArea, 1)));
 
-    // smaller "forcefield" clamp so they can get closer when needed
-    const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);   // was 40
-    const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE); // was 40
+    const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);
+    const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE);
 
     const blobs = [];
     const placed = [];
@@ -251,30 +244,31 @@
       return randPos(sizePx);
     }
 
-    // ===== FULLSCREEN HOLD PULSE (NO SQUARE CUTOUT) =====
-    function pulseStart(color, clientX, clientY){
-      pulse.style.setProperty("--px", clientX + "px");
-      pulse.style.setProperty("--py", clientY + "px");
-      pulse.style.background = `radial-gradient(circle, ${color} 0%, rgba(255,255,255,0) 55%)`;
-
-      pulse.classList.remove("pulse-out");
-      pulse.classList.add("pulse-in");
-      pulse.style.setProperty("--po", "0.92");
-      pulse.style.setProperty("--pk", "1");
-    }
-
-    function pulseEnd(){
-      pulse.classList.remove("pulse-in");
-      pulse.classList.add("pulse-out");
-      pulse.style.setProperty("--pk", "0.92"); // retract a bit before fading
-      pulse.style.setProperty("--po", "0");
-    }
-
-    function localPulse(coreEl){
-      coreEl.classList.remove("pulse-local");
+    /* ===== HOLD PULSE FUNCTIONS ===== */
+    function startHoldPulse(coreEl){
+      coreEl.classList.remove("pulse-out","hold","pulse-in");
       void coreEl.offsetWidth;
-      coreEl.classList.add("pulse-local");
-      setTimeout(() => coreEl.classList.remove("pulse-local"), 560);
+      coreEl.classList.add("pulse-in");
+
+      clearTimeout(coreEl._holdTimer);
+      coreEl._holdTimer = setTimeout(() => {
+        coreEl.classList.remove("pulse-in");
+        coreEl.classList.add("hold");
+      }, 240);
+    }
+
+    function endHoldPulse(coreEl){
+      clearTimeout(coreEl._holdTimer);
+
+      coreEl.classList.remove("hold","pulse-in");
+      void coreEl.offsetWidth;
+
+      coreEl.classList.add("pulse-out");
+
+      clearTimeout(coreEl._outTimer);
+      coreEl._outTimer = setTimeout(() => {
+        coreEl.classList.remove("pulse-out");
+      }, 1150);
     }
 
     // Build blobs
@@ -321,7 +315,6 @@
         label: `${item.app} — ${h.toFixed(1)} HOURS`
       });
 
-      // HOLD: burst stays while holding; RELEASE: slow fade
       wrap.addEventListener("pointerdown", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -334,14 +327,13 @@
 
         try { wrap.setPointerCapture(e.pointerId); } catch(_) {}
 
-        pulseStart(item.color, e.clientX, e.clientY);
-        localPulse(core);
+        startHoldPulse(core);
         showTip(blobs[idx].label, e.clientX, e.clientY);
 
         const stop = (ev) => {
           if (ev.pointerId !== e.pointerId) return;
 
-          pulseEnd();
+          endHoldPulse(core);
 
           window.removeEventListener("pointerup", stop, true);
           window.removeEventListener("pointercancel", stop, true);
@@ -363,7 +355,7 @@
     function animate(now){
       const b = getBounds();
 
-      // 1) pick roaming targets + steer gently (smooth arcs)
+      // 1) pick roaming targets + steer gently
       blobs.forEach(o => {
         if (now >= o.nextTargetAt){
           const t = randPos(o.size);
@@ -386,29 +378,25 @@
         o.vx += (desiredVx - o.vx) * STEER;
         o.vy += (desiredVy - o.vy) * STEER;
 
-        // continuous dreamy wave drift
         const tt = now * 0.001;
         o.vx += Math.sin(tt * 0.55 + o.seed) * WAVE_PUSH;
         o.vy += Math.cos(tt * 0.48 + o.seed) * WAVE_PUSH;
         o.vx += Math.sin(tt * 1.40 + o.seed * 0.7) * MICRO_PUSH;
         o.vy += Math.cos(tt * 1.25 + o.seed * 0.7) * MICRO_PUSH;
 
-        // guarantee visible motion
         let sp = Math.hypot(o.vx, o.vy) || 0.0001;
         if (sp < MIN_SPEED){
           const s = MIN_SPEED / sp;
           o.vx *= s; o.vy *= s;
-          sp = MIN_SPEED;
         }
         if (sp > MAX_SPEED){
           const s = MAX_SPEED / sp;
           o.vx *= s; o.vy *= s;
-          sp = MAX_SPEED;
         }
 
-        // UNSTICK: tiny nudge if a blob gets trapped in a tight pocket
         if (!o.stuckAt) o.stuckAt = now;
-        if (sp < (MIN_SPEED * 1.05)) {
+        const sp2 = Math.hypot(o.vx, o.vy) || 0.0001;
+        if (sp2 < (MIN_SPEED * 1.05)) {
           if (now - o.stuckAt > 700) {
             o.vx += (Math.random() - 0.5) * 0.45;
             o.vy += (Math.random() - 0.5) * 0.45;
@@ -419,7 +407,7 @@
         }
       });
 
-      // 2) separation solver (position-only)
+      // 2) separation solver
       for (let pass = 0; pass < SOLVER_PASSES; pass++){
         for (let i = 0; i < blobs.length; i++){
           for (let j = i + 1; j < blobs.length; j++){
