@@ -92,8 +92,8 @@
     const PAD = 24;
 
     // Separation buffers: (forcefield smaller)
-    const PHYS_GAP   = 5;   // was 110
-    const VISUAL_GAP = 10;   // was 90
+    const PHYS_GAP   = 5;    // smaller physical gap
+    const VISUAL_GAP = 10;   // smaller visual gap
 
     // Solver stability (kept the same loosened feel)
     const SOLVER_PASSES  = 42;
@@ -126,7 +126,7 @@
     const stageArea = Math.max(rect0.width * rect0.height, 1);
 
     // bigger blobs
-    const BASE_SIZE  = 780;  // was 420
+    const BASE_SIZE  = 780;
     const RANGE_SIZE = 360;
 
     let sumArea = 0;
@@ -138,16 +138,17 @@
     }
 
     // keep the same flowy spacing behavior (but less downscaling)
-    const TARGET_FILL = 0.50; // was 0.26
+    const TARGET_FILL = 0.50;
 
     const SCALE = Math.min(1, Math.sqrt((stageArea * TARGET_FILL) / Math.max(sumArea, 1)));
 
     // NEW: visual size multiplier AFTER auto-fit
     const SIZE_BOOST = 1.32; // try 1.15–1.40
 
-    // smaller "forcefield" clamp so they can get closer when needed
-    const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);   // was 40
-    const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE); // was 40
+    // IMPORTANT FIX:
+    // Let the tiny forcefield actually be tiny (don’t clamp to 18px minimum)
+    const PHYS_GAP_S   = Math.max(2, PHYS_GAP * SCALE);
+    const VISUAL_GAP_S = Math.max(2, VISUAL_GAP * SCALE);
 
     const blobs = [];
     const placed = [];
@@ -335,24 +336,10 @@
         if (sp < MIN_SPEED){
           const s = MIN_SPEED / sp;
           o.vx *= s; o.vy *= s;
-          sp = MIN_SPEED;
         }
         if (sp > MAX_SPEED){
           const s = MAX_SPEED / sp;
           o.vx *= s; o.vy *= s;
-          sp = MAX_SPEED;
-        }
-
-        // UNSTICK: tiny nudge if a blob gets trapped in a tight pocket
-        if (!o.stuckAt) o.stuckAt = now;
-        if (sp < (MIN_SPEED * 1.05)) {
-          if (now - o.stuckAt > 700) {
-            o.vx += (Math.random() - 0.5) * 0.45;
-            o.vy += (Math.random() - 0.5) * 0.45;
-            o.stuckAt = now;
-          }
-        } else {
-          o.stuckAt = now;
         }
       });
 
