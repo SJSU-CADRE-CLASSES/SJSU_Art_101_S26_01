@@ -91,13 +91,13 @@
     // ===== TUNING =====
     const PAD = 24;
 
-    // Separation buffers:
-    const PHYS_GAP   = 180;
-    const VISUAL_GAP = 140;
+    // Separation buffers: (LOOSENED so blobs don’t feel “stuck”)
+    const PHYS_GAP   = 130;  // was 180
+    const VISUAL_GAP = 110;  // was 140
 
-    // Solver stability
-    const SOLVER_PASSES  = 70;
-    const SEPARATE_RATIO = 0.95;
+    // Solver stability (LOOSENED so it doesn’t create “invisible walls”)
+    const SOLVER_PASSES  = 42;  // was 70
+    const SEPARATE_RATIO = 0.86; // was 0.95
 
     // Movement (dreamy lava lamp)
     const MAX_SPEED = 3.8;   // visible but slow
@@ -110,9 +110,9 @@
     const STEER       = 0.018;
     const ARRIVE      = 420;
 
-    // NEW: smooth continuous drift so it ALWAYS moves (even if targets are "near")
-    const WAVE_PUSH = 0.040;   // main float strength
-    const MICRO_PUSH = 0.010;  // tiny extra life
+    // smooth continuous drift so it ALWAYS moves
+    const WAVE_PUSH = 0.040;
+    const MICRO_PUSH = 0.010;
 
     // Tooltip timing
     const TIP_MS = 2000;
@@ -125,8 +125,8 @@
     const rect0 = stage.getBoundingClientRect();
     const stageArea = Math.max(rect0.width * rect0.height, 1);
 
-    // FIX: slightly bigger blobs
-    const BASE_SIZE  = 340;  // was 240
+    // slightly bigger blobs
+    const BASE_SIZE  = 340;
     const RANGE_SIZE = 360;
 
     let sumArea = 0;
@@ -137,8 +137,8 @@
       sumArea += Math.PI * r * r;
     }
 
-    // FIX: lower fill = more empty space = less merging
-    const TARGET_FILL = 0.35;
+    // FIX: give them more room to flow (still big)
+    const TARGET_FILL = 0.26; // was 0.35
 
     const SCALE = Math.min(1, Math.sqrt((stageArea * TARGET_FILL) / Math.max(sumArea, 1)));
 
@@ -233,7 +233,6 @@
     ITEMS.forEach((item, idx) => {
       const h = Number(item.hours || 0);
 
-      // FIX: slightly bigger blobs (matches BASE_SIZE bump)
       const size = (BASE_SIZE + (h / maxH) * RANGE_SIZE) * SCALE;
       const r = size / 2;
 
@@ -269,7 +268,7 @@
         tx: t0.x,
         ty: t0.y,
         nextTargetAt: performance.now() + (600 + Math.random() * RETARGET_MS),
-        seed: Math.random() * 1000, // unique float pattern per blob
+        seed: Math.random() * 1000,
         baseZ: 10 + idx,
         label: `${item.app} — ${h.toFixed(1)} HOURS`
       });
@@ -319,7 +318,7 @@
         o.vx += (desiredVx - o.vx) * STEER;
         o.vy += (desiredVy - o.vy) * STEER;
 
-        // continuous dreamy wave drift (guarantees "lava lamp" motion)
+        // continuous dreamy wave drift
         const tt = now * 0.001;
         o.vx += Math.sin(tt * 0.55 + o.seed) * WAVE_PUSH;
         o.vy += Math.cos(tt * 0.48 + o.seed) * WAVE_PUSH;
@@ -331,10 +330,24 @@
         if (sp < MIN_SPEED){
           const s = MIN_SPEED / sp;
           o.vx *= s; o.vy *= s;
+          sp = MIN_SPEED;
         }
         if (sp > MAX_SPEED){
           const s = MAX_SPEED / sp;
           o.vx *= s; o.vy *= s;
+          sp = MAX_SPEED;
+        }
+
+        // UNSTICK: tiny nudge if a blob gets trapped in a tight pocket
+        if (!o.stuckAt) o.stuckAt = now;
+        if (sp < (MIN_SPEED * 1.05)) {
+          if (now - o.stuckAt > 700) {
+            o.vx += (Math.random() - 0.5) * 0.45;
+            o.vy += (Math.random() - 0.5) * 0.45;
+            o.stuckAt = now;
+          }
+        } else {
+          o.stuckAt = now;
         }
       });
 
