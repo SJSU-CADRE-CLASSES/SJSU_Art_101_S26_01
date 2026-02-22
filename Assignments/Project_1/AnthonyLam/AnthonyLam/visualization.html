@@ -18,10 +18,9 @@
     .blob-wrap{
       position:absolute;
       left:0; top:0;
-      will-change: transform, opacity;
+      will-change: transform;
       touch-action: manipulation;
       z-index: 10; /* baseline */
-      transition: opacity 600ms ease, transform 600ms ease;
     }
 
     .blob-core{
@@ -41,6 +40,23 @@
       opacity:1;
       filter: blur(8px) saturate(3.0);
     }
+
+    /* NEW: black “mix” layer (fades in during combine) */
+    .blob-core::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 900ms ease;
+      background: radial-gradient(circle,
+        rgba(0,0,0,0.95) 0%,
+        rgba(0,0,0,0.70) 42%,
+        rgba(0,0,0,0.00) 72%
+      );
+    }
+    .blob-core.to-black::before{ opacity:1; }
 
     .blob-core::after{
       content:"";
@@ -149,7 +165,7 @@
       transform: translateX(-50%) translateY(1px);
     }
 
-    /* The black blob made from “mixing” that fills the screen */
+    /* The mega black blob that fills the screen */
     #mega-blob{
       position: fixed;
       left: 50%;
@@ -161,16 +177,16 @@
       pointer-events: none;
 
       background: radial-gradient(circle,
-        rgba(0,0,0,0.96) 0%,
-        rgba(0,0,0,0.86) 42%,
-        rgba(0,0,0,0.00) 74%
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.70) 38%,
+        rgba(0,0,0,0.00) 70%
       );
 
       filter: blur(10px) saturate(0.2);
       opacity: 0;
       z-index: 999998;
-      will-change: transform, opacity, filter;
-      transition: opacity 900ms ease, transform 2600ms cubic-bezier(.16,1,.2,1), filter 1200ms ease;
+      will-change: transform, opacity;
+      transition: transform 1400ms cubic-bezier(.16,1,.2,1), opacity 900ms ease;
     }
 
     #mega-blob.on{
@@ -330,6 +346,7 @@
       if (!music || musicStarted) return;
       musicStarted = true;
       music.volume = 0.30;
+
       try { music.load(); } catch(_) {}
       music.play().catch((err) => console.log("Music play failed:", err));
     }
@@ -343,11 +360,17 @@
     const overlay = document.getElementById("combine-overlay");
     const overlayClose = document.getElementById("overlay-close");
 
-    // start hidden until ALL blobs have been tapped at least once
-    if (combineBtn) {
-      combineBtn.classList.remove("show");
-      combineBtn.style.opacity = "0";
-      combineBtn.style.pointerEvents = "none";
+    // NEW: require all blobs clicked before showing combine
+    const seen = new Array(ITEMS.length).fill(false);
+    let seenCount = 0;
+    let combineShown = false;
+
+    function maybeShowCombine(){
+      if (combineShown) return;
+      if (seenCount >= ITEMS.length){
+        combineShown = true;
+        setTimeout(() => combineBtn.classList.add("show"), 700);
+      }
     }
 
     if (!ITEMS.length) {
@@ -405,21 +428,6 @@
 
       const blobs = [];
       const placed = [];
-
-      // ===== “ALL BLOBS PRESSED” GATE =====
-      const pressed = new Array(ITEMS.length).fill(false);
-      let pressedCount = 0;
-
-      function maybeRevealCombine(){
-        if (!combineBtn) return;
-        if (pressedCount !== ITEMS.length) return;
-
-        // reveal once, with a small suspense delay
-        setTimeout(() => {
-          combineBtn.classList.add("show");
-          combineBtn.style.pointerEvents = "auto";
-        }, 900);
-      }
 
       let tipTimer = null;
 
@@ -530,13 +538,17 @@
         return { x: rect.width * 0.5, y: rect.height * 0.5 };
       }
 
-      function computeFillScale(){
+      function expandMegaToFill(){
         const w = window.innerWidth;
         const h = window.innerHeight;
+
         const base = mega.getBoundingClientRect();
         const baseR = Math.max(base.width, 1) * 0.5;
         const cornerDist = Math.hypot(w * 0.5, h * 0.5);
-        return (cornerDist / baseR) * 1.22;
+        const s = (cornerDist / baseR) * 1.18;
+
+        mega.classList.add("on");
+        mega.style.transform = `translate(-50%, -50%) scale(${s})`;
       }
 
       function beginCombine(){
@@ -553,12 +565,6 @@
           combineBtn.style.pointerEvents = "none";
           combineBtn.style.opacity = "0";
         }
-
-        // prep mega blob
-        mega.style.opacity = "0";
-        mega.classList.remove("on");
-        mega.style.filter = "blur(14px) saturate(0.0)";
-        mega.style.transform = "translate(-50%, -50%) scale(0.001)";
       }
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
@@ -607,17 +613,17 @@
         wrap.addEventListener("pointerdown", (e) => {
           if (combineState.active) return;
 
+          // NEW: mark as seen for combine unlock
+          if (!seen[idx]){
+            seen[idx] = true;
+            seenCount++;
+            maybeShowCombine();
+          }
+
           e.preventDefault();
           e.stopPropagation();
 
           startMusic();
-
-          // mark pressed
-          if (!pressed[idx]){
-            pressed[idx] = true;
-            pressedCount++;
-            maybeRevealCombine();
-          }
 
           document.querySelectorAll(".blob-core").forEach(b => b.classList.remove("active"));
           core.classList.add("active");
@@ -659,7 +665,6 @@
         if (combineState.active){
           const center = stageCenterInStageCoords();
 
-          // Phase 0: pull + “mix” (darken blobs as they collide)
           if (combineState.phase === 0){
             for (const o of blobs){
               const tx = center.x - (o.size * 0.5);
@@ -684,44 +689,37 @@
               o.y += o.vy;
 
               o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
-              // subtle “mixing to black”
-              o.wrap.style.filter = "saturate(0.45) brightness(0.55)";
             }
 
-            if (now - combineState.startedAt > 1400){
+            if (now - combineState.startedAt > 1200){
               combineState.phase = 1;
               combineState.startedAt = now;
 
-              // fade blobs out
+              // NEW: turn blobs black first (keep visible)
+              blobs.forEach(o => o.core.classList.add("to-black"));
+            }
+          }
+          else if (combineState.phase === 1){
+            // NEW: after you SEE the black mix, fade them + start mega fill
+            if (now - combineState.startedAt > 950){
+              combineState.phase = 2;
+              combineState.startedAt = now;
+
               blobs.forEach(o => {
+                o.wrap.style.transition = "opacity 700ms ease";
                 o.wrap.style.opacity = "0";
               });
 
-              // mega appears (black “mixture”)
               mega.style.opacity = "1";
               mega.classList.add("on");
-              mega.style.filter = "blur(18px) saturate(0.0)";
-              mega.style.transform = `translate(-50%, -50%) scale(0.08)`;
+              mega.style.transform = `translate(-50%, -50%) scale(0.01)`;
+
+              setTimeout(() => expandMegaToFill(), 180);
             }
           }
-
-          // Phase 1: slowly expand mega to fill screen (the “flood”)
-          else if (combineState.phase === 1){
-            const t = (now - combineState.startedAt);
-
-            // after a beat, expand
-            if (t > 350){
-              const s = computeFillScale();
-              mega.style.filter = "blur(10px) saturate(0.15)";
-              mega.style.transform = `translate(-50%, -50%) scale(${s})`;
-              combineState.phase = 2;
-              combineState.startedAt = now;
-            }
-          }
-
-          // Phase 2: wait until the flood “finishes”, then reveal README
           else if (combineState.phase === 2){
-            if (now - combineState.startedAt > 2400){
+            // NEW: reveal README after the fill animation has mostly finished
+            if (now - combineState.startedAt > 1350){
               overlay.classList.add("on");
               overlay.setAttribute("aria-hidden", "false");
               mega.setAttribute("aria-hidden", "false");
