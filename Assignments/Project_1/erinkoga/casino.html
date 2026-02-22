@@ -28,6 +28,9 @@
         .result { min-height: 2rem; color: #fff; font-weight: bold; }
         .result.win { color: #90ee90; }
         .result.lose { color: #ffb6c1; }
+        .tracker { margin-top: 1rem; color: #ccc; font-size: 0.9rem; }
+        .tracker span { color: #90ee90; margin-right: 0.75rem; }
+        .tracker .losses { color: #ffb6c1; }
         .back { margin-top: 1rem; }
         .back a { color: #ffd700; }
     </style>
@@ -45,15 +48,20 @@
         </div>
         <button type="button" id="flip">Flip coin</button>
         <div class="result" id="result"></div>
+        <div class="tracker">Wins: <span id="wins">0</span><span class="losses">Losses: <span id="losses">0</span></span></div>
         <div class="back"><a href="index.html">Back to lobby</a></div>
     </div>
     <script>
         let balance = 100;
         let choice = null;
+        let wins = 0;
+        let losses = 0;
         const balanceEl = document.getElementById('balance');
         const betEl = document.getElementById('bet');
         const resultEl = document.getElementById('result');
         const flipBtn = document.getElementById('flip');
+        const winsEl = document.getElementById('wins');
+        const lossesEl = document.getElementById('losses');
 
         document.querySelectorAll('.choices button').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -73,10 +81,14 @@
             const win = side === choice;
             if (win) {
                 balance += bet;
+                wins++;
+                winsEl.textContent = wins;
                 resultEl.textContent = `It was ${side}. You win ${bet} chips!`;
                 resultEl.className = 'result win';
             } else {
                 balance -= bet;
+                losses++;
+                lossesEl.textContent = losses;
                 resultEl.textContent = `It was ${side}. You lose ${bet} chips.`;
                 resultEl.className = 'result lose';
             }
