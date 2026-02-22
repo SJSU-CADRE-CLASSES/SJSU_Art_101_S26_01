@@ -5,8 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Casino</title>
     <link rel="stylesheet" href="cstyle.css">
+    <style>
+        .casino {
+            max-width: 320px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .casino h1 { margin: 0 0 1rem; color: #fff; font-size: 1.5rem; }
+        .balance { font-size: 1.2rem; color: #ffd700; margin-bottom: 1rem; }
+        .casino label { display: block; color: #eee; margin-bottom: 0.25rem; }
+        .casino input[type="number"] { width: 100%; padding: 0.5rem; box-sizing: border-box; margin-bottom: 0.75rem; }
+        .choices { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
+        .choices button { padding: 0.5rem 1rem; cursor: pointer; background: #1a5f2a; color: #fff; border: none; border-radius: 4px; }
+        .choices button:hover { background: #2a7f3a; }
+        .choices button.selected { background: #ffd700; color: #000; }
+        #flip { padding: 0.6rem 1.5rem; font-size: 1rem; cursor: pointer; background: #8b0000; color: #fff; border: none; border-radius: 4px; margin-bottom: 1rem; }
+        #flip:hover { background: #a00; }
+        #flip:disabled { background: #555; cursor: not-allowed; }
+        .result { min-height: 2rem; color: #fff; font-weight: bold; }
+        .result.win { color: #90ee90; }
+        .result.lose { color: #ffb6c1; }
+        .back { margin-top: 1rem; }
+        .back a { color: #ffd700; }
+    </style>
 </head>
 <body>
+    <div class="casino">
+        <h1>Coin flip</h1>
+        <div class="balance">Balance: <span id="balance">100</span> chips</div>
+        <label for="bet">Bet amount</label>
+        <input type="number" id="bet" min="1" value="10" placeholder="Bet">
+        <label>Choose</label>
+        <div class="choices">
+            <button type="button" data-choice="heads">Heads</button>
+            <button type="button" data-choice="tails">Tails</button>
+        </div>
+        <button type="button" id="flip">Flip coin</button>
+        <div class="result" id="result"></div>
+        <div class="back"><a href="index.html">Back to lobby</a></div>
+    </div>
+    <script>
+        let balance = 100;
+        let choice = null;
+        const balanceEl = document.getElementById('balance');
+        const betEl = document.getElementById('bet');
+        const resultEl = document.getElementById('result');
+        const flipBtn = document.getElementById('flip');
 
+        document.querySelectorAll('.choices button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.choices button').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                choice = btn.dataset.choice;
+            });
+        });
+
+        flipBtn.addEventListener('click', () => {
+            const bet = Math.floor(Number(betEl.value)) || 0;
+            if (bet < 1) { resultEl.textContent = 'Enter a bet of at least 1.'; resultEl.className = 'result'; return; }
+            if (bet > balance) { resultEl.textContent = "You don't have enough chips."; resultEl.className = 'result'; return; }
+            if (!choice) { resultEl.textContent = 'Pick heads or tails.'; resultEl.className = 'result'; return; }
+
+            const side = Math.random() < 0.5 ? 'heads' : 'tails';
+            const win = side === choice;
+            if (win) {
+                balance += bet;
+                resultEl.textContent = `It was ${side}. You win ${bet} chips!`;
+                resultEl.className = 'result win';
+            } else {
+                balance -= bet;
+                resultEl.textContent = `It was ${side}. You lose ${bet} chips.`;
+                resultEl.className = 'result lose';
+            }
+            balanceEl.textContent = balance;
+            if (balance <= 0) {
+                resultEl.textContent += ' Game over. Refresh to play again.';
+                flipBtn.disabled = true;
+            }
+        });
+    </script>
 </body>
 </html>
