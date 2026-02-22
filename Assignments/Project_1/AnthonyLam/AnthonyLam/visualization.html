@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>DIGITAL RESIDUE — Visualization</title>
+  <link rel="stylesheet" href="./style.css?v=1016">
+
+  <style>
+    /* IMPORTANT: styles here are ONLY for blob-wrap/blob-core + pulse.
+       They do NOT override JS translate(). */
+
+    /* Make stage its own stacking context so z-index behaves predictably */
+    #blob-stage{
+      position: relative;
+      isolation: isolate;
+    }
+
+    .blob-wrap{
+      position:absolute;
+      left:0; top:0;
+      will-change: transform;
+      touch-action: manipulation;
+      z-index: 10; /* baseline */
+    }
+
+    .blob-core{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      opacity:0.88;
+      filter: blur(10px) saturate(2.4);
+      mix-blend-mode: normal;
+      pointer-events: none; /* clicks go to wrap */
+      transition: filter 180ms ease, opacity 180ms ease;
+      position: relative; /* needed for ::before/::after positioning */
+      --burst-scale: 13;
+    }
+
+    .blob-core.active{
+      opacity:1;
+      filter: blur(8px) saturate(3.0);
+    }
+
+    /* black “mix” layer (fades in during combine) */
+    .blob-core::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 900ms ease;
+      background: radial-gradient(circle,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 55%,
+        rgba(0,0,0,1) 100%
+      );
+    }
+    .blob-core.to-black::before{ opacity:1; }
+
+    .blob-core::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      background: inherit;
+
+      /* KEY FIX: don't inherit heavy blur (can cause square artifacts) */
+      filter: none;
+
+      opacity:0;
+      transform: scale(1) translateZ(0);
+      transform-origin:center;
+      pointer-events:none;
+
+      /* extra safety to force circular clip */
+      clip-path: circle(50% at 50% 50%);
+
+      will-change: transform, opacity;
+      z-index: 9999;
+    }
+
+    /* Keep tooltip above everything */
+    #tip.tip{
+      position: fixed;
+      z-index: 2147483647;
+    }
+
+    /* ===== HOLD INTERACTION PULSE ===== */
+    .blob-core.pulse-in::after{
+      animation: blobPulseIn 240ms ease-out forwards;
+    }
+
+    .blob-core.hold::after{
+      opacity:0.98;
+      transform: scale(var(--burst-scale));
+    }
+
+    .blob-core.pulse-out::after{
+      animation: blobPulseOut 1100ms ease-out forwards;
+    }
+
+    @keyframes blobPulseIn{
+      0%   { opacity:0.00; transform: scale(1); }
+      100% { opacity:0.98; transform: scale(var(--burst-scale)); }
+    }
+
+    @keyframes blobPulseOut{
+      0%   { opacity:0.98; transform: scale(var(--burst-scale)); }
+      60%  { opacity:0.78; transform: scale(calc(var(--burst-scale) * 0.72)); }
+      100% { opacity:0.00; transform: scale(1.0); }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .blob-core.pulse-in::after,
+      .blob-core.pulse-out::after{ animation:none; opacity:0; }
+      .blob-core.hold::after{ opacity:0; transform: scale(1); }
+    }
+
+    /* =========================
+       COMBINE UI
+       ========================= */
+
+    /* ghost button under the subtitle */
+    #combine-btn{
+      position: fixed;
+      left: 50%;
+      top: 230px;
+      transform: translateX(-50%);
+      z-index: 9999;
+
+      font: inherit;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,17,17,0.22);
+      background: rgba(255,255,255,0.35);
+      color: rgba(17,17,17,0.55);
+
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 900ms ease, transform 900ms ease, color 220ms ease, border-color 220ms ease, background 220ms ease;
+    }
+
+    #combine-btn.show{
+      opacity: 0.55;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #combine-btn:hover{
+      opacity: 0.75;
+      color: rgba(17,17,17,0.7);
+      border-color: rgba(17,17,17,0.35);
+      background: rgba(255,255,255,0.55);
+    }
+
+    #combine-btn:active{
+      opacity: 0.95;
+      transform: translateX(-50%) translateY(1px);
+    }
+
+    /* The mega black blob that fills the screen (pitch black, blurred like the other blobs) */
+    #mega-blob{
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 62vmin;
+      height: 62vmin;
+      transform: translate(-50%, -50%) scale(0.001);
+      border-radius: 50%;
+      pointer-events: none;
+
+      /* pitch black core, softened edges (so it still feels "blob") */
+      background: radial-gradient(circle,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 62%,
+        rgba(0,0,0,0.0) 78%
+      );
+
+      /* match blob feel */
+      filter: blur(10px) saturate(0.2);
+      opacity: 0;
+      z-index: 999998;
+      will-change: transform, opacity;
+
+      /* SLOW + CINEMATIC (slower than before) */
+      transition: transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1400ms ease;
+    }
+
+    #mega-blob.on{ opacity: 1; }
+
+    /* Readme overlay */
+    #combine-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1400ms ease;
+    }
+
+    #combine-overlay.on{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* make it look like the screen is OFF */
+    #combine-overlay .veil{
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,1);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    #combine-overlay .panel{
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: min(980px, calc(100vw - 80px));
+      padding: 34px 32px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.92);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+    }
+
+    #combine-overlay .panel h2{
+      margin: 0 0 10px 0;
+      font-size: 26px;
+      letter-spacing: 8px;
+      opacity: 0.9;
+    }
+
+    #combine-overlay .panel p{
+      margin: 0;
+      line-height: 1.72;
+      font-size: 17px;
+      letter-spacing: 1.4px;
+      opacity: 0.9;
+      text-transform: none;
+      font-weight: 500;
+    }
+
+    /* ===== QUOTE TRAIN-STATION STYLE ===== */
+    #combine-overlay .panel .small{
+      margin-top: 16px;
+      font-family: "Doto", sans-serif;
+      font-size: 15px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.85;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      transition: opacity 600ms ease;
+    }
+
+    /* Holographic / iridescent gradient must be on EACH character span */
+    .quote-char{
+      display:inline-block;
+      opacity:0;
+      transform: translateY(6px);
+
+      background: linear-gradient(
+        90deg,
+        #ffa1ec,
+        #b191ff,
+        #8ad3ff,
+        #85ff8f,
+        #ffa3b1,
+        #ffa1db,
+        #abdcff,
+        #b99cff
+      );
+      background-size: 300% 100%;
+      background-position: 0% 50%;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes quoteReveal{
+      0%{
+        opacity:0;
+        transform: translateY(8px);
+        filter: blur(4px);
+      }
+      100%{
+        opacity:1;
+        transform: translateY(0px);
+        filter: blur(0px);
+      }
+    }
+
+    /* Holo shimmer shift */
+    @keyframes holoShift{
+      0%{ background-position:0% 50%; }
+      100%{ background-position:300% 50%; }
+    }
+
+    @keyframes holoGlow{
+      0%{ filter: brightness(1) saturate(1); }
+      50%{ filter: brightness(1.18) saturate(1.25); }
+      100%{ filter: brightness(1) saturate(1); }
+    }
+
+    .quote-fade{ opacity:0.2; }
+
+    #combine-overlay .panel .close-row{
+      margin-top: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    #combine-overlay .panel a{
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      letter-spacing: 3px;
+      opacity: 0.85;
+    }
+
+    #combine-overlay .panel a:hover{ opacity: 1; }
+
+    /* ===== HOLOGRAPHIC TITLE (DIGITAL RESIDUE) ===== */
+    #combine-overlay .panel h2{
+      background: linear-gradient(
+        110deg,
+        #f7b7ff,
+        #b9c6ff,
+        #a8e6ff,
+        #b7ffd9,
+        #fff1b3,
+        #ffd1e8,
+        #c8fff7,
+        #f7b7ff
+      );
+      background-size: 400% 100%;
+      background-position: 0% 50%;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+
+      animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
+    }
+
+    /* ===== LINE-BY-LINE REVEAL TARGET ===== */
+    #residue-lines{
+      margin-top: 6px;
+      line-height: 1.72;
+      font-size: 17px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      font-weight: 500;
+      opacity: 0.92;
+
+      transition: opacity 900ms ease, transform 900ms ease, filter 900ms ease;
+      will-change: opacity, transform, filter;
+    }
+
+    /* fade the whole block out between groups */
+    #residue-lines.fade-out{
+      opacity: 0;
+      transform: translateY(-6px);
+      filter: blur(10px);
+    }
+
+    .res-line{
+      display:block;
+      margin: 0 0 10px 0;
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(6px);
+      transition: opacity 700ms ease, transform 700ms ease, filter 700ms ease;
+      will-change: opacity, transform, filter;
+    }
+
+    .res-line.show{
+      opacity: 1;
+      transform: translateY(0px);
+      filter: blur(0px);
+    }
+
+    /* subtle holo (we can refine color later — intentionally soft) */
+    .res-line.holo{
+      background: linear-gradient(
+        110deg,
+        rgba(247,183,255,0.95),
+        rgba(185,198,255,0.92),
+        rgba(168,230,255,0.92),
+        rgba(183,255,217,0.90),
+        rgba(255,241,179,0.88),
+        rgba(255,209,232,0.92),
+        rgba(200,255,247,0.90),
+        rgba(247,183,255,0.95)
+      );
+      background-size: 420% 100%;
+      background-position: 0% 50%;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+
+      animation: holoShift 20s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #residue-lines{ transition:none; }
+      #residue-lines.fade-out{ opacity:1; transform:none; filter:none; }
+
+      .res-line{
+        transition:none;
+        transform:none;
+        filter:none;
+        opacity:1;
+      }
+      .res-line.show{ opacity:1; }
+      .res-line.holo{ animation:none; }
+    }
+  </style>
+</head>
+
+<body data-page="viz">
+
+  <audio id="bg-music" loop preload="none" playsinline>
+    <source src="./ice-background.mp3" type="audio/mpeg">
+  </audio>
+
+  <a class="back" href="./index.html">← BACK</a>
+
+  <h1 class="viz-title">MY SCREEN TIME</h1>
+  <p class="viz-sub">TAP ON A COLOR BLOB TO REVEAL THE APP + SCREENTIME</p>
+
+  <button id="combine-btn" type="button" aria-label="Combine blobs">COMBINE</button>
+
+  <div id="blob-stage"></div>
+  <div id="tip" class="tip"></div>
+
+  <div id="mega-blob" aria-hidden="true"></div>
+
+  <div id="combine-overlay" aria-hidden="true">
+    <div class="veil"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="DIGITAL RESIDUE">
+      <h2>DIGITAL RESIDUE ‎ ‎ ‎ ‎    ‎ ‎ BY ANTHONY LAM</h2>
+
+      <!-- LINE-BY-LINE REVEAL TARGET -->
+      <div id="residue-lines" aria-live="polite"></div>
+
+      <!-- Animated quote line -->
+      <p class="small" id="quote-line" aria-live="polite"></p>
+
+      <div class="close-row">
+        <a href="./index.html">← BACK</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js?v=1016"></script>
+
+  <script>
+  (() => {
+    const stage = document.getElementById("blob-stage");
+    const tip = document.getElementById("tip");
+    const ITEMS = (typeof APPS !== "undefined") ? APPS : [];
+
+    // ===== MUSIC =====
+    const music = document.getElementById("bg-music");
+    let musicStarted = false;
+
+    function startMusic(){
+      if (!music || musicStarted) return;
+      musicStarted = true;
+      music.volume = 0.30;
+
+      try { music.load(); } catch(_) {}
+      music.play().catch((err) => console.log("Music play failed:", err));
+    }
+
+    window.addEventListener("pointerdown", startMusic, { once:true, capture:true });
+    window.addEventListener("keydown", startMusic, { once:true, capture:true });
+
+    // ===== QUOTES (train-station animation) =====
+    const quoteLine = document.getElementById("quote-line");
+
+    const QUOTES = [
+      "LESS SCROLLING, MORE LIVING. — LOUISE MYERS",
+      "HOW WE SPEND OUR DAYS IS HOW WE SPEND OUR LIVES. — ANNIE DILLARD",
+      "TECHNOLOGY IS A USEFUL SERVANT BUT A DANGEROUS MASTER. — CHRISTIAN LANGE",
+      "THE PRICE OF ANYTHING IS THE AMOUNT OF LIFE YOU EXCHANGE FOR IT. — HENRY D. THOREAU",
+      "IT TAKES DISCIPLINE NOT TO LET SOCIAL MEDIA STEAL YOUR TIME. — ALEXIS OHANIAN",
+      "TECHNOLOGY IS A GOOD SERVANT BUT A BAD MASTER. — GRETCHEN RUBIN",
+      "UNMODERATED CONTENT CONSUMPTION IS AS DANGEROUS AS THE CONSUMPTION OF SEWAGE WATER. — A. NASKAR",
+      "HUMANS ARE NOT WIRED TO BE CONSTANTLY WIRED. — CAL NEWPORT",
+      "TO FEEL ALIVE AGAIN, SPEND A DAY WITH YOUR PHONE DEAD. — TIM DENNING",
+      "WE ARE LIVING IN AN ATTENTION ECONOMY AND SOCIAL MEDIA IS ADDICTIVE BY DESIGN. — TRISTAN HARRIS",
+      "SOCIAL MEDIA IS MORE ADDICTIVE THAN CIGARETTES AND ALCOHOL. — GARY VAYNERCHUK",
+      "SOCIAL MEDIA ADDICTION IS NOT A CHOICE, IT'S A COMPULSION. — ADAM ALTER"
+    ];
+
+    let quoteIdx = 0;
+    let quoteTimer = null;
+    let quoteRunId = 0;
+
+    function stopQuotes(){
+      quoteRunId++;
+      if (quoteTimer) clearTimeout(quoteTimer);
+      quoteTimer = null;
+    }
+
+    function renderQuoteAnimated(text, runId){
+      if (!quoteLine) return 0;
+
+      quoteLine.classList.remove("quote-fade");
+      quoteLine.innerHTML = ""; // hard clear so ONLY one quote exists
+
+      const chars = Array.from(text);
+      chars.forEach((ch, i) => {
+        if (runId !== quoteRunId) return;
+
+        const span = document.createElement("span");
+        span.className = "quote-char";
+        span.textContent = ch;
+
+        /* reveal + holographic shift */
+        span.style.animation = "quoteReveal 420ms ease forwards, holoShift 8s linear infinite";
+        span.style.animationDelay = `${i * 18}ms, 0ms`;
+
+        quoteLine.appendChild(span);
+      });
+
+      return (chars.length * 18) + 420; // typing duration
+    }
+
+    function cycleQuotes(){
+      if (!quoteLine) return;
+
+      stopQuotes();               // stop any previous cycle
+      const runId = ++quoteRunId; // new run id
+
+      const text = QUOTES[quoteIdx];
+      const typingMs = renderQuoteAnimated(text, runId);
+
+      const READ_MS = 8000; // hold after typing
+      const FADE_MS = 650;
+
+      quoteTimer = setTimeout(() => {
+        if (runId !== quoteRunId) return;
+
+        quoteLine.classList.add("quote-fade");
+
+        quoteTimer = setTimeout(() => {
+          if (runId !== quoteRunId) return;
+
+          quoteIdx = (quoteIdx + 1) % QUOTES.length;
+          cycleQuotes();
+        }, FADE_MS);
+
+      }, typingMs + READ_MS);
+    }
+
+    // ===== DIGITAL RESIDUE GROUPED REVEAL + FADE + LOOP =====
+    const residueBox = document.getElementById("residue-lines");
+    let residueRunId = 0;
+    let residueTimer = null;
+
+    const RESIDUE_GROUPS = [
+      [
+        "THE AVERAGE HUMAN LIFESPAN IS ABOUT 80 YEARS.",
+        "AND THERE ARE 8,760 HOURS IN A YEAR.",
+        "THERE ARE 24 HOURS IN A DAY.",
+        "ON AVERAGE, WE SPEND ABOUT 8 HOURS ASLEEP...",
+        "LEAVING US ROUGHLY 16 HOURS AWAKE...",
+        "MANY PEOPLE SPEND 5–7 OF THOSE WAKING HOURS LOOKING AT THEIR PHONES, COMPUTERS, OR TELEVISION SCREENS...",
+        "SCROLLING, WATCHING, CONSUMING...",
+        "THAT ADDS UP TO ROUGHLY 1,800–2,500 HOURS EVERY YEAR SPENT IN DIGITAL SPACE...",
+        "OVER AN 80-YEAR LIFETIME, THAT BECOMES 150,000+ HOURS —",
+        "NEARLY A THIRD OF OUR WAKING LIVES LIVED THROUGH SCREENS."
+      ],
+      [
+        "DIGITAL RESIDUE IS A PERSONAL DATA PORTRAIT COLLECTED FROM MY WEEKLY PHONE SCREEN TIME. THIS VISUALIZATION TURNS MY SCREEN TIME INTO FLOATING “RESIDUE”-LIKE, COLOR-CODED BLOBS, FLOATING AROUND THE DIGITAL SPACE LIKE A LAVA LAMP, EACH REPRESENTING AN APP — THE SIZE REFLECTS THE AMOUNT OF SCREEN TIME IT TOOK FROM ME. WHEN A VIEWER INTERACTS WITH A BLOB, THE APP AND SCREEN TIME ARE REVEALED."
+      ],
+      [
+        "THE MOVEMENT IS INTENTIONALLY MESMERIZING AND HAS A SENSE OF PEACE, LIKE A SCREENSAVER OR LAVA LAMP. THE “COMBINE” BUTTON TRANSFORMS THE BLOBS TO MERGE INTO ONE, COLORS MIXING INTO BLACK AND FILLING THE SCREEN, AS IF YOU ARE FACE TO FACE WITH YOUR PHONE OR COMPUTER SCREEN — A BLACK MIRROR — BEFORE REVEALING FURTHER DETAILS AND SOME OF MY FAVORITE RELEVANT QUOTES ABOUT THIS TOPIC."
+      ],
+      [
+        "THE QUOTES CYCLE THROUGH, REINFORCING THE THEME OF OVERCONSUMPTION IN THE DIGITAL WORLD AND THE DANGERS AND POWERS OF IT. THEY ACT AS REMINDERS AND WARNINGS ABOUT ATTENTION, TECHNOLOGY, AND INTENTIONAL LIVING, ENCOURAGING VIEWERS TO RECONSIDER THEIR RELATIONSHIP WITH SCREENS."
+      ],
+      [
+        "ULTIMATELY, DIGITAL RESIDUE IS NOT MEANT TO JUDGE TECHNOLOGY, BUT TO VISUALIZE ITS CONSUMPTION OVER OUR LIVES AS WE CONSUME IT. BY TRANSFORMING RAW DATA INTO SOMETHING ATMOSPHERIC AND IMMERSIVE,"
+      ]
+    ];
+
+    const FADE_OUT_MS = 900;
+
+    function stopResidueCycle(){
+      residueRunId++;
+      if (residueTimer) clearTimeout(residueTimer);
+      residueTimer = null;
+
+      if (residueBox){
+        residueBox.classList.remove("fade-out");
+        residueBox.innerHTML = "";
+        delete residueBox.dataset.started;
+      }
+    }
+
+    function wordsCount(s){
+      return (s || "").trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    function msForLine(line){
+      // ~200 wpm reading speed => 300ms/word
+      const WPM = 200;
+      const base = 650;                 // breath
+      const perWord = (60_000 / WPM);    // ms per word
+      const w = wordsCount(line);
+      const ms = base + (w * perWord);
+
+      return Math.max(1500, Math.min(ms, 8000));
+    }
+
+    function msForGroupHold(groupLines){
+      // extra hold AFTER the last line appears
+      const WPM = 200;
+      const perWord = (60_000 / WPM);
+
+      const totalWords = groupLines.reduce((acc, l) => acc + wordsCount(l), 0);
+      const ms = 1200 + (totalWords * perWord * 0.65);
+
+      return Math.max(2600, Math.min(ms, 14000));
+    }
+
+    function startResidueCycle(){
+      if (!residueBox) return;
+
+      if (residueBox.dataset.started) return;
+      residueBox.dataset.started = "1";
+
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce){
+        residueBox.innerHTML = "";
+        RESIDUE_GROUPS.flat().forEach((line) => {
+          const div = document.createElement("div");
+          div.className = "res-line show";
+          div.textContent = line;
+          residueBox.appendChild(div);
+        });
+        return;
+      }
+
+      const runId = ++residueRunId;
+      let g = 0;
+
+      const playGroup = () => {
+        if (runId !== residueRunId) return;
+
+        const groupLines = RESIDUE_GROUPS[g] || [];
+        residueBox.classList.remove("fade-out");
+        residueBox.innerHTML = "";
+
+        let i = 0;
+
+        const stepLine = () => {
+          if (runId !== residueRunId) return;
+
+          if (i >= groupLines.length){
+            residueTimer = setTimeout(() => {
+              if (runId !== residueRunId) return;
+
+              residueBox.classList.add("fade-out");
+
+              residueTimer = setTimeout(() => {
+                if (runId !== residueRunId) return;
+
+                residueBox.classList.remove("fade-out");
+                residueBox.innerHTML = "";
+
+                g = (g + 1) % RESIDUE_GROUPS.length;
+                playGroup();
+              }, FADE_OUT_MS);
+
+            }, msForGroupHold(groupLines));
+
+            return;
+          }
+
+          const line = groupLines[i++];
+
+          const div = document.createElement("div");
+          div.className = "res-line holo";
+          div.textContent = line;
+          residueBox.appendChild(div);
+
+          requestAnimationFrame(() => div.classList.add("show"));
+
+          residueTimer = setTimeout(stepLine, msForLine(line));
+        };
+
+        stepLine();
+      };
+
+      playGroup();
+    }
+
+    // ===== COMBINE UI =====
+    const combineBtn = document.getElementById("combine-btn");
+    const mega = document.getElementById("mega-blob");
+    const overlay = document.getElementById("combine-overlay");
+
+    const seen = new Array(ITEMS.length).fill(false);
+    let seenCount = 0;
+    let combineShown = false;
+
+    function maybeShowCombine(){
+      if (combineShown) return;
+      if (seenCount >= ITEMS.length){
+        combineShown = true;
+        setTimeout(() => combineBtn.classList.add("show"), 700);
+      }
+    }
+
+    if (!ITEMS.length) {
+      stage.innerHTML = `<p style="opacity:.7">No APPS data found in data.js.</p>`;
+      return;
+    }
+
+    window.addEventListener("load", () => requestAnimationFrame(init), { once:true });
+
+    function init(){
+      // ===== TUNING =====
+      const PAD = 24;
+
+      const PHYS_GAP   = 70;
+      const VISUAL_GAP = 55;
+
+      const SOLVER_PASSES  = 42;
+      const SEPARATE_RATIO = 0.86;
+
+      const MAX_SPEED = 3.8;
+      const MIN_SPEED = 1.4;
+      const DAMP      = 0.998;
+      const BOUNCE    = 1.01;
+
+      const RETARGET_MS = 2600;
+      const STEER       = 0.018;
+      const ARRIVE      = 420;
+
+      const WAVE_PUSH  = 0.040;
+      const MICRO_PUSH = 0.010;
+
+      const TIP_MS = 2000;
+
+      const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
+
+      // =========================
+      // AUTO-FIT SIZES
+      // =========================
+      const rect0 = stage.getBoundingClientRect();
+      const stageArea = Math.max(rect0.width * rect0.height, 1);
+
+      const BASE_SIZE  = 520;
+      const RANGE_SIZE = 360;
+
+      let sumArea = 0;
+      for (const item of ITEMS){
+        const h = Number(item.hours || 0);
+        const rawSize = BASE_SIZE + (h / maxH) * RANGE_SIZE;
+        const r = rawSize * 0.5;
+        sumArea += Math.PI * r * r;
+      }
+
+      const TARGET_FILL = 0.32;
+      const SCALE = Math.min(1, Math.sqrt((stageArea * TARGET_FILL) / Math.max(sumArea, 1)));
+
+      const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);
+      const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE);
+
+      const blobs = [];
+      const placed = [];
+
+      let tipTimer = null;
+
+      function showTip(text, x, y){
+        if (tipTimer) clearTimeout(tipTimer);
+
+        tip.textContent = text;
+        tip.style.opacity = "1";
+        tip.style.left = (x + 14) + "px";
+        tip.style.top  = (y + 14) + "px";
+
+        tipTimer = setTimeout(() => {
+          tip.style.opacity = "0";
+          document.querySelectorAll(".blob-core").forEach(b => b.classList.remove("active"));
+          tipTimer = null;
+        }, TIP_MS);
+      }
+
+      function clearTip(){
+        if (tipTimer) clearTimeout(tipTimer);
+        tip.style.opacity = "0";
+        document.querySelectorAll(".blob-core").forEach(b => b.classList.remove("active"));
+        tipTimer = null;
+      }
+
+      function getBounds(){
+        const rect = stage.getBoundingClientRect();
+        return {
+          rect,
+          minX: PAD,
+          minY: PAD,
+          maxXFor: (size) => rect.width  - size - PAD,
+          maxYFor: (size) => rect.height - size - PAD,
+        };
+      }
+
+      function randPos(sizePx){
+        const b = getBounds();
+        const maxX = Math.max(b.maxXFor(sizePx), b.minX);
+        const maxY = Math.max(b.maxYFor(sizePx), b.minY);
+        return {
+          x: b.minX + Math.random() * Math.max(maxX - b.minX, 1),
+          y: b.minY + Math.random() * Math.max(maxY - b.minY, 1),
+        };
+      }
+
+      function tryPlace(sizePx){
+        const b = getBounds();
+        const r = sizePx / 2;
+
+        const maxX = Math.max(b.maxXFor(sizePx), b.minX);
+        const maxY = Math.max(b.maxYFor(sizePx), b.minY);
+
+        for (let attempt = 0; attempt < 5000; attempt++){
+          const x = b.minX + Math.random() * Math.max(maxX - b.minX, 1);
+          const y = b.minY + Math.random() * Math.max(maxY - b.minY, 1);
+
+          const cx = x + r;
+          const cy = y + r;
+
+          let ok = true;
+          for (const p of placed){
+            const dist = Math.hypot(cx - p.cx, cy - p.cy);
+            const minDist = r + p.r + PHYS_GAP_S + VISUAL_GAP_S;
+            if (dist < minDist){ ok = false; break; }
+          }
+          if (ok){
+            placed.push({ cx, cy, r });
+            return { x, y };
+          }
+        }
+        return randPos(sizePx);
+      }
+
+      function startHoldPulse(coreEl){
+        coreEl.classList.remove("pulse-out","hold","pulse-in");
+        void coreEl.offsetWidth;
+        coreEl.classList.add("pulse-in");
+
+        clearTimeout(coreEl._holdTimer);
+        coreEl._holdTimer = setTimeout(() => {
+          coreEl.classList.remove("pulse-in");
+          coreEl.classList.add("hold");
+        }, 240);
+      }
+
+      function endHoldPulse(coreEl){
+        clearTimeout(coreEl._holdTimer);
+
+        coreEl.classList.remove("hold","pulse-in");
+        void coreEl.offsetWidth;
+
+        coreEl.classList.add("pulse-out");
+
+        clearTimeout(coreEl._outTimer);
+        coreEl._outTimer = setTimeout(() => {
+          coreEl.classList.remove("pulse-out");
+        }, 1150);
+      }
+
+      // =========================
+      // COMBINE STATE
+      // =========================
+      const combineState = { active:false, startedAt:0, phase:0 };
+
+      function stageCenterInStageCoords(){
+        const rect = getBounds().rect;
+        return { x: rect.width * 0.5, y: rect.height * 0.5 };
+      }
+
+      function computeMegaFillScale(){
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        const baseR = Math.max(mega.offsetWidth, 1) * 0.5;
+        const cornerDist = Math.hypot(w * 0.5, h * 0.5);
+
+        return (cornerDist / baseR) * 2.6;
+      }
+
+      function expandMegaToFill(onDone){
+        const s = computeMegaFillScale();
+
+        mega.classList.add("on");
+        mega.style.opacity = "1";
+        mega.style.transition = "transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1400ms ease";
+        mega.style.transform = "translate(-50%, -50%) scale(0.06)";
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            mega.style.transform = `translate(-50%, -50%) scale(${s})`;
+          });
+        });
+
+        let called = false;
+        const finish = () => {
+          if (called) return;
+          called = true;
+          mega.removeEventListener("transitionend", onEnd, false);
+          onDone && onDone();
+        };
+
+        const onEnd = (e) => {
+          if (e.propertyName === "transform") finish();
+        };
+
+        mega.addEventListener("transitionend", onEnd, false);
+        setTimeout(finish, 6000);
+      }
+
+      function beginCombine(){
+        if (combineState.active) return;
+        combineState.active = true;
+        combineState.startedAt = performance.now();
+        combineState.phase = 0;
+
+        startMusic();
+        clearTip();
+
+        if (combineBtn){
+          combineBtn.disabled = true;
+          combineBtn.style.pointerEvents = "none";
+          combineBtn.style.opacity = "0";
+        }
+      }
+
+      if (combineBtn) combineBtn.addEventListener("click", beginCombine);
+
+      // ESC closes overlay + stops quote cycle + stops residue cycle
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          overlay.classList.remove("on");
+          stopQuotes();
+          stopResidueCycle();
+          if (quoteLine) delete quoteLine.dataset.started;
+        }
+      });
+
+      // Build blobs
+      ITEMS.forEach((item, idx) => {
+        const h = Number(item.hours || 0);
+        const size = (BASE_SIZE + (h / maxH) * RANGE_SIZE) * SCALE;
+        const r = size / 2;
+
+        const wrap = document.createElement("div");
+        wrap.className = "blob-wrap";
+        wrap.style.width = size + "px";
+        wrap.style.height = size + "px";
+        wrap.style.zIndex = String(10 + idx);
+
+        const core = document.createElement("div");
+        core.className = "blob-core";
+        core.style.background = `radial-gradient(circle, ${item.color} 0%, rgba(255,255,255,0) 50%)`;
+
+        wrap.appendChild(core);
+        stage.appendChild(wrap);
+
+        const pos = tryPlace(size);
+
+        const ang = Math.random() * Math.PI * 2;
+        const sp  = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+        const t0  = randPos(size);
+
+        blobs.push({
+          wrap, core, size, r,
+          x: pos.x, y: pos.y,
+          vx: Math.cos(ang) * sp,
+          vy: Math.sin(ang) * sp,
+          tx: t0.x, ty: t0.y,
+          nextTargetAt: performance.now() + (600 + Math.random() * RETARGET_MS),
+          seed: Math.random() * 1000,
+          label: `${item.app} — ${h.toFixed(1)} HOURS`
+        });
+
+        wrap.addEventListener("pointerdown", (e) => {
+          if (combineState.active) return;
+
+          if (!seen[idx]){
+            seen[idx] = true;
+            seenCount++;
+            maybeShowCombine();
+          }
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          startMusic();
+
+          document.querySelectorAll(".blob-core").forEach(b => b.classList.remove("active"));
+          core.classList.add("active");
+
+          wrap.style.zIndex = "999999";
+          setTimeout(() => { wrap.style.zIndex = String(10 + idx); }, 900);
+
+          try { wrap.setPointerCapture(e.pointerId); } catch(_) {}
+
+          startHoldPulse(core);
+          showTip(blobs[idx].label, e.clientX, e.clientY);
+
+          const stop = (ev) => {
+            if (ev.pointerId !== e.pointerId) return;
+
+            endHoldPulse(core);
+
+            window.removeEventListener("pointerup", stop, true);
+            window.removeEventListener("pointercancel", stop, true);
+            window.removeEventListener("blur", stop, true);
+
+            try { wrap.releasePointerCapture(e.pointerId); } catch(_) {}
+          };
+
+          window.addEventListener("pointerup", stop, true);
+          window.addEventListener("pointercancel", stop, true);
+          window.addEventListener("blur", stop, true);
+        });
+      });
+
+      stage.addEventListener("pointerdown", (e) => {
+        if (e.target === stage) clearTip();
+      });
+
+      function animate(now){
+        const b = getBounds();
+
+        // COMBINE MODE
+        if (combineState.active){
+          const center = stageCenterInStageCoords();
+
+          if (combineState.phase === 0){
+            for (const o of blobs){
+              const tx = center.x - (o.size * 0.5);
+              const ty = center.y - (o.size * 0.5);
+
+              const dx = (tx - o.x);
+              const dy = (ty - o.y);
+
+              o.vx += dx * 0.012;
+              o.vy += dy * 0.012;
+
+              const max = MAX_SPEED * 2.6;
+              const sp = Math.hypot(o.vx, o.vy) || 0.0001;
+              if (sp > max){
+                const s = max / sp;
+                o.vx *= s; o.vy *= s;
+              }
+
+              o.vx *= 0.995;
+              o.vy *= 0.995;
+              o.x += o.vx;
+              o.y += o.vy;
+
+              o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
+            }
+
+            if (now - combineState.startedAt > 1200){
+              combineState.phase = 1;
+              combineState.startedAt = now;
+              blobs.forEach(o => o.core.classList.add("to-black"));
+            }
+          }
+          else if (combineState.phase === 1){
+            if (now - combineState.startedAt > 950){
+              combineState.phase = 2;
+              combineState.startedAt = now;
+
+              blobs.forEach(o => {
+                o.wrap.style.transition = "opacity 700ms ease";
+                o.wrap.style.opacity = "0";
+              });
+
+              expandMegaToFill(() => {
+                overlay.classList.add("on");
+                overlay.setAttribute("aria-hidden", "false");
+                mega.setAttribute("aria-hidden", "false");
+                combineState.phase = 3;
+
+                // START RESIDUE LOOP
+                startResidueCycle();
+
+                if (quoteLine && !quoteLine.dataset.started){
+                  quoteLine.dataset.started = "1";
+                  cycleQuotes();
+                }
+              });
+            }
+          }
+
+          requestAnimationFrame(animate);
+          return;
+        }
+
+        // NORMAL MODE
+        blobs.forEach(o => {
+          if (now >= o.nextTargetAt){
+            const t = randPos(o.size);
+            o.tx = t.x;
+            o.ty = t.y;
+            o.nextTargetAt = now + (RETARGET_MS * (0.75 + Math.random() * 0.75));
+          }
+
+          const dx = (o.tx - o.x);
+          const dy = (o.ty - o.y);
+          const dist = Math.hypot(dx, dy) || 0.0001;
+
+          const desiredSpeed = Math.min(MAX_SPEED, Math.max(MIN_SPEED, (dist / ARRIVE) * MAX_SPEED));
+          const ux = dx / dist;
+          const uy = dy / dist;
+
+          const desiredVx = ux * desiredSpeed;
+          const desiredVy = uy * desiredSpeed;
+
+          o.vx += (desiredVx - o.vx) * STEER;
+          o.vy += (desiredVy - o.vy) * STEER;
+
+          const tt = now * 0.001;
+          o.vx += Math.sin(tt * 0.55 + o.seed) * WAVE_PUSH;
+          o.vy += Math.cos(tt * 0.48 + o.seed) * WAVE_PUSH;
+          o.vx += Math.sin(tt * 1.40 + o.seed * 0.7) * MICRO_PUSH;
+          o.vy += Math.cos(tt * 1.25 + o.seed * 0.7) * MICRO_PUSH;
+
+          let sp = Math.hypot(o.vx, o.vy) || 0.0001;
+          if (sp < MIN_SPEED){
+            const s = MIN_SPEED / sp;
+            o.vx *= s; o.vy *= s;
+          }
+          if (sp > MAX_SPEED){
+            const s = MAX_SPEED / sp;
+            o.vx *= s; o.vy *= s;
+          }
+
+          if (!o.stuckAt) o.stuckAt = now;
+          const sp2 = Math.hypot(o.vx, o.vy) || 0.0001;
+          if (sp2 < (MIN_SPEED * 1.05)) {
+            if (now - o.stuckAt > 700) {
+              o.vx += (Math.random() - 0.5) * 0.45;
+              o.vy += (Math.random() - 0.5) * 0.45;
+              o.stuckAt = now;
+            }
+          } else {
+            o.stuckAt = now;
+          }
+        });
+
+        /* ✅ FIX: DO NOT re-declare SCALE / gaps here.
+              Use the already-computed PHYS_GAP_S / VISUAL_GAP_S from init(). */
+        for (let pass = 0; pass < SOLVER_PASSES; pass++){
+          for (let i = 0; i < blobs.length; i++){
+            for (let j = i + 1; j < blobs.length; j++){
+              const a = blobs[i], c = blobs[j];
+
+              const ax = a.x + a.r, ay = a.y + a.r;
+              const bx = c.x + c.r, by = c.y + c.r;
+
+              const dx = bx - ax, dy = by - ay;
+              const dist = Math.hypot(dx, dy) || 0.0001;
+
+              const minDist = (a.r + c.r) + PHYS_GAP_S + VISUAL_GAP_S;
+
+              if (dist < minDist){
+                const overlap = (minDist - dist);
+                const ux = dx / dist, uy = dy / dist;
+
+                const sep = overlap * SEPARATE_RATIO * 0.5;
+                a.x -= ux * sep; a.y -= uy * sep;
+                c.x += ux * sep; c.y += uy * sep;
+              }
+            }
+          }
+        }
+
+        blobs.forEach(o => {
+          o.vx *= DAMP;
+          o.vy *= DAMP;
+
+          o.x += o.vx;
+          o.y += o.vy;
+
+          const maxX = Math.max(b.maxXFor(o.size), b.minX);
+          const maxY = Math.max(b.maxYFor(o.size), b.minY);
+
+          if (o.x < b.minX){ o.x = b.minX; o.vx = Math.abs(o.vx) * BOUNCE; }
+          if (o.x > maxX){ o.x = maxX; o.vx = -Math.abs(o.vx) * BOUNCE; }
+          if (o.y < b.minY){ o.y = b.minY; o.vy = Math.abs(o.vy) * BOUNCE; }
+          if (o.y > maxY){ o.y = maxY; o.vy = -Math.abs(o.vy) * BOUNCE; }
+
+          o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    }
+  })();
+  </script>
+
+</body>
+</html>

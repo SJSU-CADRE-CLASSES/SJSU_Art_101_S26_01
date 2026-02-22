@@ -1,0 +1,268 @@
+@import url("https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap");
+
+html, body { height: 100%; }
+
+body{
+  margin:0;
+  padding:40px;
+  font-family:"Doto", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:#111;
+  background:#fff;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* FULL-SCREEN LAVA LAMP LAYER */
+body::before{
+  content:"";
+  position:fixed;
+  inset:-30vmax;
+  z-index:-1;
+  pointer-events:none;
+  background-color:#ffffff;
+
+  background-image:
+    radial-gradient(circle, rgba(120,190,255,.58) 0%, rgba(120,190,255,0) 58%),
+    radial-gradient(circle, rgba(170,120,255,.54) 0%, rgba(170,120,255,0) 60%),
+    radial-gradient(circle, rgba(255,120,220,.48) 0%, rgba(255,120,220,0) 62%),
+
+    radial-gradient(circle, rgba(80,220,255,.42) 0%, rgba(80,220,255,0) 60%),
+    radial-gradient(circle, rgba(210,160,255,.40) 0%, rgba(210,160,255,0) 64%),
+    radial-gradient(circle, rgba(255,170,240,.36) 0%, rgba(255,170,240,0) 64%),
+    radial-gradient(circle, rgba(120,190,255,.36) 0%, rgba(120,190,255,0) 60%),
+    radial-gradient(circle, rgba(170,120,255,.34) 0%, rgba(170,120,255,0) 62%),
+    radial-gradient(circle, rgba(255,120,220,.30) 0%, rgba(255,120,220,0) 64%),
+
+    radial-gradient(circle, rgba(80,220,255,.30) 0%, rgba(80,220,255,0) 62%),
+    radial-gradient(circle, rgba(210,160,255,.28) 0%, rgba(210,160,255,0) 66%),
+    radial-gradient(circle, rgba(255,120,220,.26) 0%, rgba(255,120,220,0) 66%),
+    radial-gradient(circle, rgba(120,190,255,.26) 0%, rgba(120,190,255,0) 66%),
+    radial-gradient(circle, rgba(170,120,255,.24) 0%, rgba(170,120,255,0) 68%),
+    radial-gradient(circle, rgba(255,170,240,.22) 0%, rgba(255,170,240,0) 70%),
+
+    radial-gradient(circle, rgba(80,220,255,.22) 0%, rgba(80,220,255,0) 70%),
+    radial-gradient(circle, rgba(210,160,255,.20) 0%, rgba(210,160,255,0) 72%),
+    radial-gradient(circle, rgba(255,120,220,.18) 0%, rgba(255,120,220,0) 72%),
+    radial-gradient(circle, rgba(120,190,255,.18) 0%, rgba(120,190,255,0) 74%),
+    radial-gradient(circle, rgba(170,120,255,.16) 0%, rgba(170,120,255,0) 76%),
+    radial-gradient(circle, rgba(255,170,240,.16) 0%, rgba(255,170,240,0) 78%);
+
+  background-repeat:no-repeat;
+
+  background-size:
+    60vmax 60vmax, 54vmax 54vmax, 48vmax 48vmax,
+    36vmax 36vmax, 34vmax 34vmax, 32vmax 32vmax, 30vmax 30vmax, 28vmax 28vmax, 26vmax 26vmax,
+    22vmax 22vmax, 20vmax 20vmax, 18vmax 18vmax, 16vmax 16vmax, 15vmax 15vmax, 14vmax 14vmax,
+    12vmax 12vmax, 11vmax 11vmax, 10vmax 10vmax, 10vmax 10vmax, 9vmax 9vmax, 9vmax 9vmax;
+
+  background-position:
+    10% 18%, 80% 16%, 55% 55%,
+    88% 72%, 22% 78%, 35% 35%, 70% 48%, 16% 62%, 92% 40%,
+    62% 84%, 8% 50%, 44% 22%, 30% 64%, 76% 66%, 52% 78%,
+    24% 30%, 60% 24%, 84% 28%, 12% 86%, 40% 88%, 96% 60%;
+
+  filter: blur(26px) saturate(1.35);
+  animation: lavaMove 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes lavaMove{
+  0%{ background-position:
+      10% 18%, 80% 16%, 55% 55%,
+      88% 72%, 22% 78%, 35% 35%, 70% 48%, 16% 62%, 92% 40%,
+      62% 84%, 8% 50%, 44% 22%, 30% 64%, 76% 66%, 52% 78%,
+      24% 30%, 60% 24%, 84% 28%, 12% 86%, 40% 88%, 96% 60%;
+  }
+  100%{ background-position:
+      18% 26%, 70% 24%, 60% 48%,
+      78% 62%, 16% 70%, 42% 44%, 62% 56%, 26% 54%, 84% 48%,
+      54% 76%, 14% 58%, 52% 18%, 22% 72%, 68% 74%, 44% 84%,
+      32% 22%, 72% 18%, 92% 34%, 18% 78%, 36% 92%, 88% 66%;
+  }
+}
+
+/* TITLE + TEXT */
+h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
+.subtitle{text-align:center;font-size:25px;opacity:.65;}
+
+.viz-title{text-align:center;font-size:60px;margin-top:10px;}
+.viz-sub{text-align:center;font-size:20px;opacity:.6;}
+
+.intro{
+  max-width:1100px;
+  margin:30px auto;
+  text-align:center;
+  font-size:20px;
+  line-height:1.5;
+  opacity:.6;
+}
+
+.enter{
+  display:block;
+  width:fit-content;
+  margin:60px auto;
+  text-align:center;
+  font-size:54px;
+  letter-spacing:10px;
+  opacity:0.45;
+  color:#111;
+  text-decoration:none;
+}
+.enter:hover{opacity:.2;}
+
+.back{
+  text-decoration:none;
+  color:#111;
+  opacity:.6;
+  display:inline-block;
+  margin-bottom:20px;
+}
+
+/* LEGEND */
+.legend{
+  position:fixed;
+  left:40px;
+  top:160px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  font-size:18px;
+  opacity:.7;
+}
+.legend-item{
+  cursor:pointer;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.legend-item:hover{
+  opacity:1;
+  transform:translateX(6px);
+}
+
+#blob-stage{
+  position:relative;
+  width:100vw;
+  height: calc(100vh - 220px);
+  min-height: 520px;
+  margin: 0;
+  overflow: visible;
+  isolation:isolate;
+}
+
+/* BLOBS */
+.blob{
+  position:absolute;
+  border-radius:50%;
+  opacity:0.88;
+  filter:blur(10px) saturate(2.4);
+  mix-blend-mode:normal;
+
+  /* IMPORTANT: JS controls transform translate() for movement */
+  animation:none !important;
+
+  will-change:transform;
+  transition:
+    filter 180ms ease,
+    opacity 180ms ease;
+
+  z-index:1;
+}
+
+.blob:hover{
+  opacity:1;
+  filter:blur(9px) saturate(2.8);
+  z-index:10;
+}
+
+.blob.active{
+  opacity:1;
+  filter:blur(8px) saturate(3.0);
+  z-index:20;
+}
+
+/* TOOLTIP */
+.tip{
+  position:fixed;
+  pointer-events:none;
+  font-size:18px;
+  letter-spacing:2px;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+
+/* =========================
+   FIXED: click "page fill" pulse
+   (pulse runs on ::after so it NEVER overrides JS translate)
+   ========================= */
+.blob::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background: inherit;        /* uses the same radial-gradient you set in JS */
+  filter: inherit;            /* matches blur/saturation */
+  opacity:0;                  /* off by default */
+  pointer-events:none;        /* never blocks clicking other blobs */
+  transform: scale(1);
+  transform-origin:center;
+}
+
+.blob.pulse-on{
+  z-index:60;                 /* above others during pulse */
+}
+
+/* animate ONLY the pseudo-element */
+.blob.pulse-on::after{
+  animation: blobPulseFill 650ms ease-out forwards;
+}
+
+/* expands fast, then fades out */
+@keyframes blobPulseFill{
+  0%   { opacity:0.92; transform: scale(1); }
+  55%  { opacity:0.98; transform: scale(9.5); }
+  100% { opacity:0;    transform: scale(9.5); }
+}
+
+/* accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .blob.pulse-on::after{ animation:none !important; opacity:0.92; transform: scale(1); }
+}
+/* your existing styles above ... */
+
+
+
+/* ===== COMBINE BUTTON (ghost fade-in) ===== */
+#combine-btn{
+  position:fixed;
+  bottom:48px;
+  right:48px;
+
+  font-family:"Doto", sans-serif;
+  font-size:18px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.25);
+  color:#111;
+
+  padding:14px 22px;
+  cursor:pointer;
+
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity 900ms ease, transform 900ms ease, border-color 300ms ease;
+  pointer-events:none;
+}
+
+#combine-btn.visible{
+  opacity:0.45;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+#combine-btn:hover{
+  opacity:0.9;
+  border-color:#111;
+}
