@@ -189,8 +189,8 @@
       z-index: 999998;
       will-change: transform, opacity;
 
-      /* SLOW + CINEMATIC */
-      transition: transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease;
+      /* SLOW + CINEMATIC (slower than before) */
+      transition: transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1400ms ease;
     }
 
     #mega-blob.on{ opacity: 1; }
@@ -202,7 +202,7 @@
       z-index: 999999;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 1100ms ease;
+      transition: opacity 1400ms ease;
     }
 
     #combine-overlay.on{
@@ -250,11 +250,41 @@
       font-weight: 500;
     }
 
+    /* ===== QUOTE TRAIN-STATION STYLE ===== */
     #combine-overlay .panel .small{
-      margin-top: 14px;
+      margin-top: 16px;
+      font-family: "Doto", sans-serif;
       font-size: 13px;
-      opacity: 0.7;
-      letter-spacing: 1.2px;
+      letter-spacing: 2.6px;
+      text-transform: uppercase;
+      opacity: 0.85;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.75);
+      white-space: pre-wrap;
+      transition: opacity 600ms ease;
+    }
+
+    .quote-char{
+      display:inline-block;
+      opacity:0;
+      transform: translateY(6px);
+    }
+
+    @keyframes quoteReveal{
+      0%{
+        opacity:0;
+        transform: translateY(8px);
+        filter: blur(4px);
+      }
+      100%{
+        opacity:1;
+        transform: translateY(0px);
+        filter: blur(0px);
+      }
+    }
+
+    .quote-fade{
+      opacity:0.2;
     }
 
     #combine-overlay .panel .close-row{
@@ -323,9 +353,10 @@
         habit, and attention. Tapping/holding reveals what each color represents, and the way the blobs
         resist each other mirrors how apps compete for space in my day.
       </p>
-      <p class="small">
-        Tip: replace this README with your full conceptual description + any notes about interaction/data source.
-      </p>
+
+      <!-- THIS is now the animated quotes line -->
+      <p class="small" id="quote-line" aria-live="polite"></p>
+
       <div class="close-row">
         <a href="./index.html">← BACK</a>
       </div>
@@ -356,11 +387,78 @@
     window.addEventListener("pointerdown", startMusic, { once:true, capture:true });
     window.addEventListener("keydown", startMusic, { once:true, capture:true });
 
+    // ===== QUOTES (train-station animation) =====
+    const quoteLine = document.getElementById("quote-line");
+    const QUOTES = [
+      'Less scrolling, more living." — Louise Myers',
+      '“How we spend our days is how we spend our lives.” — Annie Dillard',
+      '“Technology is a useful servant but a dangerous master.” — Christian Lous Lange',
+      '“The price of anything is the amount of life you exchange for it.” — Henry David Thoreau',
+      "It takes discipline not to let social media steal your time. — Alexis Ohanian",
+      "Technology is a good servant but a bad master. — Gretchen Rubin",
+      "Un-moderated content consumption is as dangerous as the consumption of sewage water. — Abhijit Naskar",
+      "Humans are not wired to be constantly wired. — Cal Newport",
+      "To feel alive again, spend a day with your phone dead. — Tim Denning",
+      "I fear the day when the technology overlaps with our humanity. The world will only have a generation of idiots. — Albert Einstein",
+      "The internet can make you angry, jealous, hostile, bitter and lead to the eventual loss of enthusiasm for living your best life. — Germany Kent",
+      "We are living in an attention economy and social media is addictive by design. — Tristan Harris",
+      "Social media is more addictive than cigarettes and alcohol. — Gary Vaynerchuk",
+      "Social media addiction is not a choice, it's a compulsion. — Adam Alter"
+    ];
+
+    let quoteIdx = 0;
+    let quoteTimer = null;
+
+    function clearQuoteTimers(){
+      if (quoteTimer) clearTimeout(quoteTimer);
+      quoteTimer = null;
+    }
+
+    function renderQuoteAnimated(text){
+      if (!quoteLine) return;
+
+      quoteLine.classList.remove("quote-fade");
+      quoteLine.innerHTML = "";
+
+      const chars = Array.from(text);
+      chars.forEach((ch, i) => {
+        const span = document.createElement("span");
+        span.className = "quote-char";
+        span.textContent = ch;
+
+        // staggered reveal
+        span.style.animation = `quoteReveal 420ms ease forwards`;
+        span.style.animationDelay = `${i * 18}ms`;
+
+        quoteLine.appendChild(span);
+      });
+    }
+
+    function cycleQuotes(){
+      if (!quoteLine) return;
+
+      clearQuoteTimers();
+      renderQuoteAnimated(QUOTES[quoteIdx]);
+
+      // how long to keep quote visible after it finishes typing
+      const typingMs = (Array.from(QUOTES[quoteIdx]).length * 18) + 420;
+      const holdMs = 2200;
+
+      quoteTimer = setTimeout(() => {
+        quoteLine.classList.add("quote-fade");
+
+        // switch after fade
+        quoteTimer = setTimeout(() => {
+          quoteIdx = (quoteIdx + 1) % QUOTES.length;
+          cycleQuotes();
+        }, 650);
+      }, typingMs + holdMs);
+    }
+
     // ===== COMBINE UI =====
     const combineBtn = document.getElementById("combine-btn");
     const mega = document.getElementById("mega-blob");
     const overlay = document.getElementById("combine-overlay");
-    const overlayClose = document.getElementById("overlay-close");
 
     // require all blobs clicked before showing combine
     const seen = new Array(ITEMS.length).fill(false);
@@ -561,8 +659,8 @@
         mega.classList.add("on");
         mega.style.opacity = "1";
 
-        // ensure our cinematic timing
-        mega.style.transition = "transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease";
+        /* keep in sync with CSS (slower) */
+        mega.style.transition = "transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1400ms ease";
 
         // start visible small
         mega.style.transform = "translate(-50%, -50%) scale(0.06)";
@@ -588,7 +686,7 @@
         mega.addEventListener("transitionend", onEnd, false);
 
         // fallback
-        setTimeout(finish, 4100);
+        setTimeout(finish, 6000);
       }
 
       function beginCombine(){
@@ -609,7 +707,6 @@
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
-      if (overlayClose) overlayClose.addEventListener("click", () => overlay.classList.remove("on"));
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") overlay.classList.remove("on");
       });
@@ -752,6 +849,12 @@
                 overlay.setAttribute("aria-hidden", "false");
                 mega.setAttribute("aria-hidden", "false");
                 combineState.phase = 3;
+
+                /* start quotes only when overlay is shown */
+                if (quoteLine && !quoteLine.dataset.started){
+                  quoteLine.dataset.started = "1";
+                  cycleQuotes();
+                }
               });
             }
           }
