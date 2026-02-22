@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE</title>
 
-  <!-- GOOGLE FONT -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bungee+Tint&display=swap" rel="stylesheet">
-
-  <!-- STYLE -->
+  <!-- STYLE (Doto font is imported inside style.css) -->
   <link rel="stylesheet" href="./style.css?v=4">
 </head>
 
@@ -22,68 +18,13 @@
 This project visualizes my weekly phone screen time, transforming the data into a visual portrait that documents the hours I lost to the digital world.
 </p>
 
-<a href="#" class="enter" id="enterBtn">ENTER VISUALIZATION</a>
-
-<!-- MUSIC (starts on ENTER, keeps playing because we never leave this page) -->
-<audio id="bg-music" loop preload="auto">
-  <source src="./ice-background.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Visualization loads inside iframe so the page (and audio) never unloads -->
-<iframe id="vizFrame" src="" style="display:none; border:0; width:100vw; height:100vh;"></iframe>
+<a href="visualization.html" class="enter">
+ENTER VISUALIZATION
+</a>
 
 <!-- SCRIPTS -->
 <script src="./data.js?v=4"></script>
 <script src="./script.js?v=4"></script>
-
-<script>
-(() => {
-  const enterBtn = document.getElementById("enterBtn");
-  const frame = document.getElementById("vizFrame");
-  const music = document.getElementById("bg-music");
-
-  function startMusic(){
-    if (!music) return;
-    music.volume = 0.30;
-
-    // IMPORTANT: must be inside a user gesture (click)
-    music.play().catch(err => console.log("Music play blocked:", err));
-  }
-
-  function showViz(){
-    // hide your landing text/buttons
-    document.querySelector("h1").style.display = "none";
-    document.querySelector(".subtitle").style.display = "none";
-    document.querySelector(".intro").style.display = "none";
-    enterBtn.style.display = "none";
-
-    // show iframe
-    frame.src = "./visualization.html";
-    frame.style.display = "block";
-  }
-
-  enterBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    startMusic();
-    showViz();
-  });
-
-  // Listen for back message from visualization
-  window.addEventListener("message", (e) => {
-    if (e.data !== "GO_BACK_HOME") return;
-
-    // stop iframe (optional: keep music going)
-    frame.src = "";
-    frame.style.display = "none";
-
-    // show landing again
-    document.querySelector("h1").style.display = "";
-    document.querySelector(".subtitle").style.display = "";
-    document.querySelector(".intro").style.display = "";
-    enterBtn.style.display = "";
-  });
-})();
-</script>
 
 </body>
 </html>
