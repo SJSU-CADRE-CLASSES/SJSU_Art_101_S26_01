@@ -357,15 +357,25 @@
       animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
     }
 
-    /* ===== LINE-BY-LINE REVEAL (DIGITAL RESIDUE TEXT) ===== */
+    /* ===== LINE-BY-LINE REVEAL TARGET ===== */
     #residue-lines{
       margin-top: 6px;
       line-height: 1.72;
       font-size: 17px;
       letter-spacing: 1.4px;
-      text-transform: none;
+      text-transform: uppercase; /* enforce caps look even if text changes later */
       font-weight: 500;
       opacity: 0.92;
+
+      transition: opacity 900ms ease, transform 900ms ease, filter 900ms ease;
+      will-change: opacity, transform, filter;
+    }
+
+    /* fade the whole block out between groups */
+    #residue-lines.fade-out{
+      opacity: 0;
+      transform: translateY(-6px);
+      filter: blur(10px);
     }
 
     .res-line{
@@ -384,7 +394,7 @@
       filter: blur(0px);
     }
 
-    /* subtle holo (you said we can refine color later — this is intentionally soft) */
+    /* subtle holo (we can refine color later — intentionally soft) */
     .res-line.holo{
       background: linear-gradient(
         110deg,
@@ -409,10 +419,14 @@
     }
 
     @media (prefers-reduced-motion: reduce){
+      #residue-lines{ transition:none; }
+      #residue-lines.fade-out{ opacity:1; transform:none; filter:none; }
+
       .res-line{
         transition:none;
         transform:none;
         filter:none;
+        opacity:1;
       }
       .res-line.show{ opacity:1; }
       .res-line.holo{ animation:none; }
@@ -558,33 +572,50 @@
       }, typingMs + READ_MS);
     }
 
-    // ===== DIGITAL RESIDUE LINE REVEAL =====
+    // ===== DIGITAL RESIDUE GROUPED REVEAL + FADE + LOOP =====
     const residueBox = document.getElementById("residue-lines");
     let residueRunId = 0;
     let residueTimer = null;
 
-    const RESIDUE_LINES = [
-      "The average human lifespan is about 80 years.",
-      "There are 8,760 hours in a year.",
-      "There are 24 hours in a day.",
-      "On average, we spend about 8 hours asleep...",
-      "leaving roughly 16 hours awake...",
-      "Many people spend 5–7 of those waking hours looking at their phones, computers, or television screens...",
-      "scrolling, watching, consuming.",
-      "That adds up to roughly 1,800–2,500 hours every year spent in digital space...",
-      "Over an 80-year lifetime, that becomes 150,000+ hours —\nnearly a third of our waking lives lived through screens.",
-      "Digital Residue is a personal data portrait collected from my weekly phone screen time. This visualization turns my screen time into floating “residue”-like, color-coded blobs, floating around the digital space like a lava lamp, each representing an app — the size reflects the amount of screen time it took from me. When a viewer interacts with a blob, the app and screen time are revealed.",
-      "The movement is intentionally mesmerizing and has a sense of peace, like a screensaver or lava lamp. The “Combine” button transforms the blobs to merge into one, colors mixing into black and filling the screen, as if you are face to face with your phone or computer screen — a black mirror — before revealing further details and some of my favorite relevant quotes about this topic.",
-      "The quotes cycle through, reinforcing the theme of overconsumption in the digital world and the dangers and powers of it. They act as reminders and warnings about attention, technology, and intentional living, encouraging viewers to reconsider their relationship with screens.",
-      "Ultimately, Digital Residue is not meant to judge technology, but to visualize its consumption over our lives as we consume it. By transforming raw data into something atmospheric and immersive, the project asks a simple question: what does our time look like when it becomes visible?"
+    const RESIDUE_GROUPS = [
+      [
+        "THE AVERAGE HUMAN LIFESPAN IS ABOUT 80 YEARS.",
+        "AND THERE ARE 8,760 HOURS IN A YEAR.",
+        "THERE ARE 24 HOURS IN A DAY.",
+        "ON AVERAGE, WE SPEND ABOUT 8 HOURS ASLEEP...",
+        "LEAVING US ROUGHLY 16 HOURS AWAKE...",
+        "MANY PEOPLE SPEND 5–7 OF THOSE WAKING HOURS LOOKING AT THEIR PHONES, COMPUTERS, OR TELEVISION SCREENS...",
+        "SCROLLING, WATCHING, CONSUMING...",
+        "THAT ADDS UP TO ROUGHLY 1,800–2,500 HOURS EVERY YEAR SPENT IN DIGITAL SPACE...",
+        "OVER AN 80-YEAR LIFETIME, THAT BECOMES 150,000+ HOURS —",
+        "NEARLY A THIRD OF OUR WAKING LIVES LIVED THROUGH SCREENS."
+      ],
+      [
+        "DIGITAL RESIDUE IS A PERSONAL DATA PORTRAIT COLLECTED FROM MY WEEKLY PHONE SCREEN TIME. THIS VISUALIZATION TURNS MY SCREEN TIME INTO FLOATING “RESIDUE”-LIKE, COLOR-CODED BLOBS, FLOATING AROUND THE DIGITAL SPACE LIKE A LAVA LAMP, EACH REPRESENTING AN APP — THE SIZE REFLECTS THE AMOUNT OF SCREEN TIME IT TOOK FROM ME. WHEN A VIEWER INTERACTS WITH A BLOB, THE APP AND SCREEN TIME ARE REVEALED."
+      ],
+      [
+        "THE MOVEMENT IS INTENTIONALLY MESMERIZING AND HAS A SENSE OF PEACE, LIKE A SCREENSAVER OR LAVA LAMP. THE “COMBINE” BUTTON TRANSFORMS THE BLOBS TO MERGE INTO ONE, COLORS MIXING INTO BLACK AND FILLING THE SCREEN, AS IF YOU ARE FACE TO FACE WITH YOUR PHONE OR COMPUTER SCREEN — A BLACK MIRROR — BEFORE REVEALING FURTHER DETAILS AND SOME OF MY FAVORITE RELEVANT QUOTES ABOUT THIS TOPIC."
+      ],
+      [
+        "THE QUOTES CYCLE THROUGH, REINFORCING THE THEME OF OVERCONSUMPTION IN THE DIGITAL WORLD AND THE DANGERS AND POWERS OF IT. THEY ACT AS REMINDERS AND WARNINGS ABOUT ATTENTION, TECHNOLOGY, AND INTENTIONAL LIVING, ENCOURAGING VIEWERS TO RECONSIDER THEIR RELATIONSHIP WITH SCREENS."
+      ],
+      [
+        "ULTIMATELY, DIGITAL RESIDUE IS NOT MEANT TO JUDGE TECHNOLOGY, BUT TO VISUALIZE ITS CONSUMPTION OVER OUR LIVES AS WE CONSUME IT. BY TRANSFORMING RAW DATA INTO SOMETHING ATMOSPHERIC AND IMMERSIVE,"
+      ]
     ];
 
-    function clearResidue(){
+    const FADE_OUT_MS = 900;
+
+    function stopResidueCycle(){
       residueRunId++;
       if (residueTimer) clearTimeout(residueTimer);
       residueTimer = null;
-      if (residueBox) residueBox.innerHTML = "";
-      if (residueBox) delete residueBox.dataset.started;
+
+      if (residueBox){
+        residueBox.classList.remove("fade-out");
+        residueBox.innerHTML = "";
+        delete residueBox.dataset.started;
+      }
     }
 
     function wordsCount(s){
@@ -592,64 +623,103 @@
     }
 
     function msForLine(line){
-      // Average silent reading speed ~200 wpm => 3.33 words/sec
+      // ~200 wpm reading speed => 300ms/word
       const WPM = 200;
-      const base = 600;         // baseline pause so it breathes
-      const perWord = (60_000 / WPM);
-      const w = wordsCount(line.replace(/\n/g, " "));
+      const base = 650;                 // breath
+      const perWord = (60_000 / WPM);    // ms per word
+      const w = wordsCount(line);
       const ms = base + (w * perWord);
-      // clamp so short lines don't snap, long lines don't stall too hard
-      return Math.max(1400, Math.min(ms, 7000));
+
+      // clamp so it feels consistent
+      return Math.max(1500, Math.min(ms, 8000));
     }
 
-    function startResidueReveal(){
+    function msForGroupHold(groupLines){
+      // extra hold AFTER the last line appears, so people can re-read the full chunk
+      const WPM = 200;
+      const perWord = (60_000 / WPM);
+
+      const totalWords = groupLines.reduce((acc, l) => acc + wordsCount(l), 0);
+
+      // hold about ~65% of full read time + base
+      const ms = 1200 + (totalWords * perWord * 0.65);
+
+      return Math.max(2600, Math.min(ms, 14000));
+    }
+
+    function startResidueCycle(){
       if (!residueBox) return;
 
       // prevent double-start
       if (residueBox.dataset.started) return;
       residueBox.dataset.started = "1";
 
-      // reset
-      clearResidue();
-      residueBox.dataset.started = "1";
-
-      const runId = ++residueRunId;
-
-      // prefers-reduced-motion: just dump everything
+      // reduced motion: just show all groups (no loop)
       const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce){
-        RESIDUE_LINES.forEach((line) => {
+        residueBox.innerHTML = "";
+        RESIDUE_GROUPS.flat().forEach((line) => {
           const div = document.createElement("div");
           div.className = "res-line show";
-          div.textContent = line.replace(/\n/g, " ");
+          div.textContent = line;
           residueBox.appendChild(div);
         });
         return;
       }
 
-      let i = 0;
+      const runId = ++residueRunId;
+      let g = 0;
 
-      const step = () => {
+      const playGroup = () => {
         if (runId !== residueRunId) return;
-        if (i >= RESIDUE_LINES.length) return;
 
-        const line = RESIDUE_LINES[i];
+        const groupLines = RESIDUE_GROUPS[g] || [];
+        residueBox.classList.remove("fade-out");
+        residueBox.innerHTML = "";
 
-        const div = document.createElement("div");
-        div.className = "res-line holo";
-        div.innerHTML = line.replace(/\n/g, "<br>");
-        residueBox.appendChild(div);
+        let i = 0;
 
-        // animate in next frame
-        requestAnimationFrame(() => div.classList.add("show"));
+        const stepLine = () => {
+          if (runId !== residueRunId) return;
 
-        const wait = msForLine(line);
-        i++;
+          // finished revealing this group -> hold -> fade -> next group
+          if (i >= groupLines.length){
+            residueTimer = setTimeout(() => {
+              if (runId !== residueRunId) return;
 
-        residueTimer = setTimeout(step, wait);
+              residueBox.classList.add("fade-out");
+
+              residueTimer = setTimeout(() => {
+                if (runId !== residueRunId) return;
+
+                residueBox.classList.remove("fade-out");
+                residueBox.innerHTML = "";
+
+                g = (g + 1) % RESIDUE_GROUPS.length;
+                playGroup();
+              }, FADE_OUT_MS);
+
+            }, msForGroupHold(groupLines));
+
+            return;
+          }
+
+          const line = groupLines[i++];
+
+          const div = document.createElement("div");
+          div.className = "res-line holo";
+          div.textContent = line;
+          residueBox.appendChild(div);
+
+          requestAnimationFrame(() => div.classList.add("show"));
+
+          residueTimer = setTimeout(stepLine, msForLine(line));
+        };
+
+        stepLine();
       };
 
-      step();
+      playGroup();
     }
 
     // ===== COMBINE UI =====
@@ -838,7 +908,6 @@
         return { x: rect.width * 0.5, y: rect.height * 0.5 };
       }
 
-      // compute a BIG fill scale that always over-covers corners
       function computeMegaFillScale(){
         const w = window.innerWidth;
         const h = window.innerHeight;
@@ -849,17 +918,12 @@
         return (cornerDist / baseR) * 2.6;
       }
 
-      // animate mega to fill, then call onDone
       function expandMegaToFill(onDone){
         const s = computeMegaFillScale();
 
         mega.classList.add("on");
         mega.style.opacity = "1";
-
-        /* keep in sync with CSS (slower) */
         mega.style.transition = "transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1400ms ease";
-
-        // start visible small
         mega.style.transform = "translate(-50%, -50%) scale(0.06)";
 
         requestAnimationFrame(() => {
@@ -881,8 +945,6 @@
         };
 
         mega.addEventListener("transitionend", onEnd, false);
-
-        // fallback
         setTimeout(finish, 6000);
       }
 
@@ -904,12 +966,12 @@
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
-      // ESC closes overlay + stops quote cycle + stops residue reveal
+      // ESC closes overlay + stops quote cycle + stops residue cycle
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           overlay.classList.remove("on");
           stopQuotes();
-          clearResidue();
+          stopResidueCycle();
           if (quoteLine) delete quoteLine.dataset.started;
         }
       });
@@ -945,7 +1007,7 @@
           vx: Math.cos(ang) * sp,
           vy: Math.sin(ang) * sp,
           tx: t0.x, ty: t0.y,
-          nextTargetAt: performance.now() + (600 + Math.random() * RETARGET_MS),
+          nextTargetAt: performance.now() + (600 + Math.random() * 2600),
           seed: Math.random() * 1000,
           label: `${item.app} — ${h.toFixed(1)} HOURS`
         });
@@ -1015,7 +1077,7 @@
               o.vx += dx * 0.012;
               o.vy += dy * 0.012;
 
-              const max = MAX_SPEED * 2.6;
+              const max = 3.8 * 2.6;
               const sp = Math.hypot(o.vx, o.vy) || 0.0001;
               if (sp > max){
                 const s = max / sp;
@@ -1033,7 +1095,6 @@
             if (now - combineState.startedAt > 1200){
               combineState.phase = 1;
               combineState.startedAt = now;
-
               blobs.forEach(o => o.core.classList.add("to-black"));
             }
           }
@@ -1053,9 +1114,10 @@
                 mega.setAttribute("aria-hidden", "false");
                 combineState.phase = 3;
 
-                // start residue reveal + quotes only when overlay is shown
-                startResidueReveal();
+                // START RESIDUE LOOP
+                startResidueCycle();
 
+                // start quotes only when overlay is shown
                 if (quoteLine && !quoteLine.dataset.started){
                   quoteLine.dataset.started = "1";
                   cycleQuotes();
@@ -1074,12 +1136,17 @@
             const t = randPos(o.size);
             o.tx = t.x;
             o.ty = t.y;
-            o.nextTargetAt = now + (RETARGET_MS * (0.75 + Math.random() * 0.75));
+            o.nextTargetAt = now + (2600 * (0.75 + Math.random() * 0.75));
           }
 
           const dx = (o.tx - o.x);
           const dy = (o.ty - o.y);
           const dist = Math.hypot(dx, dy) || 0.0001;
+
+          const MAX_SPEED = 3.8;
+          const MIN_SPEED = 1.4;
+          const ARRIVE = 420;
+          const STEER = 0.018;
 
           const desiredSpeed = Math.min(MAX_SPEED, Math.max(MIN_SPEED, (dist / ARRIVE) * MAX_SPEED));
           const ux = dx / dist;
@@ -1090,6 +1157,9 @@
 
           o.vx += (desiredVx - o.vx) * STEER;
           o.vy += (desiredVy - o.vy) * STEER;
+
+          const WAVE_PUSH  = 0.040;
+          const MICRO_PUSH = 0.010;
 
           const tt = now * 0.001;
           o.vx += Math.sin(tt * 0.55 + o.seed) * WAVE_PUSH;
@@ -1120,6 +1190,22 @@
           }
         });
 
+        const SOLVER_PASSES = 42;
+        const SEPARATE_RATIO = 0.86;
+
+        const PHYS_GAP   = 70;
+        const VISUAL_GAP = 55;
+        const PAD = 24;
+
+        const rect = b.rect;
+        const stageArea = Math.max(rect.width * rect.height, 1);
+
+        // reuse same SCALE logic from your earlier sizing (approx; keeps behavior stable)
+        // (the sizes themselves were already set; this is only for solver gap approximation)
+        const SCALE = 1;
+        const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);
+        const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE);
+
         for (let pass = 0; pass < SOLVER_PASSES; pass++){
           for (let i = 0; i < blobs.length; i++){
             for (let j = i + 1; j < blobs.length; j++){
@@ -1145,6 +1231,9 @@
           }
         }
 
+        const DAMP = 0.998;
+        const BOUNCE = 1.01;
+
         blobs.forEach(o => {
           o.vx *= DAMP;
           o.vy *= DAMP;
@@ -1152,12 +1241,14 @@
           o.x += o.vx;
           o.y += o.vy;
 
-          const maxX = Math.max(b.maxXFor(o.size), b.minX);
-          const maxY = Math.max(b.maxYFor(o.size), b.minY);
+          const minX = PAD;
+          const minY = PAD;
+          const maxX = Math.max(rect.width  - o.size - PAD, minX);
+          const maxY = Math.max(rect.height - o.size - PAD, minY);
 
-          if (o.x < b.minX){ o.x = b.minX; o.vx = Math.abs(o.vx) * BOUNCE; }
+          if (o.x < minX){ o.x = minX; o.vx = Math.abs(o.vx) * BOUNCE; }
           if (o.x > maxX){ o.x = maxX; o.vx = -Math.abs(o.vx) * BOUNCE; }
-          if (o.y < b.minY){ o.y = b.minY; o.vy = Math.abs(o.vy) * BOUNCE; }
+          if (o.y < minY){ o.y = minY; o.vy = Math.abs(o.vy) * BOUNCE; }
           if (o.y > maxY){ o.y = maxY; o.vy = -Math.abs(o.vy) * BOUNCE; }
 
           o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
