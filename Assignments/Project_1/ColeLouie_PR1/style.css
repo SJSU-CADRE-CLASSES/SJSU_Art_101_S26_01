@@ -7,6 +7,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Quintessential';
+  src: url('Quintessential-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: 'Oswald', sans-serif;
   font-weight: 300; /* light */
@@ -27,6 +34,18 @@ body.page-marine-biologist {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transform: none;
+  justify-content: center;
+  align-items: center;
+}
+
+body.page-marine-biologist .marine-title {
+  font-family: 'Quintessential', serif;
+  font-size: 3.5rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  text-align: center;
 }
 
 h1.intro-block {
@@ -435,6 +454,22 @@ body.page-helldiver .seva-footer {
   letter-spacing: 0.06em;
   opacity: 0.8;
   z-index: 1;
+}
+
+body.page-helldiver .seva-back-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 2px solid rgba(0, 255, 90, 0.6);
+  background: transparent;
+  color: #00ff5a;
+  text-decoration: none;
+  font-family: 'VT323', monospace;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+body.page-helldiver .seva-back-btn:hover {
+  box-shadow: 0 0 10px rgba(0, 255, 90, 0.5), inset 0 0 10px rgba(0, 255, 90, 0.15);
+  background: rgba(0, 255, 90, 0.08);
 }
 
 body.page-helldiver .seva-panel {
