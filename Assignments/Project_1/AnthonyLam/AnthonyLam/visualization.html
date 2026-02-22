@@ -165,7 +165,7 @@
       transform: translateX(-50%) translateY(1px);
     }
 
-    /* The mega black blob that fills the screen (pitch black, no glow) */
+    /* The mega black blob that fills the screen (pitch black, blurred like the other blobs) */
     #mega-blob{
       position: fixed;
       left: 50%;
@@ -176,19 +176,21 @@
       border-radius: 50%;
       pointer-events: none;
 
+      /* pitch black core, softened edges (so it still feels "blob") */
       background: radial-gradient(circle,
         rgba(0,0,0,1) 0%,
-        rgba(0,0,0,1) 55%,
-        rgba(0,0,0,1) 100%
+        rgba(0,0,0,1) 62%,
+        rgba(0,0,0,0.0) 78%
       );
 
-      filter: none;
+      /* match blob feel */
+      filter: blur(10px) saturate(0.2);
       opacity: 0;
       z-index: 999998;
       will-change: transform, opacity;
 
-      /* keep dreamy easing but longer so it reads as “screen turning off” */
-      transition: transform 2200ms cubic-bezier(.16,1,.2,1), opacity 900ms ease;
+      /* SLOW + CINEMATIC */
+      transition: transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease;
     }
 
     #mega-blob.on{ opacity: 1; }
@@ -200,7 +202,7 @@
       z-index: 999999;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 900ms ease;
+      transition: opacity 1100ms ease;
     }
 
     #combine-overlay.on{
@@ -547,13 +549,9 @@
         const w = window.innerWidth;
         const h = window.innerHeight;
 
-        // base radius from actual element size (not transformed)
         const baseR = Math.max(mega.offsetWidth, 1) * 0.5;
-
-        // distance from center to farthest corner
         const cornerDist = Math.hypot(w * 0.5, h * 0.5);
 
-        // stronger overshoot so there is no edge bleed
         return (cornerDist / baseR) * 2.6;
       }
 
@@ -564,13 +562,12 @@
         mega.classList.add("on");
         mega.style.opacity = "1";
 
-        // ensure transition timing (in case browser cached a previous inline style)
-        mega.style.transition = "transform 2200ms cubic-bezier(.16,1,.2,1), opacity 900ms ease";
+        // ensure our cinematic timing
+        mega.style.transition = "transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease";
 
-        // start from a visible small blob
+        // start visible small
         mega.style.transform = "translate(-50%, -50%) scale(0.06)";
 
-        // next frames: animate to full cover
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             mega.style.transform = `translate(-50%, -50%) scale(${s})`;
@@ -591,8 +588,8 @@
 
         mega.addEventListener("transitionend", onEnd, false);
 
-        // fallback in case transitionend doesn't fire
-        setTimeout(finish, 2600);
+        // fallback
+        setTimeout(finish, 4100);
       }
 
       function beginCombine(){
@@ -657,7 +654,6 @@
         wrap.addEventListener("pointerdown", (e) => {
           if (combineState.active) return;
 
-          // mark as seen for combine unlock
           if (!seen[idx]){
             seen[idx] = true;
             seenCount++;
@@ -709,7 +705,6 @@
         if (combineState.active){
           const center = stageCenterInStageCoords();
 
-          // phase 0: pull blobs into center
           if (combineState.phase === 0){
             for (const o of blobs){
               const tx = center.x - (o.size * 0.5);
@@ -740,24 +735,19 @@
               combineState.phase = 1;
               combineState.startedAt = now;
 
-              // turn blobs black first (keep visible)
               blobs.forEach(o => o.core.classList.add("to-black"));
             }
           }
-
-          // phase 1: show the black mix for a moment
           else if (combineState.phase === 1){
             if (now - combineState.startedAt > 950){
               combineState.phase = 2;
               combineState.startedAt = now;
 
-              // fade blobs out
               blobs.forEach(o => {
                 o.wrap.style.transition = "opacity 700ms ease";
                 o.wrap.style.opacity = "0";
               });
 
-              // expand mega to fill, then reveal README
               expandMegaToFill(() => {
                 overlay.classList.add("on");
                 overlay.setAttribute("aria-hidden", "false");
@@ -823,7 +813,6 @@
           }
         });
 
-        // separation solver
         for (let pass = 0; pass < SOLVER_PASSES; pass++){
           for (let i = 0; i < blobs.length; i++){
             for (let j = i + 1; j < blobs.length; j++){
@@ -849,7 +838,6 @@
           }
         }
 
-        // integrate + walls
         blobs.forEach(o => {
           o.vx *= DAMP;
           o.vy *= DAMP;
@@ -863,7 +851,7 @@
           if (o.x < b.minX){ o.x = b.minX; o.vx = Math.abs(o.vx) * BOUNCE; }
           if (o.x > maxX){ o.x = maxX; o.vx = -Math.abs(o.vx) * BOUNCE; }
           if (o.y < b.minY){ o.y = b.minY; o.vy = Math.abs(o.vy) * BOUNCE; }
-          if (o.y > maxY){ o.y = maxY; o.vy = -Math.abs(o.vy) * BOUNCE; }
+          if (o.y > maxY){ o.y = -Math.abs(o.vy) * BOUNCE; o.y = maxY; }
 
           o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
         });
