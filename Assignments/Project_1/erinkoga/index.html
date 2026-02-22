@@ -52,15 +52,50 @@
             font-family: "Times New Roman", Times, serif;
             font-style: italic;
         }
+        h2 {
+            position: relative;
+            z-index: 1;
+            margin: 0.5rem 0 0;
+            text-align: center;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1rem;
+            font-weight: normal;
+        }
         a {
             position: relative;
             z-index: 1;
             color: white;
         }
+        .doors {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            flex-wrap: wrap;
+        }
+        .doors img {
+            max-width: 200px;
+            height: auto;
+        }
+        .doors a {
+            display: inline-block;
+        }
+        .doors a img {
+            border: none;
+        }
     </style>
 </head>
 <body>
     <h1>welcome to the slumber hotel</h1>
-    <a href="casino.html">Casino</a>
+    <h2>click a door to enter the room</h2>
+    <div class="doors">
+        <a href="garage.html"><img src="door.png" alt="Door to Garage"></a>
+        <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
+    </div>
 </body>
 </html>
