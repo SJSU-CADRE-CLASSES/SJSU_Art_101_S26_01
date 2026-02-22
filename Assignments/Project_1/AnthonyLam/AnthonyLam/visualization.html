@@ -259,7 +259,24 @@
       text-transform: uppercase;
       opacity: 0.85;
       line-height: 1.6;
-      color: #FFA726;
+      background: linear-gradient(
+  90deg,
+  #ff00cc,
+  #ff66ff,
+  #66ccff,
+  #00ffe7,
+  #b8ff00,
+  #ffd000,
+  #ff7a00,
+  #ff00cc
+);
+
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+
+background-size: 300% 100%;
+animation: holoShift 8s linear infinite;
       white-space: pre-wrap;
       transition: opacity 600ms ease;
     }
@@ -282,7 +299,11 @@
         filter: blur(0px);
       }
     }
-
+    
+@keyframes holoShift{
+  0%{ background-position:0% 50%; }
+  100%{ background-position:300% 50%; }
+}
     .quote-fade{
       opacity:0.2;
     }
