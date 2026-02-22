@@ -327,7 +327,6 @@
         Tip: replace this README with your full conceptual description + any notes about interaction/data source.
       </p>
       <div class="close-row">
-        <button id="overlay-close" type="button">CLOSE</button>
         <a href="./index.html">← BACK</a>
       </div>
     </div>
@@ -610,7 +609,7 @@
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
-      overlayClose.addEventListener("click", () => overlay.classList.remove("on"));
+      if (overlayClose) overlayClose.addEventListener("click", () => overlay.classList.remove("on"));
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") overlay.classList.remove("on");
       });
