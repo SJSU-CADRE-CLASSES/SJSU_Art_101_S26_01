@@ -44,21 +44,65 @@
       <div class="seva-body">
         <aside class="seva-left">
           <div class="seva-folders">FOLDERS</div>
-          <button class="seva-tab active" data-title="Super Destroyer Terminal" data-subtitle="AN LM-LINK PRODUCT" data-footer="Wait.. Aren't you supposed to be a Graphic Designer?">
+          <button class="seva-tab active" data-view="diver-info" data-title="Super Earth Informational terminal" data-subtitle="AN LM-LINK PRODUCT" data-footer="Wait.. Aren't you supposed to be a Graphic Designer?">
             <span>&gt;DIVER INFO</span>
           </button>
-          <button class="seva-tab" data-title="DATA COLLECTED" data-subtitle="CONFIGURE TERMINAL SETTINGS" data-footer="Wait.. Aren't you supposed to be a Graphic Designer?">
+          <button class="seva-tab" data-view="data-collected" data-title="DATA COLLECTED" data-subtitle="CONFIGURE TERMINAL SETTINGS" data-footer="Wait.. Aren't you supposed to be a Graphic Designer?">
             <span>&gt;DATA COLLECTED</span>
           </button>
-          <button class="seva-tab" data-title="QUIT" data-subtitle="RETURN TO PREVIOUS SCREEN" data-footer="Wait.. Aren't you supposed to be a Graphic Designer?">
-            <span>&gt;QUIT</span>
+          <button class="seva-tab" data-view="quit" data-title="SUPER DESTROYER INFORMATION" data-subtitle="RETURN TO PREVIOUS SCREEN" data-footer="Wait.. Aren't you supposed to be a Graphic Designer?">
+            <span>&gt;SUPER DESTROYER INFORMATION</span>
           </button>
         </aside>
         <section class="seva-center">
-          <h1 id="seva-title" class="seva-title">Super Destory Terminal</h1>
-          <p id="seva-subtitle" class="seva-subtitle">AN LM-LINK PRODUCT</p>
+          <h1 id="seva-title" class="seva-title">Super Earth Informational terminal</h1>
           <p id="seva-footer" class="seva-footer">Wait.. Aren't you supposed to be a Graphic Designer?</p>
-          <div id="seva-panel" class="seva-panel"></div>
+          <div id="seva-panel" class="seva-panel">
+            <div id="diver-info-view" class="seva-panel-view diver-info-view">
+              <div id="diver-frame" class="diver-frame">
+                <div class="diver-screen">
+                  <div class="diver-loading-lines"></div>
+                </div>
+                <img class="diver-border" src="Diver png.png" alt="" aria-hidden="true">
+              </div>
+              <div class="diver-info-text">
+                <p>Diver Identification: Louie, Cole</p>
+                <p>ID #: 5008601</p>
+                <p>Place of Origin: Cadian Sector, Concord Colony</p>
+                <p>Rank: Marshal</p>
+                <p>Current Deployment: Asperoth Sector (Illuminate)</p>
+
+                <p class="bio-heading">Biography:</p>
+                <p>
+                  Diver#5008601 hails from the Concord Colony from the planet of Zzaniah Prime.
+                  The Marshal came from a family of five which is a more than sufficient voting power
+                  for our democratic society. His eagerness of becoming a helldiver came from the
+                  infatuation with space exploration and the fantasy of heroism across the stars.
+                  Upon becoming a SEAF trooper from the 8th Cadian Army, his remarkable usage of
+                  chemical agents against the enemies of managed democracy has earned him the
+                  qualification of being a specialist in chemical warfare.
+                </p>
+                <p>
+                  Since then, he and his freedom loving squad of helldivers have paved the way for
+                  liberty fighting on numerous fronts against the illuminate onslaught liberating
+                  the voteless and seizing expansion opportunities away from the oppressors of
+                  superearth.
+                </p>
+              </div>
+            </div>
+            <div id="data-collected-view" class="seva-panel-view data-collected-view">
+              <p class="data-code-text">Please enter authorized code to proceed with viewing classified data</p>
+              <div id="data-arrows" class="data-arrows">
+                <svg class="data-arrow" viewBox="0 0 32 24" width="36" height="28"><polygon points="32,4 18,4 18,0 0,12 18,24 18,20 32,20" fill="currentColor"/></svg>
+                <svg class="data-arrow" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,0 20,0 20,18 24,18 12,32 0,18 4,18" fill="currentColor"/></svg>
+                <svg class="data-arrow" viewBox="0 0 32 24" width="36" height="28"><polygon points="0,4 14,4 14,0 32,12 14,24 14,20 0,20" fill="currentColor"/></svg>
+                <svg class="data-arrow" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,32 20,32 20,14 24,14 12,0 0,14 4,14" fill="currentColor"/></svg>
+                <svg class="data-arrow" viewBox="0 0 32 24" width="36" height="28"><polygon points="32,4 18,4 18,0 0,12 18,24 18,20 32,20" fill="currentColor"/></svg>
+                <svg class="data-arrow" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,0 20,0 20,18 24,18 12,32 0,18 4,18" fill="currentColor"/></svg>
+                <svg class="data-arrow" viewBox="0 0 24 32" width="28" height="36"><polygon points="4,32 20,32 20,14 24,14 12,0 0,14 4,14" fill="currentColor"/></svg>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </div>
@@ -78,6 +122,14 @@
       var sevaSubtitle = document.getElementById('seva-subtitle');
       var sevaFooter = document.getElementById('seva-footer');
       var sevaPanel = document.getElementById('seva-panel');
+      var diverFrame = document.getElementById('diver-frame');
+      var diverInfoView = document.getElementById('diver-info-view');
+      var dataCollectedView = document.getElementById('data-collected-view');
+      var dataArrowsEl = document.getElementById('data-arrows');
+      var dataArrowNodes = dataArrowsEl ? dataArrowsEl.querySelectorAll('.data-arrow') : [];
+      var dataExpectedSequence = ['ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowUp'];
+      var dataInputIndex = 0;
+      var dataInputEnabled = false;
       var expectedSequence = ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowUp', 'ArrowUp'];
       var inputIndex = 0;
       var inputEnabled = false;
@@ -169,18 +221,80 @@
         }
         scheduleBlink();
       }
+      function triggerDiverLoad() {
+        if (!diverInfoView || !diverFrame) return;
+        diverInfoView.classList.remove('is-loading');
+        diverInfoView.classList.remove('is-loaded');
+        diverFrame.classList.remove('is-loading');
+        void diverInfoView.offsetWidth;
+        diverInfoView.classList.add('is-loading');
+        diverFrame.classList.add('is-loading');
+        setTimeout(function() {
+          diverInfoView.classList.remove('is-loading');
+          diverInfoView.classList.add('is-loaded');
+          diverFrame.classList.remove('is-loading');
+        }, 1100);
+      }
+      function resetDataProgress() {
+        dataInputIndex = 0;
+        if (!dataArrowsEl) return;
+        dataArrowsEl.classList.remove('sequence-complete');
+        dataArrowNodes.forEach(function(node) { node.classList.remove('arrow-hit'); });
+      }
+      function triggerDataLoad() {
+        if (!dataCollectedView) return;
+        dataCollectedView.classList.remove('is-loading');
+        dataCollectedView.classList.remove('is-loaded');
+        void dataCollectedView.offsetWidth;
+        dataCollectedView.classList.add('is-loading');
+        setTimeout(function() {
+          dataCollectedView.classList.remove('is-loading');
+          dataCollectedView.classList.add('is-loaded');
+        }, 550);
+      }
+      function handleDataInput(event) {
+        if (!dataInputEnabled) return;
+        if (!event.key || dataExpectedSequence.indexOf(event.key) === -1) return;
+        event.preventDefault();
+        if (event.key === dataExpectedSequence[dataInputIndex]) {
+          dataArrowNodes[dataInputIndex].classList.add('arrow-hit');
+          dataInputIndex++;
+          if (dataInputIndex === dataExpectedSequence.length) {
+            dataArrowsEl.classList.add('sequence-complete');
+            dataInputEnabled = false;
+          }
+          return;
+        }
+        resetDataProgress();
+      }
       function activateTab(tab) {
         if (!tab) return;
         sevaTabs.forEach(function(t) { t.classList.remove('active'); });
         tab.classList.add('active');
+        var view = tab.getAttribute('data-view') || '';
         if (sevaSubtitle) sevaSubtitle.textContent = tab.getAttribute('data-subtitle') || '';
         if (sevaFooter) sevaFooter.textContent = tab.getAttribute('data-footer') || '';
-        if (sevaPanel) sevaPanel.classList.add('visible');
+        if (sevaPanel) {
+          sevaPanel.classList.add('visible');
+          sevaPanel.classList.toggle('show-diver-info', view === 'diver-info');
+          sevaPanel.classList.toggle('show-data-collected', view === 'data-collected');
+        }
+        if (view === 'diver-info') {
+          dataInputEnabled = false;
+          triggerDiverLoad();
+        } else if (view === 'data-collected') {
+          triggerDataLoad();
+          resetDataProgress();
+          dataInputEnabled = true;
+        } else {
+          dataInputEnabled = false;
+        }
       }
       sevaTabs.forEach(function(tab) {
         tab.addEventListener('click', function() { activateTab(tab); });
       });
       window.addEventListener('keydown', handleArrowInput);
+      window.addEventListener('keydown', handleDataInput);
       setTimeout(function() { showLine(0); }, 400);
     })();
   </script>
