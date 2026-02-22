@@ -768,7 +768,14 @@
               combineState.phase = 3;
             }
           }
+// ===== COMBINE BUTTON FADE-IN =====
+const combineBtn = document.getElementById("combine-btn");
 
+if (combineBtn){
+  setTimeout(()=>{
+    combineBtn.classList.add("visible");
+  }, 2800); // delay before it appears (mysterious feel)
+}
           requestAnimationFrame(animate);
           return;
         }
