@@ -41,7 +41,7 @@
       filter: blur(8px) saturate(3.0);
     }
 
-    /* black “mix” layer (fades in during combine) */
+    /* ✅ SLOWER + SMOOTHER black “mix” layer */
     .blob-core::before{
       content:"";
       position:absolute;
@@ -49,7 +49,10 @@
       border-radius:50%;
       pointer-events:none;
       opacity:0;
-      transition: opacity 900ms ease;
+
+      /* was 900ms; make it cinematic */
+      transition: opacity 2400ms cubic-bezier(.22,1,.36,1);
+
       background: radial-gradient(circle,
         rgba(0,0,0,1) 0%,
         rgba(0,0,0,1) 55%,
@@ -165,7 +168,7 @@
       transform: translateX(-50%) translateY(1px);
     }
 
-    /* The mega black blob that fills the screen (pitch black, blurred like the other blobs) */
+    /* ✅ SLOWER + SMOOTHER mega blob growth */
     #mega-blob{
       position: fixed;
       left: 50%;
@@ -176,21 +179,19 @@
       border-radius: 50%;
       pointer-events: none;
 
-      /* pitch black core, softened edges (so it still feels "blob") */
       background: radial-gradient(circle,
         rgba(0,0,0,1) 0%,
         rgba(0,0,0,1) 62%,
         rgba(0,0,0,0.0) 78%
       );
 
-      /* match blob feel */
       filter: blur(10px) saturate(0.2);
       opacity: 0;
       z-index: 999998;
       will-change: transform, opacity;
 
-      /* SLOW + CINEMATIC */
-      transition: transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease;
+      /* was 3800ms; make it more cinematic */
+      transition: transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1600ms ease;
     }
 
     #mega-blob.on{ opacity: 1; }
@@ -202,7 +203,7 @@
       z-index: 999999;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 1100ms ease;
+      transition: opacity 1400ms ease;
     }
 
     #combine-overlay.on{
@@ -210,7 +211,6 @@
       pointer-events: auto;
     }
 
-    /* make it look like the screen is OFF */
     #combine-overlay .veil{
       position: absolute;
       inset: 0;
@@ -562,8 +562,8 @@
         mega.classList.add("on");
         mega.style.opacity = "1";
 
-        // ensure our cinematic timing
-        mega.style.transition = "transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease";
+        // ✅ match the slower CSS timing (safe even if already set)
+        mega.style.transition = "transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1600ms ease";
 
         // start visible small
         mega.style.transform = "translate(-50%, -50%) scale(0.06)";
@@ -588,8 +588,8 @@
 
         mega.addEventListener("transitionend", onEnd, false);
 
-        // fallback
-        setTimeout(finish, 4100);
+        // ✅ fallback matches new duration
+        setTimeout(finish, 5900);
       }
 
       function beginCombine(){
@@ -739,12 +739,14 @@
             }
           }
           else if (combineState.phase === 1){
-            if (now - combineState.startedAt > 950){
+            /* ✅ was 950ms; wait longer so the black-mix actually reads */
+            if (now - combineState.startedAt > 2400){
               combineState.phase = 2;
               combineState.startedAt = now;
 
               blobs.forEach(o => {
-                o.wrap.style.transition = "opacity 700ms ease";
+                /* ✅ was 700ms; make fade smoother */
+                o.wrap.style.transition = "opacity 1600ms cubic-bezier(.22,1,.36,1)";
                 o.wrap.style.opacity = "0";
               });
 
@@ -761,7 +763,7 @@
           return;
         }
 
-        // NORMAL MODE
+        // NORMAL MODE (UNCHANGED)
         blobs.forEach(o => {
           if (now >= o.nextTargetAt){
             const t = randPos(o.size);
