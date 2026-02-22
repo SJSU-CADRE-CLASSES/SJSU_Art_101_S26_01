@@ -295,25 +295,6 @@
       justify-content: flex-start;
     }
 
-    #combine-overlay .panel button{
-      font: inherit;
-      text-transform: uppercase;
-      letter-spacing: 6px;
-      border-radius: 999px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.86);
-      cursor: pointer;
-      transition: opacity 220ms ease, background 220ms ease, border-color 220ms ease;
-    }
-
-    #combine-overlay .panel button:hover{
-      opacity: 1;
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.28);
-    }
-
     #combine-overlay .panel a{
       color: rgba(255,255,255,0.75);
       text-decoration: none;
@@ -354,7 +335,7 @@
         resist each other mirrors how apps compete for space in my day.
       </p>
 
-      <!-- THIS is now the animated quotes line -->
+      <!-- Animated quote line -->
       <p class="small" id="quote-line" aria-live="polite"></p>
 
       <div class="close-row">
@@ -389,18 +370,17 @@
 
     // ===== QUOTES (train-station animation) =====
     const quoteLine = document.getElementById("quote-line");
+
     const QUOTES = [
-      'Less scrolling, more living." — Louise Myers',
-      '“How we spend our days is how we spend our lives.” — Annie Dillard',
-      '“Technology is a useful servant but a dangerous master.” — Christian Lous Lange',
-      '“The price of anything is the amount of life you exchange for it.” — Henry David Thoreau',
+      "Less scrolling, more living. — Louise Myers",
+      "How we spend our days is how we spend our lives. — Annie Dillard",
+      "Technology is a useful servant but a dangerous master. — Christian Lous Lange",
+      "The price of anything is the amount of life you exchange for it. — Henry David Thoreau",
       "It takes discipline not to let social media steal your time. — Alexis Ohanian",
       "Technology is a good servant but a bad master. — Gretchen Rubin",
       "Un-moderated content consumption is as dangerous as the consumption of sewage water. — Abhijit Naskar",
       "Humans are not wired to be constantly wired. — Cal Newport",
       "To feel alive again, spend a day with your phone dead. — Tim Denning",
-      "I fear the day when the technology overlaps with our humanity. The world will only have a generation of idiots. — Albert Einstein",
-      "The internet can make you angry, jealous, hostile, bitter and lead to the eventual loss of enthusiasm for living your best life. — Germany Kent",
       "We are living in an attention economy and social media is addictive by design. — Tristan Harris",
       "Social media is more addictive than cigarettes and alcohol. — Gary Vaynerchuk",
       "Social media addiction is not a choice, it's a compulsion. — Adam Alter"
@@ -408,51 +388,62 @@
 
     let quoteIdx = 0;
     let quoteTimer = null;
+    let quoteRunId = 0;
 
-    function clearQuoteTimers(){
+    function stopQuotes(){
+      quoteRunId++;
       if (quoteTimer) clearTimeout(quoteTimer);
       quoteTimer = null;
     }
 
-    function renderQuoteAnimated(text){
-      if (!quoteLine) return;
+    function renderQuoteAnimated(text, runId){
+      if (!quoteLine) return 0;
 
       quoteLine.classList.remove("quote-fade");
-      quoteLine.innerHTML = "";
+      quoteLine.innerHTML = ""; // hard clear so ONLY one quote exists
 
       const chars = Array.from(text);
       chars.forEach((ch, i) => {
+        if (runId !== quoteRunId) return;
+
         const span = document.createElement("span");
         span.className = "quote-char";
         span.textContent = ch;
 
-        // staggered reveal
-        span.style.animation = `quoteReveal 420ms ease forwards`;
+        span.style.animation = "quoteReveal 420ms ease forwards";
         span.style.animationDelay = `${i * 18}ms`;
 
         quoteLine.appendChild(span);
       });
+
+      return (chars.length * 18) + 420; // typing duration
     }
 
     function cycleQuotes(){
       if (!quoteLine) return;
 
-      clearQuoteTimers();
-      renderQuoteAnimated(QUOTES[quoteIdx]);
+      stopQuotes();               // stop any previous cycle
+      const runId = ++quoteRunId; // new run id
 
-      // how long to keep quote visible after it finishes typing
-      const typingMs = (Array.from(QUOTES[quoteIdx]).length * 18) + 420;
-      const holdMs = 2200;
+      const text = QUOTES[quoteIdx];
+      const typingMs = renderQuoteAnimated(text, runId);
+
+      const READ_MS = 8000; // hold after typing
+      const FADE_MS = 650;
 
       quoteTimer = setTimeout(() => {
+        if (runId !== quoteRunId) return;
+
         quoteLine.classList.add("quote-fade");
 
-        // switch after fade
         quoteTimer = setTimeout(() => {
+          if (runId !== quoteRunId) return;
+
           quoteIdx = (quoteIdx + 1) % QUOTES.length;
           cycleQuotes();
-        }, 650);
-      }, typingMs + holdMs);
+        }, FADE_MS);
+
+      }, typingMs + READ_MS);
     }
 
     // ===== COMBINE UI =====
@@ -707,8 +698,13 @@
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
+      // ESC closes overlay + stops quote cycle
       window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") overlay.classList.remove("on");
+        if (e.key === "Escape") {
+          overlay.classList.remove("on");
+          stopQuotes();
+          if (quoteLine) delete quoteLine.dataset.started;
+        }
       });
 
       // Build blobs
@@ -850,7 +846,7 @@
                 mega.setAttribute("aria-hidden", "false");
                 combineState.phase = 3;
 
-                /* start quotes only when overlay is shown */
+                // start quotes only when overlay is shown
                 if (quoteLine && !quoteLine.dataset.started){
                   quoteLine.dataset.started = "1";
                   cycleQuotes();
@@ -953,7 +949,7 @@
           if (o.x < b.minX){ o.x = b.minX; o.vx = Math.abs(o.vx) * BOUNCE; }
           if (o.x > maxX){ o.x = maxX; o.vx = -Math.abs(o.vx) * BOUNCE; }
           if (o.y < b.minY){ o.y = b.minY; o.vy = Math.abs(o.vy) * BOUNCE; }
-          if (o.y > maxY){ o.y = -Math.abs(o.vy) * BOUNCE; o.y = maxY; }
+          if (o.y > maxY){ o.y = maxY; o.vy = -Math.abs(o.vy) * BOUNCE; }
 
           o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
         });
@@ -963,47 +959,6 @@
 
       requestAnimationFrame(animate);
     }
-    /* ========================
-   QUOTE ROTATOR (departure board style)
-======================== */
-
-const quotes = [
-"Less scrolling, more living. — Louise Myers",
-"How we spend our days is how we spend our lives. — Annie Dillard",
-"Technology is a useful servant but a dangerous master. — Christian Lous Lange",
-"The price of anything is the amount of life you exchange for it. — Henry David Thoreau",
-"It takes discipline not to let social media steal your time. — Alexis Ohanian",
-"Technology is a good servant but a bad master. — Gretchen Rubin",
-"Humans are not wired to be constantly wired. — Cal Newport",
-"To feel alive again, spend a day with your phone dead. — Tim Denning",
-"We are living in an attention economy and social media is addictive by design. — Tristan Harris"
-];
-
-const quoteEl = document.querySelector("#combine-overlay .small");
-
-if (quoteEl){
-  let qi = 0;
-
-  function typeQuote(text){
-    quoteEl.textContent = "";
-    let i = 0;
-
-    const typing = setInterval(() => {
-      quoteEl.textContent += text[i];
-      i++;
-      if(i >= text.length){
-        clearInterval(typing);
-
-        setTimeout(() => {
-          qi = (qi + 1) % quotes.length;
-          typeQuote(quotes[qi]);
-        }, 4000);
-      }
-    }, 24);
-  }
-
-  typeQuote(quotes[0]);
-}
   })();
   </script>
 
