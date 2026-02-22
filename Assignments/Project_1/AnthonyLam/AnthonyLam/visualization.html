@@ -328,6 +328,29 @@
     }
 
     #combine-overlay .panel a:hover{ opacity: 1; }
+    /* ===== HOLOGRAPHIC TITLE (DIGITAL RESIDUE) ===== */
+#combine-overlay .panel h2{
+  background: linear-gradient(
+    90deg,
+    #ffa1ec,
+    #b191ff,
+    #8ad3ff,
+    #85ff8f,
+    #ffa3b1,
+    #ffa1db,
+    #abdcff,
+    #b99cff
+  );
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  animation: holoShift 12s linear infinite;
+}
   </style>
 </head>
 
@@ -351,8 +374,8 @@
 
   <div id="combine-overlay" aria-hidden="true">
     <div class="veil"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-label="Read me">
-      <h2>READ ME</h2>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="DIGITAL RESIDUE">
+      <h2>DIGITAL RESIDUE</h2>
       <p>
         <!-- REPLACE THIS TEXT with your final 300–500 word concept write-up -->
         This visualization turns my screen-time into floating “residue” — soft blobs that drift like memory,
