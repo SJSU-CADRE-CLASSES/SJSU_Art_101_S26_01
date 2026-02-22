@@ -307,15 +307,14 @@
       0%{ background-position:0% 50%; }
       100%{ background-position:300% 50%; }
     }
-    @keyframes holoGlow{
-  0%{ filter: brightness(1) saturate(1); }
-  50%{ filter: brightness(1.18) saturate(1.25); }
-  100%{ filter: brightness(1) saturate(1); }
-}
 
-    .quote-fade{
-      opacity:0.2;
+    @keyframes holoGlow{
+      0%{ filter: brightness(1) saturate(1); }
+      50%{ filter: brightness(1.18) saturate(1.25); }
+      100%{ filter: brightness(1) saturate(1); }
     }
+
+    .quote-fade{ opacity:0.2; }
 
     #combine-overlay .panel .close-row{
       margin-top: 18px;
@@ -333,53 +332,91 @@
     }
 
     #combine-overlay .panel a:hover{ opacity: 1; }
+
     /* ===== HOLOGRAPHIC TITLE (DIGITAL RESIDUE) ===== */
-    /* ===== HOLOGRAPHIC DESCRIPTION TEXT ===== */
-#combine-overlay .panel > p:first-of-type{
-  background: linear-gradient(
-    110deg,
-    #f7b7ff,
-    #b9c6ff,
-    #a8e6ff,
-    #b7ffd9,
-    #fff1b3,
-    #ffd1e8,
-    #c8fff7,
-    #f7b7ff
-  );
-  background-size: 400% 100%;
+    #combine-overlay .panel h2{
+      background: linear-gradient(
+        110deg,
+        #f7b7ff,
+        #b9c6ff,
+        #a8e6ff,
+        #b7ffd9,
+        #fff1b3,
+        #ffd1e8,
+        #c8fff7,
+        #f7b7ff
+      );
+      background-size: 400% 100%;
+      background-position: 0% 50%;
 
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
 
-  animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
+      animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
+    }
 
-  opacity: 0.92;
-}
-#combine-overlay .panel h2{
-  background: linear-gradient(
-  110deg,
-  #f7b7ff,
-  #b9c6ff,
-  #a8e6ff,
-  #b7ffd9,
-  #fff1b3,
-  #ffd1e8,
-  #c8fff7,
-  #f7b7ff
-);
-background-size: 400% 100%;
-background-position: 0% 50%;
+    /* ===== LINE-BY-LINE REVEAL (DIGITAL RESIDUE TEXT) ===== */
+    #residue-lines{
+      margin-top: 6px;
+      line-height: 1.72;
+      font-size: 17px;
+      letter-spacing: 1.4px;
+      text-transform: none;
+      font-weight: 500;
+      opacity: 0.92;
+    }
 
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+    .res-line{
+      display:block;
+      margin: 0 0 10px 0;
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(6px);
+      transition: opacity 700ms ease, transform 700ms ease, filter 700ms ease;
+      will-change: opacity, transform, filter;
+    }
 
-  animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
-}
+    .res-line.show{
+      opacity: 1;
+      transform: translateY(0px);
+      filter: blur(0px);
+    }
+
+    /* subtle holo (you said we can refine color later — this is intentionally soft) */
+    .res-line.holo{
+      background: linear-gradient(
+        110deg,
+        rgba(247,183,255,0.95),
+        rgba(185,198,255,0.92),
+        rgba(168,230,255,0.92),
+        rgba(183,255,217,0.90),
+        rgba(255,241,179,0.88),
+        rgba(255,209,232,0.92),
+        rgba(200,255,247,0.90),
+        rgba(247,183,255,0.95)
+      );
+      background-size: 420% 100%;
+      background-position: 0% 50%;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+
+      animation: holoShift 20s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .res-line{
+        transition:none;
+        transform:none;
+        filter:none;
+      }
+      .res-line.show{ opacity:1; }
+      .res-line.holo{ animation:none; }
+    }
   </style>
 </head>
 
@@ -405,12 +442,9 @@ background-position: 0% 50%;
     <div class="veil"></div>
     <div class="panel" role="dialog" aria-modal="true" aria-label="DIGITAL RESIDUE">
       <h2>DIGITAL RESIDUE</h2>
-      <p>
-        <!-- REPLACE THIS TEXT with your final 300–500 word concept write-up -->
-        This visualization turns my screen-time into floating “residue” — soft blobs that drift like memory,
-        habit, and attention. Tapping/holding reveals what each color represents, and the way the blobs
-        resist each other mirrors how apps compete for space in my day.
-      </p>
+
+      <!-- LINE-BY-LINE REVEAL TARGET -->
+      <div id="residue-lines" aria-live="polite"></div>
 
       <!-- Animated quote line -->
       <p class="small" id="quote-line" aria-live="polite"></p>
@@ -522,6 +556,100 @@ background-position: 0% 50%;
         }, FADE_MS);
 
       }, typingMs + READ_MS);
+    }
+
+    // ===== DIGITAL RESIDUE LINE REVEAL =====
+    const residueBox = document.getElementById("residue-lines");
+    let residueRunId = 0;
+    let residueTimer = null;
+
+    const RESIDUE_LINES = [
+      "The average human lifespan is about 80 years.",
+      "There are 8,760 hours in a year.",
+      "There are 24 hours in a day.",
+      "On average, we spend about 8 hours asleep...",
+      "leaving roughly 16 hours awake...",
+      "Many people spend 5–7 of those waking hours looking at their phones, computers, or television screens...",
+      "scrolling, watching, consuming.",
+      "That adds up to roughly 1,800–2,500 hours every year spent in digital space...",
+      "Over an 80-year lifetime, that becomes 150,000+ hours —\nnearly a third of our waking lives lived through screens.",
+      "Digital Residue is a personal data portrait collected from my weekly phone screen time. This visualization turns my screen time into floating “residue”-like, color-coded blobs, floating around the digital space like a lava lamp, each representing an app — the size reflects the amount of screen time it took from me. When a viewer interacts with a blob, the app and screen time are revealed.",
+      "The movement is intentionally mesmerizing and has a sense of peace, like a screensaver or lava lamp. The “Combine” button transforms the blobs to merge into one, colors mixing into black and filling the screen, as if you are face to face with your phone or computer screen — a black mirror — before revealing further details and some of my favorite relevant quotes about this topic.",
+      "The quotes cycle through, reinforcing the theme of overconsumption in the digital world and the dangers and powers of it. They act as reminders and warnings about attention, technology, and intentional living, encouraging viewers to reconsider their relationship with screens.",
+      "Ultimately, Digital Residue is not meant to judge technology, but to visualize its consumption over our lives as we consume it. By transforming raw data into something atmospheric and immersive, the project asks a simple question: what does our time look like when it becomes visible?"
+    ];
+
+    function clearResidue(){
+      residueRunId++;
+      if (residueTimer) clearTimeout(residueTimer);
+      residueTimer = null;
+      if (residueBox) residueBox.innerHTML = "";
+      if (residueBox) delete residueBox.dataset.started;
+    }
+
+    function wordsCount(s){
+      return (s || "").trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    function msForLine(line){
+      // Average silent reading speed ~200 wpm => 3.33 words/sec
+      const WPM = 200;
+      const base = 600;         // baseline pause so it breathes
+      const perWord = (60_000 / WPM);
+      const w = wordsCount(line.replace(/\n/g, " "));
+      const ms = base + (w * perWord);
+      // clamp so short lines don't snap, long lines don't stall too hard
+      return Math.max(1400, Math.min(ms, 7000));
+    }
+
+    function startResidueReveal(){
+      if (!residueBox) return;
+
+      // prevent double-start
+      if (residueBox.dataset.started) return;
+      residueBox.dataset.started = "1";
+
+      // reset
+      clearResidue();
+      residueBox.dataset.started = "1";
+
+      const runId = ++residueRunId;
+
+      // prefers-reduced-motion: just dump everything
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce){
+        RESIDUE_LINES.forEach((line) => {
+          const div = document.createElement("div");
+          div.className = "res-line show";
+          div.textContent = line.replace(/\n/g, " ");
+          residueBox.appendChild(div);
+        });
+        return;
+      }
+
+      let i = 0;
+
+      const step = () => {
+        if (runId !== residueRunId) return;
+        if (i >= RESIDUE_LINES.length) return;
+
+        const line = RESIDUE_LINES[i];
+
+        const div = document.createElement("div");
+        div.className = "res-line holo";
+        div.innerHTML = line.replace(/\n/g, "<br>");
+        residueBox.appendChild(div);
+
+        // animate in next frame
+        requestAnimationFrame(() => div.classList.add("show"));
+
+        const wait = msForLine(line);
+        i++;
+
+        residueTimer = setTimeout(step, wait);
+      };
+
+      step();
     }
 
     // ===== COMBINE UI =====
@@ -776,11 +904,12 @@ background-position: 0% 50%;
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
-      // ESC closes overlay + stops quote cycle
+      // ESC closes overlay + stops quote cycle + stops residue reveal
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           overlay.classList.remove("on");
           stopQuotes();
+          clearResidue();
           if (quoteLine) delete quoteLine.dataset.started;
         }
       });
@@ -924,7 +1053,9 @@ background-position: 0% 50%;
                 mega.setAttribute("aria-hidden", "false");
                 combineState.phase = 3;
 
-                // start quotes only when overlay is shown
+                // start residue reveal + quotes only when overlay is shown
+                startResidueReveal();
+
                 if (quoteLine && !quoteLine.dataset.started){
                   quoteLine.dataset.started = "1";
                   cycleQuotes();
