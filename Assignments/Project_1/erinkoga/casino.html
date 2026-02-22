@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="cstyle.css">
     <style>
         body { zoom: 1.5; }
+        .balance-bar {
+            text-align: center;
+            padding: 1rem;
+            color: #ffd700;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.15);
+        }
         .casino {
             max-width: 320px;
             margin: 2rem auto;
@@ -16,7 +23,6 @@
             text-align: center;
         }
         .casino h1 { margin: 0 0 1rem; color: #fff; font-size: 1.5rem; }
-        .balance { font-size: 1.2rem; color: #ffd700; margin-bottom: 1rem; }
         .casino label { display: block; color: #eee; margin-bottom: 0.25rem; }
         .casino input[type="number"] { width: 100%; padding: 0.5rem; box-sizing: border-box; margin-bottom: 0.75rem; }
         .choices { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
@@ -50,8 +56,8 @@
     </style>
 </head>
 <body>
+    <div class="balance-bar">Balance: <span id="balance">100</span> chips</div>
     <div class="casino">
-        <div class="balance">Balance: <span id="balance">100</span> chips</div>
         <h1>Coin flip</h1>
         <label for="bet">Bet amount</label>
         <input type="number" id="bet" min="1" value="10" placeholder="Bet">
