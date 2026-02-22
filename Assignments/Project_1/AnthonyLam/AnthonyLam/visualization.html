@@ -307,6 +307,11 @@
       0%{ background-position:0% 50%; }
       100%{ background-position:300% 50%; }
     }
+    @keyframes holoGlow{
+  0%{ filter: brightness(1) saturate(1); }
+  50%{ filter: brightness(1.18) saturate(1.25); }
+  100%{ filter: brightness(1) saturate(1); }
+}
 
     .quote-fade{
       opacity:0.2;
@@ -329,6 +334,30 @@
 
     #combine-overlay .panel a:hover{ opacity: 1; }
     /* ===== HOLOGRAPHIC TITLE (DIGITAL RESIDUE) ===== */
+    /* ===== HOLOGRAPHIC DESCRIPTION TEXT ===== */
+#combine-overlay .panel > p:first-of-type{
+  background: linear-gradient(
+    110deg,
+    #f7b7ff,
+    #b9c6ff,
+    #a8e6ff,
+    #b7ffd9,
+    #fff1b3,
+    #ffd1e8,
+    #c8fff7,
+    #f7b7ff
+  );
+  background-size: 400% 100%;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
+
+  opacity: 0.92;
+}
 #combine-overlay .panel h2{
   background: linear-gradient(
   110deg,
@@ -349,7 +378,7 @@ background-position: 0% 50%;
   color: transparent;
   -webkit-text-fill-color: transparent;
 
-  animation: holoShift 12s linear infinite;
+  animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
 }
   </style>
 </head>
