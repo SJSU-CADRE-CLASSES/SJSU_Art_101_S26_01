@@ -259,32 +259,34 @@
       text-transform: uppercase;
       opacity: 0.85;
       line-height: 1.6;
-      background: linear-gradient(
-  90deg,
-  #ff00cc,
-  #ff66ff,
-  #66ccff,
-  #00ffe7,
-  #b8ff00,
-  #ffd000,
-  #ff7a00,
-  #ff00cc
-);
-
--webkit-background-clip: text;
-background-clip: text;
-color: transparent;
-
-background-size: 300% 100%;
-animation: holoShift 8s linear infinite;
       white-space: pre-wrap;
       transition: opacity 600ms ease;
     }
 
+    /* Holographic / iridescent gradient must be on EACH character span */
     .quote-char{
       display:inline-block;
       opacity:0;
       transform: translateY(6px);
+
+      background: linear-gradient(
+        90deg,
+        #ff00cc,
+        #ff66ff,
+        #66ccff,
+        #00ffe7,
+        #b8ff00,
+        #ffd000,
+        #ff7a00,
+        #ff00cc
+      );
+      background-size: 300% 100%;
+      background-position: 0% 50%;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
     }
 
     @keyframes quoteReveal{
@@ -299,11 +301,13 @@ animation: holoShift 8s linear infinite;
         filter: blur(0px);
       }
     }
-    
-@keyframes holoShift{
-  0%{ background-position:0% 50%; }
-  100%{ background-position:300% 50%; }
-}
+
+    /* Holo shimmer shift */
+    @keyframes holoShift{
+      0%{ background-position:0% 50%; }
+      100%{ background-position:300% 50%; }
+    }
+
     .quote-fade{
       opacity:0.2;
     }
@@ -431,8 +435,9 @@ animation: holoShift 8s linear infinite;
         span.className = "quote-char";
         span.textContent = ch;
 
-        span.style.animation = "quoteReveal 420ms ease forwards";
-        span.style.animationDelay = `${i * 18}ms`;
+        /* reveal + holographic shift */
+        span.style.animation = "quoteReveal 420ms ease forwards, holoShift 8s linear infinite";
+        span.style.animationDelay = `${i * 18}ms, 0ms`;
 
         quoteLine.appendChild(span);
       });
