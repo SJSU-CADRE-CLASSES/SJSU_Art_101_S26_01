@@ -103,6 +103,181 @@
       .blob-core.pulse-out::after{ animation:none; opacity:0; }
       .blob-core.hold::after{ opacity:0; transform: scale(1); }
     }
+
+    /* =========================
+       COMBINE UI (NEW)
+       ========================= */
+
+    /* ghost button under the subtitle */
+    #combine-btn{
+      position: fixed;
+      left: 50%;
+      top: 230px;                /* sits under header/subtitle on your layout */
+      transform: translateX(-50%);
+      z-index: 9999;
+
+      font: inherit;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,17,17,0.22);
+      background: rgba(255,255,255,0.35);
+      color: rgba(17,17,17,0.55);
+
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 900ms ease, transform 900ms ease, color 220ms ease, border-color 220ms ease, background 220ms ease;
+    }
+
+    #combine-btn.show{
+      opacity: 0.55;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #combine-btn:hover{
+      opacity: 0.75;
+      color: rgba(17,17,17,0.7);
+      border-color: rgba(17,17,17,0.35);
+      background: rgba(255,255,255,0.55);
+    }
+
+    #combine-btn:active{
+      opacity: 0.95;
+      transform: translateX(-50%) translateY(1px);
+    }
+
+    /* The mega black blob that fills the screen */
+    #mega-blob{
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 62vmin;
+      height: 62vmin;
+      transform: translate(-50%, -50%) scale(0.001);
+      border-radius: 50%;
+      pointer-events: none;
+
+      /* black “mixed” blob */
+      background: radial-gradient(circle,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.70) 38%,
+        rgba(0,0,0,0.00) 70%
+      );
+
+      filter: blur(10px) saturate(0.2);
+      opacity: 0;
+      z-index: 999998;
+      will-change: transform, opacity;
+      transition: transform 1400ms cubic-bezier(.16,1,.2,1), opacity 900ms ease;
+    }
+
+    #mega-blob.on{
+      opacity: 1;
+    }
+
+    /* Readme overlay */
+    #combine-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 900ms ease;
+    }
+
+    #combine-overlay.on{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #combine-overlay .veil{
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    #combine-overlay .panel{
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: min(860px, calc(100vw - 80px));
+      padding: 28px 26px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.28);
+      color: rgba(255,255,255,0.92);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+    }
+
+    #combine-overlay .panel h2{
+      margin: 0 0 10px 0;
+      font-size: 22px;
+      letter-spacing: 6px;
+      opacity: 0.9;
+    }
+
+    #combine-overlay .panel p{
+      margin: 0;
+      line-height: 1.65;
+      font-size: 16px;
+      letter-spacing: 1.2px;
+      opacity: 0.9;
+      text-transform: none;
+      font-weight: 500;
+    }
+
+    #combine-overlay .panel .small{
+      margin-top: 14px;
+      font-size: 13px;
+      opacity: 0.7;
+      letter-spacing: 1.2px;
+    }
+
+    #combine-overlay .panel .close-row{
+      margin-top: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    #combine-overlay .panel button{
+      font: inherit;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.86);
+      cursor: pointer;
+      transition: opacity 220ms ease, background 220ms ease, border-color 220ms ease;
+    }
+
+    #combine-overlay .panel button:hover{
+      opacity: 1;
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.28);
+    }
+
+    #combine-overlay .panel a{
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      letter-spacing: 3px;
+      opacity: 0.85;
+    }
+
+    #combine-overlay .panel a:hover{ opacity: 1; }
+
   </style>
 </head>
 
@@ -119,8 +294,34 @@
   <h1 class="viz-title">MY SCREEN TIME</h1>
   <p class="viz-sub">TAP ON A COLOR BLOB TO REVEAL THE APP + SCREENTIME</p>
 
+  <!-- COMBINE BUTTON (NEW) -->
+  <button id="combine-btn" type="button" aria-label="Combine blobs">COMBINE</button>
+
   <div id="blob-stage"></div>
   <div id="tip" class="tip"></div>
+
+  <!-- MEGA BLOB + OVERLAY (NEW) -->
+  <div id="mega-blob" aria-hidden="true"></div>
+
+  <div id="combine-overlay" aria-hidden="true">
+    <div class="veil"></div>
+    <div class="panel" role="dialog" aria-modal="true" aria-label="Read me">
+      <h2>READ ME</h2>
+      <p>
+        <!-- REPLACE THIS TEXT with your final 300–500 word concept write-up -->
+        This visualization turns my screen-time into floating “residue” — soft blobs that drift like memory,
+        habit, and attention. Tapping/holding reveals what each color represents, and the way the blobs
+        resist each other mirrors how apps compete for space in my day.
+      </p>
+      <p class="small">
+        Tip: replace this README with your full conceptual description + any notes about interaction/data source.
+      </p>
+      <div class="close-row">
+        <button id="overlay-close" type="button">CLOSE</button>
+        <a href="./index.html">← BACK</a>
+      </div>
+    </div>
+  </div>
 
   <script src="./data.js?v=1016"></script>
 
@@ -144,13 +345,21 @@
       try { music.load(); } catch(_) {}
 
       music.play().catch((err) => {
-        // If file path is wrong you'll usually see an error here
         console.log("Music play failed:", err);
       });
     }
 
     window.addEventListener("pointerdown", startMusic, { once:true, capture:true });
     window.addEventListener("keydown", startMusic, { once:true, capture:true });
+
+    // ===== COMBINE UI (NEW) =====
+    const combineBtn = document.getElementById("combine-btn");
+    const mega = document.getElementById("mega-blob");
+    const overlay = document.getElementById("combine-overlay");
+    const overlayClose = document.getElementById("overlay-close");
+
+    // fade-in the button after a few seconds (mysterious)
+    setTimeout(() => combineBtn.classList.add("show"), 3500);
 
     if (!ITEMS.length) {
       stage.innerHTML = `<p style="opacity:.7">No APPS data found in data.js.</p>`;
@@ -358,10 +567,14 @@
           nextTargetAt: performance.now() + (600 + Math.random() * RETARGET_MS),
           seed: Math.random() * 1000,
           baseZ: 10 + idx,
-          label: `${item.app} — ${h.toFixed(1)} HOURS`
+          label: `${item.app} — ${h.toFixed(1)} HOURS`,
+          canInteract: true
         });
 
         wrap.addEventListener("pointerdown", (e) => {
+          // block blob interactions during combine
+          if (combineState.active) return;
+
           e.preventDefault();
           e.stopPropagation();
 
@@ -402,9 +615,165 @@
         if (e.target === stage) clearTip();
       });
 
+      // =========================
+      // COMBINE LOGIC (NEW)
+      // =========================
+      const combineState = {
+        active: false,
+        startedAt: 0,
+        phase: 0
+        // phase 0: pull blobs in
+        // phase 1: fade blobs out + turn mega on
+        // phase 2: expand mega + show overlay
+      };
+
+      function viewportCenter(){
+        const b = getBounds().rect;
+        return {
+          cx: b.left + b.width * 0.5,
+          cy: b.top  + b.height * 0.5
+        };
+      }
+
+      function stageCenterInStageCoords(){
+        const rect = getBounds().rect;
+        return {
+          x: (rect.width * 0.5),
+          y: (rect.height * 0.5)
+        };
+      }
+
+      function expandMegaToFill(){
+        // compute a scale so the blob covers the farthest corner
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        // base radius is half of mega's width (in px)
+        const base = mega.getBoundingClientRect();
+        const baseR = Math.max(base.width, 1) * 0.5;
+
+        // distance from center to corner
+        const cornerDist = Math.hypot(w * 0.5, h * 0.5);
+
+        // scale factor (+ a little extra)
+        const s = (cornerDist / baseR) * 1.18;
+
+        mega.classList.add("on");
+        mega.style.transform = `translate(-50%, -50%) scale(${s})`;
+      }
+
+      function beginCombine(){
+        if (combineState.active) return;
+        combineState.active = true;
+        combineState.startedAt = performance.now();
+        combineState.phase = 0;
+
+        // start music too
+        startMusic();
+
+        // hide tooltip
+        clearTip();
+
+        // disable button
+        combineBtn.disabled = true;
+        combineBtn.style.pointerEvents = "none";
+        combineBtn.style.opacity = "0";
+      }
+
+      combineBtn.addEventListener("click", beginCombine);
+
+      overlayClose.addEventListener("click", () => {
+        overlay.classList.remove("on");
+      });
+
+      // ESC closes overlay
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") overlay.classList.remove("on");
+      });
+
       function animate(now){
         const b = getBounds();
 
+        // COMBINE MODE
+        if (combineState.active){
+          const center = stageCenterInStageCoords();
+
+          // Phase 0: pull everything into the center quickly
+          if (combineState.phase === 0){
+            for (const o of blobs){
+              // target is the center (top-left coords for wrap)
+              const tx = center.x - (o.size * 0.5);
+              const ty = center.y - (o.size * 0.5);
+
+              const dx = (tx - o.x);
+              const dy = (ty - o.y);
+
+              // strong pull
+              o.vx += dx * 0.012;
+              o.vy += dy * 0.012;
+
+              // clamp faster than normal
+              const max = MAX_SPEED * 2.6;
+              const sp = Math.hypot(o.vx, o.vy) || 0.0001;
+              if (sp > max){
+                const s = max / sp;
+                o.vx *= s; o.vy *= s;
+              }
+
+              // integrate
+              o.vx *= 0.995;
+              o.vy *= 0.995;
+              o.x += o.vx;
+              o.y += o.vy;
+
+              o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
+            }
+
+            // if enough time has passed, move to phase 1
+            if (now - combineState.startedAt > 1200){
+              combineState.phase = 1;
+              combineState.startedAt = now;
+
+              // fade blobs out
+              blobs.forEach(o => {
+                o.wrap.style.transition = "opacity 600ms ease";
+                o.wrap.style.opacity = "0";
+              });
+
+              // show mega blob at center (still tiny)
+              mega.style.opacity = "1";
+              mega.classList.add("on");
+              mega.style.transform = `translate(-50%, -50%) scale(0.01)`;
+            }
+          }
+
+          // Phase 1: wait a beat, then expand mega
+          else if (combineState.phase === 1){
+            if (now - combineState.startedAt > 650){
+              combineState.phase = 2;
+              combineState.startedAt = now;
+
+              // expand mega to fill screen
+              expandMegaToFill();
+            }
+          }
+
+          // Phase 2: reveal overlay after mega finishes expanding
+          else if (combineState.phase === 2){
+            if (now - combineState.startedAt > 850){
+              overlay.classList.add("on");
+              overlay.setAttribute("aria-hidden", "false");
+              mega.setAttribute("aria-hidden", "false");
+              // stop advancing phases
+              combineState.phase = 3;
+            }
+          }
+
+          requestAnimationFrame(animate);
+          return;
+        }
+
+        // NORMAL MODE (your original)
         // 1) pick roaming targets + steer gently
         blobs.forEach(o => {
           if (now >= o.nextTargetAt){
@@ -509,6 +878,6 @@
     }
   })();
   </script>
-<button id="combine-btn">COMBINE</button>
+
 </body>
 </html>
