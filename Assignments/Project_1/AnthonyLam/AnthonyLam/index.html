@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8" />
   <title>DIGITAL RESIDUE</title>
@@ -16,20 +15,82 @@
 
 <body>
 
-<h1>DIGITAL RESIDUE</h1>
-<h2 class="subtitle">All The Time I Lost in the Digital World</h2>
+  <!-- GLOBAL MUSIC (lives on index so it never stops) -->
+  <audio id="bg-music" loop preload="auto" playsinline>
+    <source src="./ice-background.mp3" type="audio/mpeg">
+  </audio>
 
-<p class="intro">
-This project visualizes my weekly phone screen time, transforming the data into a visual portrait that documents the hours I lost to the digital world.
-</p>
+  <!-- LANDING CONTENT -->
+  <div id="landing">
+    <h1>DIGITAL RESIDUE</h1>
+    <h2 class="subtitle">All The Time I Lost in the Digital World</h2>
 
-<a href="visualization.html" class="enter">
-ENTER VISUALIZATION
-</a>
+    <p class="intro">
+      This project visualizes my weekly phone screen time, transforming the data into a visual portrait that documents the hours I lost to the digital world.
+    </p>
 
-<!-- SCRIPTS -->
-<script src="./data.js?v=4"></script>
-<script src="./script.js?v=4"></script>
+    <!-- was a link — now a button so we can start audio on click and NOT navigate away -->
+    <button type="button" id="enterBtn" class="enter">
+      ENTER VISUALIZATION
+    </button>
+  </div>
+
+  <!-- PAGE FRAME (loads visualization.html without leaving index, so music keeps playing) -->
+  <iframe
+    id="pageFrame"
+    src=""
+    title="DIGITAL RESIDUE — Visualization"
+    style="
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: none;
+      background: transparent;
+    "
+  ></iframe>
+
+  <!-- SCRIPTS -->
+  <script src="./data.js?v=4"></script>
+  <script src="./script.js?v=4"></script>
+
+  <!-- MUSIC + NAV CONTROL -->
+  <script>
+    (function () {
+      const music = document.getElementById("bg-music");
+      const enterBtn = document.getElementById("enterBtn");
+      const landing = document.getElementById("landing");
+      const frame = document.getElementById("pageFrame");
+
+      if (music) music.volume = 0.30;
+
+      enterBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        // Start audio on a real user gesture (Safari desktop compatible)
+        try {
+          if (music) await music.play();
+        } catch (_) {}
+
+        // Load visualization without leaving index (audio continues)
+        frame.src = "./visualization.html";
+        frame.style.display = "block";
+        landing.style.display = "none";
+      });
+
+      // Visualization page can send: window.parent.postMessage("GO_BACK_HOME","*")
+      window.addEventListener("message", (e) => {
+        if (!e.data) return;
+
+        if (e.data === "GO_BACK_HOME") {
+          frame.src = "";
+          frame.style.display = "none";
+          landing.style.display = "block";
+        }
+      });
+    })();
+  </script>
 
 </body>
 </html>
