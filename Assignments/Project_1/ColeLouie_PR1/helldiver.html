@@ -36,6 +36,31 @@
       </div>
       <footer class="crt-footer">SELECT..... ENTER</footer>
     </div>
+    <div id="sevastolink-ui" class="sevastolink-ui">
+      <div class="seva-topbar">
+        <div class="seva-search"></div>
+        <div class="seva-icon">▣</div>
+      </div>
+      <div class="seva-body">
+        <aside class="seva-left">
+          <div class="seva-folders">FOLDERS</div>
+          <button class="seva-tab active" data-title="SEVASTOLINK" data-subtitle="AN LM-LINK PRODUCT" data-footer="SELECT..... ENTER">
+            <span>&gt;DIVER INFO</span>
+          </button>
+          <button class="seva-tab" data-title="OPTIONS" data-subtitle="CONFIGURE TERMINAL SETTINGS" data-footer="SELECT..... ENTER">
+            <span>&gt;OPTIONS</span>
+          </button>
+          <button class="seva-tab" data-title="QUIT" data-subtitle="RETURN TO PREVIOUS SCREEN" data-footer="SELECT..... ENTER">
+            <span>&gt;QUIT</span>
+          </button>
+        </aside>
+        <section class="seva-center">
+          <h1 id="seva-title" class="seva-title">SEVASTOLINK</h1>
+          <p id="seva-subtitle" class="seva-subtitle">AN LM-LINK PRODUCT</p>
+          <p id="seva-footer" class="seva-footer">SELECT..... ENTER</p>
+        </section>
+      </div>
+    </div>
   </div>
   <script>
     (function() {
@@ -44,7 +69,50 @@
       var mainEl = document.getElementById('helldiver-main');
       var typewriterEl = document.getElementById('helldiver-typewriter');
       var cursorEl = mainEl.querySelector('.helldiver-cursor');
+      var arrowsEl = document.getElementById('stratagem-arrows');
+      var arrowNodes = arrowsEl ? arrowsEl.querySelectorAll('.arrow') : [];
+      var sevastolinkEl = document.getElementById('sevastolink-ui');
+      var sevaTabs = sevastolinkEl ? sevastolinkEl.querySelectorAll('.seva-tab') : [];
+      var sevaTitle = document.getElementById('seva-title');
+      var sevaSubtitle = document.getElementById('seva-subtitle');
+      var sevaFooter = document.getElementById('seva-footer');
+      var expectedSequence = ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowUp', 'ArrowUp'];
+      var inputIndex = 0;
+      var inputEnabled = false;
       var message = "Welcome Helldiver, Please initiate identification code";
+
+      function resetArrowProgress() {
+        inputIndex = 0;
+        if (!arrowsEl) return;
+        arrowsEl.classList.remove('sequence-complete');
+        arrowNodes.forEach(function(node) { node.classList.remove('arrow-hit'); });
+      }
+
+      function handleArrowInput(event) {
+        if (!inputEnabled) return;
+        if (!event.key || expectedSequence.indexOf(event.key) === -1) return;
+        event.preventDefault();
+
+        if (event.key === expectedSequence[inputIndex]) {
+          arrowNodes[inputIndex].classList.add('arrow-hit');
+          inputIndex++;
+          if (inputIndex === expectedSequence.length) {
+            arrowsEl.classList.add('sequence-complete');
+            inputEnabled = false;
+            // Once the full stratagem sequence is entered, fade all text/arrows off quickly.
+            setTimeout(function() {
+              mainEl.classList.add('content-fade-out');
+              setTimeout(function() {
+                mainEl.style.display = 'none';
+                if (sevastolinkEl) sevastolinkEl.classList.add('visible');
+              }, 260);
+            }, 120);
+          }
+          return;
+        }
+
+        resetArrowProgress();
+      }
       function showLine(idx) {
         if (idx < bootLines.length - 1) {
           bootLines[idx].classList.add('boot-visible');
@@ -72,8 +140,11 @@
             if (cursorEl) cursorEl.style.display = 'none';
             startBlink();
             setTimeout(function() {
-              var arrowsEl = document.getElementById('stratagem-arrows');
-              if (arrowsEl) arrowsEl.classList.add('stratagem-arrows-visible');
+              if (arrowsEl) {
+                arrowsEl.classList.add('stratagem-arrows-visible');
+                resetArrowProgress();
+                inputEnabled = true;
+              }
             }, 800);
           }
         }
@@ -96,6 +167,18 @@
         }
         scheduleBlink();
       }
+      function activateTab(tab) {
+        if (!tab) return;
+        sevaTabs.forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        if (sevaTitle) sevaTitle.textContent = tab.getAttribute('data-title') || '';
+        if (sevaSubtitle) sevaSubtitle.textContent = tab.getAttribute('data-subtitle') || '';
+        if (sevaFooter) sevaFooter.textContent = tab.getAttribute('data-footer') || '';
+      }
+      sevaTabs.forEach(function(tab) {
+        tab.addEventListener('click', function() { activateTab(tab); });
+      });
+      window.addEventListener('keydown', handleArrowInput);
       setTimeout(function() { showLine(0); }, 400);
     })();
   </script>

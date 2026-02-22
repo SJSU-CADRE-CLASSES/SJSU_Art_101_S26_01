@@ -255,10 +255,150 @@ body.page-helldiver .stratagem-arrows {
 }
 
 body.page-helldiver .stratagem-arrows.stratagem-arrows-visible {
-  opacity: 0.35;
+  opacity: 1;
 }
 
 body.page-helldiver .stratagem-arrows .arrow {
   flex-shrink: 0;
   color: #c9b896;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+}
+
+body.page-helldiver .stratagem-arrows .arrow.arrow-hit {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(201, 184, 150, 0.85));
+  transform: scale(1.03);
+}
+
+body.page-helldiver .stratagem-arrows.sequence-complete .arrow {
+  opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(201, 184, 150, 1));
+}
+
+/* Quick fade once full arrow sequence is complete */
+body.page-helldiver .crt-content.content-fade-out .crt-main-title,
+body.page-helldiver .crt-content.content-fade-out .stratagem-arrows,
+body.page-helldiver .crt-content.content-fade-out .crt-footer {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Post-sequence Sevastolink interface */
+body.page-helldiver .sevastolink-ui {
+  position: absolute;
+  inset: 0;
+  display: none;
+  opacity: 0;
+  padding: 1.2rem 1.6rem;
+  color: #00ff66;
+  text-shadow: 0 0 6px rgba(0, 255, 90, 0.5);
+  transition: opacity 0.25s ease;
+}
+
+body.page-helldiver .sevastolink-ui.visible {
+  display: block;
+  opacity: 1;
+}
+
+body.page-helldiver .seva-topbar {
+  height: 24px;
+  border: 2px solid rgba(0, 255, 90, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.4rem;
+  margin-bottom: 1.4rem;
+}
+
+body.page-helldiver .seva-search {
+  flex: 1;
+  height: 10px;
+  background: rgba(0, 255, 90, 0.35);
+}
+
+body.page-helldiver .seva-icon {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(0, 255, 90, 0.8);
+}
+
+body.page-helldiver .seva-body {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 2.2rem;
+  height: calc(100% - 3rem);
+}
+
+body.page-helldiver .seva-left {
+  align-self: start;
+}
+
+body.page-helldiver .seva-folders {
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+  opacity: 0.75;
+}
+
+body.page-helldiver .seva-tab {
+  width: 100%;
+  margin-bottom: 0;
+  height: calc((66vh - 1.9rem) / 3);
+  min-height: 0;
+  padding: 0.9rem 0.8rem;
+  border: 2px solid rgba(0, 255, 90, 0.6);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 4.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+}
+
+body.page-helldiver .seva-tab:not(:last-of-type) {
+  margin-bottom: 0.95rem;
+}
+
+body.page-helldiver .seva-tab.active {
+  box-shadow: 0 0 10px rgba(0, 255, 90, 0.5), inset 0 0 10px rgba(0, 255, 90, 0.15);
+}
+
+body.page-helldiver .seva-x {
+  opacity: 0.8;
+}
+
+body.page-helldiver .seva-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+body.page-helldiver .seva-title {
+  margin: 0;
+  font-size: clamp(2rem, 7vw, 5.2rem);
+  letter-spacing: 0.08em;
+  color: rgba(0, 255, 90, 0.45);
+}
+
+body.page-helldiver .seva-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  opacity: 0.45;
+}
+
+body.page-helldiver .seva-footer {
+  position: absolute;
+  right: 0;
+  bottom: 1.2rem;
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
 }
