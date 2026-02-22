@@ -18,9 +18,10 @@
     .blob-wrap{
       position:absolute;
       left:0; top:0;
-      will-change: transform;
+      will-change: transform, opacity;
       touch-action: manipulation;
       z-index: 10; /* baseline */
+      transition: opacity 600ms ease, transform 600ms ease;
     }
 
     .blob-core{
@@ -148,7 +149,7 @@
       transform: translateX(-50%) translateY(1px);
     }
 
-    /* The mega black blob that fills the screen */
+    /* The black blob made from “mixing” that fills the screen */
     #mega-blob{
       position: fixed;
       left: 50%;
@@ -160,16 +161,16 @@
       pointer-events: none;
 
       background: radial-gradient(circle,
-        rgba(0,0,0,0.92) 0%,
-        rgba(0,0,0,0.70) 38%,
-        rgba(0,0,0,0.00) 70%
+        rgba(0,0,0,0.96) 0%,
+        rgba(0,0,0,0.86) 42%,
+        rgba(0,0,0,0.00) 74%
       );
 
       filter: blur(10px) saturate(0.2);
       opacity: 0;
       z-index: 999998;
-      will-change: transform, opacity;
-      transition: transform 1400ms cubic-bezier(.16,1,.2,1), opacity 900ms ease;
+      will-change: transform, opacity, filter;
+      transition: opacity 900ms ease, transform 2600ms cubic-bezier(.16,1,.2,1), filter 1200ms ease;
     }
 
     #mega-blob.on{
@@ -329,7 +330,6 @@
       if (!music || musicStarted) return;
       musicStarted = true;
       music.volume = 0.30;
-
       try { music.load(); } catch(_) {}
       music.play().catch((err) => console.log("Music play failed:", err));
     }
@@ -343,8 +343,11 @@
     const overlay = document.getElementById("combine-overlay");
     const overlayClose = document.getElementById("overlay-close");
 
-    if (combineBtn){
-      setTimeout(() => combineBtn.classList.add("show"), 3500);
+    // start hidden until ALL blobs have been tapped at least once
+    if (combineBtn) {
+      combineBtn.classList.remove("show");
+      combineBtn.style.opacity = "0";
+      combineBtn.style.pointerEvents = "none";
     }
 
     if (!ITEMS.length) {
@@ -402,6 +405,21 @@
 
       const blobs = [];
       const placed = [];
+
+      // ===== “ALL BLOBS PRESSED” GATE =====
+      const pressed = new Array(ITEMS.length).fill(false);
+      let pressedCount = 0;
+
+      function maybeRevealCombine(){
+        if (!combineBtn) return;
+        if (pressedCount !== ITEMS.length) return;
+
+        // reveal once, with a small suspense delay
+        setTimeout(() => {
+          combineBtn.classList.add("show");
+          combineBtn.style.pointerEvents = "auto";
+        }, 900);
+      }
 
       let tipTimer = null;
 
@@ -512,17 +530,13 @@
         return { x: rect.width * 0.5, y: rect.height * 0.5 };
       }
 
-      function expandMegaToFill(){
+      function computeFillScale(){
         const w = window.innerWidth;
         const h = window.innerHeight;
-
         const base = mega.getBoundingClientRect();
         const baseR = Math.max(base.width, 1) * 0.5;
         const cornerDist = Math.hypot(w * 0.5, h * 0.5);
-        const s = (cornerDist / baseR) * 1.18;
-
-        mega.classList.add("on");
-        mega.style.transform = `translate(-50%, -50%) scale(${s})`;
+        return (cornerDist / baseR) * 1.22;
       }
 
       function beginCombine(){
@@ -539,6 +553,12 @@
           combineBtn.style.pointerEvents = "none";
           combineBtn.style.opacity = "0";
         }
+
+        // prep mega blob
+        mega.style.opacity = "0";
+        mega.classList.remove("on");
+        mega.style.filter = "blur(14px) saturate(0.0)";
+        mega.style.transform = "translate(-50%, -50%) scale(0.001)";
       }
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
@@ -592,6 +612,13 @@
 
           startMusic();
 
+          // mark pressed
+          if (!pressed[idx]){
+            pressed[idx] = true;
+            pressedCount++;
+            maybeRevealCombine();
+          }
+
           document.querySelectorAll(".blob-core").forEach(b => b.classList.remove("active"));
           core.classList.add("active");
 
@@ -632,6 +659,7 @@
         if (combineState.active){
           const center = stageCenterInStageCoords();
 
+          // Phase 0: pull + “mix” (darken blobs as they collide)
           if (combineState.phase === 0){
             for (const o of blobs){
               const tx = center.x - (o.size * 0.5);
@@ -656,31 +684,44 @@
               o.y += o.vy;
 
               o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
+              // subtle “mixing to black”
+              o.wrap.style.filter = "saturate(0.45) brightness(0.55)";
             }
 
-            if (now - combineState.startedAt > 1200){
+            if (now - combineState.startedAt > 1400){
               combineState.phase = 1;
               combineState.startedAt = now;
 
+              // fade blobs out
               blobs.forEach(o => {
-                o.wrap.style.transition = "opacity 600ms ease";
                 o.wrap.style.opacity = "0";
               });
 
+              // mega appears (black “mixture”)
               mega.style.opacity = "1";
               mega.classList.add("on");
-              mega.style.transform = `translate(-50%, -50%) scale(0.01)`;
+              mega.style.filter = "blur(18px) saturate(0.0)";
+              mega.style.transform = `translate(-50%, -50%) scale(0.08)`;
             }
           }
+
+          // Phase 1: slowly expand mega to fill screen (the “flood”)
           else if (combineState.phase === 1){
-            if (now - combineState.startedAt > 650){
+            const t = (now - combineState.startedAt);
+
+            // after a beat, expand
+            if (t > 350){
+              const s = computeFillScale();
+              mega.style.filter = "blur(10px) saturate(0.15)";
+              mega.style.transform = `translate(-50%, -50%) scale(${s})`;
               combineState.phase = 2;
               combineState.startedAt = now;
-              expandMegaToFill();
             }
           }
+
+          // Phase 2: wait until the flood “finishes”, then reveal README
           else if (combineState.phase === 2){
-            if (now - combineState.startedAt > 850){
+            if (now - combineState.startedAt > 2400){
               overlay.classList.add("on");
               overlay.setAttribute("aria-hidden", "false");
               mega.setAttribute("aria-hidden", "false");
