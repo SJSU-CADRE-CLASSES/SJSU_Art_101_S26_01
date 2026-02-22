@@ -15,82 +15,75 @@
 
 <body>
 
-  <!-- GLOBAL MUSIC (lives on index so it never stops) -->
-  <audio id="bg-music" loop preload="auto" playsinline>
-    <source src="./ice-background.mp3" type="audio/mpeg">
-  </audio>
+<h1>DIGITAL RESIDUE</h1>
+<h2 class="subtitle">All The Time I Lost in the Digital World</h2>
 
-  <!-- LANDING CONTENT -->
-  <div id="landing">
-    <h1>DIGITAL RESIDUE</h1>
-    <h2 class="subtitle">All The Time I Lost in the Digital World</h2>
+<p class="intro">
+This project visualizes my weekly phone screen time, transforming the data into a visual portrait that documents the hours I lost to the digital world.
+</p>
 
-    <p class="intro">
-      This project visualizes my weekly phone screen time, transforming the data into a visual portrait that documents the hours I lost to the digital world.
-    </p>
+<a href="#" class="enter" id="enterBtn">ENTER VISUALIZATION</a>
 
-    <!-- was a link — now a button so we can start audio on click and NOT navigate away -->
-    <button type="button" id="enterBtn" class="enter">
-      ENTER VISUALIZATION
-    </button>
-  </div>
+<!-- MUSIC (starts on ENTER, keeps playing because we never leave this page) -->
+<audio id="bg-music" loop preload="auto">
+  <source src="./ice-background.mp3" type="audio/mpeg">
+</audio>
 
-  <!-- PAGE FRAME (loads visualization.html without leaving index, so music keeps playing) -->
-  <iframe
-    id="pageFrame"
-    src=""
-    title="DIGITAL RESIDUE — Visualization"
-    style="
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: none;
-      background: transparent;
-    "
-  ></iframe>
+<!-- Visualization loads inside iframe so the page (and audio) never unloads -->
+<iframe id="vizFrame" src="" style="display:none; border:0; width:100vw; height:100vh;"></iframe>
 
-  <!-- SCRIPTS -->
-  <script src="./data.js?v=4"></script>
-  <script src="./script.js?v=4"></script>
+<!-- SCRIPTS -->
+<script src="./data.js?v=4"></script>
+<script src="./script.js?v=4"></script>
 
-  <!-- MUSIC + NAV CONTROL -->
-  <script>
-    (function () {
-      const music = document.getElementById("bg-music");
-      const enterBtn = document.getElementById("enterBtn");
-      const landing = document.getElementById("landing");
-      const frame = document.getElementById("pageFrame");
+<script>
+(() => {
+  const enterBtn = document.getElementById("enterBtn");
+  const frame = document.getElementById("vizFrame");
+  const music = document.getElementById("bg-music");
 
-      if (music) music.volume = 0.30;
+  function startMusic(){
+    if (!music) return;
+    music.volume = 0.30;
 
-      enterBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
+    // IMPORTANT: must be inside a user gesture (click)
+    music.play().catch(err => console.log("Music play blocked:", err));
+  }
 
-        // Start audio on a real user gesture (Safari desktop compatible)
-        try {
-          if (music) await music.play();
-        } catch (_) {}
+  function showViz(){
+    // hide your landing text/buttons
+    document.querySelector("h1").style.display = "none";
+    document.querySelector(".subtitle").style.display = "none";
+    document.querySelector(".intro").style.display = "none";
+    enterBtn.style.display = "none";
 
-        // Load visualization without leaving index (audio continues)
-        frame.src = "./visualization.html";
-        frame.style.display = "block";
-        landing.style.display = "none";
-      });
+    // show iframe
+    frame.src = "./visualization.html";
+    frame.style.display = "block";
+  }
 
-      // Visualization page can send: window.parent.postMessage("GO_BACK_HOME","*")
-      window.addEventListener("message", (e) => {
-        if (!e.data) return;
+  enterBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    startMusic();
+    showViz();
+  });
 
-        if (e.data === "GO_BACK_HOME") {
-          frame.src = "";
-          frame.style.display = "none";
-          landing.style.display = "block";
-        }
-      });
-    })();
-  </script>
+  // Listen for back message from visualization
+  window.addEventListener("message", (e) => {
+    if (e.data !== "GO_BACK_HOME") return;
+
+    // stop iframe (optional: keep music going)
+    frame.src = "";
+    frame.style.display = "none";
+
+    // show landing again
+    document.querySelector("h1").style.display = "";
+    document.querySelector(".subtitle").style.display = "";
+    document.querySelector(".intro").style.display = "";
+    enterBtn.style.display = "";
+  });
+})();
+</script>
 
 </body>
 </html>
