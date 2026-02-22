@@ -49,7 +49,10 @@
       border-radius:50%;
       pointer-events:none;
       opacity:0;
-      transition: opacity 900ms ease;
+
+      /* smoother + slower */
+      transition: opacity 1800ms cubic-bezier(.16,1,.2,1);
+
       background: radial-gradient(circle,
         rgba(0,0,0,1) 0%,
         rgba(0,0,0,1) 55%,
@@ -189,8 +192,8 @@
       z-index: 999998;
       will-change: transform, opacity;
 
-      /* SLOW + CINEMATIC */
-      transition: transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease;
+      /* slower + smoother */
+      transition: transform 5200ms cubic-bezier(.12,1,.18,1), opacity 1600ms ease;
     }
 
     #mega-blob.on{ opacity: 1; }
@@ -202,7 +205,9 @@
       z-index: 999999;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 1100ms ease;
+
+      /* slightly slower fade-in */
+      transition: opacity 1500ms ease;
     }
 
     #combine-overlay.on{
@@ -265,25 +270,6 @@
       justify-content: flex-start;
     }
 
-    #combine-overlay .panel button{
-      font: inherit;
-      text-transform: uppercase;
-      letter-spacing: 6px;
-      border-radius: 999px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.86);
-      cursor: pointer;
-      transition: opacity 220ms ease, background 220ms ease, border-color 220ms ease;
-    }
-
-    #combine-overlay .panel button:hover{
-      opacity: 1;
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.28);
-    }
-
     #combine-overlay .panel a{
       color: rgba(255,255,255,0.75);
       text-decoration: none;
@@ -297,11 +283,10 @@
 
 <body data-page="viz">
 
-  <audio id="bg-music" loop preload="none" playsinline>
-    <source src="./ice-background.mp3" type="audio/mpeg">
-  </audio>
+  <!-- removed audio from visualization; audio lives in index page now -->
 
-  <a class="back" href="./index.html">← BACK</a>
+  <!-- changed BACK to send message to parent so music doesn't stop -->
+  <a class="back" href="#" id="backBtn">← BACK</a>
 
   <h1 class="viz-title">MY SCREEN TIME</h1>
   <p class="viz-sub">TAP ON A COLOR BLOB TO REVEAL THE APP + SCREENTIME</p>
@@ -327,7 +312,8 @@
         Tip: replace this README with your full conceptual description + any notes about interaction/data source.
       </p>
       <div class="close-row">
-        <a href="./index.html">← BACK</a>
+        <!-- back uses parent message (no reload) -->
+        <a href="#" id="backBtn2">← BACK</a>
       </div>
     </div>
   </div>
@@ -340,27 +326,20 @@
     const tip = document.getElementById("tip");
     const ITEMS = (typeof APPS !== "undefined") ? APPS : [];
 
-    // ===== MUSIC =====
-    const music = document.getElementById("bg-music");
-    let musicStarted = false;
-
-    function startMusic(){
-      if (!music || musicStarted) return;
-      musicStarted = true;
-      music.volume = 0.30;
-
-      try { music.load(); } catch(_) {}
-      music.play().catch((err) => console.log("Music play failed:", err));
+    // ===== BACK (no reload; keeps music alive in index) =====
+    function goBackHome(e){
+      if (e) e.preventDefault();
+      window.parent.postMessage("GO_BACK_HOME", "*");
     }
-
-    window.addEventListener("pointerdown", startMusic, { once:true, capture:true });
-    window.addEventListener("keydown", startMusic, { once:true, capture:true });
+    const backBtn = document.getElementById("backBtn");
+    const backBtn2 = document.getElementById("backBtn2");
+    if (backBtn) backBtn.addEventListener("click", goBackHome);
+    if (backBtn2) backBtn2.addEventListener("click", goBackHome);
 
     // ===== COMBINE UI =====
     const combineBtn = document.getElementById("combine-btn");
     const mega = document.getElementById("mega-blob");
     const overlay = document.getElementById("combine-overlay");
-    const overlayClose = document.getElementById("overlay-close");
 
     // require all blobs clicked before showing combine
     const seen = new Array(ITEMS.length).fill(false);
@@ -561,8 +540,8 @@
         mega.classList.add("on");
         mega.style.opacity = "1";
 
-        // ensure our cinematic timing
-        mega.style.transition = "transform 3800ms cubic-bezier(.12,1,.18,1), opacity 1200ms ease";
+        // ensure our slower timing matches CSS above
+        mega.style.transition = "transform 5200ms cubic-bezier(.12,1,.18,1), opacity 1600ms ease";
 
         // start visible small
         mega.style.transform = "translate(-50%, -50%) scale(0.06)";
@@ -588,7 +567,7 @@
         mega.addEventListener("transitionend", onEnd, false);
 
         // fallback
-        setTimeout(finish, 4100);
+        setTimeout(finish, 5600);
       }
 
       function beginCombine(){
@@ -597,7 +576,6 @@
         combineState.startedAt = performance.now();
         combineState.phase = 0;
 
-        startMusic();
         clearTip();
 
         if (combineBtn){
@@ -609,7 +587,6 @@
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
-if (overlayClose) overlayClose.addEventListener("click", () => overlay.classList.remove("on"));
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") overlay.classList.remove("on");
       });
@@ -661,8 +638,6 @@ if (overlayClose) overlayClose.addEventListener("click", () => overlay.classList
 
           e.preventDefault();
           e.stopPropagation();
-
-          startMusic();
 
           document.querySelectorAll(".blob-core").forEach(b => b.classList.remove("active"));
           core.classList.add("active");
@@ -730,7 +705,7 @@ if (overlayClose) overlayClose.addEventListener("click", () => overlay.classList
               o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
             }
 
-            if (now - combineState.startedAt > 1200){
+            if (now - combineState.startedAt > 1500){
               combineState.phase = 1;
               combineState.startedAt = now;
 
@@ -738,12 +713,12 @@ if (overlayClose) overlayClose.addEventListener("click", () => overlay.classList
             }
           }
           else if (combineState.phase === 1){
-            if (now - combineState.startedAt > 950){
+            if (now - combineState.startedAt > 1650){
               combineState.phase = 2;
               combineState.startedAt = now;
 
               blobs.forEach(o => {
-                o.wrap.style.transition = "opacity 700ms ease";
+                o.wrap.style.transition = "opacity 1100ms ease";
                 o.wrap.style.opacity = "0";
               });
 
