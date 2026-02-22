@@ -7,16 +7,26 @@
     <link rel="stylesheet" href="cstyle.css">
     <style>
         body { zoom: 1.5; }
+        .page-wrap {
+            display: flex;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
         .balance-bar {
-            text-align: center;
-            padding: 1rem;
+            flex-shrink: 0;
+            width: 7rem;
+            padding: 1.5rem 1rem;
             color: #ffd700;
             font-size: 1.2rem;
             background: rgba(0,0,0,0.15);
+            text-align: center;
         }
+        .balance-bar .balance-label { display: block; }
+        .balance-bar .balance-amount { display: block; font-weight: bold; margin-top: 0.25rem; }
         .casino {
+            flex: 1;
             max-width: 320px;
-            margin: 2rem auto;
+            margin: 2rem;
             padding: 1.5rem;
             background: rgba(0,0,0,0.2);
             border-radius: 8px;
@@ -56,8 +66,12 @@
     </style>
 </head>
 <body>
-    <div class="balance-bar">Balance: <span id="balance">1000</span> chips</div>
-    <div class="casino">
+    <div class="page-wrap">
+        <div class="balance-bar">
+            <span class="balance-label">Balance</span>
+            <span class="balance-amount" id="balance">1000</span> chips
+        </div>
+        <div class="casino">
         <h1>Coin flip</h1>
         <label for="bet">Bet amount</label>
         <input type="number" id="bet" min="1" value="10" placeholder="Bet">
@@ -91,6 +105,7 @@
         </div>
 
         <div class="back"><a href="index.html">Back to lobby</a></div>
+        </div>
     </div>
     <script>
         let balance = 1000;
