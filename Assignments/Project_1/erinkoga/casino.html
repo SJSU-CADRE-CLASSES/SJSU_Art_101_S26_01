@@ -80,6 +80,7 @@
                 <button type="button" id="bjStand" disabled>Stand</button>
             </div>
             <div class="bj-result" id="bjResult"></div>
+            <div class="tracker" style="margin-top: 0.75rem;">Lost in blackjack: <span id="bjTotalLost">0</span> chips</div>
         </div>
 
         <div class="back"><a href="index.html">Back to lobby</a></div>
@@ -169,13 +170,14 @@
             while (sum > 21 && aces--) sum -= 10;
             return sum;
         }
-        let bjDeck = [], playerHand = [], dealerHand = [], bjBetAmount = 0, dealerHole = null;
+        let bjDeck = [], playerHand = [], dealerHand = [], bjBetAmount = 0, dealerHole = null, bjTotalLost = 0;
         const bjDealerHandEl = document.getElementById('bjDealerHand');
         const bjPlayerHandEl = document.getElementById('bjPlayerHand');
         const bjDealerValueEl = document.getElementById('bjDealerValue');
         const bjPlayerValueEl = document.getElementById('bjPlayerValue');
         const bjBetEl = document.getElementById('bjBet');
         const bjResultEl = document.getElementById('bjResult');
+        const bjTotalLostEl = document.getElementById('bjTotalLost');
         const bjDealBtn = document.getElementById('bjDeal');
         const bjHitBtn = document.getElementById('bjHit');
         const bjStandBtn = document.getElementById('bjStand');
@@ -201,8 +203,15 @@
             balanceEl.textContent = balance;
             bjResultEl.textContent = '';
             bjDeck = newDeck();
-            playerHand = [bjDeck.pop(), bjDeck.pop()];
-            dealerHand = [bjDeck.pop(), bjDeck.pop()];
+            const four = [bjDeck.pop(), bjDeck.pop(), bjDeck.pop(), bjDeck.pop()];
+            if (Math.random() < 0.6) {
+                four.sort((a, b) => cardValue(b) - cardValue(a));
+                playerHand = [four[2], four[3]];
+                dealerHand = [four[0], four[1]];
+            } else {
+                playerHand = [four[0], four[1]];
+                dealerHand = [four[2], four[3]];
+            }
             dealerHole = dealerHand[1];
             bjUpdateDisplay(false);
             bjDealBtn.disabled = true;
@@ -221,6 +230,8 @@
             playerHand.push(bjDeck.pop());
             bjUpdateDisplay(false);
             if (handValue(playerHand) > 21) {
+                bjTotalLost += bjBetAmount;
+                bjTotalLostEl.textContent = bjTotalLost;
                 bjResultEl.textContent = 'Bust! You lose.';
                 bjEndRound();
             }
@@ -240,6 +251,8 @@
                 bjResultEl.textContent = 'You win ' + bjBetAmount + ' chips!';
                 balance += bjBetAmount * 2;
             } else if (pv < dv) {
+                bjTotalLost += bjBetAmount;
+                bjTotalLostEl.textContent = bjTotalLost;
                 bjResultEl.textContent = 'Dealer wins.';
             } else {
                 bjResultEl.textContent = 'Push. Bet returned.';
@@ -259,3 +272,4 @@
     </script>
 </body>
 </html>
+
