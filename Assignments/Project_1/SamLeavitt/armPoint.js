@@ -1,9 +1,16 @@
+/**
+ * Arm reveal: points animate along path on scroll; stars clickable for workout popup.
+ */
 (function () {
   const viewBox = { w: 286.03, h: 301.53 };
   const pathEl = document.getElementById('outlinePath');
   const layer = document.getElementById('pointsLayer');
+  const stage = layer.closest('.stage');
   const hint = document.getElementById('hint');
+  const clickStarHint = document.getElementById('clickStarHint');
   const phase2 = document.getElementById('phase2');
+  let wasClickable = false;
+  let clickStarHintHide = null;
   const numPoints = 500;
 
   const PHASE2_START = 0.90;
@@ -55,6 +62,63 @@
     });
   }
 
+  // Workout data: 0 = Push, 1 = Pull, 2 = Leg
+  const WORKOUTS = [
+    { name: 'Push Day', dayClass: 'push', exercises: ['Flat Bench Press', 'Cable Lateral Raise', 'Cable Face Pull', 'Machine Fly', 'Parallel Bar Dips'] },
+    { name: 'Pull Day', dayClass: 'pull', exercises: ['Pull Ups', 'Seated Machine Row', 'Preacher Curls', '5-minute Ab Routine'] },
+    { name: 'Leg Day', dayClass: 'leg', exercises: ['Barbell Squat', 'Barbell Deadlift', 'Hamstring Curls', 'Leg Extensions', 'Calf Raises'] }
+  ];
+
+  const workoutPopup = document.getElementById('workoutPopup');
+  const workoutPopupTitle = document.getElementById('workoutPopupTitle');
+  const workoutPopupList = document.getElementById('workoutPopupList');
+  const workoutPopupInner = workoutPopup ? workoutPopup.querySelector('.workout-popup-inner') : null;
+  const POPUP_OFFSET = 14;
+  const POPUP_PADDING = 12;
+
+  function showWorkoutPopup(dayIndex, starX, starY) {
+    if (!workoutPopup || !workoutPopupTitle || !workoutPopupList || !workoutPopupInner) return;
+    const w = WORKOUTS[dayIndex];
+    workoutPopupTitle.textContent = w.name;
+    workoutPopupList.innerHTML = w.exercises.map(function (ex) {
+      return '<li class="' + w.dayClass + '">' + ex + '</li>';
+    }).join('');
+    workoutPopup.classList.add('is-open');
+    workoutPopup.setAttribute('aria-hidden', 'false');
+
+    var left = starX + POPUP_OFFSET;
+    var top = starY + POPUP_OFFSET;
+    workoutPopupInner.style.left = left + 'px';
+    workoutPopupInner.style.top = top + 'px';
+    workoutPopupInner.style.right = 'auto';
+    workoutPopupInner.style.bottom = 'auto';
+    requestAnimationFrame(function () {
+      var rect = workoutPopupInner.getBoundingClientRect();
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      if (left + rect.width + POPUP_PADDING > vw) left = starX - rect.width - POPUP_OFFSET;
+      if (top + rect.height + POPUP_PADDING > vh) top = starY - rect.height - POPUP_OFFSET;
+      if (left < POPUP_PADDING) left = POPUP_PADDING;
+      if (top < POPUP_PADDING) top = POPUP_PADDING;
+      workoutPopupInner.style.left = left + 'px';
+      workoutPopupInner.style.top = top + 'px';
+    });
+  }
+
+  function closeWorkoutPopup() {
+    if (!workoutPopup || !workoutPopupInner) return;
+    workoutPopup.classList.remove('is-open');
+    workoutPopup.setAttribute('aria-hidden', 'true');
+    setTimeout(function () {
+      workoutPopupInner.style.left = '';
+      workoutPopupInner.style.top = '';
+    }, 250);
+  }
+
+  // Last drawn positions for hit-testing (screen px)
+  const lastPositions = [];
+  for (let i = 0; i < numPoints; i++) lastPositions.push({ x: 0, y: 0, radius: 0 });
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     const w = window.innerWidth;
@@ -77,7 +141,7 @@
 
   function draw() {
     const raw = getScrollProgress();
-    const moveRaw = Math.max(0, Math.min(1, (raw - 0.78) / 0.10));
+    const moveRaw = Math.max(0, Math.min(1, (raw - 0.5) / 0.28));
     const p = easeOutCubic(moveRaw);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -100,11 +164,14 @@
       phase2.style.setProperty('--phase2-opacity', phase2Eased);
       phase2.style.setProperty('--legend-opacity', Math.max(0, (phase2Eased - 0.2) / 0.8));
       phase2.style.setProperty('--charts-opacity', Math.max(0, (phase2Eased - 0.4) / 0.6));
+      if (phase2Eased > 0.35) phase2.classList.add('phase2-charts-visible');
+      else phase2.classList.remove('phase2-charts-visible');
     }
 
     ctx.clearRect(0, 0, w, h);
 
     for (let i = 0; i < numPoints; i++) {
+      lastPositions[i].radius = 0;
       const pt = points[i];
       const visible = raw >= pt.appearAt ? Math.min(1, (raw - pt.appearAt) / 0.15) : 0;
       if (visible <= 0) continue;
@@ -141,7 +208,35 @@
       ctx.arc(x, y, drawSize / 2, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(' + Math.round(r) + ',' + Math.round(g) + ',' + Math.round(b) + ',' + alpha + ')';
       ctx.fill();
+
+      lastPositions[i].x = x;
+      lastPositions[i].y = y;
+      lastPositions[i].radius = drawSize / 2;
     }
+
+    const inPreArmFormation = p < 0.65;
+    if (stage) {
+      if (inPreArmFormation) stage.classList.add('stars-clickable');
+      else stage.classList.remove('stars-clickable');
+    }
+    if (clickStarHint) {
+      if (inPreArmFormation && !wasClickable) {
+        clickStarHint.classList.add('is-visible');
+        clickStarHint.setAttribute('aria-hidden', 'false');
+        if (clickStarHintHide) clearTimeout(clickStarHintHide);
+        clickStarHintHide = setTimeout(function () {
+          clickStarHint.classList.remove('is-visible');
+          clickStarHint.setAttribute('aria-hidden', 'true');
+          clickStarHintHide = null;
+        }, 2500);
+      }
+      if (!inPreArmFormation) {
+        clickStarHint.classList.remove('is-visible');
+        clickStarHint.setAttribute('aria-hidden', 'true');
+        if (clickStarHintHide) { clearTimeout(clickStarHintHide); clickStarHintHide = null; }
+      }
+    }
+    wasClickable = inPreArmFormation;
 
     var now = performance.now();
     for (var i = 0; i < numPoints; i++) {
@@ -187,7 +282,7 @@
     var anyBlinking = points.some(function (pt) {
       return pt.blinkStart !== null && (performance.now() - pt.blinkStart) < Math.max(BLINK_DUR, RIPPLE_DUR);
     });
-    if ((raw >= 0.7 && raw <= 0.95) || anyBlinking) {
+    if ((raw >= 0.5 && raw <= 0.95) || anyBlinking) {
       requestAnimationFrame(tick);
     } else {
       animating = false;
@@ -212,6 +307,43 @@
       draw();
     });
   }
+
+  function getMouseCanvas(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  canvas.addEventListener('click', function (e) {
+    const moveRaw = Math.max(0, Math.min(1, (getScrollProgress() - 0.5) / 0.28));
+    const p = easeOutCubic(moveRaw);
+    if (p >= 0.65) return;
+    const pos = getMouseCanvas(e);
+    for (let i = numPoints - 1; i >= 0; i--) {
+      const lp = lastPositions[i];
+      if (lp.radius <= 0) continue;
+      const dx = pos.x - lp.x;
+      const dy = pos.y - lp.y;
+      if (dx * dx + dy * dy <= lp.radius * lp.radius) {
+        const dayIndex = points[i].colorIndex % 3;
+        showWorkoutPopup(dayIndex, lp.x, lp.y);
+        e.stopPropagation();
+        e.preventDefault();
+        return;
+      }
+    }
+    if (workoutPopup && workoutPopup.classList.contains('is-open')) {
+      closeWorkoutPopup();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (workoutPopup && workoutPopupInner && workoutPopup.classList.contains('is-open') && !workoutPopupInner.contains(e.target)) {
+      closeWorkoutPopup();
+    }
+  });
 
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', function () {
