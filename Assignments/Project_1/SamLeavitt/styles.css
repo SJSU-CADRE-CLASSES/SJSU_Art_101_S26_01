@@ -2,7 +2,7 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'VCR OSD Mono', monospace;
-  background: #0f0f12;
+  background: #000;
   color: #e0e0e0;
   min-height: 100vh;
 }
@@ -51,11 +51,209 @@ body {
   transition: opacity 0.6s ease;
 }
 
-/* Phase 2: explanation layout */
+.click-star-hint {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 0.9rem;
+  color: #c0c0c8;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 10;
+}
+.click-star-hint.is-visible {
+  opacity: 0.85;
+  visibility: visible;
+}
+
+/* Clickable stars only in pre-arm formation — stage must accept events or clicks pass through */
+.stage.stars-clickable {
+  pointer-events: auto;
+}
+.stage.stars-clickable .points-layer canvas {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Workout popup — retro, readable; positioned next to clicked star */
+.workout-popup {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.workout-popup.is-open {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+.workout-popup-inner {
+  font-family: 'VCR OSD Mono', monospace;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid #32cd32;
+  border-radius: 0;
+  padding: 1rem 1.25rem;
+  min-width: 220px;
+  max-width: 90vw;
+  pointer-events: auto;
+  position: absolute;
+  /* left/top set in JS next to clicked star */
+}
+.workout-popup-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+}
+.workout-popup-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  color: #e0e0e0;
+  position: relative;
+  z-index: 1;
+}
+.workout-popup-list {
+  list-style: none;
+  position: relative;
+  z-index: 1;
+}
+.workout-popup-list li {
+  font-size: 0.85rem;
+  padding: 0.35rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+  color: #c8c8d0;
+}
+.workout-popup-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.workout-popup-list li.push::before { background: rgb(255, 80, 80); }
+.workout-popup-list li.pull::before { background: rgb(80, 200, 120); }
+.workout-popup-list li.leg::before { background: rgb(80, 150, 255); }
+
+/* Chart legend popup */
+.chart-legend-popup {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 110;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.chart-legend-popup.is-open {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+.chart-legend-popup-inner {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: min(380px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  font-family: 'VCR OSD Mono', monospace;
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #32cd32;
+  border-radius: 0;
+  padding: 1.25rem 1.5rem;
+  padding-top: 2.25rem;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.chart-legend-popup-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid #32cd32;
+  border-radius: 0;
+  background: #000;
+  color: #e0e0e0;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chart-legend-popup-close:hover {
+  background: rgba(50, 205, 50, 0.15);
+}
+.chart-legend-popup-title {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+.chart-legend-popup-content p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.chart-legend-popup-content p:first-of-type { margin-top: 0; }
+.chart-legend-popup-content ul {
+  margin: 0 0 0 1rem;
+  padding-left: 0.5rem;
+}
+.chart-legend-popup-content li {
+  margin-bottom: 0.35rem;
+}
+
+/* Chart hover tooltip (bar + scatter) */
+.chart-tooltip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #32cd32;
+  color: #e0e0e0;
+  border-radius: 0;
+  max-width: 220px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+.chart-tooltip.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Phase 2: explanation layout; only charts capture clicks when this class is set */
 .phase2 {
   position: fixed;
   inset: 0;
   pointer-events: none;
+  z-index: 5;
   opacity: var(--phase2-opacity, 0);
   transition: opacity 0.5s ease;
   display: flex;
@@ -63,64 +261,336 @@ body {
   align-items: stretch;
   padding: 0 1.5rem;
   box-sizing: border-box;
+  min-height: 0;
+}
+.phase2.phase2-charts-visible .charts {
+  pointer-events: auto;
 }
 
 .legend {
   flex-shrink: 0;
-  margin-top: 42vh;
+  margin-top: 22vh;
   text-align: center;
   opacity: var(--legend-opacity, 0);
   transition: opacity 0.5s ease 0.1s;
 }
 
-.legend h3 {
+.legend-caption-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 100%;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+.legend-caption-left,
+.legend-caption-right {
   font-size: 1.1rem;
   font-weight: 600;
   color: #e0e0e0;
-  margin-bottom: 0.75rem;
+  font-family: 'VCR OSD Mono', monospace;
+  text-align: center;
+}
+.legend-caption-left {
+  grid-column: 1;
+}
+.legend-caption-right {
+  grid-column: 2;
 }
 
-.legend-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.5rem;
-  justify-content: center;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  color: #b0b0b0;
-}
-
-.swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
+/* ---- Charts: normal state (3 cards in a row) ---- */
 .charts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
   gap: 1.5rem;
   width: 100%;
-  margin-top: 2.5rem;
-  padding-bottom: 3rem;
+  margin-top: 1.5rem;
+  padding-bottom: 2rem;
   opacity: var(--charts-opacity, 0);
   transition: opacity 0.5s ease 0.3s;
+  pointer-events: none;
+}
+.chart-legend-spacer {
+  grid-row: 1;
+}
+.chart-legend-btn-wrap {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-bottom: 0.25rem;
+}
+.chart-legend-btn {
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  background: #000;
+  border: 2px solid #32cd32;
+  color: #e0e0e0;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.2s, color 0.2s;
+}
+.chart-legend-btn:hover {
+  background: rgba(50, 205, 50, 0.15);
+}
+.charts .chart-card {
+  grid-row: 2;
 }
 
+/* When one card is expanded: fixed height so bottom is visible; placeholder stays in flow so grid doesn't collapse */
+.charts.charts-has-expanded {
+  flex: 0 0 calc(100vh - 22vh - 4rem);
+  height: calc(100vh - 22vh - 4rem);
+  min-height: 0;
+  max-height: calc(100vh - 22vh - 4rem);
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+  position: relative;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: 0;
+  align-items: stretch;
+  justify-items: stretch;
+}
+.charts-expanded-placeholder {
+  display: none;
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 0;
+}
+.charts.charts-has-expanded .charts-expanded-placeholder {
+  display: block;
+  height: 100%;
+}
+.charts.charts-has-expanded .chart-legend-spacer,
+.charts.charts-has-expanded .chart-legend-btn-wrap {
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
+  z-index: 2;
+}
+.charts.charts-has-expanded .chart-legend-spacer {
+  display: none;
+}
+
+/* Non-expanded cards: remove from flow so they don't create a second row or steal height */
+.charts.charts-has-expanded .chart-card:not(.expanded) {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+/* ---- Chart card (shared): black inside, lime green border defines window ---- */
 .chart-card {
-  background: rgba(30, 30, 36, 0.9);
-  border-radius: 8px;
+  background: #000;
+  border: 2px solid #32cd32;
+  border-radius: 0;
   padding: 1rem;
+  position: relative;
+  cursor: pointer;
+  transition: opacity 0.35s ease;
+}
+
+.chart-card .chart-close {
+  display: none;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid #32cd32;
+  border-radius: 0;
+  background: #000;
+  color: #e0e0e0;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 0.2s, border-color 0.2s;
+}
+.chart-card .chart-close:hover {
+  background: rgba(50, 205, 50, 0.15);
+}
+.chart-card.expanded .chart-close {
+  display: flex;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  margin: 0;
+  z-index: 2;
+}
+
+/* Explanation: hidden by default, shown as bullet list when expanded */
+.chart-card .chart-explanation {
+  display: none;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #b8b8c0;
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.chart-card .chart-explanation li {
+  margin-bottom: 0.4rem;
+}
+.chart-card .chart-explanation li:last-child {
+  margin-bottom: 0;
+}
+.chart-card.expanded .chart-explanation {
+  display: block;
+  font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+  line-height: 1.6;
+}
+.chart-card.expanded .chart-explanation li {
+  margin-bottom: 0.6rem;
+}
+
+/* ---- Expanded card: fixed to viewport so size never depends on container ---- */
+.chart-card.expanded {
+  position: fixed;
+  left: var(--expand-start-left, 0);
+  top: var(--expand-start-top, 0);
+  width: var(--expand-start-width, 100%);
+  height: var(--expand-start-height, 100%);
+  min-height: 0;
+  cursor: default;
+  display: block;
+  overflow: hidden;
+  z-index: 6;
+  animation: chart-panel-expand 0.45s ease forwards;
+}
+.chart-card.expanded .chart-card-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--expand-full-width, 100%);
+  height: var(--expand-full-height, 100%);
+  min-width: var(--expand-full-width, 100%);
+  min-height: var(--expand-full-height, 100%);
+  display: grid;
+  grid-template-columns: minmax(0, var(--chart-fixed-size, 33%)) 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 1rem 1.25rem;
+  align-items: start;
+  box-sizing: border-box;
+}
+.chart-card.expanded.expand-done {
+  overflow: hidden;
+}
+/* Expand from the card’s position: left card grows right, center both ways, right card grows left */
+.chart-card.expanded.expand-from-left .chart-card-inner {
+  grid-template-columns: minmax(0, var(--chart-fixed-size)) 1fr;
+}
+/* Center card: same chart|text layout as left so chart is left, text revealed on right; title stays centered */
+.chart-card.expanded.expand-from-center .chart-card-inner {
+  grid-template-columns: minmax(0, var(--chart-fixed-size)) 1fr;
+  grid-template-rows: auto 1fr;
+  padding-top: 2.5rem;
+}
+.chart-card.expanded.expand-from-center .chart-wrapper,
+.chart-card.expanded.expand-from-center .chart-explanation {
+  grid-row: 1;
+}
+.chart-card.expanded.expand-from-center .chart-explanation {
+  grid-row: 1 / -1;
+}
+.chart-card.expanded.expand-from-right .chart-card-inner {
+  grid-template-columns: 1fr minmax(0, var(--chart-fixed-size));
+}
+/* Closing: card stays full size (viewport); visible area shrinks via clip-path */
+.chart-card.expanded.closing {
+  overflow: hidden;
+  animation: none;
+  left: var(--expand-end-left, 0) !important;
+  top: var(--expand-end-top, 0) !important;
+  width: var(--expand-end-width, 100%) !important;
+  height: var(--expand-end-height, 100%) !important;
+  transition: clip-path 0.45s ease;
+  clip-path: inset(0 0 0 0);
+}
+/* Center card close: use curtains so chart is covered from left, text from right (reverse of open) */
+.chart-card.expanded.closing.expand-from-center {
+  clip-path: none;
+}
+.chart-close-curtain {
+  position: absolute;
+  z-index: 10;
+  background: #000;
+  transition: width 0.45s ease, height 0.45s ease, top 0.45s ease, left 0.45s ease;
+  pointer-events: none;
+}
+.chart-close-curtain-left { left: 0; top: 0; height: 100%; width: 0; }
+.chart-close-curtain-right { right: 0; top: 0; height: 100%; width: 0; }
+.chart-close-curtain-top { left: 0; top: 0; width: 100%; height: 0; }
+.chart-close-curtain-bottom { left: 0; bottom: 0; width: 100%; height: 0; }
+.chart-card.expanded.closing .chart-title,
+.chart-card.expanded.closing .chart-wrapper,
+.chart-card.expanded.closing .chart-explanation {
+  transition: left 0.45s ease, top 0.45s ease, width 0.45s ease, height 0.45s ease;
+}
+@keyframes chart-panel-expand {
+  to {
+    left: var(--expand-end-left, 0);
+    top: var(--expand-end-top, 0);
+    width: var(--expand-end-width, 100%);
+    height: var(--expand-end-height, 100%);
+  }
+}
+.chart-card.expanded .chart-title {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  text-align: center;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+/* Center card: title fixed at panel center so it stays centered during expand/collapse */
+.chart-card.expanded.expand-from-center .chart-title {
+  position: fixed;
+  left: var(--title-center-x, 50%);
+  top: var(--title-top, 0.5rem);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  margin: 0;
+  z-index: 2;
+}
+.chart-card.expanded.expand-from-left .chart-wrapper,
+.chart-card.expanded.expand-from-left .chart-wrapper-line-outer { grid-column: 1; grid-row: 2; }
+.chart-card.expanded.expand-from-left .chart-explanation { grid-column: 2; grid-row: 2 / 4; }
+.chart-card.expanded.expand-from-center .chart-wrapper,
+.chart-card.expanded.expand-from-center .chart-wrapper-line-outer { grid-column: 1; grid-row: 2; }
+.chart-card.expanded.expand-from-center .chart-explanation { grid-column: 2; grid-row: 2 / 4; }
+.chart-card.expanded.expand-from-right .chart-wrapper,
+.chart-card.expanded.expand-from-right .chart-wrapper-line-outer { grid-column: 2; grid-row: 2; }
+.chart-card.expanded.expand-from-right .chart-explanation { grid-column: 1; grid-row: 2 / 4; }
+.chart-card.expanded .chart-explanation {
+  align-self: stretch;
+  padding-right: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.chart-card.expanded .chart-wrapper,
+.chart-card.expanded .chart-wrapper-line-outer {
+  width: var(--chart-fixed-size);
+  max-width: 100%;
+  aspect-ratio: 1;
 }
 
 .chart-title {
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #e0e0e0;
   margin-bottom: 0.75rem;
@@ -130,18 +600,65 @@ body {
 }
 
 .chart-wrapper {
-  filter: url(#pixelate-subtle);
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 0;
+}
+.chart-wrapper-line-outer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 0;
+}
+.chart-wrapper-line-outer .chart-wrapper {
+  filter: none;
+}
+.chart-wrapper-line-outer .line-chart {
+  /* pixelation applied to .chart-data layer only so labels stay crisp */
+}
+.chart-select {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  z-index: 3;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  background: #000;
+  border: 1px solid #32cd32;
+  color: #e0e0e0;
+  cursor: pointer;
+  max-width: 90%;
+  -webkit-font-smoothing: antialiased;
+}
+.chart-select:focus {
+  outline: 1px solid #32cd32;
 }
 
 .bar-chart, .line-chart, .scatter-chart {
-  height: 180px;
   width: 100%;
+  height: 100%;
   min-width: 0;
+  min-height: 0;
   position: relative;
 }
-
+.bar-chart .chart-data,
+.line-chart .chart-data,
+.scatter-chart .chart-data {
+  position: absolute;
+  inset: 0;
+  filter: url(#pixelate-subtle);
+}
+.bar-chart .chart-labels,
+.line-chart .chart-labels,
+.scatter-chart .chart-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
 .bar-chart canvas, .line-chart canvas, .scatter-chart canvas {
   display: block;
   width: 100% !important;

@@ -15,38 +15,105 @@
     </div>
   </div>
   <p class="hint" id="hint">Scroll down</p>
+  <p class="click-star-hint" id="clickStarHint" aria-hidden="true">click a star!</p>
+
+  <!-- Workout popup (shown when clicking a star in pre-arm formation) -->
+  <div class="workout-popup" id="workoutPopup" aria-hidden="true" role="dialog" aria-label="Workout">
+    <div class="workout-popup-inner">
+      <h4 class="workout-popup-title" id="workoutPopupTitle"></h4>
+      <ul class="workout-popup-list" id="workoutPopupList"></ul>
+    </div>
+  </div>
 
   <!-- Phase 2: explanation layout (fades in at bottom of scroll) -->
   <div class="phase2" id="phase2">
     <div class="legend" id="legend">
-      <h3>What each point represents</h3>
-      <div class="legend-items">
-        <span class="legend-item"><span class="swatch" style="background: rgb(255,50,50)"></span> Strength</span>
-        <span class="legend-item"><span class="swatch" style="background: rgb(255,140,0)"></span> Cardio</span>
-        <span class="legend-item"><span class="swatch" style="background: rgb(255,220,0)"></span> Flexibility</span>
-        <span class="legend-item"><span class="swatch" style="background: rgb(50,255,80)"></span> Balance</span>
-        <span class="legend-item"><span class="swatch" style="background: rgb(50,150,255)"></span> Endurance</span>
-        <span class="legend-item"><span class="swatch" style="background: rgb(180,80,255)"></span> Recovery</span>
+      <div class="legend-caption-row" aria-hidden="true">
+        <span class="legend-caption-left">One Star</span>
+        <span class="legend-caption-right">One Workout</span>
       </div>
     </div>
     <div class="charts" id="charts">
-      <div class="chart-card">
-        <h4 class="chart-title">Exercise type vs. weekly frequency</h4>
-        <div class="chart-wrapper">
-          <div class="bar-chart" id="barChart"></div>
+      <div class="charts-expanded-placeholder" aria-hidden="true"></div>
+      <div class="chart-legend-spacer"></div>
+      <div class="chart-legend-spacer"></div>
+      <div class="chart-legend-btn-wrap">
+        <button type="button" class="chart-legend-btn" id="chartLegendBtn" aria-label="Open graph legend">Legend</button>
+      </div>
+      <div class="chart-card" data-chart="bar">
+        <div class="chart-card-inner">
+          <button type="button" class="chart-close" aria-label="Close">&times;</button>
+          <h4 class="chart-title">Workouts per week vs. strength increase</h4>
+          <div class="chart-wrapper">
+            <div class="bar-chart" id="barChart"></div>
+          </div>
+          <ul class="chart-explanation">
+            <li>Compares how often you trained each period with strength gain.</li>
+            <li>Bars show average workouts per week and strength increase by month.</li>
+            <li>More consistent weeks tend to show higher strength gains.</li>
+          </ul>
         </div>
       </div>
-      <div class="chart-card">
-        <h4 class="chart-title">Progress over 12 weeks</h4>
-        <div class="chart-wrapper">
-          <div class="line-chart" id="lineChart"></div>
+      <div class="chart-card" data-chart="line">
+        <div class="chart-card-inner">
+          <button type="button" class="chart-close" aria-label="Close">&times;</button>
+          <h4 class="chart-title">One-rep max increase by exercise</h4>
+          <div class="chart-wrapper-line-outer">
+            <select id="lineChartSelect" class="chart-select" aria-label="Select exercise"></select>
+            <div class="chart-wrapper">
+              <div class="line-chart" id="lineChart"></div>
+            </div>
+          </div>
+          <ul class="chart-explanation">
+            <li>Estimated one-rep max over time for the selected exercise.</li>
+            <li>Use the dropdown to switch exercises; the graph transitions smoothly.</li>
+            <li>Plateaus reflect weeks with fewer sessions.</li>
+          </ul>
         </div>
       </div>
-      <div class="chart-card">
-        <h4 class="chart-title">Intensity vs. duration correlation</h4>
-        <div class="chart-wrapper">
-          <div class="scatter-chart" id="scatterChart"></div>
+      <div class="chart-card" data-chart="scatter">
+        <div class="chart-card-inner">
+          <button type="button" class="chart-close" aria-label="Close">&times;</button>
+          <h4 class="chart-title">Exercises sorted by frequency</h4>
+          <div class="chart-wrapper">
+            <div class="scatter-chart" id="scatterChart"></div>
+          </div>
+          <ul class="chart-explanation">
+            <li>Each point is an exercise; position shows how often you did it.</li>
+            <li>Further right = more sessions; vertical axis = estimated strength level.</li>
+            <li>Helps see which exercises you prioritize.</li>
+          </ul>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tooltip for bar/scatter hover (one shared element) -->
+  <div class="chart-tooltip" id="chartTooltip" aria-hidden="true"></div>
+
+  <!-- Legend popup: explains numbers and labels on the graphs -->
+  <div class="chart-legend-popup" id="chartLegendPopup" aria-hidden="true" role="dialog" aria-label="Graph legend">
+    <div class="chart-legend-popup-inner">
+      <button type="button" class="chart-legend-popup-close" id="chartLegendPopupClose" aria-label="Close">&times;</button>
+      <h4 class="chart-legend-popup-title">Graph legend</h4>
+      <div class="chart-legend-popup-content">
+        <p><strong>Bar chart (left)</strong></p>
+        <ul>
+          <li><strong>Workouts/wk</strong> — Left axis: average number of workouts per week in that period.</li>
+          <li><strong>Strength %</strong> — Right axis: strength increase compared to the first period.</li>
+          <li><strong>M1, M2, …</strong> — Each label is a 4‑week period (month).</li>
+        </ul>
+        <p><strong>Line chart (center)</strong></p>
+        <ul>
+          <li><strong>1RM (lb)</strong> — Vertical axis: estimated one‑rep max in pounds.</li>
+          <li><strong>Session</strong> — Horizontal axis: workout session number for the selected exercise.</li>
+        </ul>
+        <p><strong>Scatter plot (right)</strong></p>
+        <ul>
+          <li><strong>Frequency (sessions)</strong> — Horizontal axis: how many times you did that exercise.</li>
+          <li><strong>Max 1RM (lb)</strong> — Vertical axis: your best estimated one‑rep max for that exercise.</li>
+          <li>Each point is one exercise; hover a point to see its name.</li>
+        </ul>
       </div>
     </div>
   </div>
