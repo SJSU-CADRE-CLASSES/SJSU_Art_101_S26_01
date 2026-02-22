@@ -363,7 +363,7 @@
       line-height: 1.72;
       font-size: 17px;
       letter-spacing: 1.4px;
-      text-transform: uppercase; /* enforce caps look even if text changes later */
+      text-transform: uppercase;
       font-weight: 500;
       opacity: 0.92;
 
@@ -455,7 +455,7 @@
   <div id="combine-overlay" aria-hidden="true">
     <div class="veil"></div>
     <div class="panel" role="dialog" aria-modal="true" aria-label="DIGITAL RESIDUE">
-      <h2>DIGITAL RESIDUE‎ ‎ ‎ ‎ ‎‎ ‎ ‎ BY ANTHONY LAM</h2>
+      <h2>DIGITAL RESIDUE</h2>
 
       <!-- LINE-BY-LINE REVEAL TARGET -->
       <div id="residue-lines" aria-live="polite"></div>
@@ -630,18 +630,15 @@
       const w = wordsCount(line);
       const ms = base + (w * perWord);
 
-      // clamp so it feels consistent
       return Math.max(1500, Math.min(ms, 8000));
     }
 
     function msForGroupHold(groupLines){
-      // extra hold AFTER the last line appears, so people can re-read the full chunk
+      // extra hold AFTER the last line appears
       const WPM = 200;
       const perWord = (60_000 / WPM);
 
       const totalWords = groupLines.reduce((acc, l) => acc + wordsCount(l), 0);
-
-      // hold about ~65% of full read time + base
       const ms = 1200 + (totalWords * perWord * 0.65);
 
       return Math.max(2600, Math.min(ms, 14000));
@@ -650,11 +647,9 @@
     function startResidueCycle(){
       if (!residueBox) return;
 
-      // prevent double-start
       if (residueBox.dataset.started) return;
       residueBox.dataset.started = "1";
 
-      // reduced motion: just show all groups (no loop)
       const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce){
         residueBox.innerHTML = "";
@@ -682,7 +677,6 @@
         const stepLine = () => {
           if (runId !== residueRunId) return;
 
-          // finished revealing this group -> hold -> fade -> next group
           if (i >= groupLines.length){
             residueTimer = setTimeout(() => {
               if (runId !== residueRunId) return;
@@ -727,7 +721,6 @@
     const mega = document.getElementById("mega-blob");
     const overlay = document.getElementById("combine-overlay");
 
-    // require all blobs clicked before showing combine
     const seen = new Array(ITEMS.length).fill(false);
     let seenCount = 0;
     let combineShown = false;
@@ -1007,7 +1000,7 @@
           vx: Math.cos(ang) * sp,
           vy: Math.sin(ang) * sp,
           tx: t0.x, ty: t0.y,
-          nextTargetAt: performance.now() + (600 + Math.random() * 2600),
+          nextTargetAt: performance.now() + (600 + Math.random() * RETARGET_MS),
           seed: Math.random() * 1000,
           label: `${item.app} — ${h.toFixed(1)} HOURS`
         });
@@ -1077,7 +1070,7 @@
               o.vx += dx * 0.012;
               o.vy += dy * 0.012;
 
-              const max = 3.8 * 2.6;
+              const max = MAX_SPEED * 2.6;
               const sp = Math.hypot(o.vx, o.vy) || 0.0001;
               if (sp > max){
                 const s = max / sp;
@@ -1117,7 +1110,6 @@
                 // START RESIDUE LOOP
                 startResidueCycle();
 
-                // start quotes only when overlay is shown
                 if (quoteLine && !quoteLine.dataset.started){
                   quoteLine.dataset.started = "1";
                   cycleQuotes();
@@ -1136,17 +1128,12 @@
             const t = randPos(o.size);
             o.tx = t.x;
             o.ty = t.y;
-            o.nextTargetAt = now + (2600 * (0.75 + Math.random() * 0.75));
+            o.nextTargetAt = now + (RETARGET_MS * (0.75 + Math.random() * 0.75));
           }
 
           const dx = (o.tx - o.x);
           const dy = (o.ty - o.y);
           const dist = Math.hypot(dx, dy) || 0.0001;
-
-          const MAX_SPEED = 3.8;
-          const MIN_SPEED = 1.4;
-          const ARRIVE = 420;
-          const STEER = 0.018;
 
           const desiredSpeed = Math.min(MAX_SPEED, Math.max(MIN_SPEED, (dist / ARRIVE) * MAX_SPEED));
           const ux = dx / dist;
@@ -1157,9 +1144,6 @@
 
           o.vx += (desiredVx - o.vx) * STEER;
           o.vy += (desiredVy - o.vy) * STEER;
-
-          const WAVE_PUSH  = 0.040;
-          const MICRO_PUSH = 0.010;
 
           const tt = now * 0.001;
           o.vx += Math.sin(tt * 0.55 + o.seed) * WAVE_PUSH;
@@ -1190,22 +1174,8 @@
           }
         });
 
-        const SOLVER_PASSES = 42;
-        const SEPARATE_RATIO = 0.86;
-
-        const PHYS_GAP   = 70;
-        const VISUAL_GAP = 55;
-        const PAD = 24;
-
-        const rect = b.rect;
-        const stageArea = Math.max(rect.width * rect.height, 1);
-
-        // reuse same SCALE logic from your earlier sizing (approx; keeps behavior stable)
-        // (the sizes themselves were already set; this is only for solver gap approximation)
-        const SCALE = 1;
-        const PHYS_GAP_S   = Math.max(18, PHYS_GAP * SCALE);
-        const VISUAL_GAP_S = Math.max(18, VISUAL_GAP * SCALE);
-
+        /* ✅ FIX: DO NOT re-declare SCALE / gaps here.
+              Use the already-computed PHYS_GAP_S / VISUAL_GAP_S from init(). */
         for (let pass = 0; pass < SOLVER_PASSES; pass++){
           for (let i = 0; i < blobs.length; i++){
             for (let j = i + 1; j < blobs.length; j++){
@@ -1231,9 +1201,6 @@
           }
         }
 
-        const DAMP = 0.998;
-        const BOUNCE = 1.01;
-
         blobs.forEach(o => {
           o.vx *= DAMP;
           o.vy *= DAMP;
@@ -1241,14 +1208,12 @@
           o.x += o.vx;
           o.y += o.vy;
 
-          const minX = PAD;
-          const minY = PAD;
-          const maxX = Math.max(rect.width  - o.size - PAD, minX);
-          const maxY = Math.max(rect.height - o.size - PAD, minY);
+          const maxX = Math.max(b.maxXFor(o.size), b.minX);
+          const maxY = Math.max(b.maxYFor(o.size), b.minY);
 
-          if (o.x < minX){ o.x = minX; o.vx = Math.abs(o.vx) * BOUNCE; }
+          if (o.x < b.minX){ o.x = b.minX; o.vx = Math.abs(o.vx) * BOUNCE; }
           if (o.x > maxX){ o.x = maxX; o.vx = -Math.abs(o.vx) * BOUNCE; }
-          if (o.y < minY){ o.y = minY; o.vy = Math.abs(o.vy) * BOUNCE; }
+          if (o.y < b.minY){ o.y = b.minY; o.vy = Math.abs(o.vy) * BOUNCE; }
           if (o.y > maxY){ o.y = maxY; o.vy = -Math.abs(o.vy) * BOUNCE; }
 
           o.wrap.style.transform = `translate(${o.x}px, ${o.y}px)`;
