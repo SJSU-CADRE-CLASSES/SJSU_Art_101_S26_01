@@ -963,6 +963,47 @@
 
       requestAnimationFrame(animate);
     }
+    /* ========================
+   QUOTE ROTATOR (departure board style)
+======================== */
+
+const quotes = [
+"Less scrolling, more living. — Louise Myers",
+"How we spend our days is how we spend our lives. — Annie Dillard",
+"Technology is a useful servant but a dangerous master. — Christian Lous Lange",
+"The price of anything is the amount of life you exchange for it. — Henry David Thoreau",
+"It takes discipline not to let social media steal your time. — Alexis Ohanian",
+"Technology is a good servant but a bad master. — Gretchen Rubin",
+"Humans are not wired to be constantly wired. — Cal Newport",
+"To feel alive again, spend a day with your phone dead. — Tim Denning",
+"We are living in an attention economy and social media is addictive by design. — Tristan Harris"
+];
+
+const quoteEl = document.querySelector("#combine-overlay .small");
+
+if (quoteEl){
+  let qi = 0;
+
+  function typeQuote(text){
+    quoteEl.textContent = "";
+    let i = 0;
+
+    const typing = setInterval(() => {
+      quoteEl.textContent += text[i];
+      i++;
+      if(i >= text.length){
+        clearInterval(typing);
+
+        setTimeout(() => {
+          qi = (qi + 1) % quotes.length;
+          typeQuote(quotes[qi]);
+        }, 4000);
+      }
+    }, 24);
+  }
+
+  typeQuote(quotes[0]);
+}
   })();
   </script>
 
