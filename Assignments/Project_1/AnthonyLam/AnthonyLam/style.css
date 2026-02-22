@@ -228,3 +228,41 @@ h1{margin:0;text-align:center;font-size:72px;opacity:0.80;}
 @media (prefers-reduced-motion: reduce){
   .blob.pulse-on::after{ animation:none !important; opacity:0.92; transform: scale(1); }
 }
+/* your existing styles above ... */
+
+
+
+/* ===== COMBINE BUTTON (ghost fade-in) ===== */
+#combine-btn{
+  position:fixed;
+  bottom:48px;
+  right:48px;
+
+  font-family:"Doto", sans-serif;
+  font-size:18px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.25);
+  color:#111;
+
+  padding:14px 22px;
+  cursor:pointer;
+
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity 900ms ease, transform 900ms ease, border-color 300ms ease;
+  pointer-events:none;
+}
+
+#combine-btn.visible{
+  opacity:0.45;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+#combine-btn:hover{
+  opacity:0.9;
+  border-color:#111;
+}
