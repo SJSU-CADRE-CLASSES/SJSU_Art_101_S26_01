@@ -43,17 +43,17 @@
     }
 
     h1 {
-      font-family: 'Marck Script', cursive;
-      font-size: 7rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9rem;
       font-weight: 400;
       text-align: center;
       color: #f2e8a8;
-      letter-spacing: 0.02em;
-      /* Cursive pixel script: no smoothing + chunky pixel filter */
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+      /* DOS / pixel: no smoothing */
       -webkit-font-smoothing: none;
       -moz-osx-font-smoothing: unset;
       font-smooth: never;
-      text-rendering: geometricPrecision;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: url(#pixelate);
@@ -69,9 +69,7 @@
         3px 3px 0 #000,
         /* Metallic shine */
         -1px -1px 0 rgba(255,255,230,0.9),
-        1px 1px 0 rgba(180,160,80,0.6),
-        0 3px 6px rgba(0,0,0,0.4),
-        0 0 28px rgba(242,232,168,0.2);
+        1px 1px 0 rgba(180,160,80,0.6);
       animation: titleIdle 4s ease-in-out infinite;
     }
 
@@ -200,18 +198,18 @@
       66% { transform: translateX(2%) translateY(0.5%); }
     }
 
-    .bg-cloud-1 { width: 38%; height: 24%; left: -4%; top: 8%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 50s; animation-delay: 0s; }
-    .bg-cloud-2 { width: 32%; height: 19%; right: -6%; top: 22%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 55s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-3 { width: 48%; height: 21%; left: 22%; bottom: 12%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 60s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-4 { width: 26%; height: 17%; right: 12%; bottom: 28%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 48s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-5 { width: 20%; height: 13%; left: 8%; top: 42%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 52s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-6 { width: 28%; height: 15%; right: 22%; top: 52%; clip-path: url(#marioCloud6); -webkit-clip-path: url(#marioCloud6); animation-name: cloudDriftL; animation-duration: 58s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-7 { width: 36%; height: 19%; left: 38%; top: 4%; clip-path: url(#marioCloud7); -webkit-clip-path: url(#marioCloud7); animation-name: cloudDriftR2; animation-duration: 42s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-8 { width: 24%; height: 14%; left: 4%; bottom: 38%; clip-path: url(#marioCloud8); -webkit-clip-path: url(#marioCloud8); animation-name: cloudDriftL2; animation-duration: 50s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-9 { width: 30%; height: 18%; left: 55%; top: 14%; clip-path: url(#marioCloud9); -webkit-clip-path: url(#marioCloud9); animation-name: cloudDriftL; animation-duration: 53s; animation-delay: 4s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,245,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-10 { width: 34%; height: 20%; right: -2%; bottom: 18%; clip-path: url(#marioCloud10); -webkit-clip-path: url(#marioCloud10); animation-name: cloudDriftR2; animation-duration: 56s; animation-delay: 7s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,240,252,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-11 { width: 42%; height: 22%; left: 12%; top: 28%; clip-path: url(#marioCloud11); -webkit-clip-path: url(#marioCloud11); animation-name: cloudDriftR; animation-duration: 54s; animation-delay: 11s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,232,248,0.26)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-12 { width: 22%; height: 14%; right: 8%; top: 48%; clip-path: url(#marioCloud12); -webkit-clip-path: url(#marioCloud12); animation-name: cloudDriftL2; animation-duration: 51s; animation-delay: 9s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.24)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-1 { width: 46%; height: 28%; left: -4%; top: 6%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 50s; animation-delay: 0s; }
+    .bg-cloud-2 { width: 24%; height: 14%; right: -6%; top: 20%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 55s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-3 { width: 52%; height: 26%; left: 20%; bottom: 10%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 60s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-4 { width: 18%; height: 11%; right: 14%; bottom: 26%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 48s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-5 { width: 14%; height: 9%; left: 10%; top: 40%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 52s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-6 { width: 32%; height: 18%; right: 20%; top: 50%; clip-path: url(#marioCloud6); -webkit-clip-path: url(#marioCloud6); animation-name: cloudDriftL; animation-duration: 58s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-7 { width: 28%; height: 15%; left: 36%; top: 2%; clip-path: url(#marioCloud7); -webkit-clip-path: url(#marioCloud7); animation-name: cloudDriftR2; animation-duration: 42s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-8 { width: 20%; height: 12%; left: 2%; bottom: 36%; clip-path: url(#marioCloud8); -webkit-clip-path: url(#marioCloud8); animation-name: cloudDriftL2; animation-duration: 50s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-9 { width: 38%; height: 22%; left: 52%; top: 12%; clip-path: url(#marioCloud9); -webkit-clip-path: url(#marioCloud9); animation-name: cloudDriftL; animation-duration: 53s; animation-delay: 4s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,245,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-10 { width: 40%; height: 24%; right: -4%; bottom: 16%; clip-path: url(#marioCloud10); -webkit-clip-path: url(#marioCloud10); animation-name: cloudDriftR2; animation-duration: 56s; animation-delay: 7s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,240,252,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-11 { width: 50%; height: 26%; left: 8%; top: 26%; clip-path: url(#marioCloud11); -webkit-clip-path: url(#marioCloud11); animation-name: cloudDriftR; animation-duration: 54s; animation-delay: 11s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,232,248,0.26)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-12 { width: 16%; height: 10%; right: 10%; top: 46%; clip-path: url(#marioCloud12); -webkit-clip-path: url(#marioCloud12); animation-name: cloudDriftL2; animation-duration: 51s; animation-delay: 9s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.24)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
 
     /* Pixel art sun and stars (sky decor) */
     .sky-decor {
@@ -226,8 +224,8 @@
       left: 50%;
       bottom: -8%;
       transform: translateX(-50%);
-      width: 120px;
-      height: 120px;
+      width: 240px;
+      height: 225px;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
@@ -250,87 +248,85 @@
         <feMorphology in="SourceGraphic" result="dilated" operator="dilate" radius="2.8"/>
         <feMorphology in="dilated" operator="erode" radius="1.2"/>
       </filter>
-      <!-- Parting clouds: more bumps and variety on inner edge -->
+      <!-- Parting clouds: traditional puffy scalloped inner edge -->
       <clipPath id="leftCloudClip" clipPathUnits="objectBoundingBox">
-        <path d="M 0.02,0 Q -0.02,0.12 0.02,0.28 Q 0,0.4 0.02,0.52 Q -0.03,0.65 0.02,0.78 Q 0,0.9 0.02,1 L 1,1
-                 L 1,0.9 Q 0.94,0.86 0.92,0.78 Q 0.96,0.68 0.9,0.58 Q 0.94,0.48 0.88,0.38 Q 0.92,0.28 0.86,0.18 Q 0.94,0.08 1,0.04 L 1,0 L 0.02,0 Z" />
+        <path d="M 0.02,0 Q 0,0.25 0.02,0.5 Q 0,0.75 0.02,1 L 1,1
+                 L 1,0.85 Q 0.92,0.7 0.95,0.5 Q 0.92,0.3 1,0.15 L 1,0 L 0.02,0 Z" />
       </clipPath>
       <clipPath id="rightCloudClip" clipPathUnits="objectBoundingBox">
-        <path d="M 0.98,0 Q 1.02,0.12 0.98,0.28 Q 1,0.4 0.98,0.52 Q 1.03,0.65 0.98,0.78 Q 1,0.9 0.98,1 L 0,1
-                 L 0,0.9 Q 0.06,0.86 0.08,0.78 Q 0.04,0.68 0.1,0.58 Q 0.06,0.48 0.12,0.38 Q 0.08,0.28 0.14,0.18 Q 0.06,0.08 0,0.04 L 0,0 L 0.98,0 Z" />
+        <path d="M 0.98,0 Q 1,0.25 0.98,0.5 Q 1,0.75 0.98,1 L 0,1
+                 L 0,0.85 Q 0.08,0.7 0.05,0.5 Q 0.08,0.3 0,0.15 L 0,0 L 0.98,0 Z" />
       </clipPath>
-      <!-- Varied cumulus shapes: flat base, different puffy tops -->
+      <!-- Traditional clouds: flat base + 2 or 3 puffy bumps (overlapping circles style) -->
       <clipPath id="marioCloud1" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.52 Q 0,0.22 0.32,0.06 Q 0.5,0 0.68,0.06 Q 1,0.22 1,0.52 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.55 Q 0.2,0.3 0.4,0.5 Q 0.6,0.3 0.8,0.5 Q 1,0.35 1,0.55 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud2" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.58 Q 0,0.3 0.18,0.12 Q 0.38,0.02 0.5,0.06 Q 0.62,0.02 0.82,0.12 Q 1,0.3 1,0.58 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.6 Q 0.25,0.35 0.5,0.55 Q 0.75,0.35 1,0.6 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud3" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.42 Q 0,0.05 0.5,0 Q 1,0.05 1,0.42 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.5 Q 0.15,0.25 0.35,0.45 Q 0.5,0.2 0.65,0.45 Q 0.85,0.25 1,0.5 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud4" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.55 Q 0,0.18 0.38,0.04 Q 0.58,0 0.82,0.12 Q 1,0.32 1,0.55 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.58 Q 0.3,0.35 0.5,0.5 Q 0.7,0.35 1,0.58 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud5" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.6 Q 0,0.35 0.15,0.18 Q 0.35,0.06 0.5,0.1 Q 0.65,0.06 0.85,0.18 Q 1,0.35 1,0.6 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.65 Q 0.2,0.4 0.5,0.6 Q 0.8,0.4 1,0.65 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud6" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.7 Q 0,0.5 0.15,0.38 Q 0.32,0.28 0.5,0.32 Q 0.68,0.28 0.85,0.38 Q 1,0.5 1,0.7 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.62 Q 0.2,0.38 0.4,0.55 Q 0.6,0.38 0.8,0.55 Q 1,0.4 1,0.62 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud7" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.48 Q 0,0.15 0.28,0.02 Q 0.5,0 0.72,0.02 Q 1,0.15 1,0.48 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.5 Q 0.33,0.2 0.5,0.45 Q 0.67,0.2 1,0.5 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud8" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.75 Q 0,0.55 0.2,0.42 Q 0.45,0.28 0.5,0.35 Q 0.55,0.28 0.8,0.42 Q 1,0.55 1,0.75 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.68 Q 0.25,0.45 0.5,0.6 Q 0.75,0.45 1,0.68 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud9" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.62 Q 0,0.38 0.22,0.2 Q 0.45,0.06 0.5,0.1 Q 0.55,0.06 0.78,0.2 Q 1,0.38 1,0.62 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.55 Q 0.15,0.3 0.35,0.5 Q 0.5,0.28 0.65,0.5 Q 0.85,0.3 1,0.55 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud10" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.68 Q 0,0.45 0.12,0.3 Q 0.3,0.18 0.5,0.22 Q 0.7,0.18 0.88,0.3 Q 1,0.45 1,0.68 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.6 Q 0.2,0.35 0.4,0.52 Q 0.6,0.35 0.8,0.52 Q 1,0.38 1,0.6 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud11" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.5 Q 0,0.12 0.35,0 Q 0.65,0 1,0.12 L 1,0.5 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.48 Q 0.25,0.2 0.5,0.42 Q 0.75,0.2 1,0.48 L 1,1 Z" />
       </clipPath>
       <clipPath id="marioCloud12" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.72 Q 0.1,0.5 0.3,0.4 Q 0.5,0.35 0.7,0.4 Q 0.9,0.5 1,0.72 L 1,1 Z" />
+        <path d="M 0,1 L 0,0.65 Q 0.3,0.42 0.5,0.58 Q 0.7,0.42 1,0.65 L 1,1 Z" />
       </clipPath>
     </defs>
   </svg>
 </head>
 <body>
   <div class="sky-decor" aria-hidden="true">
-    <svg class="pixel-sun" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <!-- Pixel sun: round shape from 8px blocks, rising from bottom -->
-      <rect x="8" y="16" width="8" height="8" fill="#1a1a1a"/>
-      <rect x="16" y="16" width="8" height="8" fill="#1a1a1a"/>
-      <rect x="24" y="16" width="8" height="8" fill="#1a1a1a"/>
-      <rect x="32" y="16" width="8" height="8" fill="#1a1a1a"/>
-      <rect x="4" y="24" width="8" height="8" fill="#1a1a1a"/>
-      <rect x="12" y="24" width="8" height="8" fill="#ffc107"/>
-      <rect x="20" y="24" width="8" height="8" fill="#ffeb3b"/>
-      <rect x="28" y="24" width="8" height="8" fill="#ffeb3b"/>
-      <rect x="36" y="24" width="8" height="8" fill="#ffc107"/>
-      <rect x="8" y="32" width="8" height="8" fill="#ffc107"/>
-      <rect x="16" y="32" width="8" height="8" fill="#ffeb3b"/>
-      <rect x="24" y="32" width="8" height="8" fill="#fff59d"/>
-      <rect x="32" y="32" width="8" height="8" fill="#ffeb3b"/>
-      <rect x="16" y="40" width="8" height="8" fill="#ffc107"/>
-      <rect x="24" y="40" width="8" height="8" fill="#ffc107"/>
+    <svg class="pixel-sun" viewBox="0 -24 64 64" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+      <!-- Traditional sun: semicircle + 8 even straight rays -->
+      <g fill="#ffeb3b" stroke="none">
+        <polygon points="32,40 30,40 32,8 34,40"/>
+        <polygon points="32,40 35,36 56,22 37,44"/>
+        <polygon points="32,40 32,38 56,40 32,42"/>
+        <polygon points="32,40 37,44 56,58 35,36"/>
+        <polygon points="32,40 30,40 32,58 34,40"/>
+        <polygon points="32,40 29,44 8,58 31,36"/>
+        <polygon points="32,40 32,38 8,40 32,42"/>
+        <polygon points="32,40 27,36 8,22 31,44"/>
+      </g>
+      <!-- Half circle (rising sun disc) -->
+      <path fill="#ffd54f" d="M 12,40 A 20,20 0 0 1 52,40 L 52,64 L 12,64 Z"/>
+      <path fill="#ffeb3b" d="M 14,40 A 18,18 0 0 1 50,40 L 50,62 L 14,62 Z"/>
     </svg>
     <svg class="pixel-stars" viewBox="0 0 400 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Pixel stars scattered in top (darker) area - 4-point style -->
-      <g fill="#fff" fill-opacity="0.95"><rect x="24" y="8" width="2" height="2"/><rect x="25" y="7" width="2" height="2"/><rect x="25" y="9" width="2" height="2"/><rect x="23" y="8" width="2" height="2"/><rect x="27" y="8" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.9"><rect x="88" y="20" width="2" height="2"/><rect x="89" y="19" width="2" height="2"/><rect x="89" y="21" width="2" height="2"/><rect x="87" y="20" width="2" height="2"/><rect x="91" y="20" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.85"><rect x="160" y="4" width="2" height="2"/><rect x="161" y="3" width="2" height="2"/><rect x="161" y="5" width="2" height="2"/><rect x="159" y="4" width="2" height="2"/><rect x="163" y="4" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.95"><rect x="232" y="14" width="2" height="2"/><rect x="233" y="13" width="2" height="2"/><rect x="233" y="15" width="2" height="2"/><rect x="231" y="14" width="2" height="2"/><rect x="235" y="14" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.88"><rect x="304" y="22" width="2" height="2"/><rect x="305" y="21" width="2" height="2"/><rect x="305" y="23" width="2" height="2"/><rect x="303" y="22" width="2" height="2"/><rect x="307" y="22" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.92"><rect x="56" y="32" width="2" height="2"/><rect x="57" y="31" width="2" height="2"/><rect x="57" y="33" width="2" height="2"/><rect x="55" y="32" width="2" height="2"/><rect x="59" y="32" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.8"><rect x="200" y="28" width="2" height="2"/><rect x="201" y="27" width="2" height="2"/><rect x="201" y="29" width="2" height="2"/><rect x="199" y="28" width="2" height="2"/><rect x="203" y="28" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.9"><rect x="336" y="10" width="2" height="2"/><rect x="337" y="9" width="2" height="2"/><rect x="337" y="11" width="2" height="2"/><rect x="335" y="10" width="2" height="2"/><rect x="339" y="10" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.85"><rect x="120" y="38" width="2" height="2"/><rect x="121" y="37" width="2" height="2"/><rect x="121" y="39" width="2" height="2"/><rect x="119" y="38" width="2" height="2"/><rect x="123" y="38" width="2" height="2"/></g>
-      <g fill="#fff" fill-opacity="0.78"><rect x="272" y="6" width="2" height="2"/><rect x="273" y="5" width="2" height="2"/><rect x="273" y="7" width="2" height="2"/><rect x="271" y="6" width="2" height="2"/><rect x="275" y="6" width="2" height="2"/></g>
+      <!-- Stars with size variation: small (0.5), medium (1), large (1.4) -->
+      <g fill="#fff" fill-opacity="0.95" transform="translate(24,7.5) scale(0.5) translate(-24,-7.5)"><rect x="23" y="6" width="1" height="1"/><rect x="24" y="6" width="1" height="1"/><rect x="25" y="6" width="1" height="1"/><rect x="23" y="7" width="1" height="1"/><rect x="24" y="7" width="1" height="1"/><rect x="25" y="7" width="1" height="1"/><rect x="23" y="8" width="1" height="1"/><rect x="24" y="8" width="1" height="1"/><rect x="25" y="8" width="1" height="1"/><rect x="24" y="5" width="1" height="1"/><rect x="24" y="9" width="1" height="1"/><rect x="22" y="7" width="1" height="1"/><rect x="26" y="7" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.9"><rect x="87" y="18" width="1" height="1"/><rect x="88" y="18" width="1" height="1"/><rect x="89" y="18" width="1" height="1"/><rect x="87" y="19" width="1" height="1"/><rect x="88" y="19" width="1" height="1"/><rect x="89" y="19" width="1" height="1"/><rect x="87" y="20" width="1" height="1"/><rect x="88" y="20" width="1" height="1"/><rect x="89" y="20" width="1" height="1"/><rect x="88" y="17" width="1" height="1"/><rect x="88" y="21" width="1" height="1"/><rect x="86" y="19" width="1" height="1"/><rect x="90" y="19" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.85" transform="translate(160,3.5) scale(1.4) translate(-160,-3.5)"><rect x="159" y="2" width="1" height="1"/><rect x="160" y="2" width="1" height="1"/><rect x="161" y="2" width="1" height="1"/><rect x="159" y="3" width="1" height="1"/><rect x="160" y="3" width="1" height="1"/><rect x="161" y="3" width="1" height="1"/><rect x="159" y="4" width="1" height="1"/><rect x="160" y="4" width="1" height="1"/><rect x="161" y="4" width="1" height="1"/><rect x="160" y="1" width="1" height="1"/><rect x="160" y="5" width="1" height="1"/><rect x="158" y="3" width="1" height="1"/><rect x="162" y="3" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.95" transform="translate(232,13.5) scale(0.55) translate(-232,-13.5)"><rect x="231" y="12" width="1" height="1"/><rect x="232" y="12" width="1" height="1"/><rect x="233" y="12" width="1" height="1"/><rect x="231" y="13" width="1" height="1"/><rect x="232" y="13" width="1" height="1"/><rect x="233" y="13" width="1" height="1"/><rect x="231" y="14" width="1" height="1"/><rect x="232" y="14" width="1" height="1"/><rect x="233" y="14" width="1" height="1"/><rect x="232" y="11" width="1" height="1"/><rect x="232" y="15" width="1" height="1"/><rect x="230" y="13" width="1" height="1"/><rect x="234" y="13" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.88"><rect x="303" y="20" width="1" height="1"/><rect x="304" y="20" width="1" height="1"/><rect x="305" y="20" width="1" height="1"/><rect x="303" y="21" width="1" height="1"/><rect x="304" y="21" width="1" height="1"/><rect x="305" y="21" width="1" height="1"/><rect x="303" y="22" width="1" height="1"/><rect x="304" y="22" width="1" height="1"/><rect x="305" y="22" width="1" height="1"/><rect x="304" y="19" width="1" height="1"/><rect x="304" y="23" width="1" height="1"/><rect x="302" y="21" width="1" height="1"/><rect x="306" y="21" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.92" transform="translate(56,31.5) scale(1.35) translate(-56,-31.5)"><rect x="55" y="30" width="1" height="1"/><rect x="56" y="30" width="1" height="1"/><rect x="57" y="30" width="1" height="1"/><rect x="55" y="31" width="1" height="1"/><rect x="56" y="31" width="1" height="1"/><rect x="57" y="31" width="1" height="1"/><rect x="55" y="32" width="1" height="1"/><rect x="56" y="32" width="1" height="1"/><rect x="57" y="32" width="1" height="1"/><rect x="56" y="29" width="1" height="1"/><rect x="56" y="33" width="1" height="1"/><rect x="54" y="31" width="1" height="1"/><rect x="58" y="31" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.8" transform="translate(200,27.5) scale(0.5) translate(-200,-27.5)"><rect x="199" y="26" width="1" height="1"/><rect x="200" y="26" width="1" height="1"/><rect x="201" y="26" width="1" height="1"/><rect x="199" y="27" width="1" height="1"/><rect x="200" y="27" width="1" height="1"/><rect x="201" y="27" width="1" height="1"/><rect x="199" y="28" width="1" height="1"/><rect x="200" y="28" width="1" height="1"/><rect x="201" y="28" width="1" height="1"/><rect x="200" y="25" width="1" height="1"/><rect x="200" y="29" width="1" height="1"/><rect x="198" y="27" width="1" height="1"/><rect x="202" y="27" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.9" transform="translate(336,9.5) scale(0.6) translate(-336,-9.5)"><rect x="335" y="8" width="1" height="1"/><rect x="336" y="8" width="1" height="1"/><rect x="337" y="8" width="1" height="1"/><rect x="335" y="9" width="1" height="1"/><rect x="336" y="9" width="1" height="1"/><rect x="337" y="9" width="1" height="1"/><rect x="335" y="10" width="1" height="1"/><rect x="336" y="10" width="1" height="1"/><rect x="337" y="10" width="1" height="1"/><rect x="336" y="7" width="1" height="1"/><rect x="336" y="11" width="1" height="1"/><rect x="334" y="9" width="1" height="1"/><rect x="338" y="9" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.85" transform="translate(120,37.5) scale(0.55) translate(-120,-37.5)"><rect x="119" y="36" width="1" height="1"/><rect x="120" y="36" width="1" height="1"/><rect x="121" y="36" width="1" height="1"/><rect x="119" y="37" width="1" height="1"/><rect x="120" y="37" width="1" height="1"/><rect x="121" y="37" width="1" height="1"/><rect x="119" y="38" width="1" height="1"/><rect x="120" y="38" width="1" height="1"/><rect x="121" y="38" width="1" height="1"/><rect x="120" y="35" width="1" height="1"/><rect x="120" y="39" width="1" height="1"/><rect x="118" y="37" width="1" height="1"/><rect x="122" y="37" width="1" height="1"/></g>
+      <g fill="#fff" fill-opacity="0.78" transform="translate(272,5.5) scale(1.4) translate(-272,-5.5)"><rect x="271" y="4" width="1" height="1"/><rect x="272" y="4" width="1" height="1"/><rect x="273" y="4" width="1" height="1"/><rect x="271" y="5" width="1" height="1"/><rect x="272" y="5" width="1" height="1"/><rect x="273" y="5" width="1" height="1"/><rect x="271" y="6" width="1" height="1"/><rect x="272" y="6" width="1" height="1"/><rect x="273" y="6" width="1" height="1"/><rect x="272" y="3" width="1" height="1"/><rect x="272" y="7" width="1" height="1"/><rect x="270" y="5" width="1" height="1"/><rect x="274" y="5" width="1" height="1"/></g>
     </svg>
   </div>
   <div class="bg-clouds" aria-hidden="true">
