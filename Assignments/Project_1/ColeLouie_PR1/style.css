@@ -14,6 +14,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Jim Nightshade';
+  src: url('JimNightshade-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: 'Oswald', sans-serif;
   font-weight: 300; /* light */
@@ -41,11 +48,463 @@ body.page-marine-biologist {
 
 body.page-marine-biologist .marine-title {
   font-family: 'Quintessential', serif;
-  font-size: 3.5rem;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  font-size: 8rem;
+  color: #000;
   margin: 0;
   text-align: center;
+  align-self: flex-start;
+  padding-top: calc(2rem + 30px);
+  animation: marine-fade-in 2.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes marine-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.page-marine-biologist .marine-quote {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 3rem;
+  color: #000;
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 60%;
+  opacity: 0;
+  animation: marine-quote-fade-in 1s ease-out 4s forwards;
+}
+
+@keyframes marine-quote-fade-in {
+  to { opacity: 1; }
+}
+
+body.page-marine-biologist .marine-quote-bottom {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 3rem;
+  color: #000;
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  bottom: 12rem;
+  transform: translateX(-50%);
+  max-width: 70%;
+  opacity: 0;
+  animation: marine-quote-fade-in 1s ease-out 9s forwards;
+}
+
+body.page-marine-biologist .marine-squid-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  opacity: 0;
+  animation: marine-quote-fade-in 1s ease-out 13s forwards,
+             marine-squid-shake 5s ease-in-out 15s infinite;
+  display: inline-block;
+  line-height: 0;
+  cursor: pointer;
+}
+
+body.page-marine-biologist .marine-squid-btn:hover,
+body.page-marine-biologist .marine-squid-btn:active {
+  animation: marine-quote-fade-in 1s ease-out 13s forwards;
+  transform: translateX(-50%);
+}
+
+@keyframes marine-squid-shake {
+  0%, 90%, 100% { transform: translate(-50%, 0); }
+  92% { transform: translate(calc(-50% - 4px), 0); }
+  94% { transform: translate(calc(-50% + 4px), 0); }
+  96% { transform: translate(calc(-50% - 2px), 0); }
+}
+
+body.page-marine-biologist .marine-squid-btn img {
+  width: 300px;
+  height: auto;
+  display: block;
+}
+
+body.page-marine-biologist .marine-squid-btn {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+body.page-marine-biologist .marine-squid-btn:hover {
+  filter: brightness(1.1);
+}
+
+body.page-marine-biologist.marine-clearing .marine-title,
+body.page-marine-biologist.marine-clearing .marine-quote,
+body.page-marine-biologist.marine-clearing .marine-quote-bottom,
+body.page-marine-biologist.marine-clearing .marine-squid-btn {
+  opacity: 0 !important;
+  animation: none !important;
+  transition: opacity 1s ease-out;
+}
+
+body.page-marine-biologist .marine-reveal-quote {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 3rem;
+  color: #000;
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 4rem;
+  transform: translateX(-50%);
+  max-width: 70%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 1s;
+}
+
+body.page-marine-biologist.marine-clearing .marine-reveal-quote {
+  opacity: 1;
+}
+
+body.page-marine-biologist .marine-reveal-quote-2 {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 3rem;
+  color: #000;
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 70%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 5s;
+}
+
+body.page-marine-biologist.marine-clearing .marine-reveal-quote-2 {
+  opacity: 1;
+}
+
+body.page-marine-biologist .marine-scroll-img {
+  position: absolute;
+  right: 15%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  max-width: 200px;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 5s;
+}
+
+body.page-marine-biologist.marine-clearing .marine-scroll-img {
+  opacity: 1;
+}
+
+body.page-marine-biologist .marine-scroll-dropped {
+  opacity: 0 !important;
+  transition: none !important;
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+body.page-marine-biologist.marine-draggable-ready .marine-scroll-img {
+  pointer-events: auto;
+  cursor: grab;
+  animation: marine-scroll-initial-shake 1.2s ease-out,
+             marine-scroll-idle-vibrate 0.35s ease-in-out 4s infinite;
+}
+
+body.page-marine-biologist .marine-scroll-dragging {
+  cursor: grabbing;
+  z-index: 10;
+  animation: none !important;
+}
+
+@keyframes marine-scroll-initial-shake {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  10% { transform: translateY(-50%) translateX(-4px); }
+  20% { transform: translateY(-50%) translateX(4px); }
+  30% { transform: translateY(-50%) translateX(-3px); }
+  40% { transform: translateY(-50%) translateX(3px); }
+  50% { transform: translateY(-50%) translateX(-2px); }
+  60% { transform: translateY(-50%) translateX(2px); }
+  70% { transform: translateY(-50%) translateX(-1px); }
+  80% { transform: translateY(-50%) translateX(1px); }
+}
+
+@keyframes marine-scroll-idle-vibrate {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  25% { transform: translateY(-50%) translateX(-2px); }
+  50% { transform: translateY(-50%) translateX(2px); }
+  75% { transform: translateY(-50%) translateX(-1px); }
+}
+
+body.page-marine-biologist .marine-university-dropzone {
+  position: absolute;
+  left: 50%;
+  bottom: 4rem;
+  transform: translateX(-50%);
+  max-width: 400px;
+  width: 50%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 7s;
+}
+
+body.page-marine-biologist.marine-clearing .marine-university-dropzone {
+  opacity: 1;
+}
+
+body.page-marine-biologist .marine-degree-prompt {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 1.5rem;
+  color: #000;
+  text-align: center;
+  margin: 0 0 0.5rem 0;
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 7s;
+}
+
+body.page-marine-biologist.marine-clearing .marine-degree-prompt {
+  opacity: 1;
+}
+
+body.page-marine-biologist.marine-draggable-ready .marine-university-dropzone {
+  pointer-events: auto;
+}
+
+body.page-marine-biologist .marine-university-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+body.page-marine-biologist .marine-university-img {
+  transform-origin: center center;
+}
+
+body.page-marine-biologist .marine-university-shrink .marine-university-img {
+  animation: marine-spin-shrink 1.2s ease-in forwards;
+}
+
+@keyframes marine-spin-shrink {
+  0% { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(0) rotate(720deg); }
+}
+
+body.page-marine-biologist .marine-university-gone {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.page-marine-biologist .marine-graduate-cap-img {
+  position: absolute;
+  left: 50%;
+  bottom: 4rem;
+  transform: translateX(-50%) scale(0) rotate(0deg);
+  transform-origin: center center;
+  max-width: 280px;
+  width: 35%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.page-marine-biologist .marine-graduate-cap-visible {
+  opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: marine-graduate-cap-appear 1s ease-out forwards;
+}
+
+body.page-marine-biologist.marine-final-clear .marine-reveal-quote,
+body.page-marine-biologist.marine-final-clear .marine-reveal-quote-2,
+body.page-marine-biologist.marine-final-clear .marine-scroll-img,
+body.page-marine-biologist.marine-final-clear .marine-university-dropzone,
+body.page-marine-biologist.marine-final-clear .marine-graduate-cap-img {
+  opacity: 0 !important;
+  animation: none !important;
+  transition: opacity 1s ease-out;
+}
+
+body.page-marine-biologist .marine-whale-quote {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 3rem;
+  color: #000;
+  text-align: left;
+  margin: 0;
+  position: absolute;
+  left: 2rem;
+  top: 4rem;
+  max-width: 55%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 1s;
+}
+
+body.page-marine-biologist.marine-final-clear .marine-whale-quote {
+  opacity: 1;
+}
+
+body.page-marine-biologist .marine-drag-prompt {
+  font-family: 'Jim Nightshade', cursive;
+  font-size: 2.5rem;
+  color: #000;
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 85px);
+  transform: translate(-50%, -50%);
+  max-width: 60%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 5.5s;
+}
+
+body.page-marine-biologist.marine-final-clear .marine-drag-prompt {
+  opacity: 1;
+}
+
+body.page-marine-biologist .marine-gray-whale-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 80vh);
+  max-width: 1200px;
+  width: 90%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease-out 4s, transform 1.2s ease-out 4s;
+}
+
+body.page-marine-biologist.marine-final-clear .marine-gray-whale-img {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+body.page-marine-biologist .marine-satchel-img,
+body.page-marine-biologist .marine-computer-img {
+  position: absolute;
+  max-width: 240px;
+  width: 24%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-out 5.5s;
+}
+
+body.page-marine-biologist.marine-final-clear .marine-satchel-img {
+  opacity: 1;
+  left: 28%;
+  top: 68%;
+  pointer-events: auto;
+  cursor: grab;
+}
+
+body.page-marine-biologist.marine-final-clear .marine-computer-img {
+  opacity: 1;
+  left: calc(55% - 20px);
+  top: calc(68% + 10px);
+  right: auto;
+  max-width: 300px;
+  width: 30%;
+  pointer-events: auto;
+  cursor: grab;
+}
+
+body.page-marine-biologist .marine-item-dragging {
+  cursor: grabbing;
+  z-index: 10;
+}
+
+body.page-marine-biologist .marine-computer-shake {
+  animation: marine-computer-wrong 0.6s ease-in-out;
+}
+
+@keyframes marine-computer-wrong {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+
+body.page-marine-biologist.marine-whale-correct .marine-whale-quote,
+body.page-marine-biologist.marine-whale-correct .marine-drag-prompt,
+body.page-marine-biologist.marine-whale-correct .marine-satchel-img,
+body.page-marine-biologist.marine-whale-correct .marine-computer-img {
+  opacity: 0 !important;
+  animation: none !important;
+  transition: opacity 1s ease-out;
+}
+
+body.page-marine-biologist.marine-whale-correct .marine-gray-whale-img {
+  top: 8rem;
+  transform: translate(-50%, 0);
+  transition: top 1s ease-out, transform 1s ease-out;
+}
+
+body.page-marine-biologist .marine-charts-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  padding-top: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease-out 1s;
+}
+
+body.page-marine-biologist.marine-whale-correct .marine-charts-container {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.page-marine-biologist .marine-chart-img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+@keyframes marine-graduate-cap-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) rotate(360deg);
+  }
 }
 
 h1.intro-block {
