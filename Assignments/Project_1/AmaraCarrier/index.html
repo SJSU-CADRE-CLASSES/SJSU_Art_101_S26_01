@@ -177,6 +177,7 @@
       clip-path: url(#marioCloud1);
       -webkit-clip-path: url(#marioCloud1);
       animation: cloudDriftR 45s ease-in-out infinite;
+      opacity: 0.55;
     }
 
     @keyframes cloudDriftR {
@@ -224,8 +225,8 @@
       left: 50%;
       bottom: -8%;
       transform: translateX(-50%);
-      width: 240px;
-      height: 225px;
+      width: 360px;
+      height: 338px;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
@@ -257,63 +258,74 @@
         <path d="M 0.98,0 Q 1,0.25 0.98,0.5 Q 1,0.75 0.98,1 L 0,1
                  L 0,0.85 Q 0.08,0.7 0.05,0.5 Q 0.08,0.3 0,0.15 L 0,0 L 0.98,0 Z" />
       </clipPath>
-      <!-- Traditional clouds: puffy bumps, rounded left, rounded bottom, no right edge -->
+      <!-- Fluffy varied cumulus: rounder curves, different lobe counts and proportions, no right edge -->
       <clipPath id="marioCloud1" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.55 L 1,0.55 Q 0.6,0.3 0.4,0.5 Q 0.2,0.3 0,0.55 Q -0.06,0.82 0,1 Z" />
+        <!-- Wide flat: 4 soft puffs, low -->
+        <path d="M 0,0.94 Q 0.05,0.9 0.15,0.94 Q 0.1,0.6 0.22,0.48 Q 0.18,0.28 0.35,0.38 Q 0.3,0.2 0.5,0.32 Q 0.45,0.18 0.65,0.38 Q 0.58,0.28 0.78,0.48 Q 0.72,0.4 0.88,0.62 Q 0.85,0.72 0.96,0.82 L 1.06,0.82 L 1.06,1 Q 0.5,1.05 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud2" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.6 L 1,0.6 Q 0.75,0.35 0.5,0.55 Q 0.25,0.35 0,0.6 Q -0.06,0.85 0,1 Z" />
+        <!-- Tall classic: 3 puffs, middle highest, very round -->
+        <path d="M 0,0.88 Q 0.04,0.78 0.2,0.88 Q 0.12,0.45 0.32,0.28 Q 0.26,0.08 0.5,0.2 Q 0.44,0.02 0.68,0.28 Q 0.62,0.45 0.82,0.65 Q 0.78,0.78 0.94,0.88 L 1.05,0.88 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud3" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.5 L 1,0.5 Q 0.85,0.25 0.65,0.45 Q 0.5,0.2 0.35,0.45 Q 0.15,0.25 0,0.5 Q -0.06,0.8 0,1 Z" />
+        <!-- Double puff: two big overlapping blobs -->
+        <path d="M 0,0.9 Q 0.02,0.7 0.2,0.82 Q 0.15,0.35 0.45,0.35 Q 0.4,0.15 0.65,0.35 Q 0.6,0.5 0.85,0.7 Q 0.82,0.82 0.98,0.9 L 1.05,0.9 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud4" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.58 L 1,0.58 Q 0.7,0.35 0.5,0.5 Q 0.3,0.35 0,0.58 Q -0.06,0.83 0,1 Z" />
+        <!-- Stretched: wide, 3 soft mounds, shallow dips -->
+        <path d="M 0,0.92 Q 0.08,0.84 0.22,0.9 Q 0.18,0.52 0.4,0.42 Q 0.34,0.25 0.58,0.38 Q 0.5,0.22 0.75,0.42 Q 0.68,0.55 0.9,0.72 Q 0.86,0.82 1,0.9 L 1.06,0.9 L 1.06,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud5" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.65 L 1,0.65 Q 0.8,0.4 0.5,0.6 Q 0.2,0.4 0,0.65 Q -0.06,0.88 0,1 Z" />
+        <!-- Chubby: 4 round puffs, similar size -->
+        <path d="M 0,0.9 Q 0.06,0.82 0.18,0.88 Q 0.14,0.48 0.3,0.35 Q 0.26,0.18 0.42,0.32 Q 0.36,0.15 0.54,0.35 Q 0.48,0.2 0.68,0.42 Q 0.62,0.35 0.8,0.55 Q 0.76,0.68 0.92,0.8 L 1.05,0.8 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud6" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.62 L 1,0.62 Q 0.8,0.55 0.6,0.38 Q 0.4,0.55 0.2,0.38 Q 0.2,0.38 0,0.62 Q -0.06,0.84 0,1 Z" />
+        <!-- Asymmetric: left big, right smaller -->
+        <path d="M 0,0.88 Q 0.02,0.65 0.22,0.82 Q 0.18,0.38 0.42,0.32 Q 0.36,0.12 0.58,0.28 Q 0.5,0.15 0.72,0.38 Q 0.65,0.5 0.85,0.68 Q 0.82,0.78 0.96,0.86 L 1.04,0.86 L 1.04,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud7" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.5 L 1,0.5 Q 0.67,0.2 0.5,0.45 Q 0.33,0.2 0,0.5 Q -0.06,0.8 0,1 Z" />
+        <!-- Fluffy pillow: 2 big soft mounds -->
+        <path d="M 0,0.92 Q 0.02,0.75 0.25,0.88 Q 0.2,0.4 0.5,0.4 Q 0.45,0.18 0.72,0.42 Q 0.68,0.58 0.9,0.78 Q 0.88,0.88 1,0.94 L 1.05,0.94 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud8" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.68 L 1,0.68 Q 0.75,0.45 0.5,0.6 Q 0.25,0.45 0,0.68 Q -0.06,0.88 0,1 Z" />
+        <!-- Scattered: 5 small bumps, irregular -->
+        <path d="M 0,0.92 Q 0.04,0.85 0.12,0.9 Q 0.08,0.55 0.2,0.45 Q 0.16,0.28 0.32,0.38 Q 0.28,0.22 0.45,0.35 Q 0.4,0.25 0.58,0.42 Q 0.52,0.35 0.7,0.52 Q 0.64,0.48 0.82,0.65 Q 0.78,0.78 0.92,0.85 L 1.05,0.85 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud9" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.55 L 1,0.55 Q 0.85,0.3 0.65,0.5 Q 0.5,0.28 0.35,0.5 Q 0.15,0.3 0,0.55 Q -0.06,0.82 0,1 Z" />
+        <!-- Round blob: one main dome, small side nubs -->
+        <path d="M 0,0.9 Q 0.02,0.78 0.15,0.88 Q 0.1,0.5 0.35,0.45 Q 0.28,0.2 0.55,0.35 Q 0.48,0.15 0.72,0.38 Q 0.65,0.5 0.88,0.68 Q 0.85,0.8 0.98,0.88 L 1.05,0.88 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud10" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.6 L 1,0.6 Q 0.8,0.52 0.6,0.35 Q 0.4,0.52 0.2,0.35 Q 0.2,0.35 0,0.6 Q -0.06,0.84 0,1 Z" />
+        <!-- Wide and low: 5 small puffs in a row -->
+        <path d="M 0,0.95 Q 0.04,0.9 0.12,0.94 Q 0.08,0.62 0.2,0.52 Q 0.16,0.35 0.32,0.44 Q 0.28,0.3 0.45,0.42 Q 0.4,0.32 0.58,0.48 Q 0.52,0.4 0.7,0.58 Q 0.65,0.55 0.85,0.72 L 1.05,0.72 L 1.05,1 Q 0.5,1.05 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud11" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.48 L 1,0.48 Q 0.75,0.2 0.5,0.42 Q 0.25,0.2 0,0.48 Q -0.06,0.78 0,1 Z" />
+        <!-- Tall double: 2 tall narrow puffs -->
+        <path d="M 0,0.88 Q 0.02,0.72 0.18,0.85 Q 0.12,0.38 0.38,0.32 Q 0.32,0.1 0.55,0.28 Q 0.48,0.12 0.72,0.35 Q 0.65,0.48 0.88,0.68 Q 0.85,0.8 0.98,0.88 L 1.04,0.88 L 1.04,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
       <clipPath id="marioCloud12" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 Q 0.5,1.07 1,1 L 1.2,1 L 1.2,0.65 L 1,0.65 Q 0.7,0.42 0.5,0.58 Q 0.3,0.42 0,0.65 Q -0.06,0.88 0,1 Z" />
+        <!-- Lumpy: 3 puffs, different roundness -->
+        <path d="M 0,0.9 Q 0.06,0.8 0.2,0.88 Q 0.14,0.45 0.38,0.35 Q 0.32,0.18 0.55,0.32 Q 0.48,0.12 0.72,0.38 Q 0.64,0.52 0.85,0.7 Q 0.8,0.82 0.95,0.9 L 1.05,0.9 L 1.05,1 Q 0.5,1.04 0,1 Z" />
       </clipPath>
     </defs>
   </svg>
 </head>
 <body>
   <div class="sky-decor" aria-hidden="true">
-    <svg class="pixel-sun" viewBox="0 -24 64 64" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-      <!-- Traditional sun: semicircle + 8 even straight rays -->
-      <g fill="#ffeb3b" stroke="none">
-        <polygon points="32,40 30,40 32,8 34,40"/>
-        <polygon points="32,40 35,36 56,22 37,44"/>
-        <polygon points="32,40 32,38 56,40 32,42"/>
-        <polygon points="32,40 37,44 56,58 35,36"/>
-        <polygon points="32,40 30,40 32,58 34,40"/>
-        <polygon points="32,40 29,44 8,58 31,36"/>
-        <polygon points="32,40 32,38 8,40 32,42"/>
-        <polygon points="32,40 27,36 8,22 31,44"/>
-      </g>
+    <svg class="pixel-sun" viewBox="0 -12 32 32" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color="#ffeb3b" stop-opacity="0.95"/>
+          <stop offset="35%" stop-color="#ffd54f" stop-opacity="0.6"/>
+          <stop offset="65%" stop-color="#ffb74d" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#ff9800" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Smooth gradient glow -->
+      <ellipse cx="16" cy="20" rx="18" ry="22" fill="url(#sunGlow)"/>
       <!-- Half circle (rising sun disc) -->
-      <path fill="#ffd54f" d="M 12,40 A 20,20 0 0 1 52,40 L 52,64 L 12,64 Z"/>
-      <path fill="#ffeb3b" d="M 14,40 A 18,18 0 0 1 50,40 L 50,62 L 14,62 Z"/>
+      <path fill="#ffd54f" d="M 6,20 A 10,10 0 0 1 26,20 L 26,32 L 6,32 Z"/>
+      <path fill="#ffeb3b" d="M 7,20 A 9,9 0 0 1 25,20 L 25,31 L 7,31 Z"/>
     </svg>
     <svg class="pixel-stars" viewBox="0 0 400 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Stars with size variation: small (0.5), medium (1), large (1.4) -->
