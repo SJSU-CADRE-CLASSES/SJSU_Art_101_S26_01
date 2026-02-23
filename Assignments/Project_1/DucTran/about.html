@@ -12,7 +12,7 @@
   <div class="wrap">
     <header>
       <h1>Data Self Portrait</h1>
-      <p class="subtitle">Duc Tran — About the data</p>
+      <p class="subtitle">Duc Tran — How this dataset was collected</p>
       <div class="channel-label">Channels</div>
       <nav>
         <a href="channel-about-myself.html">About Myself</a>
@@ -29,8 +29,8 @@
     </header>
     <main class="about">
       <section class="card">
-        <h2>Using Discord data</h2>
-        <p>This project uses a dataset inspired by <strong>Discord</strong>. You can request your own copy of your Discord data and use it to replace the sample data in this site.</p>
+        <h2>Source: Discord data export</h2>
+        <p>This site is built on a <strong>personal dataset</strong> from my Discord account. I requested a copy of my data from Discord and used it to power the Activity, Servers, and Words pages. You can do the same and plug your numbers into this structure.</p>
         <p><strong>How to get your Discord data:</strong></p>
         <ol style="margin:0 0 1rem 0; padding-left:1.25rem; color:#b5bac1;">
           <li>Open Discord (desktop or browser).</li>
@@ -42,8 +42,8 @@
         <p>The export includes account info, messages (DMs and servers), and activity. You can open the JSON/CSV files, summarize message counts by month or server, and update <code>data/discord-data.js</code> with your real numbers and word counts so this portrait reflects your actual usage.</p>
       </section>
       <section class="card">
-        <h2>Narrative</h2>
-        <p>This data self portrait turns my Discord activity into a simple narrative: <em>when</em> I message (activity by month and day of week), <em>where</em> I hang out (servers), and <em>how</em> I talk (word frequency). Right now the site uses sample data so it runs without waiting for an export. Once I have my real Discord package, I’ll replace the numbers in <code>discord-data.js</code> to make the visualizations and story about me.</p>
+        <h2>What this dataset captures</h2>
+        <p><em>When</em> I message (by month and day of week), <em>where</em> I message (which servers), and <em>how</em> I write (word frequency). The numbers are stored in <code>data/discord-data.js</code> (or inlined in each page). Replace them with your own export to make the site a portrait of your data.</p>
       </section>
     </main>
     <footer>SJSU Art 101 S26 — Project 1</footer>
