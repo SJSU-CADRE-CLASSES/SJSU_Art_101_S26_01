@@ -241,6 +241,40 @@
       image-rendering: pixelated;
     }
 
+    .dialogue-skip {
+      position: absolute;
+      top: 0.9rem;
+      right: 1.6rem;
+      padding: 0.16rem 0.8rem;
+      background: #120a1b;
+      border: 3px solid #000;
+      box-shadow: 0 0 0 2px #000;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      image-rendering: pixelated;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        background-color 0.12s ease-out;
+    }
+
+    .dialogue-skip:hover {
+      transform: translateY(-2px);
+      background: #241030;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 12px rgba(200,160,255,0.85);
+    }
+
+    .dialogue-skip:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 0 2px #000;
+    }
+
     .grim-question {
       position: absolute;
       top: 35%;
@@ -434,10 +468,10 @@
     }
 
     .spirit-next-btn,
-    .spirit-breakdown-btn {
+    .spirit-breakdown-btn,
+    .spirit-save-btn {
       margin-top: 1rem;
       padding: 0.4rem 1.4rem;
-      background: #120a1b;
       border: 3px solid #000;
       box-shadow: 0 0 0 2px #000;
       color: #ffffff;
@@ -453,8 +487,35 @@
         background-color 0.12s ease-out;
     }
 
+    .spirit-next-btn {
+      display: block;
+      margin: 1.1rem auto 0;
+      min-width: 7.5rem;
+      background: #0fd5ff;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 10px rgba(120,240,255,0.9);
+      color: #000000;
+    }
+
+    .spirit-breakdown-btn {
+      background: #120a1b;
+    }
+
+    .spirit-save-btn {
+      display: block;
+      margin: 1.2rem auto 0;
+      min-width: 11rem;
+      background: #0fd5ff;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 10px rgba(120,240,255,0.9);
+      color: #000000;
+    }
+
     .spirit-next-btn:hover,
-    .spirit-breakdown-btn:hover {
+    .spirit-breakdown-btn:hover,
+    .spirit-save-btn:hover {
       transform: translateY(-2px);
       background: #241030;
       box-shadow:
@@ -469,15 +530,12 @@
     }
 
     .spirit-animal-canvas {
-      margin: 0.8rem 0 0.6rem;
-      width: 320px;
-      height: 240px;
-      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.2), transparent 60%);
+      margin: 1rem 0 0.8rem;
+      width: 420px;
+      height: 320px;
+      background: #120918;
       border: 3px solid #000;
-      box-shadow:
-        0 0 0 2px #000,
-        0 0 28px rgba(220,210,255,0.95),
-        0 0 60px rgba(160,130,255,0.9);
+      box-shadow: 0 0 0 2px #000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -581,6 +639,7 @@
   <div class="dialogue-box" aria-label="Grimmothee speaking">
     <div class="dialogue-name">Grimmothee</div>
     <div class="dialogue-text" id="grimDialogueText"></div>
+    <button class="dialogue-skip" id="grimSkipBtn" type="button" aria-label="Skip to questions">SKIP</button>
     <button class="dialogue-next" id="grimNextBtn" type="button" aria-label="Next line">
       <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <!-- simple 8-bit skull -->
@@ -627,6 +686,9 @@
         See how this was generated
       </button>
       <div class="spirit-breakdown" id="spiritBreakdown"></div>
+      <button class="spirit-save-btn" id="spiritSaveBtn" type="button">
+        Save game &amp; go to Load Saves
+      </button>
     </div>
   </div>
 
@@ -927,31 +989,21 @@
           </g>
         `;
 
-        const baseSize = 40 * scale;
+        const baseSize = 64 * scale;
 
         return `
           <svg xmlns="http://www.w3.org/2000/svg"
                width="${baseSize}" height="${baseSize}"
                viewBox="0 0 18 18"
                aria-hidden="true">
-            <defs>
-              <filter id="spiritGlow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="0.3" result="blur" />
-                <feColorMatrix in="blur" type="matrix"
-                  values="1 0 0 0 0
-                          0 1 0 0 0
-                          0 0 1 0 0
-                          0 0 0 1 0" />
-              </filter>
-            </defs>
             <rect x="0" y="0" width="18" height="18" fill="none" />
-            <g filter="url(#spiritGlow)">
-              ${bodyGroup}
-              ${accentGroup}
-            </g>
+            ${bodyGroup}
+            ${accentGroup}
           </svg>
         `;
       }
+
+      let lastSpiritProfile = null;
 
       function renderSpiritResult(config) {
         const questionsEl = document.getElementById('spiritQuestions');
@@ -962,6 +1014,7 @@
         const breakdownEl = document.getElementById('spiritBreakdown');
         const spiritAnswerInput = document.getElementById('spiritAnswerInput');
         const titleEl = document.getElementById('spiritResultTitle');
+        const saveBtn = document.getElementById('spiritSaveBtn');
 
         if (questionsEl) {
           questionsEl.classList.remove('spirit-questions--visible');
@@ -989,6 +1042,12 @@
         const start = nameStarts[Math.floor(Math.random() * nameStarts.length)];
         const end = nameEnds[Math.floor(Math.random() * nameEnds.length)];
         const spiritName = start + end;
+
+        lastSpiritProfile = {
+          name: spiritName,
+          ...config,
+          createdAt: Date.now()
+        };
 
         if (titleEl) {
           titleEl.textContent = `Your Spirimal: ${spiritName}`;
@@ -1030,6 +1089,26 @@
             <div><strong>Has wings:</strong> ${config.hasWings ? 'Yes' : 'No'}</div>
           `;
         }, { once: true });
+
+        if (saveBtn) {
+          saveBtn.addEventListener('click', function () {
+            try {
+              const existing = localStorage.getItem('spirimal_saves');
+              let saves = [];
+              if (existing) {
+                try {
+                  const parsed = JSON.parse(existing);
+                  if (Array.isArray(parsed)) saves = parsed;
+                } catch (e) { /* ignore parse errors */ }
+              }
+              saves.push(lastSpiritProfile || { name: spiritName, createdAt: Date.now() });
+              localStorage.setItem('spirimal_saves', JSON.stringify(saves));
+            } catch (e) {
+              // If storage fails, still navigate
+            }
+            window.location.href = 'load-saves.html';
+          }, { once: true });
+        }
       }
 
       function startGrimithyDialogue() {
@@ -1039,6 +1118,7 @@
         const textEl = document.getElementById('grimDialogueText');
         const nextBtn = document.getElementById('grimNextBtn');
         const heartBtn = document.getElementById('grimHeartBtn');
+        const skipBtn = document.getElementById('grimSkipBtn');
         const grimSvg = document.querySelector('.grim-reaper');
         const questionEl = document.getElementById('grimQuestion');
         const dialogueBox = document.querySelector('.dialogue-box');
@@ -1090,6 +1170,26 @@
         ];
         let lineIndex = 0;
         let typing = false;
+
+        function openSpiritQuestions() {
+          typing = false;
+          if (dialogueBox) {
+            dialogueBox.classList.add('dialogue-box--hidden');
+            setTimeout(function () {
+              dialogueBox.style.display = 'none';
+            }, 260);
+          }
+          if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
+            return;
+          }
+          currentQuestionIndex = 0;
+          spiritQuestionsEl.classList.add('spirit-questions--visible');
+          spiritQuestionsEl.setAttribute('aria-hidden', 'false');
+          spiritQuestionTitle.textContent = spiritQuestions[0].title;
+          spiritQuestionBody.textContent = spiritQuestions[0].prompt;
+          spiritAnswerInput.value = '';
+          spiritAnswerInput.focus();
+        }
 
         function typeLine(idx) {
           const fullText = lines[idx];
@@ -1165,7 +1265,7 @@
             }
             index += 1;
 
-            const delay = 38 + Math.random() * 60;
+            const delay = 22 + Math.random() * 32;
             setTimeout(stepType, delay);
           }
 
@@ -1185,19 +1285,13 @@
         if (heartBtn) {
           heartBtn.addEventListener('click', function () {
             if (typing) return;
-            if (dialogueBox) {
-              dialogueBox.classList.add('dialogue-box--hidden');
-            }
-            if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
-              return;
-            }
-            currentQuestionIndex = 0;
-            spiritQuestionsEl.classList.add('spirit-questions--visible');
-            spiritQuestionsEl.setAttribute('aria-hidden', 'false');
-            spiritQuestionTitle.textContent = spiritQuestions[0].title;
-            spiritQuestionBody.textContent = spiritQuestions[0].prompt;
-            spiritAnswerInput.value = '';
-            spiritAnswerInput.focus();
+            openSpiritQuestions();
+          });
+        }
+
+        if (skipBtn) {
+          skipBtn.addEventListener('click', function () {
+            openSpiritQuestions();
           });
         }
 
