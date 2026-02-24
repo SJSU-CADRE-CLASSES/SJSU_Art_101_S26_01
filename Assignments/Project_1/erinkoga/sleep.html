@@ -79,28 +79,6 @@
             display: inline-block;
             margin-top: 0.5rem;
         }
-        .bed-wrap {
-            position: relative;
-            z-index: 1;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .sleep-button {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 999px;
-            border: none;
-            cursor: pointer;
-            background-color: #ccdaf0;
-            color: #334157;
-            font-family: "Times New Roman", Times, serif;
-        }
-        .sleep-button:hover {
-            background-color: #f0f6ff;
-        }
     </style>
 </head>
 <body>
@@ -109,16 +87,5 @@
         <h2>click the bed to sleep</h2>
         <a href="index.html">Back to lobby</a>
     </div>
-    <div class="bed-wrap">
-        <button class="sleep-button" id="sleepButton">Sleep</button>
-    </div>
 </body>
-<script>
-    const sleepButton = document.getElementById('sleepButton');
-    if (sleepButton) {
-        sleepButton.addEventListener('click', () => {
-            alert("hours slept per night");
-        });
-    }
-</script>
 </html>
