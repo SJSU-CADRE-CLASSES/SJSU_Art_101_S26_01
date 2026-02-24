@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>February 11, 2026 · Scrapbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Caveat', cursive;
+      min-height: 100vh;
+      background: #e8ddd0;
+      background-image:
+        radial-gradient(circle at 20% 80%, rgba(210, 180, 140, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 228, 196, 0.4) 0%, transparent 50%);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .back-link {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.9rem;
+      color: #6b5344;
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255,255,255,0.8);
+      border-radius: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .back-link:hover { background: #fff; }
+    .date-label {
+      font-size: 1.4rem;
+      color: #6b5344;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.02em;
+    }
+    .message {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #5c4a5a;
+      text-align: center;
+      max-width: 20ch;
+      line-height: 1.3;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+      position: relative;
+      z-index: 2;
+    }
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .confetti span {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: fall linear infinite;
+    }
+    .confetti .sq {
+      border-radius: 2px;
+      width: 8px;
+      height: 8px;
+    }
+    .confetti span:nth-child(1)  { left: 5%;  background: #ff9eb5; animation-duration: 3.2s; animation-delay: 0s;    animation-timing-function: linear; }
+    .confetti span:nth-child(2)  { left: 12%; background: #b8e6d5; animation-duration: 3.8s; animation-delay: 0.2s;  animation-timing-function: linear; }
+    .confetti span:nth-child(3)  { left: 18%; background: #ffd93d; animation-duration: 2.9s; animation-delay: 0.5s;  animation-timing-function: linear; }
+    .confetti span:nth-child(4)  { left: 25%; background: #d4c5f9; animation-duration: 3.5s; animation-delay: 0.1s;  animation-timing-function: linear; }
+    .confetti span:nth-child(5)  { left: 32%; background: #ffb8c9; animation-duration: 3.1s; animation-delay: 0.4s;  animation-timing-function: linear; }
+    .confetti span:nth-child(6)  { left: 40%; background: #6b5344; animation-duration: 2.7s; animation-delay: 0.7s;  animation-timing-function: linear; }
+    .confetti span:nth-child(7)  { left: 48%; background: #ff9eb5; animation-duration: 3.4s; animation-delay: 0s;    animation-timing-function: linear; }
+    .confetti span:nth-child(8)  { left: 55%; background: #b8e6d5; animation-duration: 2.8s; animation-delay: 0.3s;  animation-timing-function: linear; }
+    .confetti span:nth-child(9)  { left: 62%; background: #ffd93d; animation-duration: 3.6s; animation-delay: 0.6s;  animation-timing-function: linear; }
+    .confetti span:nth-child(10) { left: 70%; background: #d4c5f9; animation-duration: 3s;   animation-delay: 0.2s;  animation-timing-function: linear; }
+    .confetti span:nth-child(11) { left: 78%; background: #ff9eb5; animation-duration: 3.3s; animation-delay: 0.5s;  animation-timing-function: linear; width: 8px; height: 8px; border-radius: 2px; }
+    .confetti span:nth-child(12) { left: 85%; background: #b8e6d5; animation-duration: 2.6s; animation-delay: 0.1s;  animation-timing-function: linear; width: 6px; height: 6px; border-radius: 2px; }
+    .confetti span:nth-child(13) { left: 92%; background: #ffb8c9; animation-duration: 3.2s; animation-delay: 0.4s;  animation-timing-function: linear; }
+    .confetti span:nth-child(14) { left: 8%;  background: #d4c5f9; animation-duration: 3.5s; animation-delay: 0.8s;  animation-timing-function: linear; }
+    .confetti span:nth-child(15) { left: 22%; background: #ff9eb5; animation-duration: 2.9s; animation-delay: 0.3s;  animation-timing-function: linear; }
+    .confetti span:nth-child(16) { left: 45%; background: #ffd93d; animation-duration: 3.1s; animation-delay: 0.6s;  animation-timing-function: linear; }
+    .confetti span:nth-child(17) { left: 68%; background: #b8e6d5; animation-duration: 2.7s; animation-delay: 0.2s;  animation-timing-function: linear; }
+    .confetti span:nth-child(18) { left: 88%; background: #ff9eb5; animation-duration: 3.4s; animation-delay: 0.5s;  animation-timing-function: linear; }
+    @keyframes fall {
+      0% {
+        transform: translateY(-10px) translateX(0) rotate(0deg);
+        opacity: 1;
+      }
+      25% {
+        transform: translateY(25vh) translateX(15px) rotate(90deg);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(50vh) translateX(-10px) rotate(180deg);
+        opacity: 1;
+      }
+      75% {
+        transform: translateY(75vh) translateX(8px) rotate(270deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) translateX(-5px) rotate(360deg);
+        opacity: 0.9;
+      }
+    }
+    .washi-tape {
+      position: fixed;
+      height: 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      z-index: 0;
+      opacity: 0.88;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    .washi-tape.tape-1 {
+      top: 12%;
+      left: 5%;
+      width: 90px;
+      background: repeating-linear-gradient(90deg, #ffb8c9 0px, #ffb8c9 4px, #ff9eb5 4px, #ff9eb5 8px);
+      transform: rotate(-25deg);
+    }
+    .washi-tape.tape-2 {
+      top: 15%;
+      right: 8%;
+      width: 80px;
+      background: repeating-linear-gradient(90deg, #b8e6d5 0px, #b8e6d5 4px, #a0d9c4 4px, #a0d9c4 8px);
+      transform: rotate(20deg);
+    }
+    .washi-tape.tape-3 {
+      bottom: 18%;
+      left: 10%;
+      width: 70px;
+      background: repeating-linear-gradient(90deg, #d4c5f9 0px, #d4c5f9 4px, #c4b0f0 4px, #c4b0f0 8px);
+      transform: rotate(15deg);
+    }
+    .washi-tape.tape-4 {
+      bottom: 12%;
+      right: 6%;
+      width: 85px;
+      background: repeating-linear-gradient(90deg, #ffd93d 0px, #ffd93d 5px, #f0c920 5px, #f0c920 10px);
+      transform: rotate(-18deg);
+    }
+    .day-total-wrap {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 2;
+      font-family: 'Caveat', cursive;
+    }
+    .day-total-sparkle {
+      font-size: 1.4rem;
+      opacity: 0.9;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+    .day-total-sparkle:nth-child(1) { animation-delay: 0s; }
+    .day-total-sparkle:nth-child(2) { animation-delay: 0.2s; }
+    .day-total-sparkle:nth-child(3) { animation-delay: 0.4s; }
+    .day-total-sparkle:nth-child(4) { animation-delay: 0.1s; }
+    .day-total-sparkle:nth-child(5) { animation-delay: 0.3s; }
+    .day-total { font-size: 1.75rem; font-weight: 700; color: #5c4a5a; }
+    @keyframes sparkle { 0%, 100% { opacity: 0.9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+  </style>
+</head>
+<body>
+  <div class="washi-tape tape-1" aria-hidden="true"></div>
+  <div class="washi-tape tape-2" aria-hidden="true"></div>
+  <div class="washi-tape tape-3" aria-hidden="true"></div>
+  <div class="washi-tape tape-4" aria-hidden="true"></div>
+  <a href="../index.html" class="back-link">← Back to calendar</a>
+  <p class="date-label">February 11, 2026</p>
+  <p class="message">No money spent!</p>
+  <div class="day-total-wrap">
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+    <span class="day-total">Total: $0.00</span>
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+  </div>
+  <div class="confetti" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span class="sq"></span><span class="sq"></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</body>
+</html>
