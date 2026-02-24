@@ -63,7 +63,7 @@
             <circle id="pupil-left" cx="35" cy="56" r="3" fill="#1a1a1a"/>
             <circle id="pupil-right" cx="77" cy="56" r="3" fill="#1a1a1a"/>
             <rect x="48" y="88" width="4" height="4" fill="#2a2020"/>
-            <path id="avatar-mouth" d="M 42 92 L 49 96 L 56 96 L 63 92" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="square" style="cursor:pointer"/>
+            <path id="avatar-mouth" d="M 42 80 L 49 84 L 56 84 L 63 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="square" style="cursor:pointer"/>
           </svg>
         </div>
         <p>I'm Duc Tran. I'm a student at San José State and I put this site together to collect and show data about my own Discord use — when I message, where I hang out, and the words I use. The numbers on the other pages are my data; this page is a short intro to me.</p>
@@ -119,8 +119,8 @@
 
     var mouth = document.getElementById("avatar-mouth");
     if (mouth) {
-      var happyPath = "M 42 92 L 49 96 L 56 96 L 63 92";
-      var sadPath = "M 42 96 L 49 92 L 56 92 L 63 96";
+      var happyPath = "M 42 80 L 49 84 L 56 84 L 63 80";
+      var sadPath = "M 42 84 L 49 80 L 56 80 L 63 84";
       var isHappy = true;
       mouth.addEventListener("click", function () {
         isHappy = !isHappy;
