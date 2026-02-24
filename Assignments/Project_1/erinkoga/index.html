@@ -51,6 +51,18 @@
         }
         .plant {
             font-size: 16rem;
+            cursor: pointer;
+        }
+        .music-player {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .music-player iframe {
+            border: none;
+            max-width: 100%;
         }
         .doors a {
             display: inline-block;
@@ -63,10 +75,28 @@
 <body>
     <h1>welcome to the hotel!</h1>
     <h2>click a door to enter the room</h2>
+    <div class="music-player" id="musicPlayer"></div>
     <div class="doors">
         <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
-        <span class="plant">🪴</span>
+        <span class="plant" id="plant">🪴</span>
         <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
     </div>
+    <script>
+        const plant = document.getElementById('plant');
+        const musicPlayer = document.getElementById('musicPlayer');
+        if (plant && musicPlayer) {
+            plant.addEventListener('click', () => {
+                musicPlayer.innerHTML = `
+                    <iframe
+                        width="560"
+                        height="315"
+                        src="https://www.youtube.com/embed/bmP3UHXYi28?autoplay=1"
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    ></iframe>
+                `;
+            });
+        }
+    </script>
 </body>
 </html>
