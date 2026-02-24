@@ -1,5 +1,12 @@
 /* Comic Writer page styles */
 
+@font-face {
+  font-family: 'AnimeAce';
+  src: url('animeace2_reg.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .cw-interview-group {
   position: fixed;
   top: 30px;
@@ -176,7 +183,40 @@
   to { opacity: 1; }
 }
 
-/* Final image: centered, fades in after 5s */
+/* Pencil button: at bottom, shown when #6 revealed */
+.cw-pencil-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.cw-pencil-btn.cw-pencil-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cw-pencil-btn:hover {
+  opacity: 0.9;
+}
+
+.cw-pencil-img {
+  display: block;
+  max-width: 120px;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Final image: centered, fades in on pencil click */
 .cw-final-image {
   position: fixed;
   top: 50%;
@@ -194,6 +234,46 @@
 
 .cw-final-image.cw-final-visible {
   opacity: 1;
+}
+
+/* Final text: typewriter dialogue */
+.cw-final-text-wrap {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90vw;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.cw-final-text-wrap.cw-final-text-visible {
+  opacity: 1;
+}
+
+.cw-final-text {
+  font-family: 'AnimeAce', sans-serif;
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  line-height: 1.4;
+  color: #222;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.cw-final-text::after {
+  content: '|';
+  animation: cw-blink 0.8s step-end infinite;
+}
+
+.cw-final-text.cw-typing-done::after {
+  display: none;
+}
+
+@keyframes cw-blink {
+  50% { opacity: 0; }
 }
 
 html:has(body.page-comic-writer) {
