@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Total · Feb 8–14, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: #e8ddd0;
+      background-image: radial-gradient(circle at 20% 80%, rgba(210, 180, 140, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 228, 196, 0.4) 0%, transparent 50%);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .back-link {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      font-size: 0.9rem;
+      color: #6b5344;
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      z-index: 10;
+    }
+    .back-link:hover { background: #fff; }
+    .page-title {
+      font-family: 'Caveat', cursive;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #6b5344;
+      margin-bottom: 0.25rem;
+    }
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: #9b8a99;
+      margin-bottom: 2rem;
+    }
+    .calc-box {
+      background: rgba(255,254,249,0.95);
+      border-radius: 1rem;
+      padding: 2rem 2.5rem;
+      box-shadow: 3px 6px 20px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
+      min-width: 280px;
+      max-width: 360px;
+    }
+    .calc-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1.5rem;
+      font-size: 1.1rem;
+      color: #5c4a5a;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      transform: translateX(-10px);
+      animation: slideIn 0.5s ease forwards;
+    }
+    .calc-line:nth-child(1) { animation-delay: 0.3s; }
+    .calc-line:nth-child(2) { animation-delay: 0.8s; }
+    .calc-line:nth-child(3) { animation-delay: 1.3s; }
+    .calc-line:nth-child(4) { animation-delay: 1.8s; }
+    .calc-line:nth-child(5) { animation-delay: 2.3s; }
+    .calc-line:nth-child(6) { animation-delay: 2.8s; }
+    .calc-line:nth-child(7) { animation-delay: 3.3s; }
+    .calc-line .day { font-weight: 600; color: #6b5344; }
+    .calc-line .amt { font-family: 'Caveat', cursive; font-size: 1.35rem; font-weight: 600; color: #ff9eb5; }
+    .calc-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #f0dde4, transparent);
+      margin: 0.75rem 0 1rem;
+      opacity: 0;
+      animation: fadeIn 0.4s ease 3.7s forwards;
+    }
+    .calc-total-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      opacity: 0;
+      transform: scale(0.8);
+      animation: revealTotal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 4.1s forwards;
+    }
+    .total-sparkle {
+      font-size: 0.75rem;
+      animation: sparkle 1.2s ease-in-out infinite;
+    }
+    .total-sparkle:nth-child(1) { animation-delay: 0s; }
+    .total-sparkle:nth-child(2) { animation-delay: 0.15s; }
+    .total-sparkle:nth-child(3) { animation-delay: 0.3s; }
+    .total-sparkle:nth-child(4) { animation-delay: 0.1s; }
+    .total-sparkle:nth-child(5) { animation-delay: 0.25s; }
+    .weekly-total-label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #6b5344;
+    }
+    .weekly-total-amount {
+      font-family: 'Caveat', cursive;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #ff9eb5;
+      text-shadow: 0 0 0 2px rgba(255, 158, 181, 0.2);
+    }
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes revealTotal {
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+  <a href="../index.html" class="back-link">← Back to calendar</a>
+  <h1 class="page-title">Weekly total</h1>
+  <p class="page-subtitle">Feb 8–14, 2026</p>
+  <div class="calc-box">
+    <div class="calc-line"><span class="day">Feb 8</span><span class="amt">$0.00</span></div>
+    <div class="calc-line"><span class="day">Feb 9</span><span class="amt">$169.63</span></div>
+    <div class="calc-line"><span class="day">Feb 10</span><span class="amt">$173.38</span></div>
+    <div class="calc-line"><span class="day">Feb 11</span><span class="amt">$0.00</span></div>
+    <div class="calc-line"><span class="day">Feb 12</span><span class="amt">$7.00</span></div>
+    <div class="calc-line"><span class="day">Feb 13</span><span class="amt">$128.01</span></div>
+    <div class="calc-line"><span class="day">Feb 14</span><span class="amt">$54.88</span></div>
+    <div class="calc-divider"></div>
+    <div class="calc-total-wrap">
+      <span class="total-sparkle" aria-hidden="true">✨</span>
+      <span class="total-sparkle" aria-hidden="true">✨</span>
+      <span class="weekly-total-label">Total:</span>
+      <span class="weekly-total-amount">$532.90</span>
+      <span class="total-sparkle" aria-hidden="true">✨</span>
+      <span class="total-sparkle" aria-hidden="true">✨</span>
+    </div>
+  </div>
+</body>
+</html>

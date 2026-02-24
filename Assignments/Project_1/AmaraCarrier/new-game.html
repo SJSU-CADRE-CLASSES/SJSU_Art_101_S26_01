@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spirimal – New Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='none'/%3E%3Cg fill='%23ffd95a' shape-rendering='crispEdges'%3E%3Crect x='14' y='2' width='2' height='8'/%3E%3Crect x='9' y='10' width='12' height='2'/%3E%3Crect x='4' y='12' width='22' height='2'/%3E%3Crect x='9' y='14' width='12' height='2'/%3E%3Crect x='14' y='16' width='2' height='8'/%3E%3C/g%3E%3Cg fill='%23ffeeb0' shape-rendering='crispEdges'%3E%3Crect x='14' y='1' width='2' height='1'/%3E%3Crect x='13' y='2' width='1' height='1'/%3E%3Crect x='16' y='2' width='1' height='1'/%3E%3Crect x='8' y='10' width='1' height='2'/%3E%3Crect x='21' y='10' width='1' height='2'/%3E%3Crect x='3' y='12' width='1' height='2'/%3E%3Crect x='26' y='12' width='1' height='2'/%3E%3Crect x='8' y='16' width='1' height='2'/%3E%3Crect x='21' y='16' width='1' height='2'/%3E%3Crect x='14' y='24' width='2' height='1'/%3E%3C/g%3E%3C/svg%3E") 15 7, auto;
+    }
+
+    body.cursor-pulse {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' fill='none'/%3E%3Cg fill='%23ffd95a' shape-rendering='crispEdges'%3E%3Crect x='16' y='2' width='2' height='10'/%3E%3Crect x='10' y='10' width='14' height='2'/%3E%3Crect x='5' y='12' width='24' height='2'/%3E%3Crect x='10' y='14' width='14' height='2'/%3E%3Crect x='16' y='16' width='2' height='10'/%3E%3C/g%3E%3Cg fill='%23ffeeb0' shape-rendering='crispEdges'%3E%3Crect x='16' y='1' width='2' height='1'/%3E%3Crect x='15' y='2' width='1' height='1'/%3E%3Crect x='18' y='2' width='1' height='1'/%3E%3Crect x='9' y='10' width='1' height='2'/%3E%3Crect x='24' y='10' width='1' height='2'/%3E%3Crect x='4' y='12' width='1' height='2'/%3E%3Crect x='29' y='12' width='1' height='2'/%3E%3Crect x='9' y='16' width='1' height='2'/%3E%3Crect x='24' y='16' width='1' height='2'/%3E%3Crect x='16' y='26' width='2' height='1'/%3E%3C/g%3E%3C/svg%3E") 17 8, auto;
+    }
+
+    .bg-fade-layer {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      opacity: 1;
+      z-index: 0;
+      animation: bgFadeToBlack 4.8s ease-in forwards;
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      opacity: 0;
+      animation: contentFadeIn 1.4s ease-out 6s forwards;
+    }
+
+    .page-content h2 {
+      font-size: 1.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* Swiping fog bands – copied from landing page for consistent feel */
+    .swipe-cloud {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        /* Vertical opacity gradient: soft transparent edges, denser center */
+        linear-gradient(
+          180deg,
+          rgba(210, 220, 235, 0.08) 0%,
+          rgba(205, 216, 234, 0.70) 20%,
+          rgba(195, 208, 230, 0.96) 50%,
+          rgba(185, 200, 224, 0.70) 80%,
+          rgba(180, 196, 222, 0.08) 100%
+        ),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.45)'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='6' y='0' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='4' y='3' width='1' height='1'/%3E%3Crect x='7' y='3' width='1' height='1'/%3E%3Crect x='2' y='6' width='1' height='1'/%3E%3Crect x='5' y='7' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: auto, 8px 8px;
+      box-shadow: 0 0 40px rgba(200, 212, 235, 0.6);
+      transform-origin: 50% 50%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: url(#cloudPixelate);
+    }
+
+    .swipe-cloud-top {
+      top: 0;
+      height: 55%;
+      clip-path: url(#swipeCloudTopClip);
+      -webkit-clip-path: url(#swipeCloudTopClip);
+      animation: swipeTop 6s ease-in-out forwards;
+    }
+
+    .swipe-cloud-bottom {
+      bottom: 0;
+      height: 55%;
+      clip-path: url(#swipeCloudBottomClip);
+      -webkit-clip-path: url(#swipeCloudBottomClip);
+      animation: swipeBottom 6s ease-in-out forwards;
+    }
+
+    .center-oval {
+      position: absolute;
+      width: 340px;
+      height: 120px;
+      border-radius: 50%;
+      background: #2b153d;
+      opacity: 0;
+      z-index: 1;
+      animation: centerOvalFadeIn 1.8s ease-out 5s forwards;
+      image-rendering: pixelated;
+    }
+
+    .grim-reaper {
+      position: absolute;
+      width: 122px;
+      height: 152px;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      z-index: 2;
+      opacity: 0;
+      filter: drop-shadow(0 0 6px rgba(220,210,255,0.7));
+      animation:
+        grimFadeIn 1.6s ease-out 7s forwards,
+        grimIdle 3.2s ease-in-out 8.6s infinite;
+    }
+
+    .dialogue-box {
+      position: fixed;
+      left: 50%;
+      bottom: 7vh;
+      transform: translateX(-50%);
+      padding: 2.0rem 3.6rem 2.4rem;
+      min-width: min(96vw, 1120px);
+      background: #24152f;
+      border: 4px solid #000;
+      box-shadow:
+        0 0 0 4px #000,
+        0 8px 0 #000,
+        0 18px 22px rgba(0,0,0,0.9);
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      z-index: 3;
+      opacity: 0;
+      animation: dialogueFadeIn 1.5s ease-out 8.8s forwards;
+    }
+
+    .dialogue-box::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 2px solid rgba(120,90,180,0.85);
+      pointer-events: none;
+    }
+
+    .dialogue-name {
+      position: relative;
+      display: inline-block;
+      padding: 0.18rem 0.9rem;
+      margin-bottom: 0.4rem;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      text-transform: uppercase;
+      font-size: 1.35rem;
+      letter-spacing: 0.22em;
+      transform: translateY(-55%);
+      text-shadow:
+        0 0 6px rgba(210,170,255,1),
+        0 0 16px rgba(168,120,255,1);
+    }
+
+    .dialogue-text {
+      font-size: 1.18rem;
+      line-height: 1.6;
+      text-align: left;
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+    }
+
+    .dialogue-emphasis {
+      font-weight: 700;
+    }
+
+    .dialogue-next {
+      position: absolute;
+      right: 1.6rem;
+      bottom: 1.2rem;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: #120a1b;
+      border: 3px solid #000;
+      box-shadow: 0 0 0 2px #000;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      image-rendering: pixelated;
+      transition:
+        opacity 0.18s ease-out,
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out;
+      animation: skullPulse 1.35s ease-in-out infinite;
+    }
+
+    .dialogue-next--visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .dialogue-next:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 10px rgba(200,160,255,0.8);
+    }
+
+    .dialogue-next svg {
+      width: 18px;
+      height: 18px;
+      image-rendering: pixelated;
+    }
+
+    .dialogue-heart {
+      background: #0fd5ff;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 10px rgba(120,240,255,0.9);
+    }
+
+    .dialogue-heart svg {
+      width: 20px;
+      height: 20px;
+      image-rendering: pixelated;
+    }
+
+    .grim-question {
+      position: absolute;
+      top: 35%;
+      left: 54%;
+      width: 26px;
+      height: 26px;
+      opacity: 0;
+      transform: translate(-50%, 4px) scale(0.8);
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
+    .grim-question svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .grim-question--show {
+      animation: grimQuestionPop 1.15s ease-out forwards;
+    }
+
+    @keyframes grimQuestionPop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 6px) scale(0.6);
+      }
+      30% {
+        opacity: 1;
+        transform: translate(-50%, -2px) scale(1.0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -14px) scale(1.0);
+      }
+    }
+
+    .grim-mouth--open {
+      opacity: 0;
+    }
+
+    .grim-mouth--closed {
+      opacity: 1;
+    }
+
+    .grim-reaper--talk .grim-mouth--open {
+      opacity: 1;
+    }
+
+    .grim-reaper--talk .grim-mouth--closed {
+      opacity: 0;
+    }
+
+    @keyframes skullPulse {
+      0%   { transform: translateY(0) scale(1); }
+      50%  { transform: translateY(-1px) scale(1.15); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes grimFadeIn {
+      0%   { opacity: 0; transform: translate(-50%, -60%) scale(0.9); }
+      70%  { opacity: 1; transform: translate(-50%, -60%) scale(1.02); }
+      100% { opacity: 1; transform: translate(-50%, -60%) scale(1); }
+    }
+
+    @keyframes grimIdle {
+      0%   { transform: translate(-50%, -60%) scale(1); }
+      50%  { transform: translate(-50%, -62%) scale(1.02); }
+      100% { transform: translate(-50%, -60%) scale(1); }
+    }
+
+    @keyframes swipeTop {
+      from { transform: translateY(0); }
+      to { transform: translateY(-110%); }
+    }
+
+    @keyframes swipeBottom {
+      from { transform: translateY(0); }
+      to { transform: translateY(110%); }
+    }
+
+    @keyframes contentFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bgFadeToBlack {
+      0%   { opacity: 1; }
+      70%  { opacity: 0.4; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes centerOvalFadeIn {
+      0%   { opacity: 0; transform: scale(0.85); }
+      60%  { opacity: 1; transform: scale(1.0); }
+      100% { opacity: 1; transform: scale(1.0); }
+    }
+
+    @keyframes dialogueFadeIn {
+      0%   { opacity: 0; transform: translate(-50%, 12px); }
+      100% { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    /* Spirit questions + result flow */
+    .spirit-questions,
+    .spirit-result {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    .spirit-questions--visible,
+    .spirit-result--visible {
+      display: flex;
+    }
+
+    .dialogue-box--hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease-out;
+    }
+
+    .spirit-panel {
+      position: relative;
+      padding: 2rem 3rem 2.4rem;
+      width: min(96vw, 1120px);
+      background: #20102a;
+      border: 4px solid #000;
+      box-shadow:
+        0 0 0 4px #000,
+        0 8px 0 #000,
+        0 18px 22px rgba(0,0,0,0.9);
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      image-rendering: pixelated;
+    }
+
+    .spirit-panel::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 2px solid rgba(140,110,210,0.9);
+      pointer-events: none;
+    }
+
+    .spirit-question-title,
+    .spirit-result-title {
+      text-transform: uppercase;
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      text-align: left;
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+    }
+
+    .spirit-question-body {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      margin-bottom: 0.8rem;
+      text-align: left;
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+    }
+
+    .spirit-answer-input {
+      width: 100%;
+      min-height: 5rem;
+      padding: 0.6rem 0.8rem;
+      background: #120918;
+      border: 3px solid #000;
+      box-shadow: 0 0 0 2px #000;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      resize: vertical;
+      outline: none;
+    }
+
+    .spirit-answer-input:focus-visible {
+      border-color: #8cf9ff;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 14px rgba(140,249,255,0.9);
+    }
+
+    .spirit-next-btn,
+    .spirit-breakdown-btn {
+      margin-top: 1rem;
+      padding: 0.4rem 1.4rem;
+      background: #120a1b;
+      border: 3px solid #000;
+      box-shadow: 0 0 0 2px #000;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      image-rendering: pixelated;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        background-color 0.12s ease-out;
+    }
+
+    .spirit-next-btn:hover,
+    .spirit-breakdown-btn:hover {
+      transform: translateY(-2px);
+      background: #241030;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 16px rgba(200,160,255,0.9);
+    }
+
+    .spirit-next-btn:active,
+    .spirit-breakdown-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 0 2px #000;
+    }
+
+    .spirit-animal-canvas {
+      margin: 0.8rem 0 0.6rem;
+      width: 320px;
+      height: 240px;
+      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.2), transparent 60%);
+      border: 3px solid #000;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 28px rgba(220,210,255,0.95),
+        0 0 60px rgba(160,130,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-inline: auto;
+      image-rendering: pixelated;
+    }
+
+    .spirit-result-text {
+      margin-top: 0.6rem;
+      font-size: 0.7rem;
+      line-height: 1.6;
+      text-align: left;
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+    }
+
+    .spirit-breakdown {
+      margin-top: 0.8rem;
+      font-size: 0.6rem;
+      line-height: 1.5;
+      text-align: left;
+      max-height: 9rem;
+      overflow-y: auto;
+      padding-right: 0.4rem;
+    }
+
+    .spirit-breakdown strong {
+      display: inline-block;
+      min-width: 9rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background color layer that slowly fades into black -->
+  <div class="bg-fade-layer" aria-hidden="true"></div>
+  <!-- Fog swipe effect -->
+  <div class="swipe-cloud swipe-cloud-top" aria-hidden="true"></div>
+  <div class="swipe-cloud swipe-cloud-bottom" aria-hidden="true"></div>
+  <!-- Dark purple oval that appears after fade -->
+  <div class="center-oval" aria-hidden="true"></div>
+  <!-- 8-bit Grim Reaper sprite -->
+  <svg class="grim-reaper" viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g fill="#000000" shape-rendering="crispEdges">
+      <!-- hood outline -->
+      <rect x="5" y="1" width="6" height="1"/>
+      <rect x="4" y="2" width="8" height="1"/>
+      <rect x="3" y="3" width="10" height="1"/>
+      <rect x="2" y="4" width="12" height="2"/>
+      <rect x="2" y="6" width="3" height="6"/>
+      <rect x="11" y="6" width="3" height="6"/>
+    </g>
+    <!-- face -->
+    <g fill="#d8e4ff" shape-rendering="crispEdges">
+      <rect x="6" y="5" width="4" height="4"/>
+    </g>
+    <!-- eyes -->
+    <g fill="#000000" shape-rendering="crispEdges">
+      <rect x="6" y="6" width="1" height="1"/>
+      <rect x="9" y="6" width="1" height="1"/>
+      <rect x="7" y="7" width="2" height="1"/>
+    </g>
+    <!-- mouth (closed + open frames) -->
+    <g fill="#000000" shape-rendering="crispEdges">
+      <!-- closed mouth (thicker so it stands out) -->
+      <rect class="grim-mouth grim-mouth--closed" x="7" y="8" width="2" height="2"/>
+      <!-- open mouth (bigger for clearer talking motion) -->
+      <rect class="grim-mouth grim-mouth--open" x="6" y="7" width="4" height="3"/>
+    </g>
+    <!-- body / robe -->
+    <g fill="#1b1028" shape-rendering="crispEdges">
+      <rect x="4" y="9" width="8" height="6"/>
+      <rect x="5" y="15" width="6" height="2"/>
+    </g>
+    <!-- scythe handle -->
+    <g fill="#5b4632" shape-rendering="crispEdges">
+      <rect x="2" y="3" width="1" height="12"/>
+    </g>
+    <!-- scythe blade -->
+    <g fill="#cfd4e8" shape-rendering="crispEdges">
+      <rect x="1" y="3" width="5" height="1"/>
+      <rect x="1" y="4" width="3" height="1"/>
+    </g>
+  </svg>
+  <!-- Question mark effect -->
+  <div class="grim-question" id="grimQuestion" aria-hidden="true">
+    <svg viewBox="0 0 8 12" xmlns="http://www.w3.org/2000/svg">
+      <!-- 8-bit question mark -->
+      <rect x="2" y="0" width="4" height="1" fill="#f7f2ff"/>
+      <rect x="1" y="1" width="2" height="1" fill="#f7f2ff"/>
+      <rect x="5" y="1" width="2" height="1" fill="#f7f2ff"/>
+      <rect x="5" y="2" width="2" height="1" fill="#f7f2ff"/>
+      <rect x="3" y="2" width="2" height="1" fill="#f7f2ff"/>
+      <rect x="3" y="3" width="2" height="1" fill="#f7f2ff"/>
+      <rect x="3" y="5" width="2" height="1" fill="#f7f2ff"/>
+      <!-- dot -->
+      <rect x="3" y="8" width="2" height="2" fill="#f7f2ff"/>
+    </svg>
+  </div>
+  <!-- Videogame-style dialogue box for Grimmothee -->
+  <div class="dialogue-box" aria-label="Grimmothee speaking">
+    <div class="dialogue-name">Grimmothee</div>
+    <div class="dialogue-text" id="grimDialogueText"></div>
+    <button class="dialogue-next" id="grimNextBtn" type="button" aria-label="Next line">
+      <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- simple 8-bit skull -->
+        <rect x="2" y="1" width="4" height="1" fill="#f4f4f4"/>
+        <rect x="1" y="2" width="6" height="3" fill="#f4f4f4"/>
+        <rect x="2" y="5" width="4" height="1" fill="#f4f4f4"/>
+        <!-- eyes -->
+        <rect x="2" y="3" width="1" height="1" fill="#000000"/>
+        <rect x="5" y="3" width="1" height="1" fill="#000000"/>
+        <!-- teeth -->
+        <rect x="3" y="6" width="1" height="1" fill="#f4f4f4"/>
+        <rect x="4" y="6" width="1" height="1" fill="#f4f4f4"/>
+      </svg>
+    </button>
+    <button class="dialogue-next dialogue-heart" id="grimHeartBtn" type="button" aria-label="Begin first question">
+      <svg viewBox="0 0 10 9" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- 8-bit cyan heart -->
+        <rect x="2" y="1" width="2" height="2" fill="#8cf9ff"/>
+        <rect x="6" y="1" width="2" height="2" fill="#8cf9ff"/>
+        <rect x="1" y="3" width="8" height="2" fill="#8cf9ff"/>
+        <rect x="2" y="5" width="6" height="2" fill="#8cf9ff"/>
+        <rect x="3" y="7" width="4" height="1" fill="#8cf9ff"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Spirit guide question flow -->
+  <div class="spirit-questions" id="spiritQuestions" aria-hidden="true">
+    <div class="spirit-panel">
+      <div class="spirit-question-title" id="spiritQuestionTitle"></div>
+      <div class="spirit-question-body" id="spiritQuestionBody"></div>
+      <textarea class="spirit-answer-input" id="spiritAnswerInput" rows="4"></textarea>
+      <button class="spirit-next-btn" id="spiritNextBtn" type="button">Next</button>
+    </div>
+  </div>
+
+  <!-- Spirit animal result view -->
+  <div class="spirit-result" id="spiritResult" aria-hidden="true">
+    <div class="spirit-panel">
+      <div class="spirit-result-title" id="spiritResultTitle">Your Spirimal</div>
+      <div class="spirit-animal-canvas" id="spiritAnimalCanvas" aria-hidden="true"></div>
+      <div class="spirit-result-text" id="spiritResultText"></div>
+      <button class="spirit-breakdown-btn" id="spiritBreakdownBtn" type="button">
+        See how this was generated
+      </button>
+      <div class="spirit-breakdown" id="spiritBreakdown"></div>
+    </div>
+  </div>
+
+  <!-- Minimal SVG defs for the cloud pixel filter and clips -->
+  <svg width="0" height="0" aria-hidden="true">
+    <defs>
+      <filter id="cloudPixelate" x="-20%" y="-20%" width="140%" height="140%">
+        <feMorphology in="SourceGraphic" result="dilatedCloud" operator="dilate" radius="4"/>
+        <feMorphology in="dilatedCloud" operator="erode" radius="2.2"/>
+      </filter>
+      <clipPath id="swipeCloudTopClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1
+                 Q 0.06,0.96 0.12,0.92
+                 Q 0.18,0.98 0.24,0.90
+                 Q 0.30,0.96 0.36,0.88
+                 Q 0.42,0.99 0.48,0.89
+                 Q 0.54,0.96 0.60,0.90
+                 Q 0.66,0.99 0.72,0.88
+                 Q 0.78,0.96 0.84,0.92
+                 Q 0.90,0.98 1,0.90
+                 L 1,0
+                 L 0,0 Z" />
+      </clipPath>
+      <clipPath id="swipeCloudBottomClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0,0
+                 Q 0.06,0.04 0.12,0.08
+                 Q 0.18,0.01 0.24,0.10
+                 Q 0.30,0.04 0.36,0.12
+                 Q 0.42,0.01 0.48,0.11
+                 Q 0.54,0.04 0.60,0.08
+                 Q 0.66,0.01 0.72,0.10
+                 Q 0.78,0.04 0.84,0.08
+                 Q 0.90,0.01 1,0.09
+                 L 1,1
+                 L 0,1 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+
+  <script>
+    (function () {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
+      let ctx;
+      let bgStarted = false;
+      let voiceStarted = false;
+      let mouthTimeout = null;
+      let questionPopped = false;
+      let cursorPulseTimeout = null;
+
+      function getContext() {
+        if (!ctx) ctx = new AudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+
+      function startBackgroundMusic() {
+        if (bgStarted) return;
+        bgStarted = true;
+
+        const context = getContext();
+        const masterGain = context.createGain();
+        masterGain.gain.value = 0.05; // very quiet overall level
+
+        // Gentle echo to make it feel mysterious
+        const delay = context.createDelay(1.0);
+        delay.delayTime.value = 0.3;
+        const feedback = context.createGain();
+        feedback.gain.value = 0.22;
+
+        masterGain.connect(context.destination);
+        masterGain.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(context.destination);
+
+        // Simple minor-ish motif in a higher 8-bit register
+        const scale = [523.25, 587.33, 622.25, 698.46, 783.99]; // C5, D5, D#5, F5, G5
+        let step = 0;
+
+        setInterval(() => {
+          const now = context.currentTime;
+
+          // Two soft notes per step
+          for (let i = 0; i < 2; i++) {
+            const osc = context.createOscillator();
+            const gain = context.createGain();
+
+            osc.type = 'triangle';
+            const noteFreq = scale[(step + (i * 2)) % scale.length];
+            const startTime = now + i * 0.35;
+            const endTime = startTime + 0.9;
+
+            osc.frequency.setValueAtTime(noteFreq, startTime);
+
+            gain.gain.setValueAtTime(0.0, startTime);
+            gain.gain.linearRampToValueAtTime(0.045, startTime + 0.15);
+            gain.gain.linearRampToValueAtTime(0.0, endTime);
+
+            osc.connect(gain);
+            gain.connect(masterGain);
+
+            osc.start(startTime);
+            osc.stop(endTime + 0.02);
+          }
+
+          step = (step + 1) % scale.length;
+        }, 1700);
+      }
+
+      function playGrimithyVoiceBleep() {
+        const context = getContext();
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+
+        osc.type = 'triangle';
+
+        // Tiny random variation for each bleep (even higher, brighter register)
+        const baseFreq = 420;
+        const jitter = (Math.random() * 60) - 30;
+        const freq = baseFreq + jitter;
+
+        const now = context.currentTime;
+        const duration = 0.09;
+
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.linearRampToValueAtTime(freq * 0.92, now + duration); // slight downward drift
+
+        gain.gain.setValueAtTime(0.0, now);
+        gain.gain.linearRampToValueAtTime(0.035, now + 0.02);
+        gain.gain.linearRampToValueAtTime(0.0, now + duration);
+
+        // Soft echo tail for a ghostly feel
+        const delay = context.createDelay(0.5);
+        delay.delayTime.value = 0.18;
+        const feedback = context.createGain();
+        feedback.gain.value = 0.22;
+
+        gain.connect(context.destination);
+        gain.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(context.destination);
+
+        osc.connect(gain);
+
+        osc.start(now);
+        osc.stop(now + duration + 0.01);
+      }
+
+      function playConfusedChime() {
+        const context = getContext();
+        const osc1 = context.createOscillator();
+        const osc2 = context.createOscillator();
+        const gain = context.createGain();
+
+        osc1.type = 'triangle';
+        osc2.type = 'triangle';
+
+        const now = context.currentTime;
+        const startTime = now;
+
+        // Slightly off intervals for a confused feel
+        osc1.frequency.setValueAtTime(330, startTime);      // E4
+        osc2.frequency.setValueAtTime(355, startTime + 0.04); // slightly sharp F
+
+        gain.gain.setValueAtTime(0.0, startTime);
+        gain.gain.linearRampToValueAtTime(0.03, startTime + 0.05);
+        gain.gain.linearRampToValueAtTime(0.0, startTime + 0.5);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(context.destination);
+
+        osc1.start(startTime);
+        osc2.start(startTime + 0.04);
+        osc1.stop(startTime + 0.6);
+        osc2.stop(startTime + 0.6);
+      }
+
+      function analyzeSpiritAnswers(answers) {
+        const joined = (answers || []).join(' ').toLowerCase();
+        const lettersOnly = joined.replace(/[^a-z]/g, '');
+
+        let vowelCount = 0;
+        const vowelsSet = new Set(['a', 'e', 'i', 'o', 'u']);
+        for (let i = 0; i < lettersOnly.length; i++) {
+          if (vowelsSet.has(lettersOnly[i])) vowelCount++;
+        }
+        const consonantCount = lettersOnly.length - vowelCount;
+
+        const words = joined.trim().length
+          ? joined.trim().split(/\s+/).filter(Boolean)
+          : [];
+        const wordCount = words.length;
+
+        const stopwords = new Set([
+          'the','a','an','and','or','but','if','then','so','to','of','in','on','at','for',
+          'with','without','is','am','are','was','were','be','being','been','i','you',
+          'he','she','it','we','they','them','my','your','our','their'
+        ]);
+        let nounCount = 0;
+        words.forEach(w => {
+          const clean = w.replace(/[^a-z]/g, '');
+          if (!clean) return;
+          if (!stopwords.has(clean)) nounCount++;
+        });
+
+        let sizeCategory = 'medium';
+        if (vowelCount > consonantCount * 1.15) {
+          sizeCategory = 'small';
+        } else if (consonantCount > vowelCount * 1.15) {
+          sizeCategory = 'large';
+        }
+
+        let fluffiness = 'sleek';
+        if (wordCount > 40) {
+          fluffiness = 'ultra-fluffy';
+        } else if (wordCount > 20) {
+          fluffiness = 'fluffy';
+        } else if (wordCount > 8) {
+          fluffiness = 'soft';
+        }
+
+        const hasWings = nounCount > 10;
+
+        return {
+          joined,
+          lettersOnly,
+          vowelCount,
+          consonantCount,
+          wordCount,
+          nounCount,
+          sizeCategory,
+          fluffiness,
+          hasWings
+        };
+      }
+
+      function buildSpiritAnimalSVG(config) {
+        const scale =
+          config.sizeCategory === 'small' ? 1 :
+          config.sizeCategory === 'large' ? 1.6 : 1.25;
+
+        const fluffExtra =
+          config.fluffiness === 'ultra-fluffy' ? 3 :
+          config.fluffiness === 'fluffy' ? 2 :
+          config.fluffiness === 'soft' ? 1 : 0;
+
+        const bodyWidth = 8;
+        const bodyHeight = 5 + fluffExtra;
+
+        const blocks = [];
+
+        blocks.push(`<rect x="4" y="${6 - Math.floor(fluffExtra / 2)}" width="${bodyWidth}" height="${bodyHeight}" />`);
+
+        if (fluffExtra >= 1) {
+          blocks.push(`<rect x="3" y="7" width="1" height="3" />`);
+          blocks.push(`<rect x="12" y="7" width="1" height="3" />`);
+        }
+        if (fluffExtra >= 2) {
+          blocks.push(`<rect x="5" y="5" width="2" height="1" />`);
+          blocks.push(`<rect x="9" y="5" width="2" height="1" />`);
+        }
+        if (fluffExtra >= 3) {
+          blocks.push(`<rect x="3" y="9" width="1" height="2" />`);
+          blocks.push(`<rect x="12" y="9" width="1" height="2" />`);
+        }
+
+        blocks.push(`<rect x="5" y="${6 - Math.floor(fluffExtra / 2)}" width="1" height="2" />`);
+        blocks.push(`<rect x="10" y="${6 - Math.floor(fluffExtra / 2)}" width="1" height="2" />`);
+
+        blocks.push(`<rect x="6" y="${6 + bodyHeight - 1}" width="1" height="2" />`);
+        blocks.push(`<rect x="9" y="${6 + bodyHeight - 1}" width="1" height="2" />`);
+
+        if (config.hasWings) {
+          blocks.push(`<rect x="2" y="7" width="2" height="2" />`);
+          blocks.push(`<rect x="1" y="8" width="1" height="2" />`);
+          blocks.push(`<rect x="13" y="7" width="2" height="2" />`);
+          blocks.push(`<rect x="15" y="8" width="1" height="2" />`);
+        }
+
+        const brightness =
+          config.vowelCount > config.consonantCount ? '#ffeefb' : '#ffe184';
+
+        const bodyGroup = `
+          <g fill="${brightness}" shape-rendering="crispEdges">
+            ${blocks.join('')}
+          </g>
+        `;
+
+        const accentGroup = `
+          <g fill="#1b0b22" shape-rendering="crispEdges">
+            <rect x="6" y="${7 - Math.floor(fluffExtra / 2)}" width="1" height="1" />
+            <rect x="9" y="${7 - Math.floor(fluffExtra / 2)}" width="1" height="1" />
+            <rect x="7" y="${8 - Math.floor(fluffExtra / 2)}" width="2" height="1" />
+          </g>
+        `;
+
+        const baseSize = 40 * scale;
+
+        return `
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="${baseSize}" height="${baseSize}"
+               viewBox="0 0 18 18"
+               aria-hidden="true">
+            <defs>
+              <filter id="spiritGlow" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.3" result="blur" />
+                <feColorMatrix in="blur" type="matrix"
+                  values="1 0 0 0 0
+                          0 1 0 0 0
+                          0 0 1 0 0
+                          0 0 0 1 0" />
+              </filter>
+            </defs>
+            <rect x="0" y="0" width="18" height="18" fill="none" />
+            <g filter="url(#spiritGlow)">
+              ${bodyGroup}
+              ${accentGroup}
+            </g>
+          </svg>
+        `;
+      }
+
+      function renderSpiritResult(config) {
+        const questionsEl = document.getElementById('spiritQuestions');
+        const resultEl = document.getElementById('spiritResult');
+        const canvasEl = document.getElementById('spiritAnimalCanvas');
+        const textEl = document.getElementById('spiritResultText');
+        const breakdownBtn = document.getElementById('spiritBreakdownBtn');
+        const breakdownEl = document.getElementById('spiritBreakdown');
+        const spiritAnswerInput = document.getElementById('spiritAnswerInput');
+        const titleEl = document.getElementById('spiritResultTitle');
+
+        if (questionsEl) {
+          questionsEl.classList.remove('spirit-questions--visible');
+          questionsEl.setAttribute('aria-hidden', 'true');
+        }
+        if (spiritAnswerInput) {
+          spiritAnswerInput.blur();
+          spiritAnswerInput.value = '';
+        }
+        if (!resultEl || !canvasEl || !textEl || !breakdownBtn || !breakdownEl) return;
+
+        resultEl.classList.add('spirit-result--visible');
+        resultEl.setAttribute('aria-hidden', 'false');
+
+        canvasEl.innerHTML = buildSpiritAnimalSVG(config);
+
+        const nameStarts = [
+          'Luna','Echo','Mira','Nova','Astra','Zephy','Thistle','Ember','Willow',
+          'Moss','Nimbus','Sol','Nyx','Drift','Kiko','Rook','Pip','Fable'
+        ];
+        const nameEnds = [
+          'puff','gleam','whisk','wing','tail','shade','bloom','spark','song',
+          'paw','glow','step','curl','moss','moon','flare'
+        ];
+        const start = nameStarts[Math.floor(Math.random() * nameStarts.length)];
+        const end = nameEnds[Math.floor(Math.random() * nameEnds.length)];
+        const spiritName = start + end;
+
+        if (titleEl) {
+          titleEl.textContent = `Your Spirimal: ${spiritName}`;
+        }
+
+        const sizeSentence =
+          config.sizeCategory === 'small'
+            ? 'a tiny stray of starlight that darts ahead of you when the path feels too big.'
+            : config.sizeCategory === 'large'
+              ? 'a huge, quiet guardian that plants itself between you and whatever wants you to stay here.'
+              : 'a lantern-shaped companion that keeps perfect pace with your steps.';
+
+        const fluffSentence =
+          config.fluffiness === 'ultra-fluffy'
+            ? 'It is outrageously fluffy, like a drifting pillow-fort of fur and light.'
+            : config.fluffiness === 'fluffy'
+              ? 'It is soft and oversized, the kind of creature you could lean on until your thoughts untangle.'
+              : config.fluffiness === 'soft'
+                ? 'Its fur blurs at the edges, inviting you to rest your eyes on it instead of on the dark.'
+                : 'Its coat is sleek and clean, built for slipping through narrow ways out of this place.';
+
+        const guideSentence = config.hasWings
+          ? 'When you hesitate, it beats bright wings and circles ahead, pointing toward exits you cannot see yet.'
+          : 'When you hesitate, it pads back to your heel and nudges you forward, away from the pull of this void.';
+
+        textEl.textContent =
+          `${spiritName} is ${sizeSentence} ${fluffSentence} ${guideSentence}`;
+
+        breakdownEl.textContent = '';
+        breakdownBtn.addEventListener('click', function () {
+          breakdownEl.innerHTML = `
+            <div><strong>Total letters:</strong> ${config.lettersOnly.length}</div>
+            <div><strong>Vowels:</strong> ${config.vowelCount}</div>
+            <div><strong>Consonants:</strong> ${config.consonantCount}</div>
+            <div><strong>Words:</strong> ${config.wordCount}</div>
+            <div><strong>Estimated nouns:</strong> ${config.nounCount}</div>
+            <div><strong>Size category:</strong> ${config.sizeCategory}</div>
+            <div><strong>Fluffiness:</strong> ${config.fluffiness}</div>
+            <div><strong>Has wings:</strong> ${config.hasWings ? 'Yes' : 'No'}</div>
+          `;
+        }, { once: true });
+      }
+
+      function startGrimithyDialogue() {
+        if (voiceStarted) return;
+        voiceStarted = true;
+
+        const textEl = document.getElementById('grimDialogueText');
+        const nextBtn = document.getElementById('grimNextBtn');
+        const heartBtn = document.getElementById('grimHeartBtn');
+        const grimSvg = document.querySelector('.grim-reaper');
+        const questionEl = document.getElementById('grimQuestion');
+        const dialogueBox = document.querySelector('.dialogue-box');
+
+        const spiritQuestionsEl = document.getElementById('spiritQuestions');
+        const spiritQuestionTitle = document.getElementById('spiritQuestionTitle');
+        const spiritQuestionBody = document.getElementById('spiritQuestionBody');
+        const spiritAnswerInput = document.getElementById('spiritAnswerInput');
+        const spiritNextBtn = document.getElementById('spiritNextBtn');
+
+        const spiritQuestions = [
+          {
+            title: 'Question 1',
+            prompt: 'When you picture a place where you feel completely safe, what does it look, sound, and smell like?'
+          },
+          {
+            title: 'Question 2',
+            prompt: 'Describe a moment when you felt genuinely proud of yourself, even if no one else noticed.'
+          },
+          {
+            title: 'Question 3',
+            prompt: 'What kind of weather feels the most like \"you,\" and why?'
+          },
+          {
+            title: 'Question 4',
+            prompt: 'If your heart could speak in a single sentence right now, what would it say?'
+          },
+          {
+            title: 'Question 5',
+            prompt: 'Name a small habit, object, or ritual that secretly keeps you going.'
+          }
+        ];
+
+        let currentQuestionIndex = 0;
+        const spiritAnswers = [];
+        if (!textEl) return;
+
+        const lines = [
+          "So.... you died huh?",
+          "Don't blame me. You're the one who pulled too many all nighters working on your project...",
+          "Heaven? Oh... I can't take you there... it's out of my pay grade.",
+          "Here in the void we use a sort of spirit guide. Usually those guides take the form of an animal. A Spirimal!",
+          "Nah... that's stupid...",
+          "Anyways. All you gotta do is answer some questions.",
+          "This is really important so answer honestly. Your soul has to be in it or your guide will never manifest.",
+          "Then you will stay here with me~ hehehehe... heh... haaa...........",
+          ".    .    .",
+          "WELL GET TO IT"
+        ];
+        let lineIndex = 0;
+        let typing = false;
+
+        function typeLine(idx) {
+          const fullText = lines[idx];
+          const chars = fullText.split("");
+          let index = 0;
+          textEl.textContent = "";
+          typing = true;
+          if (nextBtn) {
+            nextBtn.classList.remove('dialogue-next--visible');
+          }
+          if (heartBtn) {
+            heartBtn.classList.remove('dialogue-next--visible');
+          }
+
+          const emphasisPhrase = "A Spirimal";
+          const emphasisStart = (idx === 3) ? fullText.indexOf(emphasisPhrase) : -1;
+          const emphasisEnd = emphasisStart === -1 ? -1 : emphasisStart + emphasisPhrase.length;
+
+          function renderText() {
+            const length = Math.min(index + 1, fullText.length);
+            if (emphasisStart !== -1 && length > emphasisStart) {
+              const before = fullText.slice(0, emphasisStart);
+              const midEnd = Math.min(length, emphasisEnd);
+              const mid = fullText.slice(emphasisStart, midEnd);
+              const after = fullText.slice(midEnd, length);
+              textEl.innerHTML =
+                before +
+                '<span class="dialogue-emphasis">' + mid + '</span>' +
+                after;
+            } else {
+              textEl.textContent = fullText.slice(0, length);
+            }
+          }
+
+          function stepType() {
+            if (index >= chars.length) {
+              typing = false;
+              if (idx < lines.length - 1) {
+                if (nextBtn) {
+                  nextBtn.classList.add('dialogue-next--visible');
+                }
+              } else {
+                if (heartBtn) {
+                  heartBtn.classList.add('dialogue-next--visible');
+                }
+              }
+              return;
+            }
+
+            renderText();
+
+            if (!questionPopped && idx === 0 && index === 0) {
+              questionPopped = true;
+              if (questionEl) {
+                questionEl.classList.remove('grim-question--show');
+                // force reflow so animation can restart
+                void questionEl.offsetWidth;
+                questionEl.classList.add('grim-question--show');
+              }
+              setTimeout(function () {
+                try { playConfusedChime(); } catch (e) { /* ignore audio errors */ }
+              }, 180);
+            }
+            if (!/\s/.test(chars[index])) {
+              try { playGrimithyVoiceBleep(); } catch (e) { /* ignore audio errors */ }
+              if (grimSvg) {
+                grimSvg.classList.add('grim-reaper--talk');
+                if (mouthTimeout) clearTimeout(mouthTimeout);
+                mouthTimeout = setTimeout(function () {
+                  grimSvg.classList.remove('grim-reaper--talk');
+                }, 220);
+              }
+            }
+            index += 1;
+
+            const delay = 38 + Math.random() * 60;
+            setTimeout(stepType, delay);
+          }
+
+          stepType();
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function () {
+            if (typing) return;
+            if (lineIndex < lines.length - 1) {
+              lineIndex += 1;
+              typeLine(lineIndex);
+            }
+          });
+        }
+
+        if (heartBtn) {
+          heartBtn.addEventListener('click', function () {
+            if (typing) return;
+            if (dialogueBox) {
+              dialogueBox.classList.add('dialogue-box--hidden');
+            }
+            if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
+              return;
+            }
+            currentQuestionIndex = 0;
+            spiritQuestionsEl.classList.add('spirit-questions--visible');
+            spiritQuestionsEl.setAttribute('aria-hidden', 'false');
+            spiritQuestionTitle.textContent = spiritQuestions[0].title;
+            spiritQuestionBody.textContent = spiritQuestions[0].prompt;
+            spiritAnswerInput.value = '';
+            spiritAnswerInput.focus();
+          });
+        }
+
+        if (spiritNextBtn && spiritQuestionsEl && spiritQuestionTitle && spiritQuestionBody && spiritAnswerInput) {
+          spiritNextBtn.addEventListener('click', function () {
+            const answer = spiritAnswerInput.value || '';
+            spiritAnswers[currentQuestionIndex] = answer;
+
+            if (currentQuestionIndex < spiritQuestions.length - 1) {
+              currentQuestionIndex += 1;
+              spiritQuestionTitle.textContent = spiritQuestions[currentQuestionIndex].title;
+              spiritQuestionBody.textContent = spiritQuestions[currentQuestionIndex].prompt;
+              spiritAnswerInput.value = spiritAnswers[currentQuestionIndex] || '';
+              spiritAnswerInput.focus();
+            } else {
+              const config = analyzeSpiritAnswers(spiritAnswers);
+              renderSpiritResult(config);
+            }
+          });
+        }
+
+        typeLine(lineIndex);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        try { startBackgroundMusic(); } catch (e) { /* ignore audio errors */ }
+        // Start typing/voice after Grimmothee and the dialogue box have appeared
+        setTimeout(startGrimithyDialogue, 10000);
+
+        document.addEventListener('click', function (evt) {
+          const t = evt.target;
+          if (!t) return;
+          if (t.tagName === 'BUTTON' || (t.closest && t.closest('button'))) {
+            const body = document.body;
+            if (!body) return;
+            body.classList.add('cursor-pulse');
+            if (cursorPulseTimeout) clearTimeout(cursorPulseTimeout);
+            cursorPulseTimeout = setTimeout(function () {
+              body.classList.remove('cursor-pulse');
+            }, 160);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
