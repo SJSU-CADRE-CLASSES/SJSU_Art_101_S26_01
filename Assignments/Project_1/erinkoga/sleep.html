@@ -120,16 +120,11 @@
             background: rgba(204, 218, 240, 0.2);
             font-weight: bold;
         }
-        .music-player {
-            position: relative;
-            z-index: 1;
-            margin: 0 auto 2rem;
-            display: flex;
-            justify-content: center;
-        }
-        .music-player iframe {
-            border: none;
-            max-width: 100%;
+        .coin {
+            position: absolute;
+            z-index: 2;
+            font-size: 2.5rem;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -151,35 +146,49 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Monday</td><td>6 hours</td></tr>
-                <tr><td>Tuesday</td><td>5 hours</td></tr>
-                <tr><td>Wednesday</td><td>7 hours</td></tr>
-                <tr><td>Thursday</td><td>5 hours</td></tr>
-                <tr><td>Friday</td><td>4 hours</td></tr>
-                <tr><td>Saturday</td><td>8 hours</td></tr>
+                <tr><td>Monday</td><td>0 hours</td></tr>
+                <tr><td>Tuesday</td><td>0 hours</td></tr>
+                <tr><td>Wednesday</td><td>0 hours</td></tr>
+                <tr><td>Thursday</td><td>0 hours</td></tr>
+                <tr><td>Friday</td><td>0 hours</td></tr>
+                <tr><td>Saturday</td><td>0 hours</td></tr>
             </tbody>
         </table>
     </div>
-    <div class="music-player" id="musicPlayer"></div>
 </body>
 <script>
     const bedButton = document.getElementById('bedButton');
     const hoursTable = document.getElementById('hoursTable');
-    const musicPlayer = document.getElementById('musicPlayer');
-    if (bedButton && hoursTable && musicPlayer) {
+    if (bedButton && hoursTable) {
         bedButton.addEventListener('click', () => {
+            alert('no time for that you gotta win it big');
             hoursTable.hidden = !hoursTable.hidden;
-            musicPlayer.innerHTML = `
-                <iframe
-                    width="560"
-                    height="315"
-                    src="https://www.youtube.com/embed/ujmCQzbhTUw?autoplay=1"
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                ></iframe>
-            `;
         });
     }
+
+    function spawnCoins(count) {
+        for (let i = 0; i < count; i++) {
+            const coin = document.createElement('span');
+            coin.textContent = '🪙';
+            coin.className = 'coin';
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const left = Math.random() * (viewportWidth - 60);
+            const top = Math.random() * (viewportHeight - 120) + 60;
+            coin.style.left = left + 'px';
+            coin.style.top = top + 'px';
+
+            coin.addEventListener('click', () => {
+                window.location.href = 'casino.html';
+            });
+
+            document.body.appendChild(coin);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        spawnCoins(6);
+    });
 </script>
 </html>

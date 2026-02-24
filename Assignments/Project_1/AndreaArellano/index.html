@@ -773,6 +773,11 @@
         top: 70%;
       }
 
+      .city-michoacan {
+        left: 80%;
+        top: 88%;
+      }
+
       .map-roads {
         position: absolute;
         inset: 18% 16% 20% 16%;
@@ -1028,15 +1033,15 @@
       <header>
         <div class="title-block">
           <div class="title-pill">I drive a lot, I am here and there</div>
-          <h1>I Feel Like I Have No Home</h1>
+          <h1>I am everywhere, but where do I belong?</h1>
           <p>
             Choose a city to learn more about me and the places I go.
           </p>
         </div>
         <div class="mood-tag">
           <span class="mood-dot"></span>
-          Today’s drive mood is set to
-          <strong>soft & adventurous</strong>.
+          Today’s mood is set to
+          <strong>foggy</strong>.
         </div>
       </header>
 
@@ -1045,11 +1050,11 @@
           <div class="card-header">
             <div class="card-title">
               <span>Interactive map</span>
-              <h2>Follow my Bay Area drives</h2>
+              <h2>Places I am probably at</h2>
             </div>
             <div class="pill">
               <span class="pill-dot"></span>
-              tap a city to drive
+              tap a city to see more
             </div>
           </div>
 
@@ -1068,7 +1073,7 @@
               <div class="city-dot"></div>
               <div class="city-label">
                 <span class="city-name">Santa Rosa</span>
-                <span class="city-sub">longer north bay drives</span>
+                <span class="city-sub">Home</span>
               </div>
             </button>
 
@@ -1076,7 +1081,7 @@
               <div class="city-dot"></div>
               <div class="city-label">
                 <span class="city-name">San Francisco</span>
-                <span class="city-sub">bridge views & fog</span>
+                <span class="city-sub">I am just a passerby</span>
               </div>
             </button>
 
@@ -1084,7 +1089,15 @@
               <div class="city-dot"></div>
               <div class="city-label">
                 <span class="city-name">San Jose</span>
-                <span class="city-sub">home base & campus</span>
+                <span class="city-sub">Also home?</span>
+              </div>
+            </button>
+
+            <button class="city-pin city-michoacan" data-city="michoacan">
+              <div class="city-dot"></div>
+              <div class="city-label">
+                <span class="city-name">Michoacán, Mexico</span>
+                <span class="city-sub">far away · I feel at home but also like a complete stranger</span>
               </div>
             </button>
 
@@ -1137,6 +1150,16 @@
                 2.3 hrs from San Jose
               </div>
             </button>
+
+            <button class="location-card" data-city="michoacan">
+              <div class="location-card-main">
+                <span class="location-name">Michoacán, Mexico</span>
+                <span class="location-meta">far away · travel chapter</span>
+              </div>
+              <div class="location-hours" data-hours-label="michoacan">
+                27 hrs from San Jose
+              </div>
+            </button>
           </div>
 
           <div class="drive-status" id="drive-status">
@@ -1145,8 +1168,7 @@
           </div>
 
           <p class="tiny-note">
-            Times are based on my typical drives between each city — this project turns
-            them into a little travel game.
+            Times are based on a typical drive between each place (I do not drive to Mexico)
           </p>
         </aside>
       </main>
@@ -1201,6 +1223,13 @@
             y: 70,
             page: "san-jose.html",
           },
+          michoacan: {
+            id: "michoacan",
+            name: "Michoacán, Mexico",
+            x: 80,
+            y: 88,
+            page: "michoacan.html",
+          },
         };
 
         const baseRouteData = [
@@ -1221,6 +1250,24 @@
             to: "san-jose",
             hours: 2.3,
             note: "A longer stretch that ties the whole map together.",
+          },
+          {
+            from: "san-jose",
+            to: "michoacan",
+            hours: 27,
+            note: "A much longer drive — a completely different kind of trip.",
+          },
+          {
+            from: "san-francisco",
+            to: "michoacan",
+            hours: 28,
+            note: "From the middle of the Bay down to another map entirely.",
+          },
+          {
+            from: "santa-rosa",
+            to: "michoacan",
+            hours: 29,
+            note: "From the North Bay all the way to Michoacán, Mexico.",
           },
         ];
 

@@ -3,54 +3,700 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Assignment 1 – Student Projects</title>
+  <title>Strikes & Data – Home</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 42rem;
+    .bowl-page main { padding: 0; max-width: none; overflow: hidden; }
+    .bowl-page .hero, .bowl-page .card-grid { display: none; }
+
+    .bowl-arena {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 52px);
+      min-height: 400px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #111 30%, #0d0d0d 100%);
+      overflow: hidden;
+    }
+    .knocked-display {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.6);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.9rem;
+      z-index: 20;
+    }
+
+    /* Lane with perspective - bowler's view */
+    .lane-surface {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120%;
+      max-width: 900px;
+      height: calc(100% - 95px);
+      background: linear-gradient(180deg,
+        #a67c1a 0%,
+        #b8861f 15%,
+        #c9a227 35%,
+        #d4a024 50%,
+        #c49224 70%,
+        #a67c1a 100%
+      );
+      clip-path: polygon(15% 0, 85% 0, 95% 100%, 5% 100%);
+      box-shadow: inset 0 0 80px rgba(255,220,150,0.1), inset 0 2px 0 rgba(255,255,255,0.2);
+    }
+    .lane-surface::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 3px
+      );
+      pointer-events: none;
+    }
+
+    /* Lane arrows - aim guides like real bowling lanes */
+    .lane-arrows {
+      position: absolute;
+      top: 25%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 18% 0 18%;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .lane-arrow {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 12px solid rgba(0,0,0,0.35);
+    }
+
+    /* Gutters */
+    .gutter { position: absolute; top: 0; bottom: 0; width: 8%; background: #333; }
+    .gutter-l { left: 0; }
+    .gutter-r { right: 0; }
+
+    /* Pins area - wider for full 10-pin triangle */
+    .pins-zone {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45%;
+      max-width: 220px;
+      min-width: 120px;
+    }
+    .pin {
+      position: absolute;
+      width: 20px;
+      height: 50px;
+      margin-left: -10px;
+      margin-top: -25px;
+      cursor: default;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
+      clip-path: polygon(50% 0%, 57% 10%, 61% 24%, 62% 48%, 60% 68%, 54% 84%, 50% 100%, 46% 84%, 40% 68%, 38% 48%, 39% 24%, 43% 10%);
+      background: linear-gradient(110deg, #fff 0%, #f2efe8 50%, #fff 100%);
+      box-shadow: inset 2px 0 4px rgba(255,255,255,0.8), 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .pin::before, .pin::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 145%;
+      height: 8%;
+      background: linear-gradient(180deg, #c41e3a, #9e1828);
+      border-radius: 1px;
+    }
+    .pin::before { top: 14%; }
+    .pin::after { top: 26%; }
+    .pin.down {
+      transform: rotate(-70deg) translateY(15px) scale(0.85);
+      opacity: 0.8;
+      pointer-events: none;
+      background: linear-gradient(90deg, #a0a0a0, #c0c0c0);
+    }
+    .pin.down::before, .pin.down::after { opacity: 0.4; }
+
+    /* Ball - draggable left/right to aim, above scoreboard */
+    .ball {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      margin-left: -20px;
+      margin-top: -20px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #5a5a5a, #2a2a2a);
+      box-shadow: inset -4px -4px 8px rgba(0,0,0,0.5), inset 2px 2px 4px rgba(255,255,255,0.25), 0 0 0 2px rgba(255,255,255,0.4), 0 4px 12px rgba(0,0,0,0.5);
+      cursor: grab;
+      z-index: 25;
+      left: 50%;
+      bottom: 110px;
+      transform: translateX(-50%);
+    }
+    .ball:active { cursor: grabbing; }
+    .ball.dragging { cursor: grabbing; }
+
+    /* Gutters */
+
+    /* Throw zone - drag here */
+    .throw-zone {
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      max-width: 280px;
+      height: 120px;
+      cursor: grab;
+      z-index: 5;
+    }
+    .throw-zone:active { cursor: grabbing; }
+    .throw-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.5);
+      font-size: 0.85rem;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* Power meter */
+    .power-bar {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .power-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #c45c41, #e8a090);
+      border-radius: 3px;
+      transition: width 0.1s;
+    }
+
+    /* Scoreboard - 10 frames */
+    .scoreboard {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.85);
+      padding: 0.5rem 0.75rem;
+      z-index: 20;
+      font-size: 0.75rem;
+      color: #fff;
+    }
+    .scoreboard-table {
+      width: 100%;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 2rem;
-      line-height: 1.6;
+      border-collapse: collapse;
     }
-    h1 { margin-bottom: 0.5rem; }
-    p { color: #555; margin-top: 0; }
-    ul { list-style: none; padding: 0; }
-    li { margin: 0.5rem 0; }
-    a {
-      display: inline-block;
-      padding: 0.5rem 0;
-      color: #0066cc;
+    .scoreboard-table th, .scoreboard-table td {
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.2rem 0.15rem;
+      text-align: center;
+    }
+    .scoreboard-table th { font-weight: 600; }
+    .scoreboard-table .frame-10 { min-width: 1.8em; }
+    .scoreboard-table .rolls { min-height: 1.4em; }
+    .scoreboard-table .total { font-weight: 700; font-size: 0.9em; }
+    .scoreboard-table .current { background: rgba(196, 92, 65, 0.3); }
+
+    /* Nav overlay */
+    .nav-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 20;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .nav-overlay a {
+      padding: 0.4rem 0.8rem;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
       text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
     }
-    a:hover { text-decoration: underline; }
+    .nav-overlay a:hover { background: rgba(196, 92, 65, 0.5); }
   </style>
 </head>
-<body>
-  <h1>Assignment 1 – Student Projects</h1>
-  <p>Choose a project to view.</p>
-  <ul>
-    <li><a href="AlexandraHernandez/index.html">Alexandra Hernandez</a></li>
-    <li><a href="AlanJacobVillareal/index.html">Alan Jacob Villareal</a></li>
-    <li><a href="AmaraCarrier/index.html">Amara Carrier</a></li>
-    <li><a href="AndreaArellano/index.html">Andrea Arellano</a></li>
-    <li><a href="AndreDuong/index.html">Andre Duong</a></li>
-    <li><a href="AndrewBlanton/index.html">Andrew Blanton</a></li>
-    <li><a href="AudreyWai/index.html">Audrey Wai</a></li>
-    <li><a href="BeatrizAyon/index.html">Beatriz Ayon</a></li>
-    <li><a href="CassidySingman/index.html">Cassidy Singman</a></li>
-    <li><a href="DucTran/index.html">Duc Tran</a></li>
-    <li><a href="DwayneMoraes/index.html">Dwayne Moraes</a></li>
-    <li><a href="erinKoga/index.html">Erin Koga</a></li>
-    <li><a href="jerrodReyes/index.html">Jerrod Reyes</a></li>
-    <li><a href="JohnCamacho/index.html">John Camacho</a></li>
-    <li><a href="MichelleDuong/index.html">Michelle Duong</a></li>
-    <li><a href="OliviaFlorence/index.html">Olivia Florence</a></li>
-    <li><a href="Ryan%20Redden/index.html">Ryan Redden</a></li>
-    <li><a href="SamLeavitt/index.html">Sam Leavitt</a></li>
-    <li><a href="SwadhisthaKoneti/index.html">Swadhistha Koneti</a></li>
-    <li><a href="TracyKyaw/index.html">Tracy Kyaw</a></li>
-    <li><a href="YisiAi/index.html">Yisi Ai</a></li>
-  </ul>
+<body class="bowl-page">
+  <header class="site-header">
+    <div class="nav-inner">
+      <h1 class="site-title"><a href="index.html">Strikes & Data</a></h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="professionals.html">Professionals</a></li>
+          <li><a href="journey.html">Journey</a></li>
+          <li><a href="about.html">Concept</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Strikes & Data</h1>
+      <p class="tagline">Click pins. Score. Explore.</p>
+    </section>
+
+    <div class="bowl-arena">
+      <div class="nav-overlay">
+        <a href="professionals.html">Champions</a>
+        <a href="journey.html">Journey</a>
+        <a href="about.html">Concept</a>
+      </div>
+
+      <div class="knocked-display">Knocked: <span id="roll-score">0</span></div>
+
+      <div class="ball" id="ball"></div>
+
+      <div class="scoreboard">
+        <table class="scoreboard-table">
+          <thead>
+            <tr id="score-header"></tr>
+          </thead>
+          <tbody>
+            <tr id="score-rolls"></tr>
+            <tr id="score-totals"></tr>
+          </tbody>
+        </table>
+        <div style="margin-top: 0.35rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+          <button type="button" id="btn-throw" style="padding: 0.35rem 1rem; font-size: 0.85rem; background: linear-gradient(180deg, #c45c41, #a04a35); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: #fff; cursor: pointer; font-weight: 600; box-shadow: 0 2px 0 rgba(0,0,0,0.3);">Throw</button>
+          <button type="button" id="btn-newgame" style="padding: 0.25rem 0.6rem; font-size: 0.7rem; background: rgba(255,255,255,0.2); border: none; border-radius: 4px; color: #fff; cursor: pointer;">New game</button>
+        </div>
+      </div>
+
+      <div class="lane-surface">
+        <div class="gutter gutter-l"></div>
+        <div class="gutter gutter-r"></div>
+
+        <div class="pins-zone" id="pins-zone">
+          <!-- Pins positioned by JS -->
+        </div>
+
+        <div class="lane-arrows">
+          <div class="lane-arrow"></div>
+          <div class="lane-arrow"></div>
+          <div class="lane-arrow"></div>
+          <div class="lane-arrow"></div>
+          <div class="lane-arrow"></div>
+        </div>
+
+        <div class="throw-zone" id="throw-zone">
+          <div class="throw-hint" id="throw-hint">Drag ball left/right to aim, then click Throw or drag up</div>
+          <div class="power-bar">
+            <div class="power-fill" id="power-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="reveal card-grid" style="display:none;">
+      <a href="professionals.html" class="card">Champions</a>
+      <a href="journey.html" class="card">Journey</a>
+      <a href="about.html" class="card">Concept</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Art 101 – Project 1 · Strikes & Data · Alexandra Hernandez</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      var PIN_POSITIONS = [
+        { id: 1, x: 50, y: 0 },
+        { id: 2, x: 35, y: 18 },
+        { id: 3, x: 65, y: 18 },
+        { id: 4, x: 22, y: 36 },
+        { id: 5, x: 50, y: 36 },
+        { id: 6, x: 78, y: 36 },
+        { id: 7, x: 10, y: 54 },
+        { id: 8, x: 35, y: 54 },
+        { id: 9, x: 65, y: 54 },
+        { id: 10, x: 90, y: 54 }
+      ];
+
+      var pinsZone = document.getElementById('pins-zone');
+      var ball = document.getElementById('ball');
+      var throwZone = document.getElementById('throw-zone');
+      var powerFill = document.getElementById('power-fill');
+      var throwHint = document.getElementById('throw-hint');
+      var rollScoreEl = document.getElementById('roll-score');
+      var scoreHeaderRow = document.getElementById('score-header');
+      var scoreRollsRow = document.getElementById('score-rolls');
+      var scoreTotalsRow = document.getElementById('score-totals');
+      var btnNewGame = document.getElementById('btn-newgame');
+      var btnThrow = document.getElementById('btn-throw');
+
+      var frames = [];
+      for (var i = 0; i < 10; i++) frames.push({ r1: null, r2: null, r3: null, total: null });
+      var frame = 0;
+      var roll = 1;
+      var isThrowing = false;
+      var dragStart = null;
+      var ballDragStart = null;
+      var pins = [];
+
+      function createPins() {
+        pinsZone.innerHTML = '';
+        pins = [];
+        PIN_POSITIONS.forEach(function (pos) {
+          var el = document.createElement('div');
+          el.className = 'pin';
+          el.dataset.pin = pos.id;
+          el.style.left = pos.x + '%';
+          el.style.top = pos.y + '%';
+          pinsZone.appendChild(el);
+          pins.push({ el: el, id: pos.id, x: pos.x, y: pos.y });
+        });
+      }
+
+      function getPins() { return pinsZone.querySelectorAll('.pin'); }
+      function countDown() {
+        var n = 0;
+        getPins().forEach(function (p) { if (p.classList.contains('down')) n++; });
+        return n;
+      }
+      function standAllPins() {
+        getPins().forEach(function (p) { p.classList.remove('down'); });
+      }
+
+      function knockPins(ballXPercent) {
+        var hit = [];
+        var spread = 12 + Math.random() * 8;
+        pins.forEach(function (p) {
+          var dist = Math.abs(p.x - ballXPercent);
+          var roll = Math.random();
+          if (dist < spread || (dist < spread + 12 && roll < 0.6)) hit.push(p.id);
+        });
+        if (hit.length === 0 && Math.random() < 0.2) hit.push(PIN_POSITIONS[Math.floor(Math.random() * 10)].id);
+        return hit;
+      }
+
+      function renderScoreboard() {
+        var headerHtml = '';
+        var rollsHtml = '';
+        var totalsHtml = '';
+        for (var f = 0; f < 10; f++) {
+          var col = f === 9 ? 3 : 2;
+          var cls = f === frame ? ' current' : '';
+          headerHtml += '<th colspan="' + col + '">' + (f + 1) + '</th>';
+          var r1 = frames[f].r1, r2 = frames[f].r2, r3 = frames[f].r3;
+          var r1s = r1 === null ? '' : (r1 === 10 ? 'X' : String(r1));
+          var r2s = r2 === null ? '' : (r1 !== null && r1 < 10 && r1 + r2 === 10 ? '/' : (r2 === 10 ? 'X' : String(r2)));
+          var r3s = r3 === null ? '' : (r2 !== null && r2 < 10 && r2 + r3 === 10 ? '/' : (r3 === 10 ? 'X' : String(r3)));
+          if (f < 9) {
+            rollsHtml += '<td class="rolls' + cls + '">' + r1s + '</td><td class="rolls' + cls + '">' + (r1 === 10 ? '' : r2s) + '</td>';
+          } else {
+            rollsHtml += '<td class="rolls' + cls + '">' + r1s + '</td><td class="rolls' + cls + '">' + r2s + '</td>';
+          }
+          if (f === 9) rollsHtml += '<td class="rolls' + cls + ' frame-10">' + r3s + '</td>';
+          totalsHtml += '<td class="total' + cls + '" colspan="' + col + '">' + (frames[f].total !== null ? frames[f].total : '') + '</td>';
+        }
+        scoreHeaderRow.innerHTML = headerHtml;
+        scoreRollsRow.innerHTML = rollsHtml;
+        scoreTotalsRow.innerHTML = totalsHtml;
+      }
+
+      function computeScores() {
+        var runTotal = 0;
+        for (var f = 0; f < 10; f++) {
+          var r1 = frames[f].r1, r2 = frames[f].r2, r3 = frames[f].r3;
+          if (r1 === null) break;
+          var score = 0;
+          if (f < 9) {
+            if (r1 === 10) {
+              if (frames[f + 1].r1 !== null) {
+                score = 10 + frames[f + 1].r1;
+                if (frames[f + 1].r1 === 10 && f < 8) score += frames[f + 2].r1 || 0;
+                else if (frames[f + 1].r1 === 10 && f === 8) score += frames[f + 1].r2 || 0;
+                else score += frames[f + 1].r2 || 0;
+              }
+            } else if (r2 !== null && r1 + r2 === 10) {
+              score = 10 + (frames[f + 1].r1 || 0);
+            } else if (r2 !== null) {
+              score = r1 + r2;
+            }
+          } else {
+            score = (r1 || 0) + (r2 || 0) + (r3 || 0);
+          }
+          if (r2 !== null || (r1 === 10 && f < 9) || (f === 9 && r3 !== null)) {
+            runTotal += score;
+            frames[f].total = runTotal;
+          }
+        }
+        renderScoreboard();
+      }
+
+      function advanceFrame(knocked) {
+        var f = frame, r = roll;
+        knocked = Math.min(10, knocked);
+        if (f < 9) {
+          if (r === 1) {
+            frames[f].r1 = knocked;
+            if (knocked === 10) {
+              frame++;
+              standAllPins();
+            } else {
+              roll = 2;
+            }
+          } else {
+            frames[f].r2 = Math.min(knocked, 10 - (frames[f].r1 || 0));
+            frame++;
+            roll = 1;
+            standAllPins();
+          }
+        } else {
+          if (r === 1) {
+            frames[f].r1 = knocked;
+            standAllPins();
+            roll = 2;
+          } else if (r === 2) {
+            var maxR2 = (frames[f].r1 === 10) ? 10 : (10 - frames[f].r1);
+            frames[f].r2 = Math.min(knocked, maxR2);
+            if (frames[f].r1 === 10 || frames[f].r1 + knocked === 10) {
+              standAllPins();
+              roll = 3;
+            } else {
+              frame = 0;
+              roll = 1;
+              standAllPins();
+            }
+          } else {
+            var maxR3 = (frames[f].r2 === 10) ? 10 : (10 - frames[f].r2);
+            frames[f].r3 = Math.min(knocked, maxR3);
+            frame = 0;
+            roll = 1;
+            standAllPins();
+          }
+        }
+        computeScores();
+      }
+
+      function throwBall(power, aimX) {
+        if (isThrowing) return;
+        isThrowing = true;
+        throwHint.textContent = '';
+
+        var zoneRect = pinsZone.getBoundingClientRect();
+        var arenaRect = ball.parentElement.getBoundingClientRect();
+        var ballRect = ball.getBoundingClientRect();
+        var ballCenterX = ballRect.left - arenaRect.left + ballRect.width / 2;
+        var ballCenterY = ballRect.top - arenaRect.top + ballRect.height / 2;
+        var startX = arenaRect.left + ballCenterX;
+        var startY = arenaRect.top + ballCenterY;
+        var endX = zoneRect.left + zoneRect.width * (aimX / 100);
+        var endY = zoneRect.top + zoneRect.height / 2;
+
+        ball.style.left = ballCenterX + 'px';
+        ball.style.bottom = (arenaRect.height - ballCenterY - 20) + 'px';
+        ball.style.transform = 'none';
+
+        var duration = 800 - power * 400;
+        var startTime = null;
+
+        function animate(t) {
+          if (!startTime) startTime = t;
+          var elapsed = t - startTime;
+          var progress = Math.min(1, elapsed / duration);
+          var eased = 1 - Math.pow(1 - progress, 1.5);
+          var x = startX + (endX - startX) * eased;
+          var y = startY + (endY - startY) * eased;
+          ball.style.left = (x - arenaRect.left) + 'px';
+          ball.style.bottom = (arenaRect.bottom - y - 20) + 'px';
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+            return;
+          }
+
+          var hitPins = knockPins(aimX);
+          var knocked = 0;
+          hitPins.forEach(function (id) {
+            var pin = pinsZone.querySelector('[data-pin="' + id + '"]');
+            if (pin && !pin.classList.contains('down')) {
+              pin.classList.add('down');
+              knocked++;
+            }
+          });
+          knocked = Math.min(10, knocked);
+          rollScoreEl.textContent = knocked;
+          advanceFrame(knocked);
+
+          ball.style.left = '50%';
+          ball.style.bottom = '110px';
+          ball.style.transform = 'translateX(-50%)';
+          isThrowing = false;
+          throwHint.textContent = 'Drag ball left/right to aim, then click Throw or drag up';
+        }
+        requestAnimationFrame(animate);
+      }
+
+      function onDragStart(e) {
+        e.preventDefault();
+        var c = e.touches ? e.touches[0] : e;
+        dragStart = { x: c.clientX, y: c.clientY };
+        powerFill.style.width = '0%';
+      }
+      function onDragMove(e) {
+        if (ballDragStart) {
+          var c = e.touches ? e.touches[0] : e;
+          var arenaRect = ball.parentElement.getBoundingClientRect();
+          var newCenter = ballDragStart.left + (c.clientX - ballDragStart.x);
+          newCenter = Math.max(40, Math.min(arenaRect.width - 40, newCenter));
+          ball.style.left = newCenter + 'px';
+          ball.style.transform = 'translateX(-50%)';
+          var dy = ballDragStart.y - c.clientY;
+          if (dy > 0) powerFill.style.width = Math.min(100, (dy / 80) * 100) + '%';
+          return;
+        }
+        if (!dragStart || isThrowing) return;
+        var c = e.touches ? e.touches[0] : e;
+        var dy = dragStart.y - c.clientY;
+        if (dy > 0) powerFill.style.width = Math.min(100, (dy / 80) * 100) + '%';
+      }
+      function getBallAimX() {
+        var arenaRect = ball.parentElement.getBoundingClientRect();
+        var ballRect = ball.getBoundingClientRect();
+        var ballCenter = ballRect.left - arenaRect.left + ballRect.width / 2;
+        return Math.max(15, Math.min(85, (ballCenter / arenaRect.width) * 100));
+      }
+
+      function onDragEnd(e) {
+        if (!dragStart || isThrowing) return;
+        var c = e.changedTouches ? e.changedTouches[0] : e;
+        var dy = dragStart.y - c.clientY;
+        var power = Math.min(1, Math.max(0, dy / 100));
+        var aimX = getBallAimX();
+        dragStart = null;
+        powerFill.style.width = '0%';
+        if (power > 0.08) throwBall(power, aimX);
+      }
+      function onDragLeave() {
+        if (ballDragStart) {
+          ballDragStart = null;
+          ball.classList.remove('dragging');
+        }
+        if (dragStart) {
+          var pct = parseFloat(powerFill.style.width) || 0;
+          if (pct > 20) throwBall(pct / 100, getBallAimX());
+          dragStart = null;
+          powerFill.style.width = '0%';
+        }
+      }
+
+      ball.addEventListener('mousedown', function (e) {
+        if (isThrowing) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var c = e.touches ? e.touches[0] : e;
+        var arenaRect = ball.parentElement.getBoundingClientRect();
+        var ballRect = ball.getBoundingClientRect();
+        ballDragStart = { x: c.clientX, y: c.clientY, left: ballRect.left - arenaRect.left + ballRect.width / 2 };
+        ball.classList.add('dragging');
+      });
+      ball.addEventListener('touchstart', function (e) {
+        if (isThrowing) return;
+        e.preventDefault();
+        var c = e.touches[0];
+        var arenaRect = ball.parentElement.getBoundingClientRect();
+        var ballRect = ball.getBoundingClientRect();
+        ballDragStart = { x: c.clientX, y: c.clientY, left: ballRect.left - arenaRect.left + ballRect.width / 2 };
+        ball.classList.add('dragging');
+      }, { passive: false });
+
+      document.addEventListener('mouseup', function (e) {
+        if (ballDragStart) {
+          var c = e.changedTouches ? e.changedTouches[0] : e;
+          var dy = ballDragStart.y - c.clientY;
+          var power = Math.min(1, Math.max(0, dy / 100));
+          if (power > 0.08) {
+            throwBall(power, getBallAimX());
+          }
+          powerFill.style.width = '0%';
+          ballDragStart = null;
+          ball.classList.remove('dragging');
+        } else if (dragStart) {
+          onDragEnd(e);
+        }
+      });
+      document.addEventListener('touchend', function (e) {
+        if (ballDragStart) {
+          var c = (e.changedTouches && e.changedTouches[0]) || null;
+          if (!c) { ballDragStart = null; ball.classList.remove('dragging'); powerFill.style.width = '0%'; return; }
+          var dy = ballDragStart.y - c.clientY;
+          var power = Math.min(1, Math.max(0, dy / 100));
+          if (power > 0.08) {
+            throwBall(power, getBallAimX());
+          }
+          powerFill.style.width = '0%';
+          ballDragStart = null;
+          ball.classList.remove('dragging');
+        } else if (dragStart) {
+          onDragEnd(e);
+        }
+      });
+
+      throwZone.addEventListener('mousedown', function (e) {
+        if (ballDragStart) return;
+        onDragStart(e);
+      });
+      document.addEventListener('mousemove', onDragMove);
+      document.addEventListener('touchmove', onDragMove, { passive: false });
+      throwZone.addEventListener('mouseleave', onDragLeave);
+      throwZone.addEventListener('touchstart', function (e) {
+        if (ballDragStart) return;
+        onDragStart(e);
+      }, { passive: false });
+
+      btnThrow.addEventListener('click', function () {
+        if (isThrowing) return;
+        throwBall(0.6, getBallAimX());
+      });
+      btnNewGame.addEventListener('click', function () {
+        frames = [];
+        for (var i = 0; i < 10; i++) frames.push({ r1: null, r2: null, r3: null, total: null });
+        frame = 0;
+        roll = 1;
+        standAllPins();
+        rollScoreEl.textContent = '0';
+        throwHint.textContent = 'Drag ball left/right to aim, then click Throw or drag up';
+        renderScoreboard();
+      });
+
+      createPins();
+      rollScoreEl.textContent = '0';
+      renderScoreboard();
+    })();
+  </script>
 </body>
 </html>
