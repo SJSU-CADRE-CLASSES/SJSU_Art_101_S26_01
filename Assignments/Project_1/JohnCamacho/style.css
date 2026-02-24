@@ -267,6 +267,13 @@ body {
   margin: 0 auto;
 }
 
+@media (min-width: 960px) {
+  .view-intro > div {
+    margin-left: 0;
+    margin-right: auto; /* shift block slightly to the left on wide screens */
+  }
+}
+
 .intro-title {
   font-size: 2.6rem;
   letter-spacing: 0.12em;
