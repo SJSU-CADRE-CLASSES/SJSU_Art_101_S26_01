@@ -12,6 +12,9 @@
         }
         body {
             position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         body::before {
             content: '';
@@ -57,10 +60,37 @@
             z-index: 1;
             color: white;
         }
+        .top {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .top a {
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        .bed-wrap {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .bed-wrap img {
+            width: min(700px, 90vw);
+            height: auto;
+        }
     </style>
 </head>
 <body>
-    <h1>sleep</h1>
-    <a href="index.html">Back to lobby</a>
+    <div class="top">
+        <h1>sleep</h1>
+        <a href="index.html">Back to lobby</a>
+    </div>
+    <div class="bed-wrap">
+        <img src="bed.png" alt="Bed">
+    </div>
 </body>
 </html>
