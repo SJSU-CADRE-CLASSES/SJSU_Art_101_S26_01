@@ -21,18 +21,44 @@
   font-style: normal;
 }
 
-.index-gray-whale {
+.index-whale-block {
   position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(calc(-50% - 50px)) translateY(-100%);
-  max-width: 600px;
-  width: 80%;
-  height: auto;
   opacity: 0;
   animation: index-whale-drop 1.5s ease-out forwards;
   z-index: 5;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.index-whale-link {
+  pointer-events: auto;
+  cursor: pointer;
+  display: block;
+  line-height: 0;
+}
+
+.index-gray-whale {
+  max-width: 600px;
+  width: 80%;
+  height: auto;
+  display: block;
+  animation: index-whale-float 3s ease-in-out 1.5s infinite;
+}
+
+.index-whale-caption {
+  margin: 0.5rem 0 0 0;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0;
+  transform: translate(-10px, -105px);
+  animation: index-whale-caption-fade 1s ease-out 1s forwards,
+             index-whale-caption-float 3s ease-in-out 2s infinite;
 }
 
 @keyframes index-whale-drop {
@@ -44,6 +70,118 @@
     opacity: 1;
     transform: translateX(calc(-50% - 50px)) translateY(120px);
   }
+}
+
+@keyframes index-whale-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes index-whale-caption-fade {
+  0% {
+    opacity: 0;
+    transform: translate(-10px, -105px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-10px, -85px);
+  }
+}
+
+@keyframes index-whale-caption-float {
+  0%, 100% { transform: translate(-10px, -85px); }
+  50% { transform: translate(-10px, -97px); }
+}
+
+html:has(body.page-index) {
+  overflow: hidden;
+}
+
+body.page-index {
+  overflow: hidden;
+}
+
+/* About page */
+body.page-about {
+  transform: none;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+body.page-about .about-header {
+  position: relative;
+  width: 100%;
+  padding: 1.5rem;
+  margin: 0;
+  min-height: 4rem;
+  box-sizing: border-box;
+  opacity: 0;
+  animation: about-fade-in 0.8s ease-out forwards;
+}
+
+@keyframes about-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.page-about .about-title {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 400;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 8rem);
+  max-width: 100%;
+}
+
+body.page-about .about-back-btn {
+  position: absolute;
+  left: 1.5rem;
+  top: 1.5rem;
+  flex-shrink: 0;
+  padding: 0.4rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #fff;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+body.page-about .about-back-btn:hover {
+  background: #222;
+}
+
+body.page-about .about-body {
+  max-width: 720px;
+  margin: 0 auto;
+  margin-top: 100px;
+  padding: 0 1.5rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  opacity: 0;
+  animation: about-fade-in 0.8s ease-out 0.2s forwards;
+}
+
+body.page-about .about-body p {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.25rem;
+  line-height: 1.65;
+}
+
+body.page-about .about-body p:last-child {
+  margin-bottom: 0;
 }
 
 body {
