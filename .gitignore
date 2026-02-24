@@ -20,3 +20,5 @@ Thumbs.db
 .DS_Store
 .DS_Store
 
+# Exclude large audio from repo (keep locally only)
+**/album1.wav

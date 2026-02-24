@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping Info — Art 101 Project 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 2rem;
+      font-family: 'Barlow', system-ui, sans-serif;
+      background: linear-gradient(160deg, #FFF0F5 0%, #E8F4F8 45%, #F0E6FA 100%);
+      color: #3d3d5c;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: #5a4a6a;
+    }
+    .truck {
+      display: inline-block;
+      animation: truckMove 2s ease-in-out infinite;
+    }
+    @keyframes truckMove {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(8px); }
+    }
+    .quiz {
+      width: 100%;
+      max-width: 420px;
+      padding: 1.75rem;
+      background: rgba(255,255,255,0.75);
+      border-radius: 20px;
+      border: 2px solid rgba(199, 206, 234, 0.4);
+      box-shadow: 0 8px 32px rgba(181, 234, 215, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .field label, .field legend {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #5a4a6a;
+    }
+    .field input[type="number"] {
+      padding: 0.65rem 0.85rem;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 2px solid rgba(199, 206, 234, 0.5);
+      border-radius: 12px;
+      background: #fff;
+      color: #3d3d5c;
+    }
+    .field input[type="number"]:focus,
+    .field input[type="text"]:focus {
+      outline: none;
+      border-color: #C7CEEA;
+      box-shadow: 0 0 0 3px rgba(199, 206, 234, 0.25);
+    }
+    .spend-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .spend-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .spend-row label {
+      flex: 0 0 140px;
+      font-weight: 400;
+    }
+    .spend-row input {
+      width: 80px;
+    }
+    .count-total {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .count-total.valid {
+      color: #5a9a6e;
+    }
+    .count-total.invalid {
+      color: #b85c5c;
+    }
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 400;
+      cursor: pointer;
+      color: #3d3d5c;
+    }
+    .checkboxes input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      accent-color: #FFB5C2;
+    }
+    .checkboxes .series-thumb {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
+    button[type="submit"] {
+      padding: 0.85rem 1.5rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #FFB5C2 0%, #C7CEEA 100%);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 14px rgba(255, 181, 194, 0.4);
+    }
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 181, 194, 0.5);
+    }
+    a.choose {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #6b5b7a;
+      text-decoration: none;
+    }
+    a.choose:hover {
+      color: #5a4a6a;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shipping Info <span class="truck" aria-hidden="true">🚚</span></h1>
+  <form class="quiz" id="quiz">
+    <div class="field">
+      <label for="frequency">1. How often would you like to purchase a blindbox per month?</label>
+      <input type="number" id="frequency" name="frequency" min="1" step="1" placeholder="e.g. 2" required>
+    </div>
+    <div class="field">
+      <legend>2. What series would you like to collect? (select all that apply)</legend>
+      <div class="checkboxes">
+        <label><input type="checkbox" name="series" value="Littlest Pet Shop" data-series="Littlest Pet Shop"><img src="lps.png" alt="" class="series-thumb"> Littlest Pet Shop</label>
+        <label><input type="checkbox" name="series" value="Labubu" data-series="Labubu"><img src="labubu.png" alt="" class="series-thumb"> Labubu</label>
+        <label><input type="checkbox" name="series" value="Hirono" data-series="Hirono"><img src="hirono.png" alt="" class="series-thumb"> Hirono</label>
+        <label><input type="checkbox" name="series" value="Smiski" data-series="Smiski"><img src="smiski.png" alt="" class="series-thumb"> Smiski</label>
+        <label><input type="checkbox" name="series" value="Skullpanda" data-series="Skullpanda"><img src="skullpanda.png" alt="" class="series-thumb"> Skullpanda</label>
+      </div>
+    </div>
+    <div class="field" id="countSection" style="display: none;">
+      <legend>3. How many of each series would you like? (total must equal your answer to question 1)</legend>
+      <div class="spend-inputs" id="countInputs"></div>
+      <p class="count-total invalid" id="countTotal">Total: 0 / —</p>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+  <a href="index.html" class="choose">← Choose another box</a>
+  <script>
+    function countKey(seriesName) {
+      return 'count_' + seriesName.replace(/\s+/g, '_');
+    }
+    function getFrequency() {
+      var n = parseInt(document.getElementById('frequency').value, 10);
+      return (isNaN(n) || n < 1) ? 1 : n;
+    }
+    function getCountTotal() {
+      var total = 0;
+      document.querySelectorAll('#countInputs input[type="number"]').forEach(function(input) {
+        var val = parseInt(input.value, 10);
+        if (!isNaN(val) && val > 0) total += val;
+      });
+      return total;
+    }
+    function updateCountTotalDisplay() {
+      var total = getCountTotal();
+      var target = getFrequency();
+      var el = document.getElementById('countTotal');
+      if (!el) return;
+      el.textContent = 'Total: ' + total + ' / ' + target;
+      el.className = 'count-total ' + (total === target ? 'valid' : 'invalid');
+    }
+    function updateCountInputs() {
+      var checked = document.querySelectorAll('input[name="series"]:checked');
+      var section = document.getElementById('countSection');
+      var container = document.getElementById('countInputs');
+      var target = getFrequency();
+      container.innerHTML = '';
+      if (checked.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+      checked.forEach(function(cb) {
+        var name = cb.value;
+        var key = countKey(name);
+        var row = document.createElement('div');
+        row.className = 'spend-row';
+        row.innerHTML = '<label for="' + key + '">' + name + '</label><input type="number" id="' + key + '" name="' + key + '" min="0" step="1" placeholder="0">';
+        container.appendChild(row);
+      });
+      container.querySelectorAll('input').forEach(function(input) {
+        input.addEventListener('input', updateCountTotalDisplay);
+      });
+      updateCountTotalDisplay();
+    }
+    document.querySelectorAll('input[name="series"]').forEach(function(cb) {
+      cb.addEventListener('change', updateCountInputs);
+    });
+    document.getElementById('frequency').addEventListener('input', function() {
+      updateCountInputs();
+    });
+    document.getElementById('quiz').addEventListener('submit', function(e) {
+      var checkboxes = document.querySelectorAll('input[name="series"]:checked');
+      if (checkboxes.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one series.');
+        return;
+      }
+      var total = getCountTotal();
+      var target = getFrequency();
+      if (total !== target) {
+        e.preventDefault();
+        alert('The total for all series must equal ' + target + ' (your answer to question 1). Right now the total is ' + total + '.');
+        return;
+      }
+      e.preventDefault();
+      var params = new URLSearchParams();
+      params.set('frequency', document.getElementById('frequency').value);
+      checkboxes.forEach(function(cb) { params.append('series', cb.value); });
+      checkboxes.forEach(function(cb) {
+        var input = document.getElementById(countKey(cb.value));
+        if (input) params.set(countKey(cb.value), input.value.trim() === '' ? '0' : input.value);
+      });
+      window.location.href = 'results.html?' + params.toString();
+    });
+  </script>
+</body>
+</html>

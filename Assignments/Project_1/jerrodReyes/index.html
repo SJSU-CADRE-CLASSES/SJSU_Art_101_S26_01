@@ -15,42 +15,330 @@
         }
         body {
             font-family: 'Ubuntu', sans-serif;
-            background-color: #1e1e1e;
-            color: #e8e8e8;
             min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 50%, #1e4d6b 100%);
+            background-size: cover;
+            position: relative;
+        }
+        /* Desktop icons area (optional atmosphere) */
+        .desktop {
+            position: absolute;
+            inset: 0;
+            padding: 1rem;
+            padding-bottom: 52px;
+        }
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(30, 30, 30, 0.92);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 6px;
+        }
+        .taskbar-start {
+            width: 42px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            color: #fff;
+            font-size: 14px;
+            border-radius: 4px;
         }
-        .container {
-            max-width: 560px;
-            width: 100%;
-            padding: 2.5rem;
-            background: #2a2a2a;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        .taskbar-start:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
-        h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
+        .taskbar-time {
+            margin-left: auto;
+            padding: 0 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        /* Browser window */
+        .browser-window {
+            position: absolute;
+            min-width: 320px;
+            min-height: 240px;
+            width: 560px;
+            height: 380px;
+            /* position set by JS to center on load */
+            background: #8a8a96;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10;
+        }
+        .browser-window:focus-within {
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45), 0 0 0 2px rgba(100, 160, 220, 0.4);
+        }
+        .browser-titlebar {
+            height: 36px;
+            background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+            border-bottom: 1px solid #b0b0b0;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 10px;
+            cursor: move;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .browser-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .browser-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .browser-dots .close { background: #ff5f57; }
+        .browser-dots .min { background: #febc2e; }
+        .browser-dots .max { background: #28c840; }
+        .browser-title {
+            flex: 1;
             text-align: center;
+            font-size: 13px;
+            color: #333;
+            pointer-events: none;
         }
-        a {
-            color: #7eb8da;
-            text-decoration: none;
-            transition: color 0.2s ease;
+        .browser-url-bar {
+            height: 36px;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            flex-shrink: 0;
         }
-        a:hover {
-            color: #9dd4f5;
+        .browser-url-bar .lock {
+            color: #666;
+            font-size: 12px;
+        }
+        .browser-url-bar input {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            background: #fff;
+            color: #333;
+        }
+        .browser-url-bar input:focus {
+            outline: none;
+            border-color: #4a90d9;
+            box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+        }
+        .browser-content {
+            flex: 1;
+            overflow: auto;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .browser-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        /* Resize handle */
+        .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            cursor: nwse-resize;
+            z-index: 5;
+        }
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            right: 6px;
+            bottom: 6px;
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid rgba(0, 0, 0, 0.25);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.25);
+            border-radius: 0 0 4px 0;
+        }
+        .resize-handle:hover::after {
+            border-color: rgba(0, 0, 0, 0.45);
+        }
+        /* Escape button - centered on page, under browser window */
+        .escape-btn {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            padding: 12px 28px;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #e8e8e8;
+            background: rgba(30, 30, 30, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .escape-btn:hover {
+            background: rgba(50, 50, 50, 0.95);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Jerrod Reyes - Project 1</h1>
+    <div class="desktop">
+        <div class="browser-window" id="browserWindow" tabindex="0">
+            <div class="browser-titlebar" id="titleBar">
+                <div class="browser-dots">
+                    <span class="close"></span>
+                    <span class="min"></span>
+                    <span class="max"></span>
+                </div>
+                <span class="browser-title">Copland OS Browser</span>
+            </div>
+            <div class="browser-url-bar">
+                <span class="lock">🔒</span>
+                <input type="text" value="https://coplandos.com/W1R3ED" readonly>
+            </div>
+            <div class="browser-content">
+                <img src="Copland_OS_Logo.gif" alt="Copland OS Logo">
+            </div>
+            <div class="resize-handle" id="resizeHandle"></div>
+        </div>
     </div>
+    <button type="button" class="escape-btn" id="escapeBtn">Escape to The Wired</button>
+    <div class="taskbar">
+        <div class="taskbar-start">⊞</div>
+        <div class="taskbar-time">12:00 PM</div>
+    </div>
+
+    <script>
+        (function () {
+            const win = document.getElementById('browserWindow');
+            const titleBar = document.getElementById('titleBar');
+            const resizeHandle = document.getElementById('resizeHandle');
+
+            let dragStartX = 0, dragStartY = 0, winStartX = 0, winStartY = 0;
+            let resizeStartX = 0, resizeStartY = 0, startW = 0, startH = 0;
+
+            var ws = null;
+            var wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            try {
+                ws = new WebSocket(wsScheme + '//' + window.location.host);
+                ws.onopen = function () {
+                    ws.send(JSON.stringify({ type: 'register', page: 'index' }));
+                };
+            } catch (e) {}
+
+            function getRect(el) {
+                const r = el.getBoundingClientRect();
+                return { left: r.left, top: r.top, width: r.width, height: r.height };
+            }
+
+            function sendBrowserRect() {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    var r = getRect(win);
+                    ws.send(JSON.stringify({ type: 'browser', left: r.left, top: r.top, width: r.width, height: r.height }));
+                }
+            }
+
+            function centerWindow() {
+                const w = win.offsetWidth;
+                const h = win.offsetHeight;
+                const taskbarH = 40;
+                win.style.left = Math.max(0, (window.innerWidth - w) / 2) + 'px';
+                win.style.top = Math.max(0, (window.innerHeight - taskbarH - h) / 2) + 'px';
+                sendBrowserRect();
+            }
+            centerWindow();
+            setInterval(sendBrowserRect, 400);
+
+            document.getElementById('escapeBtn').addEventListener('click', function () {
+                window.open('thewired.html', '_blank', 'noopener,noreferrer');
+            });
+
+            titleBar.addEventListener('mousedown', function (e) {
+                if (e.button !== 0) return;
+                e.preventDefault();
+                const r = getRect(win);
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                winStartX = r.left;
+                winStartY = r.top;
+                win.style.right = 'auto';
+                win.style.bottom = 'auto';
+                win.style.left = winStartX + 'px';
+                win.style.top = winStartY + 'px';
+
+                function onMove(e) {
+                    const dx = e.clientX - dragStartX;
+                    const dy = e.clientY - dragStartY;
+                    win.style.left = (winStartX + dx) + 'px';
+                    win.style.top = (winStartY + dy) + 'px';
+                    sendBrowserRect();
+                }
+                function onUp() {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                    sendBrowserRect();
+                }
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+            });
+
+            resizeHandle.addEventListener('mousedown', function (e) {
+                if (e.button !== 0) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const r = getRect(win);
+                resizeStartX = e.clientX;
+                resizeStartY = e.clientY;
+                startW = r.width;
+                startH = r.height;
+                win.style.right = 'auto';
+                win.style.bottom = 'auto';
+                win.style.left = r.left + 'px';
+                win.style.top = r.top + 'px';
+                win.style.width = startW + 'px';
+                win.style.height = startH + 'px';
+
+                function onMove(e) {
+                    const dw = e.clientX - resizeStartX;
+                    const dh = e.clientY - resizeStartY;
+                    const newW = Math.max(320, startW + dw);
+                    const newH = Math.max(240, startH + dh);
+                    win.style.width = newW + 'px';
+                    win.style.height = newH + 'px';
+                    sendBrowserRect();
+                }
+                function onUp() {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                    sendBrowserRect();
+                }
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -5,39 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Duc Tran — Data Self Portrait | Art 101 Project 1</title>
   <style>
-  *{box-sizing:border-box} body{font-family:"Segoe UI",system-ui,sans-serif;margin:0;background:#313338;color:#dbdee1;line-height:1.5;min-height:100vh} .wrap{max-width:52rem;margin:0 auto;padding:1.5rem} header{border-bottom:1px solid #404249;padding-bottom:1rem;margin-bottom:2rem} h1{margin:0 0 .25rem 0;font-size:1.75rem;color:#fff} .subtitle{margin:0;font-size:.95rem;color:#b5bac1} nav{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem} nav a{color:#5865f2;text-decoration:none;padding:.35rem .75rem;border-radius:4px;font-size:.9rem} nav a:hover{background:#5865f2;color:#fff} nav a.active{background:#4752c4;color:#fff} .channel-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#80848e;margin-bottom:.35rem;width:100%} main section{margin-bottom:2rem} .card{background:#2b2d31;border-radius:8px;padding:1.25rem;margin-bottom:1rem} .card h2{margin:0 0 .75rem 0;font-size:1.1rem;color:#fff} .bar-wrap{margin-bottom:.75rem} .bar-label{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem;color:#b5bac1} .bar{height:1.5rem;background:#404249;border-radius:4px;overflow:hidden} .bar-fill{height:100%;background:linear-gradient(90deg,#5865f2,#7289da);border-radius:4px;min-width:4px} .word-list{display:flex;flex-wrap:wrap;gap:.5rem} .word-tag{background:#404249;color:#dbdee1;padding:.35rem .7rem;border-radius:999px;font-size:.9rem} .word-tag span{color:#b5bac1;margin-left:.25rem} footer{margin-top:3rem;padding-top:1rem;border-top:1px solid #404249;font-size:.85rem;color:#80848e} .about p{margin:0 0 1rem 0} .about a{color:#5865f2} .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin:1.5rem 0} .stat{text-align:center;padding:1rem;background:#2b2d31;border-radius:8px} .stat-num{font-size:1.75rem;font-weight:700;color:#5865f2} .stat-label{font-size:.85rem;color:#b5bac1} code{background:#404249;padding:.2rem .4rem;border-radius:4px;font-size:.9em}
+  *{box-sizing:border-box}
+  body{font-family:"Courier New",Consolas,monospace;margin:0;background:#1a1a1a;color:#e0e0e0;line-height:1.6;min-height:100vh;font-size:14px}
+  .stripe{height:6px;background:repeating-linear-gradient(90deg,#c00 0,#c00 8px,#000 8px,#000 16px)}
+  .wrap{max-width:960px;margin:0 auto;padding:1.5rem 1rem}
+  .logo{text-align:center;padding:1.5rem 0;border-bottom:2px solid #c00}
+  .logo h1{margin:0;font-size:1.75rem;font-weight:700;color:#c00;letter-spacing:.15em;text-transform:uppercase;text-shadow:1px 1px 0 #000}
+  .logo p{margin:.5rem 0 0;font-size:.85rem;color:#888}
+  .cols{display:grid;grid-template-columns:1fr auto 1fr;gap:2rem;align-items:start;margin-top:2rem}
+  @media (max-width:768px){.cols{grid-template-columns:1fr}}
+  .col ul{list-style:none;padding:0;margin:0 0 1.5rem 0}
+  .col li{margin:.4rem 0}
+  .col a{color:#e0e0e0;text-decoration:none}
+  .col a:hover{color:#c00}
+  .col .bullet{color:#c00;margin-right:.5rem}
+  .col h2{font-size:.95rem;color:#c00;margin:0 0 .75rem 0;text-transform:uppercase;letter-spacing:.08em}
+  .center{text-align:center}
+  .pixel-frame{display:inline-block;padding:12px;background:#0a0a0a;border:4px solid #333;box-shadow:inset 0 0 0 2px #222;cursor:crosshair}
+  .pixel-frame svg{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+  .stat-line{font-size:.9rem;margin:.35rem 0;color:#ccc}
+  .stat-line strong{color:#c00}
+  .foot-stripe{margin-top:3rem;padding-top:1.5rem;border-top:2px solid #c00}
+  .mail-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.75rem 0}
+  .mail-row input{font-family:inherit;padding:.4rem .6rem;background:#222;border:1px solid #444;color:#e0e0e0;font-size:14px;min-width:200px}
+  .mail-row button{font-family:inherit;padding:.4rem 1rem;background:#e0e0e0;color:#1a1a1a;border:1px solid #666;cursor:pointer;font-size:14px}
+  .mail-row button:hover{background:#c00;color:#fff;border-color:#c00}
+  .mail-note{font-size:.8rem;color:#666;margin-top:.5rem}
   </style>
 </head>
 <body>
+  <div class="stripe"></div>
   <div class="wrap">
-    <header>
+    <header class="logo">
       <h1>Data Self Portrait</h1>
-      <p class="subtitle">Duc Tran — Art 101 S26 — Project 1</p>
-      <div class="channel-label">Channels</div>
-      <nav>
-        <a href="channel-about-myself.html">About Myself</a>
-        <a href="channel-my-major.html">My Major</a>
-        <a href="channel-hobbies.html">Hobbies</a>
-        <a href="channel-goals.html">Goals</a>
-      </nav>
-      <div class="channel-label" style="margin-top:1rem">Data</div>
-      <nav>
-        <a href="index.html" class="active">Home</a>
-        <a href="activity.html">Activity</a>
-        <a href="servers.html">Servers</a>
-        <a href="words.html">Words</a>
-        <a href="about.html">About the Data</a>
-      </nav>
+      <p>Duc Tran · Personal dataset from Discord</p>
     </header>
-    <main>
-      <section>
-        <p>A multi-page visualization and narrative built from <strong>Discord</strong> data about myself: when I message, where I hang out, and the words I use.</p>
-        <div class="stats-grid" id="home-stats"></div>
-        <p><strong>Channels</strong> (About Myself, My Major, Hobbies, Goals) tell my story in words; <strong>Data</strong> (Activity, Servers, Words) shows the Discord-style visualizations.</p>
-      </section>
-    </main>
-    <footer>SJSU Art 101 S26 — Project 1</footer>
+
+    <div class="cols">
+      <aside class="col">
+        <h2>About</h2>
+        <ul>
+          <li><span class="bullet">■</span><a href="channel-about-myself.html">About Myself</a></li>
+        </ul>
+        <h2>Data</h2>
+        <ul>
+          <li><span class="bullet">■</span><a href="index.html">Home</a></li>
+          <li><span class="bullet">■</span><a href="activity.html">Activity</a></li>
+          <li><span class="bullet">■</span><a href="servers.html">Servers</a></li>
+          <li><span class="bullet">■</span><a href="words.html">Words</a></li>
+        </ul>
+        <h2>Dataset stats</h2>
+        <div id="home-stats">
+          <p class="stat-line"><strong>—</strong> messages</p>
+          <p class="stat-line"><strong>—</strong> servers</p>
+          <p class="stat-line">Active since <strong>—</strong></p>
+        </div>
+      </aside>
+
+      <div class="col center">
+        <div class="pixel-frame" id="avatar-wrap">
+          <svg id="avatar-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" width="224" height="224" style="image-rendering:pixelated;image-rendering:crisp-edges">
+            <title>Duc Tran — pixel portrait</title>
+            <rect x="0" y="0" width="112" height="112" fill="#2b2d31"/>
+            <!-- Face (rounder: wider main, fuller cheeks) -->
+            <rect x="18" y="30" width="76" height="76" fill="#e0b890"/>
+            <rect x="10" y="42" width="10" height="32" fill="#e0b890"/>
+            <rect x="92" y="42" width="10" height="32" fill="#e0b890"/>
+            <rect x="28" y="38" width="56" height="12" fill="#e0b890"/>
+            <rect x="32" y="48" width="48" height="40" fill="#e8c4a0"/>
+            <!-- Hair: short black, straight hairline, slight highlights -->
+            <rect x="18" y="6" width="76" height="24" fill="#1a1a1a"/>
+            <rect x="10" y="28" width="14" height="28" fill="#1a1a1a"/>
+            <rect x="88" y="28" width="14" height="28" fill="#1a1a1a"/>
+            <rect x="38" y="10" width="6" height="6" fill="#3a3a3a"/>
+            <rect x="68" y="12" width="6" height="6" fill="#3a3a3a"/>
+            <!-- Glasses -->
+            <rect x="24" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <rect x="66" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <rect x="46" y="54" width="20" height="4" fill="#1a1a1a"/>
+            <circle id="pupil-left" cx="35" cy="56" r="3" fill="#1a1a1a"/>
+            <circle id="pupil-right" cx="77" cy="56" r="3" fill="#1a1a1a"/>
+            <rect x="48" y="88" width="4" height="4" fill="#2a2020"/>
+            <path id="avatar-mouth" d="M 42 80 L 49 84 L 56 84 L 63 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="square" style="cursor:pointer"/>
+          </svg>
+        </div>
+        <p style="margin-top:1rem;font-size:.9rem;color:#888">Personal dataset · Art 101 S26</p>
+      </div>
+
+      <aside class="col">
+        <h2>The dataset</h2>
+        <p style="margin:0 0 1rem 0;font-size:.9rem;color:#aaa">This site collects and visualizes data about me — from my Discord: when I message, where I hang out, and the words I use.</p>
+        <h2>Info</h2>
+        <ul>
+          <li><span class="bullet">■</span><a href="about.html">How I got my data</a></li>
+        </ul>
+      </aside>
+    </div>
+
+    <footer class="foot-stripe">
+      <h2 style="font-size:.95rem;color:#c00;margin:0 0 .5rem 0">Join the mail list</h2>
+      <div class="mail-row">
+        <input type="email" id="mail-input" placeholder="your email" aria-label="Your email" />
+        <button type="button" id="mail-btn">Join</button>
+      </div>
+      <p class="mail-note">Enter your email to receive updates on this project or new data visualizations.</p>
+    </footer>
   </div>
+  <div class="stripe"></div>
+
   <script>
   var discordPortrait = {
     userName: "Duc Tran",
@@ -49,18 +124,51 @@
   };
   </script>
   <script>
-    (function () {
-      var stats = document.getElementById("home-stats");
-      if (typeof discordPortrait !== "undefined") {
-        var n = discordPortrait.totalMessages;
-        var msgNum = (n && n.toLocaleString) ? n.toLocaleString() : (n || "0");
-        stats.innerHTML = "<div class=\"stat\"><div class=\"stat-num\">" + msgNum + "</div><div class=\"stat-label\">Messages</div></div>" +
-          "<div class=\"stat\"><div class=\"stat-num\">" + (discordPortrait.totalServers || "0") + "</div><div class=\"stat-label\">Servers</div></div>" +
-          "<div class=\"stat\"><div class=\"stat-num\">" + (discordPortrait.activeSince || "—") + "</div><div class=\"stat-label\">Active since</div></div>";
-      } else {
-        stats.innerHTML = "<p style='color:#b5bac1'>Data not loaded. Open from a web server or check data/discord-data.js.</p>";
-      }
-    })();
+  (function () {
+    var el = document.getElementById("home-stats");
+    if (typeof discordPortrait !== "undefined" && el) {
+      var n = discordPortrait.totalMessages;
+      var msgNum = (n && n.toLocaleString) ? n.toLocaleString() : (n || "0");
+      el.innerHTML = "<p class=\"stat-line\"><strong>" + msgNum + "</strong> messages</p><p class=\"stat-line\"><strong>" + (discordPortrait.totalServers || "0") + "</strong> servers</p><p class=\"stat-line\">Active since <strong>" + (discordPortrait.activeSince || "—") + "</strong></p>";
+    }
+  })();
+  </script>
+  <script>
+  (function () {
+    var svg = document.getElementById("avatar-svg");
+    var left = document.getElementById("pupil-left");
+    var right = document.getElementById("pupil-right");
+    if (!svg || !left || !right) return;
+    var eyeLeft = { cx: 35, cy: 56 };
+    var eyeRight = { cx: 77, cy: 56 };
+    var range = 3;
+    function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+    function movePupils(e) {
+      var r = svg.getBoundingClientRect();
+      var svgX = (e.clientX - r.left) / r.width * 112;
+      var svgY = (e.clientY - r.top) / r.height * 112;
+      var dxL = clamp((svgX - eyeLeft.cx) * 0.4, -range, range);
+      var dyL = clamp((svgY - eyeLeft.cy) * 0.4, -range, range);
+      var dxR = clamp((svgX - eyeRight.cx) * 0.4, -range, range);
+      var dyR = clamp((svgY - eyeRight.cy) * 0.4, -range, range);
+      left.setAttribute("cx", eyeLeft.cx + dxL);
+      left.setAttribute("cy", eyeLeft.cy + dyL);
+      right.setAttribute("cx", eyeRight.cx + dxR);
+      right.setAttribute("cy", eyeRight.cy + dyR);
+    }
+    document.addEventListener("mousemove", movePupils);
+
+    var mouth = document.getElementById("avatar-mouth");
+    if (mouth) {
+      var happyPath = "M 42 80 L 49 84 L 56 84 L 63 80";
+      var sadPath = "M 42 84 L 49 80 L 56 80 L 63 84";
+      var isHappy = true;
+      mouth.addEventListener("click", function () {
+        isHappy = !isHappy;
+        mouth.setAttribute("d", isHappy ? happyPath : sadPath);
+      });
+    }
+  })();
   </script>
 </body>
 </html>

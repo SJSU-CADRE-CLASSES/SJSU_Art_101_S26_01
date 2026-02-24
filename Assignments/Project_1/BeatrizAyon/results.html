@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money spent — Art 101 Project 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      font-family: 'Barlow', system-ui, sans-serif;
+      background: linear-gradient(160deg, #FFF0F5 0%, #E8F4F8 45%, #F0E6FA 100%);
+      color: #3d3d5c;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0 0 2rem 0;
+      color: #5a4a6a;
+    }
+    .viz {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .card {
+      background: rgba(255,255,255,0.8);
+      border: 2px solid rgba(199, 206, 234, 0.4);
+      border-radius: 20px;
+      padding: 1.5rem 1.75rem;
+      box-shadow: 0 8px 28px rgba(181, 234, 215, 0.2);
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #5a4a6a;
+      margin: 0 0 1rem 0;
+    }
+    .big-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #C7CEEA;
+      margin: 0 0 0.5rem 0;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .big-number.sub {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #6b5b7a;
+    }
+    .bar-wrap {
+      margin-top: 0.75rem;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-label {
+      flex: 0 0 120px;
+      font-size: 0.9rem;
+      color: #3d3d5c;
+    }
+    .bar-track {
+      flex: 1;
+      height: 26px;
+      background: rgba(199, 206, 234, 0.25);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.6s ease;
+    }
+    .bar-value {
+      flex: 0 0 60px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: right;
+      color: #5a4a6a;
+    }
+    .summary {
+      font-size: 0.9rem;
+      color: #6b5b7a;
+      margin-top: 1rem;
+    }
+    a.back {
+      display: inline-block;
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #6b5b7a;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.8);
+      border-radius: 12px;
+      border: 1px solid rgba(199, 206, 234, 0.5);
+    }
+    a.back:hover {
+      color: #5a4a6a;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(199, 206, 234, 0.3);
+    }
+    .better-use-chart {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      background: var(--pie);
+    }
+    .better-use-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.85rem;
+      color: #3d3d5c;
+    }
+    .better-use-legend li {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .better-use-legend .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .buy-more {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .buy-more p {
+      font-size: 1.1rem;
+      color: #5a4a6a;
+      margin: 0 0 0.75rem 0;
+    }
+    .buy-more-btns {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .buy-more-btns a {
+      display: inline-block;
+      padding: 0.6rem 1.25rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #FFB5C2 0%, #C7CEEA 100%);
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(255, 181, 194, 0.35);
+    }
+    .buy-more-btns a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255, 181, 194, 0.45);
+    }
+  </style>
+</head>
+<body>
+  <h1>Money spent</h1>
+  <div class="viz" id="viz"></div>
+  <div class="buy-more">
+    <p>Anyways.. Buy more blindboxes?</p>
+    <div class="buy-more-btns">
+      <a href="index.html">Yes</a>
+      <a href="index.html">Yes</a>
+    </div>
+  </div>
+  <a href="unbox-more.html" class="back">← Back to questionnaire</a>
+  <script>
+    (function() {
+      function countKey(seriesName) {
+        return 'count_' + seriesName.replace(/\s+/g, '_');
+      }
+      var prices = { 'Hirono': 15, 'Skullpanda': 17, 'Labubu': 24, 'Smiski': 11, 'Littlest Pet Shop': 6 };
+
+      var params = new URLSearchParams(window.location.search);
+      var frequency = parseInt(params.get('frequency'), 10) || 1;
+      var series = params.getAll('series');
+      if (series.length === 0) series = ['No series selected'];
+
+      var seriesData = [];
+      var totalCost = 0;
+      var totalBoxes = 0;
+      var maxSubtotal = 0;
+      for (var s = 0; s < series.length; s++) {
+        var name = series[s];
+        var key = countKey(name);
+        var qty = parseInt(params.get(key), 10);
+        if (isNaN(qty) || qty < 0) qty = 0;
+        var pricePerBox = prices[name] !== undefined ? prices[name] : 0;
+        var subtotal = qty * pricePerBox;
+        seriesData.push({ name: name, qty: qty, price: pricePerBox, subtotal: subtotal });
+        totalCost += subtotal;
+        totalBoxes += qty;
+        if (subtotal > maxSubtotal) maxSubtotal = subtotal;
+      }
+      if (maxSubtotal === 0) maxSubtotal = 1;
+      var monthlySpent = totalCost;
+      var yearTotal = totalCost * 12;
+      var maxBar = Math.max(monthlySpent, yearTotal, maxSubtotal, 1);
+
+      var colors = ['#FFB5C2', '#B5EAD7', '#C7CEEA', '#FFDAC1', '#A8D8EA'];
+
+      var html = '';
+
+      html += '<div class="card">';
+      html += '<h2>Money spent</h2>';
+      html += '<div class="bar-wrap">';
+      html += '<div class="bar-row">';
+      html += '<span class="bar-label">Per month</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (monthlySpent / maxBar * 100) + '%;background:#C7CEEA"></div></div>';
+      html += '<span class="bar-value">$' + monthlySpent + '</span></div>';
+      html += '<div class="bar-row">';
+      html += '<span class="bar-label">Year total</span>';
+      html += '<div class="bar-track"><div class="bar-fill" style="width:' + (yearTotal / maxBar * 100) + '%;background:#B5EAD7"></div></div>';
+      html += '<span class="bar-value">$' + yearTotal + '</span></div>';
+      html += '</div>';
+      html += '<p class="summary">Based on ' + totalBoxes + ' box(es) this month ($' + monthlySpent + ') × 12 months</p>';
+      html += '</div>';
+
+      if (seriesData.length) {
+        html += '<div class="card">';
+        html += '<h2>Money spent by series (qty × $/box)</h2>';
+        html += '<div class="bar-wrap">';
+        for (var i = 0; i < seriesData.length; i++) {
+          var item = seriesData[i];
+          var c = colors[i % colors.length];
+          var pct = maxSubtotal > 0 ? (item.subtotal / maxSubtotal * 100) : 0;
+          html += '<div class="bar-row">';
+          html += '<span class="bar-label">' + item.name + ' (' + item.qty + ' × $' + item.price + ')</span>';
+          html += '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + c + '"></div></div>';
+          html += '<span class="bar-value">$' + item.subtotal + '</span></div>';
+        }
+        html += '</div></div>';
+      }
+
+      var betterUse = [
+        { label: 'Food', pct: 25, color: '#FFB5C2' },
+        { label: 'Bills', pct: 25, color: '#B5EAD7' },
+        { label: 'Personal care', pct: 15, color: '#C7CEEA' },
+        { label: 'Savings', pct: 20, color: '#FFDAC1' },
+        { label: 'Other', pct: 15, color: '#A8D8EA' }
+      ];
+      var conicParts = [];
+      var acc = 0;
+      for (var b = 0; b < betterUse.length; b++) {
+        conicParts.push(betterUse[b].color + ' ' + acc + '% ' + (acc + betterUse[b].pct) + '%');
+        acc += betterUse[b].pct;
+      }
+      var pieGradient = 'conic-gradient(' + conicParts.join(', ') + ')';
+      html += '<div class="card" id="betterUseCard">';
+      html += '<h2>That amount could have gone to…</h2>';
+      html += '<p class="summary" style="margin-bottom: 0.75rem;">Your year total ($' + yearTotal + ') as a balanced budget:</p>';
+      html += '<div class="better-use-chart" style="--pie: ' + pieGradient + '"></div>';
+      html += '<ul class="better-use-legend">';
+      for (var b = 0; b < betterUse.length; b++) {
+        var amt = Math.round(yearTotal * betterUse[b].pct / 100);
+        html += '<li><span class="dot" style="background:' + betterUse[b].color + '"></span> ' + betterUse[b].label + ': $' + amt + '</li>';
+      }
+      html += '</ul></div>';
+
+      document.getElementById('viz').innerHTML = html;
+    })();
+  </script>
+</body>
+</html>

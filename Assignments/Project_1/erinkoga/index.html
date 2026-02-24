@@ -4,8 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
+    <style>
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            background: #943829;
+        }
+        h1 {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+        }
+        h2 {
+            position: relative;
+            z-index: 1;
+            margin: 0.5rem 0 0;
+            text-align: center;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1rem;
+            font-weight: normal;
+        }
+        a {
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+        .doors {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            flex-wrap: wrap;
+        }
+        .doors img {
+            max-width: 200px;
+            height: auto;
+        }
+        .plant {
+            font-size: 16rem;
+            cursor: pointer;
+        }
+        .music-player {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .music-player iframe {
+            border: none;
+            max-width: 100%;
+        }
+        .doors a {
+            display: inline-block;
+        }
+        .doors a img {
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <a href="casino.html">Casino</a>
+    <h1>welcome to the hotel!</h1>
+    <h2>click a door to enter the room</h2>
+    <div class="music-player" id="musicPlayer"></div>
+    <div class="doors">
+        <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        <span class="plant" id="plant">🪴</span>
+        <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
+    </div>
+    <script>
+        const plant = document.getElementById('plant');
+        if (plant) {
+            plant.addEventListener('click', () => {
+                window.location.href = 'stats.html';
+            });
+        }
+    </script>
 </body>
 </html>

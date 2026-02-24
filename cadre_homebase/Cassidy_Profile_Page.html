@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Name · Profile · CADRE Homebase</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Profile-page overrides using existing vars */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border: 1px solid var(--border);
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--dim);
+      flex-shrink: 0;
+    }
+    .profile-name { font-size: 1.25rem; font-weight: 700; margin: 0 0 4px 0; color: var(--fg); }
+    .profile-role { font-size: 12px; color: var(--dim); margin: 0; }
+    .profile-section {
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      transition: border-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
+    }
+    .profile-section h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: var(--fg);
+    }
+    .profile-section dl { margin: 0; }
+    .profile-section dt {
+      font-size: 11px;
+      color: var(--dim);
+      margin-top: 10px;
+      margin-bottom: 2px;
+    }
+    .profile-section dt:first-child { margin-top: 0; }
+    .profile-section dd { margin: 0; font-size: 13px; color: var(--fg); }
+    .profile-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .profile-links a {
+      color: var(--dim);
+      font-size: 12px;
+    }
+    .profile-links a:hover { color: var(--fg); }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <aside class="sidebar">
+      <a href="index.html" class="home" aria-label="Home">⌂</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">☾</button>
+      <div class="vertical">homebase</div>
+    </aside>
+
+    <div class="content">
+      <header class="mobile-header">
+        <div class="logo-wrap">
+          <a href="index.html" class="logo">
+            <pre class="logo-ascii" aria-label="CADRE">
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/             
+            </pre>
+            <span class="logo-sub">Laboratory for New Media</span>
+          </a>
+          <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+        </div>
+        <nav class="nav-top">
+          <button type="button" class="theme-toggle theme-toggle-mobile" aria-label="Switch to light mode">☾</button>
+          <a href="index.html">home</a>
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+        </nav>
+      </header>
+
+      <header class="header">
+        <div class="logo-wrap">
+          <a href="index.html" class="logo">
+            <pre class="logo-ascii" aria-label="CADRE">
+
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/ 
+            </pre>
+            <span class="logo-sub">Laboratory for New Media</span>
+          </a>
+          <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+        </div>
+        <nav class="nav-top">
+          <a href="index.html">home</a>
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+        </nav>
+      </header>
+
+      <main class="main">
+        <div class="columns">
+          <section class="left-col">
+            <h2>Profile</h2>
+            <div class="profile-header">
+              <div class="profile-avatar" aria-hidden="true">C</div>
+              <div>
+                <h1 class="profile-name">Student Name</h1>
+                <p class="profile-role">Student · Digital Media Art</p>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <h3>Student information</h3>
+              <dl>
+                <dt>Email</dt>
+                <dd>student@university.edu</dd>
+                <dt>Student ID</dt>
+                <dd>01234567</dd>
+                <dt>Major</dt>
+                <dd>BFA Digital Media Art</dd>
+                <dt>College</dt>
+                <dd>Humanities & the Arts</dd>
+                <dt>Advisor</dt>
+                <dd>Department advising</dd>
+              </dl>
+            </div>
+
+            <div class="profile-section">
+              <h3>Quick links</h3>
+              <div class="profile-links">
+                <a href="index.html">Dashboard</a>
+                <a href="#">My courses</a>
+                <a href="#">Academic calendar</a>
+                <a href="#">Campus resources</a>
+              </div>
+            </div>
+          </section>
+
+          <section class="right-col">
+            <div class="news">
+              <article class="news-item news-item--banner">
+                <div class="news-image">
+                  <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&amp;h=240&amp;fit=crop" alt="Campus life" width="600" height="240" loading="lazy">
+                </div>
+                <div class="news-body">
+                  <div class="news-meta">Profile · CADRE Homebase</div>
+                  <h3 class="news-title">Your dashboard</h3>
+                  <p class="news-excerpt">View announcements, deadlines, and program updates from the lab. Stay connected with CADRE and the DMA community.</p>
+                </div>
+              </article>
+              <article class="news-item">
+                <div class="news-body">
+                  <div class="news-meta">Account</div>
+                  <h3 class="news-title">Settings & privacy</h3>
+                  <p class="news-excerpt">Update your contact info, password, and notification preferences. Manage how your name and profile appear across university systems.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div>
+          <code class="binary-name">01000011 01000001 01000100 01010010 01000101</code><br>
+          San José State University · Department of Art & Art History<br>
+          One Washington Square, San José, CA 95192
+        </div>
+        <div>
+          <a href="https://www.facebook.com/sjsucadre" target="_blank" rel="noopener">fb</a>
+          <a href="https://twitter.com/cadre_sjsu" target="_blank" rel="noopener">tw</a>
+          <a href="https://www.instagram.com/cadre_sjsu/" target="_blank" rel="noopener">ig</a>
+        </div>
+      </footer>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      var KEY = 'cadre-homebase-theme';
+      var html = document.documentElement;
+      var toggles = document.querySelectorAll('.theme-toggle');
+
+      function applyTheme(theme) {
+        theme = theme || 'dark';
+        html.setAttribute('data-theme', theme);
+        toggles.forEach(function(btn) {
+          btn.textContent = theme === 'light' ? '☀' : '☾';
+          btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        });
+        try { localStorage.setItem(KEY, theme); } catch (e) {}
+      }
+
+      toggles.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          applyTheme(next);
+        });
+      });
+
+      var saved = localStorage.getItem(KEY);
+      if (saved === 'light' || saved === 'dark') applyTheme(saved);
+    })();
+  </script>
+</body>
+</html>

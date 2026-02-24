@@ -3,46 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>#about-myself — Duc Tran Data Self Portrait</title>
+  <title>About Myself — Duc Tran Data Self Portrait</title>
   <style>
-  *{box-sizing:border-box} body{font-family:"Segoe UI",system-ui,sans-serif;margin:0;background:#313338;color:#dbdee1;line-height:1.5;min-height:100vh} .wrap{max-width:52rem;margin:0 auto;padding:1.5rem} header{border-bottom:1px solid #404249;padding-bottom:1rem;margin-bottom:2rem} h1{margin:0 0 .25rem 0;font-size:1.75rem;color:#fff} .subtitle{margin:0;font-size:.95rem;color:#b5bac1} nav{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem} nav a{color:#5865f2;text-decoration:none;padding:.35rem .75rem;border-radius:4px;font-size:.9rem} nav a:hover{background:#5865f2;color:#fff} nav a.active{background:#4752c4;color:#fff} .channel-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#80848e;margin-bottom:.35rem;width:100%} main section{margin-bottom:2rem} .card{background:#2b2d31;border-radius:8px;padding:1.25rem;margin-bottom:1rem} .card h2{margin:0 0 .75rem 0;font-size:1.1rem;color:#fff} .card p{margin:0 0 1rem 0;color:#b5bac1} .card p:last-child{margin-bottom:0} footer{margin-top:3rem;padding-top:1rem;border-top:1px solid #404249;font-size:.85rem;color:#80848e}
+  *{box-sizing:border-box}
+  body{font-family:"Courier New",Consolas,monospace;margin:0;background:#1a1a1a;color:#e0e0e0;line-height:1.6;min-height:100vh;font-size:14px}
+  .stripe{height:6px;background:repeating-linear-gradient(90deg,#c00 0,#c00 8px,#000 8px,#000 16px)}
+  .wrap{max-width:52rem;margin:0 auto;padding:1.5rem 1rem}
+  .logo{text-align:center;padding:1rem 0;border-bottom:2px solid #c00;margin-bottom:1.5rem}
+  .logo h1{margin:0;font-size:1.4rem;font-weight:700;color:#c00;letter-spacing:.1em;text-transform:uppercase}
+  .logo p{margin:.35rem 0 0;font-size:.85rem;color:#666}
+  .nav-list{list-style:none;padding:0;margin:0 0 1.5rem 0;display:flex;flex-wrap:wrap;gap:.5rem 1rem}
+  .nav-list a{color:#e0e0e0;text-decoration:none}
+  .nav-list a:hover{color:#c00}
+  .nav-list .active{color:#c00}
+  .card{background:#222;border:1px solid #333;padding:1.25rem;margin-bottom:1rem}
+  .card h2{font-size:.95rem;color:#c00;margin:0 0 .75rem 0;text-transform:uppercase;letter-spacing:.06em}
+  .card p{margin:0 0 1rem 0;color:#aaa}
+  .card p:last-child{margin-bottom:0}
+  .card ul{margin:0 0 1rem 0;padding-left:1.25rem;color:#aaa}
+  .hobby-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+  .hobby-tag{background:#333;color:#e0e0e0;padding:.3rem .6rem;font-size:.85rem;border:1px solid #444}
+  .portrait-wrap{display:inline-block;margin-bottom:1rem;border:2px solid #333;padding:4px;background:#0a0a0a;cursor:crosshair}
+  .portrait-wrap svg{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+  footer{margin-top:2rem;padding-top:1rem;border-top:2px solid #c00;font-size:.85rem;color:#666}
   </style>
 </head>
 <body>
+  <div class="stripe"></div>
   <div class="wrap">
-    <header>
-      <h1># about-myself</h1>
-      <p class="subtitle">Channel — A little about me</p>
-      <div class="channel-label">Channels</div>
-      <nav>
-        <a href="channel-about-myself.html" class="active">About Myself</a>
-        <a href="channel-my-major.html">My Major</a>
-        <a href="channel-hobbies.html">Hobbies</a>
-        <a href="channel-goals.html">Goals</a>
-      </nav>
-      <div class="channel-label" style="margin-top:1rem">Data</div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="activity.html">Activity</a>
-        <a href="servers.html">Servers</a>
-        <a href="words.html">Words</a>
-        <a href="about.html">About the Data</a>
-      </nav>
+    <header class="logo">
+      <h1>Data Self Portrait</h1>
+      <p>About Myself · The person behind this dataset</p>
     </header>
+    <ul class="nav-list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="channel-about-myself.html" class="active">About Myself</a></li>
+      <li><a href="activity.html">Activity</a></li>
+      <li><a href="servers.html">Servers</a></li>
+      <li><a href="words.html">Words</a></li>
+      <li><a href="about.html">How I got my data</a></li>
+    </ul>
     <main>
       <section class="card">
         <h2>Who I am</h2>
-        <p>Hi, I'm Duc Tran. I'm a student at SJSU in Art 101. I built this site as a data self portrait using Discord-style data and channels to share a bit about myself.</p>
-        <p>You can edit this page to add your own intro: where you're from, what you like, and what you're into right now.</p>
+        <div class="portrait-wrap">
+          <svg id="avatar-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" width="224" height="224" style="image-rendering:pixelated;image-rendering:crisp-edges">
+            <title>Duc Tran — pixel portrait</title>
+            <rect x="0" y="0" width="112" height="112" fill="#2b2d31"/>
+            <!-- Face (rounder: wider main, fuller cheeks) -->
+            <rect x="18" y="30" width="76" height="76" fill="#e0b890"/>
+            <rect x="10" y="42" width="10" height="32" fill="#e0b890"/>
+            <rect x="92" y="42" width="10" height="32" fill="#e0b890"/>
+            <rect x="28" y="38" width="56" height="12" fill="#e0b890"/>
+            <rect x="32" y="48" width="48" height="40" fill="#e8c4a0"/>
+            <!-- Hair: short black, straight hairline, slight highlights -->
+            <rect x="18" y="6" width="76" height="24" fill="#1a1a1a"/>
+            <rect x="10" y="28" width="14" height="28" fill="#1a1a1a"/>
+            <rect x="88" y="28" width="14" height="28" fill="#1a1a1a"/>
+            <rect x="38" y="10" width="6" height="6" fill="#3a3a3a"/>
+            <rect x="68" y="12" width="6" height="6" fill="#3a3a3a"/>
+            <!-- Glasses -->
+            <rect x="24" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <rect x="66" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <rect x="46" y="54" width="20" height="4" fill="#1a1a1a"/>
+            <circle id="pupil-left" cx="35" cy="56" r="3" fill="#1a1a1a"/>
+            <circle id="pupil-right" cx="77" cy="56" r="3" fill="#1a1a1a"/>
+            <rect x="48" y="88" width="4" height="4" fill="#2a2020"/>
+            <path id="avatar-mouth" d="M 42 80 L 49 84 L 56 84 L 63 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="square" style="cursor:pointer"/>
+          </svg>
+        </div>
+        <p>I'm Duc Tran. I'm a student at San José State and I put this site together to collect and show data about my own Discord use — when I message, where I hang out, and the words I use. The numbers on the other pages are my data; this page is a short intro to me.</p>
+        <p>I'm from the Bay Area, into art and design and tech, and usually down for boba and good music.</p>
       </section>
       <section class="card">
-        <h2>Quick facts</h2>
-        <p>• From the Bay Area (edit to your own)</p>
-        <p>• Love art, design, and tech</p>
-        <p>• Always down for boba and good music</p>
+        <h2>My major</h2>
+        <p>I'm at SJSU — right now in Art 101, which is where this data self portrait idea came from. I'm interested in [your major and interests: e.g. web design, digital art, data viz].</p>
+      </section>
+      <section class="card">
+        <h2>Hobbies</h2>
+        <p>When I'm not in class or on Discord, I'm usually gaming, listening to music, or hanging with friends. The servers and word data on this site reflect a lot of that.</p>
+        <div class="hobby-list">
+          <span class="hobby-tag">Gaming</span>
+          <span class="hobby-tag">Music</span>
+          <span class="hobby-tag">Art</span>
+          <span class="hobby-tag">Discord</span>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Goals</h2>
+        <p><strong>Short-term:</strong> Finish Art 101 and this data portrait, keep my Discord life organized.</p>
+        <p><strong>Long-term:</strong> [Your goals — e.g. graduate, work in design or tech, build more projects.] This site is my first step in turning personal data into something readable and shareable.</p>
       </section>
     </main>
     <footer>SJSU Art 101 S26 — Project 1</footer>
   </div>
+  <div class="stripe"></div>
+  <script>
+  (function () {
+    var svg = document.getElementById("avatar-svg");
+    var left = document.getElementById("pupil-left");
+    var right = document.getElementById("pupil-right");
+    if (!svg || !left || !right) return;
+    var eyeLeft = { cx: 35, cy: 56 };
+    var eyeRight = { cx: 77, cy: 56 };
+    var range = 3;
+    function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+    function movePupils(e) {
+      var r = svg.getBoundingClientRect();
+      var svgX = (e.clientX - r.left) / r.width * 112;
+      var svgY = (e.clientY - r.top) / r.height * 112;
+      var dxL = clamp((svgX - eyeLeft.cx) * 0.4, -range, range);
+      var dyL = clamp((svgY - eyeLeft.cy) * 0.4, -range, range);
+      var dxR = clamp((svgX - eyeRight.cx) * 0.4, -range, range);
+      var dyR = clamp((svgY - eyeRight.cy) * 0.4, -range, range);
+      left.setAttribute("cx", eyeLeft.cx + dxL);
+      left.setAttribute("cy", eyeLeft.cy + dyL);
+      right.setAttribute("cx", eyeRight.cx + dxR);
+      right.setAttribute("cy", eyeRight.cy + dyR);
+    }
+    document.addEventListener("mousemove", movePupils);
+
+    var mouth = document.getElementById("avatar-mouth");
+    if (mouth) {
+      var happyPath = "M 42 80 L 49 84 L 56 84 L 63 80";
+      var sadPath = "M 42 84 L 49 80 L 56 80 L 63 84";
+      var isHappy = true;
+      mouth.addEventListener("click", function () {
+        isHappy = !isHappy;
+        mouth.setAttribute("d", isHappy ? happyPath : sadPath);
+      });
+    }
+  })();
+  </script>
 </body>
 </html>
