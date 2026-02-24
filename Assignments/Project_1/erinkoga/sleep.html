@@ -88,6 +88,38 @@
             justify-content: center;
             font-size: 7.2rem;
         }
+        .bed-button {
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            font: inherit;
+            color: #ffffff;
+        }
+        .hours-table {
+            position: relative;
+            z-index: 1;
+            margin: 1rem auto 2rem;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+        }
+        .hours-table table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            min-width: 260px;
+            background: rgba(0, 0, 0, 0.25);
+        }
+        .hours-table th,
+        .hours-table td {
+            border: 1px solid rgba(204, 218, 240, 0.4);
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+        }
+        .hours-table th {
+            background: rgba(204, 218, 240, 0.2);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -97,7 +129,31 @@
         <a href="index.html">Back to lobby</a>
     </div>
     <div class="middle">
-        🛏️
+        <button class="bed-button" id="bedButton">🛏️</button>
+    </div>
+    <div class="hours-table" id="hoursTable" hidden>
+        <table>
+            <thead>
+                <tr>
+                    <th>Hours slept per night</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>4 hours</td></tr>
+                <tr><td>6 hours</td></tr>
+                <tr><td>8 hours</td></tr>
+                <tr><td>10 hours</td></tr>
+            </tbody>
+        </table>
     </div>
 </body>
+<script>
+    const bedButton = document.getElementById('bedButton');
+    const hoursTable = document.getElementById('hoursTable');
+    if (bedButton && hoursTable) {
+        bedButton.addEventListener('click', () => {
+            hoursTable.hidden = !hoursTable.hidden;
+        });
+    }
+</script>
 </html>
