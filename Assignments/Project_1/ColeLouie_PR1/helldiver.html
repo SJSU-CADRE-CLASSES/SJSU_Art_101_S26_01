@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body class="page-helldiver">
+  <audio id="helldiver-bg-music" loop>
+    <source src="admonishment.mp3" type="audio/mpeg">
+  </audio>
   <div class="crt-screen">
     <div class="crt-scanlines"></div>
     <div id="helldiver-boot" class="helldiver-boot">
@@ -308,6 +311,8 @@
           if (inputIndex === expectedSequence.length) {
             arrowsEl.classList.add('sequence-complete');
             inputEnabled = false;
+            var bgMusic = document.getElementById('helldiver-bg-music');
+            if (bgMusic) bgMusic.play().catch(function() {});
             // Once the full stratagem sequence is entered, fade all text/arrows off quickly.
             setTimeout(function() {
               mainEl.classList.add('content-fade-out');
@@ -514,6 +519,14 @@
       window.addEventListener('keydown', handleArrowInput);
       window.addEventListener('keydown', handleDataInput);
       window.addEventListener('keydown', handleSuperInput);
+      window.addEventListener('beforeunload', function() {
+        var bgMusic = document.getElementById('helldiver-bg-music');
+        if (bgMusic) { bgMusic.pause(); bgMusic.currentTime = 0; }
+      });
+      window.addEventListener('pagehide', function() {
+        var bgMusic = document.getElementById('helldiver-bg-music');
+        if (bgMusic) { bgMusic.pause(); bgMusic.currentTime = 0; }
+      });
       setTimeout(function() { showLine(0); }, 400);
     })();
   </script>
