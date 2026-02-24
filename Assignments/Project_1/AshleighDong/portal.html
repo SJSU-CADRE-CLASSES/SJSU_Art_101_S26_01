@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal – Head-Tracked Space</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #070916; color: #e8e8ff; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; overflow: hidden; }
+    #world {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background: radial-gradient(1200px 700px at 50% 40%, rgba(92, 255, 197, 0.10), transparent 55%),
+                  radial-gradient(900px 700px at 30% 65%, rgba(140, 120, 255, 0.10), transparent 55%),
+                  linear-gradient(180deg, #050613 0%, #070916 40%, #06081a 100%);
+    }
+    /* Hidden webcam element (still used for tracking) */
+    #video {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      left: -10px;
+      top: -10px;
+    }
+    #cameraPrompt {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 2rem;
+      background: #070916;
+      z-index: 10;
+      text-align: center;
+    }
+    #cameraPrompt.hidden { display: none; }
+    #cameraPrompt h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: 0.2px; color: #5cffc5; }
+    #cameraPrompt p { max-width: 520px; color: rgba(232,232,255,0.75); line-height: 1.5; }
+    #cameraPrompt button {
+      margin-top: 0.75rem;
+      background: #5cffc5;
+      color: #050613;
+      border: 0;
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    #cameraPrompt button:hover { filter: brightness(0.95); }
+    #cameraPrompt .error { color: #ff6b6b; margin-top: 0.5rem; }
+
+    #hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0.9rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: rgba(10, 12, 30, 0.55);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(92, 255, 197, 0.18);
+      z-index: 5;
+    }
+    #hud .title { font-weight: 700; color: #5cffc5; }
+    #hud .tip { color: rgba(232,232,255,0.7); font-size: 0.9rem; }
+    #hud .status { color: rgba(232,232,255,0.8); font-size: 0.85rem; }
+    #hud .status.error { color: #ff6b6b; }
+  </style>
+</head>
+<body>
+  <div id="cameraPrompt">
+    <h1>Portal</h1>
+    <p>
+      This hides your camera feed and uses your <strong>head position</strong> as a control.
+      Lean left/right/closer to shift the “other space”.
+    </p>
+    <p>Click to request camera access (works on HTTPS / localhost).</p>
+    <button type="button" id="startBtn">Enter portal</button>
+    <p id="promptError" class="error" style="display:none;"></p>
+  </div>
+
+  <div id="hud" aria-live="polite">
+    <div>
+      <div class="title">Portal</div>
+      <div class="tip">Move your head to shift perspective. Your body is not shown.</div>
+    </div>
+    <div id="status" class="status">Idle</div>
+  </div>
+
+  <video id="video" playsinline></video>
+  <canvas id="world"></canvas>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('world');
+    const prompt = document.getElementById('cameraPrompt');
+    const promptError = document.getElementById('promptError');
+    const statusEl = document.getElementById('status');
+
+    let stream = null;
+    let latestLandmarks = null;
+    let lastResultAt = 0;
+    let trackingError = null;
+
+    // Smoothed control signals (centered, normalized)
+    const ctrl = {
+      x: 0,  // left/right
+      y: 0,  // up/down
+      z: 0,  // forward/back (approx)
+    };
+
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    // ---- Three.js world ----
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.max(1, Math.min(2, window.devicePixelRatio || 1)));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#070916');
+    scene.fog = new THREE.Fog('#070916', 8, 45);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 200);
+    camera.position.set(0, 1.65, 5);
+
+    const player = new THREE.Group();
+    player.position.set(0, 0, 5);
+    scene.add(player);
+
+    const cameraRig = new THREE.Group();
+    cameraRig.position.set(0, 1.65, 0);
+    player.add(cameraRig);
+    cameraRig.add(camera);
+
+    const hemi = new THREE.HemisphereLight(0xbcd7ff, 0x1b1538, 0.9);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.75);
+    dir.position.set(4, 8, 2);
+    scene.add(dir);
+
+    const floorGeo = new THREE.PlaneGeometry(60, 60);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0b1028, roughness: 0.95, metalness: 0.05 });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0;
+    scene.add(floor);
+
+    // Clickable "door" (opens a new page)
+    const door = new THREE.Mesh(
+      new THREE.BoxGeometry(1.2, 2.2, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x5cffc5, emissive: 0x173b2f, roughness: 0.25, metalness: 0.1 })
+    );
+    door.position.set(0, 1.1, 0);
+    door.userData.href = 'portal_destination.html';
+    scene.add(door);
+
+    // Simple ambience elements so you see "a world" even without models.
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(3.5, 0.08, 16, 128),
+      new THREE.MeshStandardMaterial({ color: 0x8c78ff, emissive: 0x1a1238, roughness: 0.35, metalness: 0.2 })
+    );
+    ring.position.set(0, 2.2, -3.5);
+    ring.rotation.x = Math.PI / 2.4;
+    scene.add(ring);
+
+    let loadedModel = null;
+    const MODEL_URL = 'assets/models/scene.glb';
+    async function loadGlb(url) {
+      const loader = new GLTFLoader();
+      return new Promise((resolve, reject) => {
+        loader.load(url, resolve, undefined, reject);
+      });
+    }
+
+    function fitModelIntoScene(root) {
+      // Center model near origin and put it in front of the player a bit
+      const box = new THREE.Box3().setFromObject(root);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      root.position.sub(center);
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const scale = 3.2 / maxDim;
+      root.scale.setScalar(scale);
+      root.position.add(new THREE.Vector3(0, 0, -3));
+    }
+
+    function onResize() {
+      renderer.setPixelRatio(Math.max(1, Math.min(2, window.devicePixelRatio || 1)));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', onResize);
+
+    // Pose face-related landmark indices:
+    // 0 nose, 1 leftEyeInner, 2 leftEye, 3 leftEyeOuter, 4 rightEyeInner, 5 rightEye, 6 rightEyeOuter
+    // 7 leftEar, 8 rightEar
+    function estimateHeadControls(landmarks) {
+      if (!landmarks || !landmarks.length) return null;
+      const nose = landmarks[0];
+      const lEar = landmarks[7];
+      const rEar = landmarks[8];
+      const lEye = landmarks[2];
+      const rEye = landmarks[5];
+
+      const hasEars = lEar && rEar && (lEar.visibility == null || lEar.visibility > 0.4) && (rEar.visibility == null || rEar.visibility > 0.4);
+      const hasEyes = lEye && rEye && (lEye.visibility == null || lEye.visibility > 0.4) && (rEye.visibility == null || rEye.visibility > 0.4);
+      if (!nose || (nose.visibility != null && nose.visibility < 0.3)) return null;
+
+      // Head center (prefer ears midpoint; else nose)
+      let cx = nose.x, cy = nose.y;
+      if (hasEars) {
+        cx = (lEar.x + rEar.x) / 2;
+        cy = (lEar.y + rEar.y) / 2;
+      }
+
+      // Size proxy: ear distance (or eye distance)
+      let size = 0.0;
+      if (hasEars) {
+        const dx = lEar.x - rEar.x;
+        const dy = lEar.y - rEar.y;
+        size = Math.hypot(dx, dy);
+      } else if (hasEyes) {
+        const dx = lEye.x - rEye.x;
+        const dy = lEye.y - rEye.y;
+        size = Math.hypot(dx, dy);
+      } else {
+        size = 0.08;
+      }
+
+      // Normalize controls around center of screen.
+      // x,y in roughly [-1,1], z in [-1,1] based on size changes.
+      const x = clamp((cx - 0.5) * 2.2, -1, 1);
+      const y = clamp((cy - 0.5) * 2.2, -1, 1);
+
+      // Map size to z: larger size => closer => positive z.
+      // Baseline tuned for laptop webcams; user can change by moving closer.
+      const z = clamp(((size - 0.20) / 0.12), -1, 1);
+
+      return { x, y, z, size };
+    }
+
+    // ---- Controls: WASD movement + click interaction ----
+    const keys = new Set();
+    window.addEventListener('keydown', (e) => {
+      if (['KeyW','KeyA','KeyS','KeyD'].includes(e.code)) {
+        keys.add(e.code);
+        e.preventDefault();
+      }
+    }, { passive: false });
+    window.addEventListener('keyup', (e) => {
+      if (['KeyW','KeyA','KeyS','KeyD'].includes(e.code)) {
+        keys.delete(e.code);
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    canvas.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(scene.children, true);
+      const hit = hits.find(h => h.object && h.object.userData && h.object.userData.href);
+      if (hit) window.location.href = hit.object.userData.href;
+    });
+
+    function render() {
+      const now = performance.now();
+      if (!render._last) render._last = now;
+      const dt = Math.min(0.05, (now - render._last) / 1000);
+      render._last = now;
+
+      // Movement in camera-facing plane (no mouse-look yet; facing is toward -Z).
+      const speed = 2.2;
+      const dx = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0);
+      const dz = (keys.has('KeyW') ? 1 : 0) - (keys.has('KeyS') ? 1 : 0);
+      if (dx || dz) {
+        const v = new THREE.Vector3(dx, 0, -dz).normalize().multiplyScalar(speed * dt);
+        player.position.add(v);
+      }
+
+      // Head-tracked parallax: small offsets of camera inside the rig.
+      cameraRig.position.x = ctrl.x * 0.22;
+      cameraRig.position.y = 1.65 + ctrl.y * 0.12;
+      cameraRig.position.z = ctrl.z * 0.22;
+
+      // Subtle “breathing” movement for ambience
+      ring.rotation.z += 0.002;
+      door.material.emissiveIntensity = 0.4 + 0.25 * Math.sin(now * 0.002);
+
+      renderer.render(scene, camera);
+
+      // HUD status
+      if (trackingError) {
+        statusEl.textContent = `Tracking error: ${trackingError}`;
+        statusEl.classList.add('error');
+      } else if (Date.now() - lastResultAt > 2500) {
+        statusEl.textContent = 'Loading tracking… (use HTTPS/localhost)';
+        statusEl.classList.remove('error');
+      } else {
+        statusEl.textContent = 'Tracking';
+        statusEl.classList.remove('error');
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    async function start() {
+      promptError.style.display = 'none';
+      trackingError = null;
+      statusEl.textContent = 'Requesting camera…';
+
+      if (typeof Pose === 'undefined') {
+        promptError.textContent = 'MediaPipe Pose failed to load (check internet / blocked scripts).';
+        promptError.style.display = 'block';
+        return;
+      }
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: 1280, height: 720 },
+          audio: false,
+        });
+      } catch (e) {
+        promptError.textContent = e?.message || String(e);
+        promptError.style.display = 'block';
+        return;
+      }
+
+      prompt.classList.add('hidden');
+      video.srcObject = stream;
+      await video.play();
+
+      // Load user model if present. If missing, keep the procedural scene.
+      statusEl.textContent = 'Loading world…';
+      try {
+        const gltf = await loadGlb(MODEL_URL);
+        loadedModel = gltf.scene;
+        fitModelIntoScene(loadedModel);
+        scene.add(loadedModel);
+        statusEl.textContent = 'World loaded. Use WASD to move. Click the door.';
+      } catch (e) {
+        statusEl.textContent = `No model found at ${MODEL_URL}. Add your .glb there to replace the world.`;
+      }
+
+      const pose = new Pose({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+      });
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      pose.onResults((results) => {
+        latestLandmarks = results.poseLandmarks || null;
+        lastResultAt = Date.now();
+        const est = estimateHeadControls(latestLandmarks);
+        if (!est) return;
+
+        // Smooth to reduce jitter. Slightly faster on x,y than z.
+        ctrl.x = lerp(ctrl.x, est.x, 0.18);
+        ctrl.y = lerp(ctrl.y, est.y, 0.18);
+        ctrl.z = lerp(ctrl.z, est.z, 0.10);
+      });
+
+      async function detectLoop() {
+        try {
+          await pose.send({ image: video });
+          trackingError = null;
+        } catch (e) {
+          const msg = e?.message || String(e);
+          trackingError = msg;
+        }
+        requestAnimationFrame(detectLoop);
+      }
+
+      lastResultAt = Date.now();
+      requestAnimationFrame(render);
+      requestAnimationFrame(detectLoop);
+    }
+
+    document.getElementById('startBtn').addEventListener('click', start);
+  </script>
+</body>
+</html>
+
