@@ -76,6 +76,15 @@
         .casino-header .subheader { margin: 0.5rem 0 0; color: #ddd; font-size: 1rem; }
         .casino-header .back-link { margin-top: 0.75rem; }
         .casino-header .back-link a { color: #ffd700; }
+        .music-player {
+            margin: 0 auto 1rem;
+            display: flex;
+            justify-content: center;
+        }
+        .music-player iframe {
+            border: none;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -84,6 +93,15 @@
         <p class="subheader">Gamble your life savings away~</p>
         <p class="back-link"><a href="index.html">Back to lobby</a></p>
     </header>
+    <div class="music-player">
+        <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/QoydhH3xODU?autoplay=1"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        ></iframe>
+    </div>
     <div class="page-wrap">
         <div class="balance-bar">
             <span class="balance-label">Balance</span>
