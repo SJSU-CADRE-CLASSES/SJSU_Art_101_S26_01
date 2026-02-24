@@ -84,6 +84,27 @@
         .date-link { color: inherit; text-decoration: none; }
         .date-link:hover { text-decoration: underline; }
         .breakdown-row { display: flex; justify-content: space-between; padding: 0.35rem 0; }
+        .single-day-devices {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .single-day-devices { grid-template-columns: 1fr; }
+        }
+        .single-day-device {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 1.25rem;
+            border-top: 4px solid;
+        }
+        .single-day-device.iphone { border-color: #34c759; }
+        .single-day-device.ipad { border-color: #007aff; }
+        .single-day-device.macbook { border-color: #af52de; }
+        .single-day-device-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; }
+        .single-day-device-time { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; margin-bottom: 0.25rem; }
+        .single-day-device-top { font-size: 0.9rem; color: var(--muted); }
     </style>
 </head>
 <body>
@@ -91,24 +112,10 @@
         <a href="index.html" class="back-link">← Back to overview</a>
         <a href="breakdown.html" class="back-link" id="all-days-link" style="display: none; margin-left: 1rem;">View all days</a>
         <h1>Screen time breakdown</h1>
-        <p class="subtitle" id="subtitle">January 18 – February 9, 2026</p>
+        <p class="subtitle" id="subtitle">January 25 – February 9, 2026</p>
 
         <div id="single-day-view" style="display: none;">
-            <div class="breakdown-charts">
-                <div class="chart-container">
-                    <div class="chart-title">By device</div>
-                    <div class="chart-wrapper">
-                        <canvas id="device-chart-single"></canvas>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-title">By app</div>
-                    <div class="chart-wrapper">
-                        <canvas id="app-chart-single"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="chart-container" id="single-day-list"></div>
+            <div class="single-day-devices" id="single-day-devices"></div>
         </div>
 
         <div id="all-days-view">
@@ -134,8 +141,9 @@
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Devices</th>
-                                <th>Apps</th>
+                                <th>iPhone</th>
+                                <th>iPad</th>
+                                <th>MacBook</th>
                             </tr>
                         </thead>
                         <tbody id="table-body"></tbody>
@@ -164,86 +172,56 @@
             document.getElementById('all-days-view').style.display = 'none';
             document.getElementById('all-days-link').style.display = 'inline-block';
 
-            const fmt = new Date(dayData.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            const fmt = new Date(dayData.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
             document.getElementById('subtitle').textContent = fmt;
 
-            const devLabels = Object.keys(dayData.screenBreakdown.devices || {});
-            const devValues = devLabels.map(k => dayData.screenBreakdown.devices[k]);
-            const appLabels = Object.keys(dayData.screenBreakdown.apps || {});
-            const appValues = appLabels.map(k => dayData.screenBreakdown.apps[k]);
-
-            if (devLabels.length) {
-                new Chart(document.getElementById('device-chart-single'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: devLabels,
-                        datasets: [{ data: devValues, backgroundColor: chartColors }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' },
-                            tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + toHrsMins(ctx.raw) } }
-                        }
-                    }
-                });
-            }
-            if (appLabels.length) {
-                new Chart(document.getElementById('app-chart-single'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: appLabels,
-                        datasets: [{ data: appValues, backgroundColor: chartColors }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'bottom' },
-                            tooltip: { callbacks: { label: (ctx) => ctx.label + ': ' + toHrsMins(ctx.raw) } }
-                        }
-                    }
-                });
-            }
-
-            const listEl = document.getElementById('single-day-list');
-            const devList = Object.entries(dayData.screenBreakdown.devices || {}).map(([k,v]) => `<div class="breakdown-row"><span>${k}</span><span class="num">${toHrsMins(v)}</span></div>`).join('');
-            const appList = Object.entries(dayData.screenBreakdown.apps || {}).map(([k,v]) => `<div class="breakdown-row"><span>${k}</span><span class="num">${toHrsMins(v)}</span></div>`).join('');
-            listEl.innerHTML = `
-                <div class="chart-title">Devices</div>
-                <div style="margin-bottom: 1rem;">${devList || '—'}</div>
-                <div class="chart-title">Apps</div>
-                <div>${appList || '—'}</div>
-            `;
+            // Device cards: screen time + most used app only
+            const devicesEl = document.getElementById('single-day-devices');
+            ['iPhone', 'iPad', 'MacBook'].forEach(dev => {
+                const apps = dayData.screenBreakdown[dev];
+                const total = apps ? Object.values(apps).reduce((a,b) => a+b, 0) : 0;
+                const top = apps && Object.keys(apps).length ? Object.entries(apps).reduce((a,b) => a[1] >= b[1] ? a : b) : null;
+                const cls = dev.toLowerCase();
+                devicesEl.innerHTML += `
+                    <div class="single-day-device ${cls}">
+                        <div class="single-day-device-name">${dev}</div>
+                        <div class="single-day-device-time">${total ? toHrsMins(total) : '—'}</div>
+                        <div class="single-day-device-top">${top ? `Most used: ${top[0]} (${toHrsMins(top[1])})` : 'No data'}</div>
+                    </div>
+                `;
+            });
         } else if (dayData && !dayData.screenBreakdown) {
-            document.getElementById('subtitle').textContent = new Date(dayData.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('subtitle').textContent = new Date(dayData.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
             document.getElementById('single-day-view').style.display = 'block';
             document.getElementById('all-days-view').style.display = 'none';
             document.getElementById('all-days-link').style.display = 'inline-block';
-            document.querySelector('#single-day-view .breakdown-charts').style.display = 'none';
-            document.getElementById('single-day-list').innerHTML = '<p style="color: var(--muted);">No breakdown data for this date.</p>';
+            document.getElementById('single-day-devices').innerHTML = '<p style="color: var(--muted);">No breakdown data for this date.</p>';
         } else {
-            const deviceTotals = {};
+            const deviceTotals = { iPhone: 0, iPad: 0, MacBook: 0 };
             const appTotals = {};
             data.forEach(d => {
-                if (d.screenBreakdown?.devices) {
-                    Object.entries(d.screenBreakdown.devices).forEach(([k, v]) => { deviceTotals[k] = (deviceTotals[k] || 0) + v; });
+                if (d.screenBreakdown) {
+                    ['iPhone', 'iPad', 'MacBook'].forEach(dev => {
+                        const apps = d.screenBreakdown[dev];
+                        if (apps && typeof apps === 'object') {
+                            Object.entries(apps).forEach(([app, v]) => {
+                                deviceTotals[dev] += v;
+                                appTotals[app] = (appTotals[app] || 0) + v;
+                            });
+                        }
+                    });
                 }
-                if (d.screenBreakdown?.apps) {
-                    Object.entries(d.screenBreakdown.apps).forEach(([k, v]) => { appTotals[k] = (appTotals[k] || 0) + v; });
             });
-            const deviceLabels = Object.keys(deviceTotals);
+            const deviceLabels = Object.keys(deviceTotals).filter(k => deviceTotals[k] > 0);
             const deviceValues = deviceLabels.map(k => deviceTotals[k]);
             const appLabels = Object.keys(appTotals);
             const appValues = appLabels.map(k => appTotals[k]);
-
             if (deviceLabels.length) {
                 new Chart(document.getElementById('device-chart'), {
                     type: 'doughnut',
                     data: {
                         labels: deviceLabels,
-                        datasets: [{ data: deviceValues, backgroundColor: chartColors }]
+                        datasets: [{ data: deviceValues, backgroundColor: ['#34c759', '#007aff', '#af52de'] }]
                     },
                     options: {
                         responsive: true,
@@ -274,17 +252,22 @@
             }
 
             const tbody = document.getElementById('table-body');
-            const fmtDevices = (dev) => Object.entries(dev || {}).map(([k,v]) => `${k} ${toHrsMins(v)}`).join(', ') || '—';
-            const fmtApps = (apps) => Object.entries(apps || {}).map(([k,v]) => `${k} ${toHrsMins(v)}`).join(', ') || '—';
+            const fmtDevice = (sb, dev) => {
+                if (!sb || !sb[dev]) return '—';
+                const entries = Object.entries(sb[dev] || {});
+                const total = entries.reduce((a, [,v]) => a+v, 0);
+                const top = entries.length ? entries.reduce((a, b) => a[1] >= b[1] ? a : b) : null;
+                return total > 0 ? `${toHrsMins(total)} · ${top ? top[0] : ''}` : '—';
+            };
 
             data.forEach(d => {
                 const tr = document.createElement('tr');
-                const fmt = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const hasBreakdown = d.screenBreakdown && (Object.keys(d.screenBreakdown.devices || {}).length || Object.keys(d.screenBreakdown.apps || {}).length);
+                const fmt = new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 tr.innerHTML = `
                     <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
-                    <td class="breakdown-cell">${hasBreakdown ? fmtDevices(d.screenBreakdown.devices) : '—'}</td>
-                    <td class="breakdown-cell">${hasBreakdown ? fmtApps(d.screenBreakdown.apps) : '—'}</td>
+                    <td class="breakdown-cell">${fmtDevice(d.screenBreakdown, 'iPhone')}</td>
+                    <td class="breakdown-cell">${fmtDevice(d.screenBreakdown, 'iPad')}</td>
+                    <td class="breakdown-cell">${fmtDevice(d.screenBreakdown, 'MacBook')}</td>
                 `;
                 tbody.appendChild(tr);
             });

@@ -105,6 +105,41 @@
             text-decoration: none;
         }
         .date-link:hover { text-decoration: underline; }
+        .feb9-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .feb9-stat {
+            padding: 0.75rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        .feb9-stat.sleep { border-left: 4px solid var(--sleep); }
+        .feb9-stat.workout { border-left: 4px solid var(--workout); }
+        .feb9-stat.screen { border-left: 4px solid var(--screen); }
+        .devices-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 700px) {
+            .devices-section { grid-template-columns: 1fr; }
+        }
+        .device-card {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-top: 4px solid;
+        }
+        .device-card.iphone { border-color: #34c759; }
+        .device-card.ipad { border-color: #007aff; }
+        .device-card.macbook { border-color: #af52de; }
+        .device-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .device-time { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .device-top-app { font-size: 0.9rem; color: var(--muted); }
+        .breakdown-cell { font-size: 0.9rem; color: var(--muted); }
         .sleep-col { color: var(--sleep); }
         .workout-col { color: var(--workout); }
         .screen-col { color: var(--screen); }
@@ -113,7 +148,7 @@
 <body>
     <div class="container">
         <h1>Time Well Spent? Or Time Wasted?</h1>
-        <p class="subtitle">January 18 – February 9, 2026</p>
+        <p class="subtitle">January 25 – February 9, 2026</p>
 
         <div class="stats">
             <div class="stat">
@@ -131,6 +166,28 @@
         </div>
 
         <div class="chart-container">
+            <div class="chart-title">Time by device</div>
+            <div class="devices-section" id="devices-section"></div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Most used app by day</div>
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>iPhone</th>
+                            <th>iPad</th>
+                            <th>MacBook</th>
+                        </tr>
+                    </thead>
+                    <tbody id="most-used-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="chart-container">
             <div class="chart-title">Daily comparison</div>
             <div class="chart-wrapper">
                 <canvas id="line-chart"></canvas>
@@ -142,6 +199,11 @@
             <div class="chart-wrapper">
                 <canvas id="bar-chart"></canvas>
             </div>
+        </div>
+
+        <div class="chart-container" id="feb9-section">
+            <div class="chart-title">February 9, 2026</div>
+            <div id="feb9-stats" class="feb9-stats"></div>
         </div>
 
         <div class="data-table">
@@ -168,7 +230,7 @@
         const workout = data.map(d => d.workout);
         const screen = data.map(d => d.screen);
         const labels = data.map(d => {
-            const d2 = new Date(d.date);
+            const d2 = new Date(d.date + 'T12:00:00');
             return d2.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         });
 
@@ -177,6 +239,60 @@
         document.getElementById('avg-sleep').textContent = toHrsMins(avg(sleep));
         document.getElementById('avg-workout').textContent = toHrsMins(avg(workout));
         document.getElementById('avg-screen').textContent = toHrsMins(avg(screen));
+
+        // Device breakdown: iPhone, iPad, MacBook (total time + most used app)
+        const deviceTotals = { iPhone: 0, iPad: 0, MacBook: 0 };
+        const deviceApps = { iPhone: {}, iPad: {}, MacBook: {} };
+        data.forEach(d => {
+            if (d.screenBreakdown) {
+                ['iPhone', 'iPad', 'MacBook'].forEach(dev => {
+                    const apps = d.screenBreakdown[dev];
+                    if (apps && typeof apps === 'object') {
+                        Object.entries(apps).forEach(([app, hrs]) => {
+                            deviceTotals[dev] = (deviceTotals[dev] || 0) + hrs;
+                            deviceApps[dev][app] = (deviceApps[dev][app] || 0) + hrs;
+                        });
+                    }
+                });
+            }
+        });
+        const getTopApp = (apps) => {
+            const entries = Object.entries(apps || {});
+            if (!entries.length) return null;
+            return entries.reduce((a, b) => a[1] >= b[1] ? a : b);
+        };
+        const getTopAppName = (sb, dev) => {
+            const apps = sb?.[dev];
+            const top = apps && Object.keys(apps).length ? getTopApp(apps) : null;
+            return top ? top[0] : '—';
+        };
+        const devicesEl = document.getElementById('devices-section');
+        ['iPhone', 'iPad', 'MacBook'].forEach(dev => {
+            const total = deviceTotals[dev] || 0;
+            const top = getTopApp(deviceApps[dev]);
+            const className = dev.toLowerCase();
+            devicesEl.innerHTML += `
+                <div class="device-card ${className}">
+                    <div class="device-name">${dev}</div>
+                    <div class="device-time">${toHrsMins(total)}</div>
+                    <div class="device-top-app">${top ? `Most used: ${top[0]} (${toHrsMins(top[1])})` : 'No data'}</div>
+                </div>
+            `;
+        });
+
+        // Most used app by day table
+        const mostUsedBody = document.getElementById('most-used-body');
+        data.forEach(d => {
+            const tr = document.createElement('tr');
+            const fmt = new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            tr.innerHTML = `
+                <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
+                <td class="breakdown-cell">${getTopAppName(d.screenBreakdown, 'iPhone')}</td>
+                <td class="breakdown-cell">${getTopAppName(d.screenBreakdown, 'iPad')}</td>
+                <td class="breakdown-cell">${getTopAppName(d.screenBreakdown, 'MacBook')}</td>
+            `;
+            mostUsedBody.appendChild(tr);
+        });
 
         // Line chart
         Chart.defaults.color = '#8a8784';
@@ -216,19 +332,18 @@
         });
 
         // Bar chart (weekly averages)
-        const week1 = data.filter(d => d.date < '2026-01-25');
-        const week2 = data.filter(d => d.date >= '2026-01-25' && d.date < '2026-02-01');
-        const week3 = data.filter(d => d.date >= '2026-02-01');
+        const week1 = data.filter(d => d.date >= '2026-01-25' && d.date < '2026-02-01');
+        const week2 = data.filter(d => d.date >= '2026-02-01');
         const weekAvg = (arr, key) => arr.length ? parseFloat((arr.reduce((a,b) => a+b[key], 0) / arr.length).toFixed(1)) : 0;
 
         new Chart(document.getElementById('bar-chart'), {
             type: 'bar',
             data: {
-                labels: ['Jan 18–24', 'Jan 25–31', 'Feb 1–9'],
+                labels: ['Jan 25–31', 'Feb 1–9'],
                 datasets: [
-                    { label: 'Sleep', data: [weekAvg(week1,'sleep'), weekAvg(week2,'sleep'), weekAvg(week3,'sleep')], backgroundColor: '#7c9cf7' },
-                    { label: 'Workout', data: [weekAvg(week1,'workout'), weekAvg(week2,'workout'), weekAvg(week3,'workout')], backgroundColor: '#6ee7b7' },
-                    { label: 'Screen', data: [weekAvg(week1,'screen'), weekAvg(week2,'screen'), weekAvg(week3,'screen')], backgroundColor: '#f59e9e' }
+                    { label: 'Sleep', data: [weekAvg(week1,'sleep'), weekAvg(week2,'sleep')], backgroundColor: '#7c9cf7' },
+                    { label: 'Workout', data: [weekAvg(week1,'workout'), weekAvg(week2,'workout')], backgroundColor: '#6ee7b7' },
+                    { label: 'Screen', data: [weekAvg(week1,'screen'), weekAvg(week2,'screen')], backgroundColor: '#f59e9e' }
                 ]
             },
             options: {
@@ -254,11 +369,33 @@
             }
         });
 
+        // February 9 section
+        const feb9 = data.find(d => d.date === '2026-02-09');
+        if (feb9) {
+            const feb9El = document.getElementById('feb9-stats');
+            feb9El.innerHTML = `
+                <div class="feb9-stat sleep">
+                    <div class="stat-label">Sleep</div>
+                    <div class="stat-value">${toHrsMins(feb9.sleep)}</div>
+                </div>
+                <div class="feb9-stat workout">
+                    <div class="stat-label">Workout</div>
+                    <div class="stat-value">${toHrsMins(feb9.workout)}</div>
+                </div>
+                <div class="feb9-stat screen">
+                    <div class="stat-label">Screen</div>
+                    <div class="stat-value">${toHrsMins(feb9.screen)}</div>
+                </div>
+            `;
+        } else {
+            document.getElementById('feb9-section').style.display = 'none';
+        }
+
         // Table
         const tbody = document.getElementById('table-body');
         data.forEach(d => {
             const tr = document.createElement('tr');
-            const fmt = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            const fmt = new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             tr.innerHTML = `
                 <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
                 <td class="num sleep-col">${toHrsMins(d.sleep)}</td>
