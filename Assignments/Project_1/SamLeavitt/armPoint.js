@@ -187,7 +187,12 @@
       let r, g, b;
       const atFullOpacity = visible >= 0.9 && q < 0.05;
       if (atFullOpacity) {
-        if (pt.blinkStart === null) pt.blinkStart = performance.now();
+        if (pt.blinkStart === null) {
+          pt.blinkStart = performance.now();
+          pt.rippleX = x;
+          pt.rippleY = y;
+          pt.rippleBaseRadius = drawSize / 2;
+        }
         const elapsed = performance.now() - pt.blinkStart;
         if (elapsed < BLINK_DUR) {
           const peak = BLINK_DUR * 0.3;
@@ -244,18 +249,13 @@
       if (!pt.isLarge || pt.blinkStart === null) continue;
       var elapsed = now - pt.blinkStart;
       if (elapsed >= RIPPLE_DUR) continue;
-      var visible = raw >= pt.appearAt ? Math.min(1, (raw - pt.appearAt) / 0.15) : 0;
-      if (visible <= 0) continue;
-      var q = Math.max(0, Math.min(1, (p - pt.delay) / (1 - pt.delay)));
-      var ex = ox + pathX[i] * scale;
-      var ey = oy + pathY[i] * scale;
-      var x = pt.startX * w + (ex - pt.startX * w) * q;
-      var y = pt.startY * h + (ey - pt.startY * h) * q;
-      var drawSize = pt.startSize + (pt.size - pt.startSize) * q;
-      var baseRadius = drawSize / 2;
+      var x = pt.rippleX;
+      var y = pt.rippleY;
+      var baseRadius = pt.rippleBaseRadius;
+      if (x == null || y == null || baseRadius == null) continue;
       var rippleProgress = elapsed / RIPPLE_DUR;
       var rippleRadius = baseRadius + rippleProgress * baseRadius * 3;
-      var rippleAlpha = (1 - rippleProgress) * 0.9 * visible * pt.brightness;
+      var rippleAlpha = (1 - rippleProgress) * 0.9 * pt.brightness;
       var px = RIPPLE_PIXEL;
       ctx.fillStyle = 'rgba(255,255,255,' + rippleAlpha + ')';
       for (var a = 0; a < Math.PI * 2; a += 0.15) {
