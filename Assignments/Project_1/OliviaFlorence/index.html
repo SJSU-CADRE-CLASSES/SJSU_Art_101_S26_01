@@ -105,19 +105,6 @@
             text-decoration: none;
         }
         .date-link:hover { text-decoration: underline; }
-        .feb9-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-        .feb9-stat {
-            padding: 0.75rem;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-        }
-        .feb9-stat.sleep { border-left: 4px solid var(--sleep); }
-        .feb9-stat.workout { border-left: 4px solid var(--workout); }
-        .feb9-stat.screen { border-left: 4px solid var(--screen); }
         .devices-section {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -199,25 +186,6 @@
             <div class="chart-wrapper">
                 <canvas id="bar-chart"></canvas>
             </div>
-        </div>
-
-        <div class="chart-container" id="feb9-section">
-            <div class="chart-title">February 9, 2026</div>
-            <div id="feb9-stats" class="feb9-stats"></div>
-        </div>
-
-        <div class="data-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th class="sleep-col num">Sleep</th>
-                        <th class="workout-col num">Workout</th>
-                        <th class="screen-col num">Screen</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
         </div>
 
     </div>
@@ -367,42 +335,6 @@
                     }
                 }
             }
-        });
-
-        // February 9 section
-        const feb9 = data.find(d => d.date === '2026-02-09');
-        if (feb9) {
-            const feb9El = document.getElementById('feb9-stats');
-            feb9El.innerHTML = `
-                <div class="feb9-stat sleep">
-                    <div class="stat-label">Sleep</div>
-                    <div class="stat-value">${toHrsMins(feb9.sleep)}</div>
-                </div>
-                <div class="feb9-stat workout">
-                    <div class="stat-label">Workout</div>
-                    <div class="stat-value">${toHrsMins(feb9.workout)}</div>
-                </div>
-                <div class="feb9-stat screen">
-                    <div class="stat-label">Screen</div>
-                    <div class="stat-value">${toHrsMins(feb9.screen)}</div>
-                </div>
-            `;
-        } else {
-            document.getElementById('feb9-section').style.display = 'none';
-        }
-
-        // Table
-        const tbody = document.getElementById('table-body');
-        data.forEach(d => {
-            const tr = document.createElement('tr');
-            const fmt = new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            tr.innerHTML = `
-                <td><a href="breakdown.html?date=${d.date}" class="date-link">${fmt}</a></td>
-                <td class="num sleep-col">${toHrsMins(d.sleep)}</td>
-                <td class="num workout-col">${toHrsMins(d.workout)}</td>
-                <td class="num screen-col">${toHrsMins(d.screen)}</td>
-            `;
-            tbody.appendChild(tr);
         });
     </script>
 </body>

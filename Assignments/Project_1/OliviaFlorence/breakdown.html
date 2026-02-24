@@ -105,6 +105,22 @@
         .single-day-device-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; }
         .single-day-device-time { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; margin-bottom: 0.25rem; }
         .single-day-device-top { font-size: 0.9rem; color: var(--muted); }
+        .single-day-sleep-workout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .single-day-extra {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 1.25rem;
+            border-top: 4px solid;
+        }
+        .single-day-extra.sleep { border-color: #7c9cf7; }
+        .single-day-extra.workout { border-color: #6ee7b7; }
+        .single-day-extra-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; }
+        .single-day-extra-time { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; }
     </style>
 </head>
 <body>
@@ -115,6 +131,7 @@
         <p class="subtitle" id="subtitle">January 25 – February 9, 2026</p>
 
         <div id="single-day-view" style="display: none;">
+            <div class="single-day-sleep-workout" id="single-day-sleep-workout"></div>
             <div class="single-day-devices" id="single-day-devices"></div>
         </div>
 
@@ -175,7 +192,20 @@
             const fmt = new Date(dayData.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
             document.getElementById('subtitle').textContent = fmt;
 
-            // Device cards: screen time + most used app only
+            // Sleep & Workout
+            const sleepWorkoutEl = document.getElementById('single-day-sleep-workout');
+            sleepWorkoutEl.innerHTML = `
+                <div class="single-day-extra sleep">
+                    <div class="single-day-extra-name">Sleep</div>
+                    <div class="single-day-extra-time">${toHrsMins(dayData.sleep || 0)}</div>
+                </div>
+                <div class="single-day-extra workout">
+                    <div class="single-day-extra-name">Workout</div>
+                    <div class="single-day-extra-time">${toHrsMins(dayData.workout || 0)}</div>
+                </div>
+            `;
+
+            // Device cards: screen time + most used app (with time on that app)
             const devicesEl = document.getElementById('single-day-devices');
             ['iPhone', 'iPad', 'MacBook'].forEach(dev => {
                 const apps = dayData.screenBreakdown[dev];
@@ -195,7 +225,17 @@
             document.getElementById('single-day-view').style.display = 'block';
             document.getElementById('all-days-view').style.display = 'none';
             document.getElementById('all-days-link').style.display = 'inline-block';
-            document.getElementById('single-day-devices').innerHTML = '<p style="color: var(--muted);">No breakdown data for this date.</p>';
+            document.getElementById('single-day-sleep-workout').innerHTML = `
+                <div class="single-day-extra sleep">
+                    <div class="single-day-extra-name">Sleep</div>
+                    <div class="single-day-extra-time">${toHrsMins(dayData.sleep || 0)}</div>
+                </div>
+                <div class="single-day-extra workout">
+                    <div class="single-day-extra-name">Workout</div>
+                    <div class="single-day-extra-time">${toHrsMins(dayData.workout || 0)}</div>
+                </div>
+            `;
+            document.getElementById('single-day-devices').innerHTML = '<p style="color: var(--muted);">No device breakdown for this date.</p>';
         } else {
             const deviceTotals = { iPhone: 0, iPad: 0, MacBook: 0 };
             const appTotals = {};
