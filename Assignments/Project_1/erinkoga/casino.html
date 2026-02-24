@@ -440,7 +440,22 @@
 
         function resolveHiloGuess(guessHigher) {
             if (!hiloActive || hiloCurrent === null || !hiloResultEl || !hiloCurrentEl) return;
-            const next = Math.floor(Math.random() * 10) + 1;
+            let next;
+            if (guessHigher) {
+                if (Math.random() < 0.7 && hiloCurrent > 1) {
+                    // 70% of the time, bias towards same or lower to make "higher" lose
+                    next = Math.floor(Math.random() * hiloCurrent) + 1; // 1..hiloCurrent
+                } else {
+                    next = Math.floor(Math.random() * 10) + 1;
+                }
+            } else {
+                if (Math.random() < 0.7 && hiloCurrent < 10) {
+                    // 70% of the time, bias towards same or higher to make "lower" lose
+                    next = Math.floor(Math.random() * (10 - hiloCurrent + 1)) + hiloCurrent; // hiloCurrent..10
+                } else {
+                    next = Math.floor(Math.random() * 10) + 1;
+                }
+            }
             const win = guessHigher ? next > hiloCurrent : next < hiloCurrent;
             if (win) {
                 balance += hiloBetAmount * 2;
