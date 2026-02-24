@@ -411,9 +411,9 @@
           var cls = f === frame ? ' current' : '';
           headerHtml += '<th colspan="' + col + '">' + (f + 1) + '</th>';
           var r1 = frames[f].r1, r2 = frames[f].r2, r3 = frames[f].r3;
-          var r1s = r1 === null ? '' : (r1 === 10 ? 'X' : r1);
-          var r2s = r2 === null ? '' : (r2 === 10 ? 'X' : (r1 !== null && r1 < 10 && r1 + r2 === 10 ? '/' : r2));
-          var r3s = r3 === null ? '' : (r3 === 10 ? 'X' : r3);
+          var r1s = r1 === null ? '' : (r1 === 10 ? 'X' : String(r1));
+          var r2s = r2 === null ? '' : (r1 !== null && r1 < 10 && r1 + r2 === 10 ? '/' : (r2 === 10 ? 'X' : String(r2)));
+          var r3s = r3 === null ? '' : (r2 !== null && r2 < 10 && r2 + r3 === 10 ? '/' : (r3 === 10 ? 'X' : String(r3)));
           if (f < 9) {
             rollsHtml += '<td class="rolls' + cls + '">' + r1s + '</td><td class="rolls' + cls + '">' + (r1 === 10 ? '' : r2s) + '</td>';
           } else {
@@ -459,6 +459,7 @@
 
       function advanceFrame(knocked) {
         var f = frame, r = roll;
+        knocked = Math.min(10, knocked);
         if (f < 9) {
           if (r === 1) {
             frames[f].r1 = knocked;
@@ -469,7 +470,7 @@
               roll = 2;
             }
           } else {
-            frames[f].r2 = knocked;
+            frames[f].r2 = Math.min(knocked, 10 - (frames[f].r1 || 0));
             frame++;
             roll = 1;
             standAllPins();
@@ -480,7 +481,8 @@
             standAllPins();
             roll = 2;
           } else if (r === 2) {
-            frames[f].r2 = knocked;
+            var maxR2 = (frames[f].r1 === 10) ? 10 : (10 - frames[f].r1);
+            frames[f].r2 = Math.min(knocked, maxR2);
             if (frames[f].r1 === 10 || frames[f].r1 + knocked === 10) {
               standAllPins();
               roll = 3;
@@ -490,7 +492,8 @@
               standAllPins();
             }
           } else {
-            frames[f].r3 = knocked;
+            var maxR3 = (frames[f].r2 === 10) ? 10 : (10 - frames[f].r2);
+            frames[f].r3 = Math.min(knocked, maxR3);
             frame = 0;
             roll = 1;
             standAllPins();
@@ -535,12 +538,15 @@
           }
 
           var hitPins = knockPins(aimX);
+          var knocked = 0;
           hitPins.forEach(function (id) {
             var pin = pinsZone.querySelector('[data-pin="' + id + '"]');
-            if (pin && !pin.classList.contains('down')) pin.classList.add('down');
+            if (pin && !pin.classList.contains('down')) {
+              pin.classList.add('down');
+              knocked++;
+            }
           });
-
-          var knocked = hitPins.length;
+          knocked = Math.min(10, knocked);
           rollScoreEl.textContent = knocked;
           advanceFrame(knocked);
 
