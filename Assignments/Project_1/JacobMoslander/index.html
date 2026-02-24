@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Self Portrait</title>
+
+    <!-- Pixel-style font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at 50% 0%, #ffffff, #000000 75%);
+        background-size: 160% 160%;
+        background-position: 50% 0%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container {
+        text-align: center;
+        color: white;
+        padding: 1.5rem;
+      }
+
+      .title {
+        font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+        margin-bottom: 2.5rem;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 2.8rem;
+        border-radius: 0;
+        border: 3px solid #000000;
+        background-color: #ffffff;
+        color: #000000;
+        font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000;
+        image-rendering: pixelated;
+        transition: transform 0.1s steps(2, end), box-shadow 0.1s steps(2, end),
+          background-color 0.1s steps(2, end), color 0.1s steps(2, end);
+      }
+
+      .button:hover {
+        background-color: #f2f2f2;
+        transform: translate(-2px, -2px);
+        box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000,
+          4px 4px 0 rgba(0, 0, 0, 0.8);
+      }
+
+      .button:active {
+        background-color: #e0e0e0;
+        transform: translate(1px, 1px);
+        box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000,
+          1px 1px 0 rgba(0, 0, 0, 0.9);
+      }
+
+      .footer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0.75rem;
+        text-align: center;
+        font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.55rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.8);
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+        pointer-events: none;
+      }
+
+      @media (max-width: 600px) {
+        .title {
+          font-size: 0.7rem;
+        }
+
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">experience the world through my ears</h1>
+      <button class="button" onclick="window.location.href='quadrants.html'">
+        click me
+      </button>
+    </div>
+
+    <div class="footer">data sourced from spotify! :p</div>
+    <script>
+      (function () {
+        let audioCtx;
+        function playClick() {
+          try {
+            audioCtx =
+              audioCtx ||
+              new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "square";
+            osc.frequency.value = 850;
+            gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.08
+            );
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.09);
+          } catch (e) {}
+        }
+
+        document.addEventListener("click", function (e) {
+          const target = e.target.closest("button, a");
+          if (target) {
+            playClick();
+          }
+        });
+      })();
+
+      (function () {
+        const maxShiftX = 25; // percent
+        const maxShiftY = 20; // percent
+
+        function handleMove(e) {
+          const x = e.clientX / window.innerWidth - 0.5;
+          const y = e.clientY / window.innerHeight - 0.5;
+          const posX = 50 + x * maxShiftX;
+          const posY = 0 + y * maxShiftY;
+          document.body.style.backgroundPosition = posX + "% " + posY + "%";
+        }
+
+        window.addEventListener("pointermove", handleMove);
+      })();
+    </script>
+  </body>
+</html>
+
