@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "The Radius of My Life",
+    "dateRange": ["2026-02-15", "2026-02-23"],
+    "notes": "Life360 driving summaries; addresses generalized."
+  },
+  "people": [
+    {
+      "id": "you",
+      "label": "You",
+      "days": [
+        { "date": "2026-02-15", "trips": 2, "minutes": 55 },
+        { "date": "2026-02-16", "trips": 3, "minutes": 97 },
+        { "date": "2026-02-17", "trips": 2, "minutes": 41 },
+        { "date": "2026-02-18", "trips": 4, "minutes": 88 },
+        { "date": "2026-02-19", "trips": 2, "minutes": 60 },
+        { "date": "2026-02-20", "trips": 3, "minutes": 158 },
+        { "date": "2026-02-21", "trips": 2, "minutes": 39 },
+        { "date": "2026-02-22", "trips": 1, "minutes": 61 },
+        { "date": "2026-02-23", "trips": 1, "minutes": 147 }
+      ]
+    },
+    {
+      "id": "dad",
+      "label": "Dad",
+      "days": [
+        { "date": "2026-02-15", "trips": 6, "minutes": 210 },
+        { "date": "2026-02-16", "trips": 8, "minutes": 268 },
+        { "date": "2026-02-17", "trips": 10, "minutes": 347 },
+        { "date": "2026-02-18", "trips": 8, "minutes": 334 },
+        { "date": "2026-02-19", "trips": 2, "minutes": 0 }
+      ]
+    },
+    {
+      "id": "bro",
+      "label": "Bro",
+      "days": [
+        { "date": "2026-02-16", "trips": 2, "minutes": 46 },
+        { "date": "2026-02-17", "trips": 2, "minutes": 24 },
+        { "date": "2026-02-18", "trips": 2, "minutes": 33 },
+        { "date": "2026-02-19", "trips": 2, "minutes": 40 },
+        { "date": "2026-02-20", "trips": 2, "minutes": 92 },
+        { "date": "2026-02-21", "trips": 4, "minutes": 187 },
+        { "date": "2026-02-22", "trips": 2, "minutes": 0 },
+        { "date": "2026-02-23", "trips": 4, "minutes": 80 }
+      ]
+    }
+  ]
+}
+
