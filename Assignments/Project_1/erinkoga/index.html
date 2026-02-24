@@ -8,39 +8,7 @@
         html, body {
             margin: 0;
             min-height: 100%;
-            background: #334157;
-        }
-        body {
-            position: relative;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image:
-                radial-gradient(circle at 12% 8%, white 2px, transparent 2px),
-                radial-gradient(circle at 87% 23%, white 2px, transparent 2px),
-                radial-gradient(circle at 34% 91%, white 2px, transparent 2px),
-                radial-gradient(circle at 66% 14%, white 2px, transparent 2px),
-                radial-gradient(circle at 5% 45%, white 2px, transparent 2px),
-                radial-gradient(circle at 92% 67%, white 2px, transparent 2px),
-                radial-gradient(circle at 21% 32%, white 2px, transparent 2px),
-                radial-gradient(circle at 78% 78%, white 2px, transparent 2px),
-                radial-gradient(circle at 45% 55%, white 2px, transparent 2px),
-                radial-gradient(circle at 56% 19%, white 2px, transparent 2px),
-                radial-gradient(circle at 18% 72%, white 2px, transparent 2px),
-                radial-gradient(circle at 83% 41%, white 2px, transparent 2px),
-                radial-gradient(circle at 9% 88%, white 2px, transparent 2px),
-                radial-gradient(circle at 71% 6%, white 2px, transparent 2px),
-                radial-gradient(circle at 28% 16%, white 2px, transparent 2px),
-                radial-gradient(circle at 95% 52%, white 2px, transparent 2px),
-                radial-gradient(circle at 42% 83%, white 2px, transparent 2px),
-                radial-gradient(circle at 63% 38%, white 2px, transparent 2px),
-                radial-gradient(circle at 3% 61%, white 2px, transparent 2px),
-                radial-gradient(circle at 51% 94%, white 2px, transparent 2px);
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+            background: #943829;
         }
         h1 {
             position: relative;
@@ -81,6 +49,21 @@
             max-width: 200px;
             height: auto;
         }
+        .plant {
+            font-size: 16rem;
+            cursor: pointer;
+        }
+        .music-player {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .music-player iframe {
+            border: none;
+            max-width: 100%;
+        }
         .doors a {
             display: inline-block;
         }
@@ -90,12 +73,30 @@
     </style>
 </head>
 <body>
-    <h1>welcome to the slumber hotel</h1>
+    <h1>welcome to the hotel!</h1>
     <h2>click a door to enter the room</h2>
+    <div class="music-player" id="musicPlayer"></div>
     <div class="doors">
-        <a href="garage.html"><img src="door.png" alt="Door to Garage"></a>
         <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        <span class="plant" id="plant">🪴</span>
         <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
     </div>
+    <script>
+        const plant = document.getElementById('plant');
+        const musicPlayer = document.getElementById('musicPlayer');
+        if (plant && musicPlayer) {
+            plant.addEventListener('click', () => {
+                musicPlayer.innerHTML = `
+                    <iframe
+                        width="560"
+                        height="315"
+                        src="https://www.youtube.com/embed/bmP3UHXYi28?autoplay=1"
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    ></iframe>
+                `;
+            });
+        }
+    </script>
 </body>
 </html>

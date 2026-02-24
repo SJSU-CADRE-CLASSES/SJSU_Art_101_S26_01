@@ -12,6 +12,9 @@
         }
         body {
             position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         body::before {
             content: '';
@@ -52,15 +55,140 @@
             font-family: "Times New Roman", Times, serif;
             font-style: italic;
         }
+        h2 {
+            position: relative;
+            z-index: 1;
+            margin: 0.5rem 0 0;
+            text-align: center;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1rem;
+            font-weight: normal;
+        }
         a {
             position: relative;
             z-index: 1;
             color: white;
         }
+        .top {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .top a {
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        .middle {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7.2rem;
+        }
+        .bed-button {
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            font: inherit;
+            color: #ffffff;
+        }
+        .hours-table {
+            position: relative;
+            z-index: 1;
+            margin: 1rem auto 2rem;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+        }
+        .hours-table table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            min-width: 260px;
+            background: rgba(0, 0, 0, 0.25);
+        }
+        .hours-table th,
+        .hours-table td {
+            border: 1px solid rgba(204, 218, 240, 0.4);
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+        }
+        .hours-table th {
+            background: rgba(204, 218, 240, 0.2);
+            font-weight: bold;
+        }
+        .coin {
+            position: absolute;
+            z-index: 2;
+            font-size: 2.5rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1>sleep</h1>
-    <a href="index.html">Back to lobby</a>
+    <div class="top">
+        <h1>Welcome to your room</h1>
+        <h2>click the bed to sleep</h2>
+        <a href="index.html">Back to lobby</a>
+    </div>
+    <div class="middle">
+        <button class="bed-button" id="bedButton">🛏️</button>
+    </div>
+    <div class="hours-table" id="hoursTable" hidden>
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Hours slept</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Monday</td><td>0 hours</td></tr>
+                <tr><td>Tuesday</td><td>0 hours</td></tr>
+                <tr><td>Wednesday</td><td>0 hours</td></tr>
+                <tr><td>Thursday</td><td>0 hours</td></tr>
+                <tr><td>Friday</td><td>0 hours</td></tr>
+                <tr><td>Saturday</td><td>0 hours</td></tr>
+            </tbody>
+        </table>
+    </div>
 </body>
+<script>
+    const bedButton = document.getElementById('bedButton');
+    const hoursTable = document.getElementById('hoursTable');
+    if (bedButton && hoursTable) {
+        bedButton.addEventListener('click', () => {
+            alert('no time for that you gotta win it big');
+            hoursTable.hidden = !hoursTable.hidden;
+        });
+    }
+
+    function spawnCoins(count) {
+        for (let i = 0; i < count; i++) {
+            const coin = document.createElement('span');
+            coin.textContent = '🪙';
+            coin.className = 'coin';
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const left = Math.random() * (viewportWidth - 60);
+            const top = Math.random() * (viewportHeight - 120) + 60;
+            coin.style.left = left + 'px';
+            coin.style.top = top + 'px';
+
+            coin.addEventListener('click', () => {
+                window.location.href = 'casino.html';
+            });
+
+            document.body.appendChild(coin);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        spawnCoins(6);
+    });
+</script>
 </html>
