@@ -39,18 +39,66 @@
   </div>
   <img src="stick.png" alt="" class="cw-stick" aria-hidden="true">
   </div>
+  <button type="button" class="cw-pencil-btn" aria-label="Reveal final image">
+    <img src="pencil.png" alt="" class="cw-pencil-img">
+  </button>
   <img src="interview 7.png" alt="" class="cw-final-image" aria-hidden="true">
+  <div class="cw-final-text-wrap" aria-hidden="true">
+    <p class="cw-final-text"></p>
+  </div>
   <script>
-    var finalTimerStarted = false;
-    function scheduleFinalImage() {
-      if (finalTimerStarted) return;
-      finalTimerStarted = true;
-      setTimeout(function() {
+    var pencilPhase = 0;
+    var finalText = "wait.. aren't you supposed to be a graphic designer?";
+    function showPencilButton() {
+      if (pencilPhase > 0) return;
+      pencilPhase = 1;
+      var btn = document.querySelector('.cw-pencil-btn');
+      if (btn) btn.classList.add('cw-pencil-visible');
+    }
+    function revealFinalImage() {
+      if (pencilPhase === 1) {
         var content = document.querySelector('.cw-content');
         if (content) content.remove();
         var finalImg = document.querySelector('.cw-final-image');
         if (finalImg) finalImg.classList.add('cw-final-visible');
-      }, 7000);
+        pencilPhase = 2;
+        return;
+      }
+      if (pencilPhase === 2) {
+        var finalImg = document.querySelector('.cw-final-image');
+        if (finalImg) finalImg.classList.remove('cw-final-visible');
+        var btn = document.querySelector('.cw-pencil-btn');
+        if (btn) btn.classList.remove('cw-pencil-visible');
+        var wrap = document.querySelector('.cw-final-text-wrap');
+        var textEl = document.querySelector('.cw-final-text');
+        if (wrap && textEl) {
+          wrap.classList.add('cw-final-text-visible');
+          var i = 0;
+          function typeChar() {
+            if (i < finalText.length) {
+              textEl.textContent += finalText.charAt(i);
+              i++;
+              setTimeout(typeChar, 80);
+            } else {
+              textEl.classList.add('cw-typing-done');
+              pencilPhase = 3;
+              var pencilBtn = document.querySelector('.cw-pencil-btn');
+              if (pencilBtn) {
+                pencilBtn.classList.add('cw-pencil-visible');
+                pencilBtn.setAttribute('aria-label', 'Back to home');
+              }
+            }
+          }
+          typeChar();
+        }
+        pencilPhase = 2.5;
+        return;
+      }
+    }
+    function goToIndex() {
+      if (pencilPhase === 3) {
+        window.location.href = 'index.html';
+      }
     }
     function canReveal(slot) {
       var num = parseInt(slot.getAttribute('data-interview'), 10);
@@ -75,12 +123,19 @@
         if (!canReveal(slot)) return;
         slot.classList.add('cw-revealed');
         updateLockedState();
-        if (slot.classList.contains('cw-slot-6')) scheduleFinalImage();
+        if (slot.classList.contains('cw-slot-6')) showPencilButton();
       });
       box.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
       });
     });
+    var pencilBtn = document.querySelector('.cw-pencil-btn');
+    if (pencilBtn) {
+      pencilBtn.addEventListener('click', function() {
+        if (pencilPhase === 3) goToIndex();
+        else revealFinalImage();
+      });
+    }
   </script>
 </body>
 </html>
