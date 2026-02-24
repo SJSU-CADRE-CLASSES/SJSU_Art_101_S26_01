@@ -6,10 +6,6 @@
   <link rel="stylesheet" href="./style.css?v=1016">
 
   <style>
-    /* IMPORTANT: styles here are ONLY for blob-wrap/blob-core + pulse.
-       They do NOT override JS translate(). */
-
-    /* Make stage its own stacking context so z-index behaves predictably */
     #blob-stage{
       position: relative;
       isolation: isolate;
@@ -20,7 +16,7 @@
       left:0; top:0;
       will-change: transform;
       touch-action: manipulation;
-      z-index: 10; /* baseline */
+      z-index: 10;
     }
 
     .blob-core{
@@ -30,9 +26,9 @@
       opacity:0.88;
       filter: blur(10px) saturate(2.4);
       mix-blend-mode: normal;
-      pointer-events: none; /* clicks go to wrap */
+      pointer-events: none;
       transition: filter 180ms ease, opacity 180ms ease;
-      position: relative; /* needed for ::before/::after positioning */
+      position: relative;
       --burst-scale: 13;
     }
 
@@ -41,7 +37,6 @@
       filter: blur(8px) saturate(3.0);
     }
 
-    /* black “mix” layer (fades in during combine) */
     .blob-core::before{
       content:"";
       position:absolute;
@@ -64,29 +59,21 @@
       inset:0;
       border-radius:50%;
       background: inherit;
-
-      /* KEY FIX: don't inherit heavy blur (can cause square artifacts) */
       filter: none;
-
       opacity:0;
       transform: scale(1) translateZ(0);
       transform-origin:center;
       pointer-events:none;
-
-      /* extra safety to force circular clip */
       clip-path: circle(50% at 50% 50%);
-
       will-change: transform, opacity;
       z-index: 9999;
     }
 
-    /* Keep tooltip above everything */
     #tip.tip{
       position: fixed;
       z-index: 2147483647;
     }
 
-    /* ===== HOLD INTERACTION PULSE ===== */
     .blob-core.pulse-in::after{
       animation: blobPulseIn 240ms ease-out forwards;
     }
@@ -117,11 +104,6 @@
       .blob-core.hold::after{ opacity:0; transform: scale(1); }
     }
 
-    /* =========================
-       COMBINE UI
-       ========================= */
-
-    /* ghost button under the subtitle */
     #combine-btn{
       position: fixed;
       left: 50%;
@@ -165,7 +147,6 @@
       transform: translateX(-50%) translateY(1px);
     }
 
-    /* The mega black blob that fills the screen (pitch black, blurred like the other blobs) */
     #mega-blob{
       position: fixed;
       left: 50%;
@@ -176,26 +157,22 @@
       border-radius: 50%;
       pointer-events: none;
 
-      /* pitch black core, softened edges (so it still feels "blob") */
       background: radial-gradient(circle,
         rgba(0,0,0,1) 0%,
         rgba(0,0,0,1) 62%,
         rgba(0,0,0,0.0) 78%
       );
 
-      /* match blob feel */
       filter: blur(10px) saturate(0.2);
       opacity: 0;
       z-index: 999998;
       will-change: transform, opacity;
 
-      /* SLOW + CINEMATIC (slower than before) */
       transition: transform 5600ms cubic-bezier(.12,1,.18,1), opacity 1400ms ease;
     }
 
     #mega-blob.on{ opacity: 1; }
 
-    /* Readme overlay */
     #combine-overlay{
       position: fixed;
       inset: 0;
@@ -210,7 +187,6 @@
       pointer-events: auto;
     }
 
-    /* make it look like the screen is OFF */
     #combine-overlay .veil{
       position: absolute;
       inset: 0;
@@ -238,6 +214,10 @@
       font-size: 26px;
       letter-spacing: 8px;
       opacity: 0.9;
+      color: rgba(255,255,255,0.95);
+      -webkit-text-fill-color: rgba(255,255,255,0.95);
+      background: none;
+      animation: none;
     }
 
     #combine-overlay .panel p{
@@ -250,7 +230,6 @@
       font-weight: 500;
     }
 
-    /* ===== QUOTE TRAIN-STATION STYLE ===== */
     #combine-overlay .panel .small{
       margin-top: 16px;
       font-family: "Doto", sans-serif;
@@ -263,7 +242,6 @@
       transition: opacity 600ms ease;
     }
 
-    /* Holographic / iridescent gradient must be on EACH character span */
     .quote-char{
       display:inline-block;
       opacity:0;
@@ -302,7 +280,6 @@
       }
     }
 
-    /* Holo shimmer shift */
     @keyframes holoShift{
       0%{ background-position:0% 50%; }
       100%{ background-position:300% 50%; }
@@ -333,31 +310,6 @@
 
     #combine-overlay .panel a:hover{ opacity: 1; }
 
-    /* ===== HOLOGRAPHIC TITLE (DIGITAL RESIDUE) ===== */
-    #combine-overlay .panel h2{
-      background: linear-gradient(
-  110deg,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff
-);
-      background-size: 400% 100%;
-      background-position: 0% 50%;
-
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-
-      animation: holoShift 16s linear infinite, holoGlow 6s ease-in-out infinite;
-    }
-
-    /* ===== LINE-BY-LINE REVEAL TARGET ===== */
     #residue-lines{
       margin-top: 6px;
       line-height: 1.72;
@@ -371,7 +323,6 @@
       will-change: opacity, transform, filter;
     }
 
-    /* fade the whole block out between groups */
     #residue-lines.fade-out{
       opacity: 0;
       transform: translateY(-6px);
@@ -394,29 +345,11 @@
       filter: blur(0px);
     }
 
-    /* subtle holo (we can refine color later — intentionally soft) */
     .res-line.holo{
-      background: linear-gradient(
-  110deg,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff,
-  #ffffff
-);
-      );
-      background-size: 420% 100%;
-      background-position: 0% 50%;
-
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-
-      animation: holoShift 20s linear infinite;
+      color: rgba(255,255,255,0.90);
+      -webkit-text-fill-color: rgba(255,255,255,0.90);
+      background: none;
+      animation: none;
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -458,10 +391,7 @@
     <div class="panel" role="dialog" aria-modal="true" aria-label="DIGITAL RESIDUE">
       <h2>DIGITAL RESIDUE ‎ ‎ ‎   ‎    ‎ ‎ BY ANTHONY LAM</h2>
 
-      <!-- LINE-BY-LINE REVEAL TARGET -->
       <div id="residue-lines" aria-live="polite"></div>
-
-      <!-- Animated quote line -->
       <p class="small" id="quote-line" aria-live="polite"></p>
 
       <div class="close-row">
@@ -478,7 +408,6 @@
     const tip = document.getElementById("tip");
     const ITEMS = (typeof APPS !== "undefined") ? APPS : [];
 
-    // ===== MUSIC =====
     const music = document.getElementById("bg-music");
     let musicStarted = false;
 
@@ -494,7 +423,6 @@
     window.addEventListener("pointerdown", startMusic, { once:true, capture:true });
     window.addEventListener("keydown", startMusic, { once:true, capture:true });
 
-    // ===== QUOTES (train-station animation) =====
     const quoteLine = document.getElementById("quote-line");
 
     const QUOTES = [
@@ -526,7 +454,7 @@
       if (!quoteLine) return 0;
 
       quoteLine.classList.remove("quote-fade");
-      quoteLine.innerHTML = ""; // hard clear so ONLY one quote exists
+      quoteLine.innerHTML = "";
 
       const chars = Array.from(text);
       chars.forEach((ch, i) => {
@@ -536,26 +464,25 @@
         span.className = "quote-char";
         span.textContent = ch;
 
-        /* reveal + holographic shift */
         span.style.animation = "quoteReveal 420ms ease forwards, holoShift 8s linear infinite";
         span.style.animationDelay = `${i * 18}ms, 0ms`;
 
         quoteLine.appendChild(span);
       });
 
-      return (chars.length * 18) + 420; // typing duration
+      return (chars.length * 18) + 420;
     }
 
     function cycleQuotes(){
       if (!quoteLine) return;
 
-      stopQuotes();               // stop any previous cycle
-      const runId = ++quoteRunId; // new run id
+      stopQuotes();
+      const runId = ++quoteRunId;
 
       const text = QUOTES[quoteIdx];
       const typingMs = renderQuoteAnimated(text, runId);
 
-      const READ_MS = 8000; // hold after typing
+      const READ_MS = 8000;
       const FADE_MS = 650;
 
       quoteTimer = setTimeout(() => {
@@ -573,7 +500,6 @@
       }, typingMs + READ_MS);
     }
 
-    // ===== DIGITAL RESIDUE GROUPED REVEAL + FADE + LOOP =====
     const residueBox = document.getElementById("residue-lines");
     let residueRunId = 0;
     let residueTimer = null;
@@ -624,10 +550,9 @@
     }
 
     function msForLine(line){
-      // ~200 wpm reading speed => 300ms/word
       const WPM = 200;
-      const base = 650;                 // breath
-      const perWord = (60_000 / WPM);    // ms per word
+      const base = 650;
+      const perWord = (60_000 / WPM);
       const w = wordsCount(line);
       const ms = base + (w * perWord);
 
@@ -635,7 +560,6 @@
     }
 
     function msForGroupHold(groupLines){
-      // extra hold AFTER the last line appears
       const WPM = 200;
       const perWord = (60_000 / WPM);
 
@@ -717,7 +641,6 @@
       playGroup();
     }
 
-    // ===== COMBINE UI =====
     const combineBtn = document.getElementById("combine-btn");
     const mega = document.getElementById("mega-blob");
     const overlay = document.getElementById("combine-overlay");
@@ -742,7 +665,6 @@
     window.addEventListener("load", () => requestAnimationFrame(init), { once:true });
 
     function init(){
-      // ===== TUNING =====
       const PAD = 24;
 
       const PHYS_GAP   = 70;
@@ -767,9 +689,6 @@
 
       const maxH = Math.max(...ITEMS.map(x => Number(x.hours || 0)), 1);
 
-      // =========================
-      // AUTO-FIT SIZES
-      // =========================
       const rect0 = stage.getBoundingClientRect();
       const stageArea = Math.max(rect0.width * rect0.height, 1);
 
@@ -892,9 +811,6 @@
         }, 1150);
       }
 
-      // =========================
-      // COMBINE STATE
-      // =========================
       const combineState = { active:false, startedAt:0, phase:0 };
 
       function stageCenterInStageCoords(){
@@ -960,7 +876,6 @@
 
       if (combineBtn) combineBtn.addEventListener("click", beginCombine);
 
-      // ESC closes overlay + stops quote cycle + stops residue cycle
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           overlay.classList.remove("on");
@@ -970,7 +885,6 @@
         }
       });
 
-      // Build blobs
       ITEMS.forEach((item, idx) => {
         const h = Number(item.hours || 0);
         const size = (BASE_SIZE + (h / maxH) * RANGE_SIZE) * SCALE;
@@ -1056,7 +970,6 @@
       function animate(now){
         const b = getBounds();
 
-        // COMBINE MODE
         if (combineState.active){
           const center = stageCenterInStageCoords();
 
@@ -1108,7 +1021,6 @@
                 mega.setAttribute("aria-hidden", "false");
                 combineState.phase = 3;
 
-                // START RESIDUE LOOP
                 startResidueCycle();
 
                 if (quoteLine && !quoteLine.dataset.started){
@@ -1123,7 +1035,6 @@
           return;
         }
 
-        // NORMAL MODE
         blobs.forEach(o => {
           if (now >= o.nextTargetAt){
             const t = randPos(o.size);
@@ -1175,8 +1086,6 @@
           }
         });
 
-        /* ✅ FIX: DO NOT re-declare SCALE / gaps here.
-              Use the already-computed PHYS_GAP_S / VISUAL_GAP_S from init(). */
         for (let pass = 0; pass < SOLVER_PASSES; pass++){
           for (let i = 0; i < blobs.length; i++){
             for (let j = i + 1; j < blobs.length; j++){
