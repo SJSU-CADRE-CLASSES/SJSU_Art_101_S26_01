@@ -256,9 +256,14 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 2.5rem 1.5rem;
   text-align: center;
   gap: 2rem;
+}
+
+.view-intro > div {
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 .intro-title {

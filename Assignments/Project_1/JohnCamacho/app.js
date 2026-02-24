@@ -48,7 +48,7 @@ async function initApp() {
         </div>
       </div>
       <div class="app-main">
-        <div class="sidebar-toggle"><button type="button" data-toggle-sidebar>☰ Panel</button></div>
+        <div class="sidebar-toggle" id="sidebarToggle"><button type="button" data-toggle-sidebar>☰ Panel</button></div>
         <aside class="sidebar collapsed" id="sidebar"></aside>
         <main class="view-container" id="view-container"></main>
       </div>
@@ -375,8 +375,15 @@ function attachGlobalEvents() {
 function render() {
   const container = document.getElementById('view-container');
   const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
   container.innerHTML = '';
   sidebar.innerHTML = '';
+
+  // Hide sidebar toggle on non-comparison views
+  if (sidebarToggle) {
+    const showToggle = state.view === 'you' || state.view === 'compare';
+    sidebarToggle.style.display = showToggle ? 'block' : 'none';
+  }
 
   if (state.view === 'intro') {
     sidebar.classList.add('collapsed');
