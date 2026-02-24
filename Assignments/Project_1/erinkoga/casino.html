@@ -220,6 +220,9 @@
         let coinPlays = 0;
         let bjPlays = 0;
         let hiloPlays = 0;
+        let hiloWins = 0;
+        let hiloLosses = 0;
+        let hiloTotalLost = 0;
         const balanceEl = document.getElementById('balance');
         const betEl = document.getElementById('bet');
         const resultEl = document.getElementById('result');
@@ -232,6 +235,9 @@
         const countBJEl = document.getElementById('countBJ');
         const countHiLoEl = document.getElementById('countHiLo');
         const countTotalEl = document.getElementById('countTotal');
+        const hiloWinsEl = document.getElementById('hiloWins');
+        const hiloLossesEl = document.getElementById('hiloLosses');
+        const hiloLostEl = document.getElementById('hiloLost');
 
         function updateStatsTable() {
             if (!countCoinEl || !countBJEl || !countHiLoEl || !countTotalEl) return;
@@ -464,8 +470,14 @@
             const win = guessHigher ? next > hiloCurrent : next < hiloCurrent;
             if (win) {
                 balance += hiloBetAmount * 2;
+                hiloWins++;
+                if (hiloWinsEl) hiloWinsEl.textContent = hiloWins;
                 hiloResultEl.textContent = `Next number was ${next}. You win ${hiloBetAmount} chips!`;
             } else {
+                hiloLosses++;
+                hiloTotalLost += hiloBetAmount;
+                if (hiloLossesEl) hiloLossesEl.textContent = hiloLosses;
+                if (hiloLostEl) hiloLostEl.textContent = hiloTotalLost;
                 hiloResultEl.textContent = `Next number was ${next}. You lose ${hiloBetAmount} chips.`;
             }
             balanceEl.textContent = balance;
