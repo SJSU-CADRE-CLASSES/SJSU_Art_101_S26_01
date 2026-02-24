@@ -1187,6 +1187,9 @@
             if (typing) return;
             if (dialogueBox) {
               dialogueBox.classList.add('dialogue-box--hidden');
+              setTimeout(function () {
+                dialogueBox.style.display = 'none';
+              }, 260);
             }
             if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
               return;
