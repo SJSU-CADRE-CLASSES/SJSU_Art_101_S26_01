@@ -172,7 +172,6 @@
         flipBtn.addEventListener('click', () => {
             const bet = Math.floor(Number(betEl.value)) || 0;
             if (bet < 1) { resultEl.textContent = 'Enter a bet of at least 1.'; resultEl.className = 'result'; return; }
-            if (bet > balance) { resultEl.textContent = "You don't have enough chips."; resultEl.className = 'result'; return; }
             if (!choice) { resultEl.textContent = 'Pick heads or tails.'; resultEl.className = 'result'; return; }
 
             const side = Math.random() < 0.5 ? 'heads' : 'tails';
@@ -195,10 +194,6 @@
                 resultEl.className = 'result lose';
             }
             balanceEl.textContent = balance;
-            if (balance <= 0) {
-                resultEl.textContent += ' Game over. Refresh to play again.';
-                flipBtn.disabled = true;
-            }
         });
 
         // Blackjack
@@ -257,7 +252,6 @@
         bjDealBtn.addEventListener('click', () => {
             const bet = Math.floor(Number(bjBetEl.value)) || 0;
             if (bet < 1) { bjResultEl.textContent = 'Enter a bet of at least 1.'; return; }
-            if (bet > balance) { bjResultEl.textContent = "You don't have enough chips."; return; }
             balance -= bet;
             bjBetAmount = bet;
             balanceEl.textContent = balance;
