@@ -42,6 +42,14 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
+.cw-slot.cw-locked .cw-reveal-box {
+  pointer-events: none;
+}
+
+.cw-slot.cw-locked {
+  cursor: not-allowed;
+}
+
 .cw-slot.cw-revealed .cw-reveal-box {
   opacity: 0;
   pointer-events: none;
@@ -166,6 +174,26 @@
 @keyframes cw-stick-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Final image: centered, fades in after 5s */
+.cw-final-image {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 80vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+.cw-final-image.cw-final-visible {
+  opacity: 1;
 }
 
 html:has(body.page-comic-writer) {
