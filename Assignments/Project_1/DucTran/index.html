@@ -21,8 +21,8 @@
   .col .bullet{color:#c00;margin-right:.5rem}
   .col h2{font-size:.95rem;color:#c00;margin:0 0 .75rem 0;text-transform:uppercase;letter-spacing:.08em}
   .center{text-align:center}
-  .pixel-frame{display:inline-block;padding:12px;background:#0a0a0a;border:4px solid #333;box-shadow:inset 0 0 0 2px #222}
-  .pixel-frame img{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+  .pixel-frame{display:inline-block;padding:12px;background:#0a0a0a;border:4px solid #333;box-shadow:inset 0 0 0 2px #222;cursor:crosshair}
+  .pixel-frame svg{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
   .stat-line{font-size:.9rem;margin:.35rem 0;color:#ccc}
   .stat-line strong{color:#c00}
   .foot-stripe{margin-top:3rem;padding-top:1.5rem;border-top:2px solid #c00}
@@ -63,8 +63,24 @@
       </aside>
 
       <div class="col center">
-        <div class="pixel-frame">
-          <img src="images/portrait-pixel.svg" alt="Duc Tran — pixel portrait" width="224" height="224" />
+        <div class="pixel-frame" id="avatar-wrap">
+          <svg id="avatar-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" width="224" height="224" style="image-rendering:pixelated;image-rendering:crisp-edges">
+            <title>Duc Tran — pixel portrait</title>
+            <rect x="0" y="0" width="112" height="112" fill="#2b2d31"/>
+            <rect x="16" y="8" width="80" height="24" fill="#1a1a1a"/>
+            <rect x="8" y="32" width="20" height="20" fill="#1a1a1a"/>
+            <rect x="84" y="32" width="20" height="20" fill="#1a1a1a"/>
+            <rect x="24" y="32" width="64" height="72" fill="#e0b890"/>
+            <rect x="16" y="40" width="12" height="20" fill="#e0b890"/>
+            <rect x="84" y="40" width="12" height="20" fill="#e0b890"/>
+            <rect x="32" y="48" width="48" height="40" fill="#e8c4a0"/>
+            <rect x="24" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <rect x="66" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <rect x="46" y="54" width="20" height="4" fill="#1a1a1a"/>
+            <circle id="pupil-left" cx="35" cy="56" r="3" fill="#1a1a1a"/>
+            <circle id="pupil-right" cx="77" cy="56" r="3" fill="#1a1a1a"/>
+            <rect x="48" y="88" width="4" height="4" fill="#2a2020"/>
+          </svg>
         </div>
         <p style="margin-top:1rem;font-size:.9rem;color:#888">Personal dataset · Art 101 S26</p>
       </div>
@@ -108,6 +124,32 @@
       var msgNum = (n && n.toLocaleString) ? n.toLocaleString() : (n || "0");
       el.innerHTML = "<p class=\"stat-line\"><strong>" + msgNum + "</strong> messages</p><p class=\"stat-line\"><strong>" + (discordPortrait.totalServers || "0") + "</strong> servers</p><p class=\"stat-line\">Active since <strong>" + (discordPortrait.activeSince || "—") + "</strong></p>";
     }
+  })();
+  </script>
+  <script>
+  (function () {
+    var svg = document.getElementById("avatar-svg");
+    var left = document.getElementById("pupil-left");
+    var right = document.getElementById("pupil-right");
+    if (!svg || !left || !right) return;
+    var eyeLeft = { cx: 35, cy: 56 };
+    var eyeRight = { cx: 77, cy: 56 };
+    var range = 3;
+    function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+    function movePupils(e) {
+      var r = svg.getBoundingClientRect();
+      var svgX = (e.clientX - r.left) / r.width * 112;
+      var svgY = (e.clientY - r.top) / r.height * 112;
+      var dxL = clamp((svgX - eyeLeft.cx) * 0.4, -range, range);
+      var dyL = clamp((svgY - eyeLeft.cy) * 0.4, -range, range);
+      var dxR = clamp((svgX - eyeRight.cx) * 0.4, -range, range);
+      var dyR = clamp((svgY - eyeRight.cy) * 0.4, -range, range);
+      left.setAttribute("cx", eyeLeft.cx + dxL);
+      left.setAttribute("cy", eyeLeft.cy + dyL);
+      right.setAttribute("cx", eyeRight.cx + dxR);
+      right.setAttribute("cy", eyeRight.cy + dyR);
+    }
+    document.addEventListener("mousemove", movePupils);
   })();
   </script>
 </body>
