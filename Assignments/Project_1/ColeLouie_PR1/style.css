@@ -21,27 +21,29 @@
   font-style: normal;
 }
 
-.about-page-btn {
+.index-gray-whale {
   position: fixed;
-  top: 1rem;
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
-  font-family: inherit;
-  font-weight: 400;
-  color: #fff;
-  text-decoration: none;
-  border: 1px solid #000;
-  border-radius: 4px;
-  background: #000;
+  transform: translateX(calc(-50% - 50px)) translateY(-100%);
+  max-width: 600px;
+  width: 80%;
+  height: auto;
+  opacity: 0;
+  animation: index-whale-drop 1.5s ease-out forwards;
+  z-index: 5;
+  pointer-events: none;
 }
 
-.about-page-btn:hover {
-  text-decoration: underline;
-  background: #222;
+@keyframes index-whale-drop {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(-50% - 50px)) translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(calc(-50% - 50px)) translateY(120px);
+  }
 }
 
 body {
