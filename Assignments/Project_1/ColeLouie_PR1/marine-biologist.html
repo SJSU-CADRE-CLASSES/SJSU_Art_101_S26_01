@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="MBStyle.css">
 </head>
 <body class="page-marine-biologist">
+  <audio id="marine-bg-music" loop>
+    <source src="Arcana.mp3" type="audio/mpeg">
+  </audio>
+  <button type="button" class="marine-music-btn" aria-label="Play music">music</button>
   <h1 class="marine-title">Marine Biology: The Cetologist</h1>
   <p class="marine-quote">It was always a dream since childhood to work on the ocean...</p>
   <p class="marine-quote-bottom">Endless fascination of a world that humanity has only explored less than 20% of...</p>
@@ -129,6 +133,15 @@
   </button>
   <script>
     (function() {
+      var marineMusic = document.getElementById('marine-bg-music');
+      var musicBtn = document.querySelector('.marine-music-btn');
+      if (musicBtn && marineMusic) {
+        musicBtn.addEventListener('click', function() {
+          marineMusic.play();
+          musicBtn.textContent = 'playing';
+          musicBtn.disabled = true;
+        });
+      }
       var squidBtn = document.getElementById('marine-squid-btn');
       var scrollImg = document.getElementById('marine-scroll');
       var universityZone = document.getElementById('marine-university-zone');

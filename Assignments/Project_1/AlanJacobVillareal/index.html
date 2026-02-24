@@ -179,8 +179,8 @@
             bottom: 0;
             left: 0;
             z-index: 20;
-            width: 360px;
-            height: 360px;
+            width: 120px;
+            height: 120px;
             cursor: pointer;
         }
         .chibi-corner img {
@@ -201,8 +201,23 @@
         .chibi-corner:hover img.chibi-default {
             opacity: 0;
         }
-        .chibi-corner:hover img.chibi-hover {
+        .chibi-corner:hover img.chibi-hover,
+        .chibi-corner.chibi-tour img.chibi-hover {
             opacity: 1;
+        }
+        .chibi-corner.chibi-tour img.chibi-default {
+            opacity: 0;
+        }
+        .chibi-corner.chibi-tour {
+            animation: chibi-corner-tour 6s ease-in-out forwards;
+            pointer-events: none;
+        }
+        @keyframes chibi-corner-tour {
+            0%   { transform: translate(0, 0); }
+            25%  { transform: translate(0, calc(-100vh + 100%)); }
+            50%  { transform: translate(calc(100vw - 100%), calc(-100vh + 100%)); }
+            75%  { transform: translate(calc(100vw - 100%), 0); }
+            100% { transform: translate(0, 0); }
         }
     </style>
 </head>
@@ -228,9 +243,23 @@
         </div>
         <p class="footer">© 2026 · INSERT COIN TO CONTINUE</p>
     </div>
-    <div class="chibi-corner" title="">
+    <div class="chibi-corner" id="chibi-corner" title="Click to run around the corners">
         <img class="chibi-default" src="Twin_Turbo_Chibi1.png" alt="Twin Turbo Chibi">
         <img class="chibi-hover" src="Twin_Turbo_Chibi2.png" alt="Twin Turbo Chibi (hover)">
     </div>
+    <script>
+        (function() {
+            var el = document.getElementById('chibi-corner');
+            if (!el) return;
+            el.addEventListener('click', function() {
+                el.classList.remove('chibi-tour');
+                el.offsetHeight;
+                el.classList.add('chibi-tour');
+            });
+            el.addEventListener('animationend', function() {
+                el.classList.remove('chibi-tour');
+            });
+        })();
+    </script>
 </body>
 </html>
