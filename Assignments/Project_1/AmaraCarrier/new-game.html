@@ -470,8 +470,8 @@
 
     .spirit-animal-canvas {
       margin: 0.8rem 0 0.6rem;
-      width: 220px;
-      height: 180px;
+      width: 320px;
+      height: 240px;
       background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.2), transparent 60%);
       border: 3px solid #000;
       box-shadow:
@@ -927,7 +927,7 @@
           </g>
         `;
 
-        const baseSize = 20 * scale;
+        const baseSize = 40 * scale;
 
         return `
           <svg xmlns="http://www.w3.org/2000/svg"
@@ -936,7 +936,7 @@
                aria-hidden="true">
             <defs>
               <filter id="spiritGlow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="0.7" result="blur" />
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.3" result="blur" />
                 <feColorMatrix in="blur" type="matrix"
                   values="1 0 0 0 0
                           0 1 0 0 0
