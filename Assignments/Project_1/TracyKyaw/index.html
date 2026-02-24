@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Food Calendar ✨</title>
+
+  <!-- Cute Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Baloo+2:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      background: linear-gradient(180deg, #fffde7, #fff9c4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #f4b400;
+      font-size: 42px;
+      margin-bottom: 10px;
+      animation: floatTitle 3s ease-in-out infinite;
+    }
+
+    @keyframes floatTitle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Chart Style Calendar */
+    .chart {
+      background: white;
+      padding: 25px;
+      border-radius: 25px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .chart-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: 26px;
+      color: #ffb300;
+      margin-bottom: 20px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 120px);
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .day-button {
+      font-family: 'Baloo 2', cursive;
+      background: #fff176;
+      border: none;
+      padding: 15px;
+      border-radius: 20px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+    }
+
+    .day-button:hover {
+      background: #ffd54f;
+      transform: scale(1.1);
+    }
+
+    .foods-page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .food-card {
+      background: white;
+      margin: 20px;
+      padding: 15px 15px 25px 15px;
+      border-radius: 20px;
+      width: 300px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      animation: popIn 0.5s ease forwards;
+      transform: rotate(-1deg);
+      transition: transform 0.3s ease;
+    }
+
+    .food-card:nth-child(even) { transform: rotate(1deg); }
+    .food-card:hover { transform: scale(1.05) rotate(0deg); }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .food-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      border: 6px solid;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .food-image:hover {
+      box-shadow: 0 0 25px rgba(255, 200, 0, 0.8);
+      transform: scale(1.03);
+    }
+
+    .border-0 { border-image: linear-gradient(45deg,#ffd6e0,#fff176) 1; }
+    .border-1 { border-image: linear-gradient(45deg,#c8e6c9,#fff176) 1; }
+    .border-2 { border-image: linear-gradient(45deg,#bbdefb,#fff176) 1; }
+    .border-3 { border-image: linear-gradient(45deg,#f8bbd0,#fff176) 1; }
+    .border-4 { border-image: linear-gradient(45deg,#d1c4e9,#fff176) 1; }
+    .border-5 { border-image: linear-gradient(45deg,#b2dfdb,#fff176) 1; }
+    .border-6 { border-image: linear-gradient(45deg,#ffe0b2,#fff176) 1; }
+
+    .back-button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 25px;
+      background-color: #f4b400;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .back-button:hover { transform: scale(1.1); }
+
+  </style>
+</head>
+<body>
+
+<div id="calendar-page" class="container">
+  <h1>Cravings of the Week</h1>
+  <div class="chart">
+    <div class="chart-title">Week of February 16–22</div>
+    <div class="calendar-grid">
+      <button class="day-button" onclick="showFoods(0)">Monday</button>
+      <button class="day-button" onclick="showFoods(1)">Tuesday</button>
+      <button class="day-button" onclick="showFoods(2)">Wednesday</button>
+      <button class="day-button" onclick="showFoods(3)">Thursday</button>
+      <button class="day-button" onclick="showFoods(4)">Friday</button>
+      <button class="day-button" onclick="showFoods(5)">Saturday</button>
+      <button class="day-button" onclick="showFoods(6)">Sunday</button>
+    </div>
+  </div>
+</div>
+
+<div id="foods-page" class="foods-page">
+  <h1 id="foods-title"></h1>
+  <div id="foods-list"></div>
+  <button class="back-button" onclick="goBack()">⬅ Back</button>
+</div>
+
+<script>
+// Load saved data from localStorage if available
+const savedWeek = localStorage.getItem("weeklyFoodData");
+
+const defaultWeek = [
+  { date: "Monday", foods: [
+    { name: "HeyTea Cloud Mango", image: "cloudmango.jpeg", satisfied: false },
+    { name: "Mashed Potatoes", image: "mashedpotatoes.jpg.avif", satisfied: false }
+  ]},
+  { date: "Tuesday", foods: [
+    { name: "Mcdonalds Fries", image: "fries.jpg", satisfied: false },
+    { name: "Banana Latte", image: "bananalatte.jpg", satisfied: false }
+  ]},
+  { date: "Wednesday", foods: [
+    { name: "Caramal Frappe", image: "frappe.jpg.avif", satisfied: false },
+    { name: "Tonkotsu Ramen", image: "ramen.jpg.avif", satisfied: false }
+  ]},
+  { date: "Thursday", foods: [
+    { name: "Strawberry Banana Smoothie", image: "smoothie.jpg.avif", satisfied: false },
+    { name: "Tuna Poke Bowl", image: "pokebowl.jpg.avif", satisfied: false }
+  ]},
+  { date: "Friday", foods: [
+    { name: "Mushroom and Pineapple Pizza", image: "pizza.jpg", satisfied: false },
+    { name: "Ume Tea Mango Pomelo Sago", image: "slushies.webp", satisfied: false }
+  ]},
+  { date: "Saturday", foods: [
+    { name: "Poke Bowl", image: "pokebowl1.jpg.avif", satisfied: false },
+    { name: "Lemonade", image: "lemonade.jpg.avif", satisfied: false }
+  ]},
+  { date: "Sunday", foods: [
+    { name: "HeyTea Cloud Mango", image: "cloudmango.jpeg", satisfied: false },
+    { name: "Mashed Potatoes", image: "mashedpotatoes.jpg.avif", satisfied: false }
+  ]}
+];
+
+const week = savedWeek ? JSON.parse(savedWeek) : defaultWeek;
+
+// Ensure Monday matches placeholders even with saved data
+(() => {
+  const monday = week.find((d) => (d?.date || "").toLowerCase() === "monday");
+  if (!monday || !Array.isArray(monday.foods)) return;
+  if (!monday.foods[0]) monday.foods[0] = { name: "", image: "", satisfied: false };
+  if (!monday.foods[1]) monday.foods[1] = { name: "", image: "", satisfied: false };
+  monday.foods[0].name = "HeyTea Cloud Mango";
+  monday.foods[0].image = "cloudmango.jpeg";
+  monday.foods[1].name = "Mashed Potatoes";
+  monday.foods[1].image = "mashedpotatoes.jpg.avif";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+// Ensure Tuesday's first food uses fries.jpg even with saved data
+(() => {
+  const tuesday = week.find((d) => (d?.date || "").toLowerCase() === "tuesday");
+  if (!tuesday || !Array.isArray(tuesday.foods) || !tuesday.foods[0]) return;
+  if (!tuesday.foods[1]) tuesday.foods[1] = { name: "", image: "", satisfied: false };
+  tuesday.foods[0].name = "Mcdonalds Fries";
+  tuesday.foods[0].image = "fries.jpg";
+  tuesday.foods[1].name = "Banana Latte";
+  tuesday.foods[1].image = "bananalatte.jpg";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+// Ensure Wednesday placeholders even with saved data
+(() => {
+  const wednesday = week.find((d) => (d?.date || "").toLowerCase() === "wednesday");
+  if (!wednesday || !Array.isArray(wednesday.foods)) return;
+  if (!wednesday.foods[0]) wednesday.foods[0] = { name: "", image: "", satisfied: false };
+  if (!wednesday.foods[1]) wednesday.foods[1] = { name: "", image: "", satisfied: false };
+  wednesday.foods[0].name = "Caramal Frappe";
+  wednesday.foods[0].image = "frappe.jpg.avif";
+  wednesday.foods[1].name = "Tonkotsu Ramen";
+  wednesday.foods[1].image = "ramen.jpg.avif";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+// Ensure Thursday placeholders even with saved data
+(() => {
+  const thursday = week.find((d) => (d?.date || "").toLowerCase() === "thursday");
+  if (!thursday || !Array.isArray(thursday.foods)) return;
+  if (!thursday.foods[0]) thursday.foods[0] = { name: "", image: "", satisfied: false };
+  if (!thursday.foods[1]) thursday.foods[1] = { name: "", image: "", satisfied: false };
+  thursday.foods[0].name = "Strawberry Banana Smoothie";
+  thursday.foods[0].image = "smoothie.jpg.avif";
+  thursday.foods[1].name = "Tuna Poke Bowl";
+  thursday.foods[1].image = "pokebowl.jpg.avif";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+// Ensure Friday placeholders even with saved data
+(() => {
+  const friday = week.find((d) => (d?.date || "").toLowerCase() === "friday");
+  if (!friday || !Array.isArray(friday.foods)) return;
+  if (!friday.foods[0]) friday.foods[0] = { name: "", image: "", satisfied: false };
+  if (!friday.foods[1]) friday.foods[1] = { name: "", image: "", satisfied: false };
+  friday.foods[0].name = "Mushroom and Pineapple Pizza";
+  friday.foods[0].image = "pizza.jpg";
+  friday.foods[1].name = "Ume Tea Mango Pomelo Sago";
+  friday.foods[1].image = "slushies.webp";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+// Ensure Saturday placeholders even with saved data
+(() => {
+  const saturday = week.find((d) => (d?.date || "").toLowerCase() === "saturday");
+  if (!saturday || !Array.isArray(saturday.foods)) return;
+  if (!saturday.foods[0]) saturday.foods[0] = { name: "", image: "", satisfied: false };
+  if (!saturday.foods[1]) saturday.foods[1] = { name: "", image: "", satisfied: false };
+  saturday.foods[0].name = "Poke Bowl";
+  saturday.foods[0].image = "pokebowl1.jpg.avif";
+  saturday.foods[1].name = "Lemonade";
+  saturday.foods[1].image = "lemonade.jpg.avif";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+// Ensure Sunday matches Monday placeholders even with saved data
+(() => {
+  const sunday = week.find((d) => (d?.date || "").toLowerCase() === "sunday");
+  if (!sunday || !Array.isArray(sunday.foods)) return;
+  if (!sunday.foods[0]) sunday.foods[0] = { name: "", image: "", satisfied: false };
+  if (!sunday.foods[1]) sunday.foods[1] = { name: "", image: "", satisfied: false };
+  sunday.foods[0].name = "HeyTea Cloud Mango";
+  sunday.foods[0].image = "cloudmango.jpeg";
+  sunday.foods[1].name = "Mashed Potatoes";
+  sunday.foods[1].image = "mashedpotatoes.jpg.avif";
+  localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+})();
+
+function showFoods(index) {
+  document.getElementById("calendar-page").style.display = "none";
+  const foodsPage = document.getElementById("foods-page");
+  foodsPage.style.display = "flex";
+
+  document.getElementById("foods-title").innerText = week[index].date + " 🍯";
+
+  const foodsList = document.getElementById("foods-list");
+  foodsList.innerHTML = "";
+
+  week[index].foods.forEach((food, i) => {
+    const card = document.createElement("div");
+    card.className = "food-card";
+
+    const img = document.createElement("img");
+    img.src = food.image;
+    img.alt = food.name;
+    img.className = "food-image border-" + index;
+
+    const name = document.createElement("div");
+    name.innerText = "🍽 " + food.name;
+
+    // Craving satisfied checkbox
+    const checkboxContainer = document.createElement("div");
+    checkboxContainer.style.marginTop = "10px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "check-" + index + "-" + i;
+
+    const label = document.createElement("label");
+    label.htmlFor = checkbox.id;
+    label.innerText = " Craving satisfied?";
+    label.style.fontFamily = "'Baloo 2', cursive";
+    label.style.fontSize = "16px";
+
+        // Restore saved state
+    checkbox.checked = food.satisfied;
+
+    // Save state when changed
+    checkbox.addEventListener("change", function() {
+      week[index].foods[i].satisfied = this.checked;
+      localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+    });
+
+    checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(label);
+
+    card.appendChild(img);
+    card.appendChild(name);
+    card.appendChild(checkboxContainer);
+    foodsList.appendChild(card);
+  });
+}
+
+function goBack() {
+  document.getElementById("calendar-page").style.display = "flex";
+  document.getElementById("foods-page").style.display = "none";
+}
+</script>
+
+</body>
+</html>
