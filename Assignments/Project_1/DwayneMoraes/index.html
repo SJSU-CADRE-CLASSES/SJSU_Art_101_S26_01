@@ -3,9 +3,1034 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dwayne Moraes - Project 1</title>
+    <title>Dwayne Moraes - 3 Cups a Day</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --espresso: #2c1810;
+            --coffee: #3d2318;
+            --crema: #8b6914;
+            --milk: #f5e6d3;
+            --cup: #e8d5c4;
+            --shadow: #1a0f0a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(165deg, #1a0f0a 0%, #2c1810 40%, #3d2318 100%);
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--milk);
+            overflow-x: hidden;
+        }
+
+        /* Dripping background decoration */
+        .drip-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .drip {
+            position: absolute;
+            width: 12px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--crema), var(--coffee));
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0.4;
+            animation: drip-fall 8s ease-in infinite;
+        }
+
+        .drip:nth-child(1) { left: 8%; animation-delay: 0s; }
+        .drip:nth-child(2) { left: 25%; animation-delay: 2s; }
+        .drip:nth-child(3) { left: 50%; animation-delay: 1s; }
+        .drip:nth-child(4) { left: 75%; animation-delay: 3s; }
+        .drip:nth-child(5) { left: 92%; animation-delay: 1.5s; }
+        .drip:nth-child(6) { left: 15%; animation-delay: 4s; top: -20px; }
+        .drip:nth-child(7) { left: 60%; animation-delay: 5s; top: -20px; }
+        .drip:nth-child(8) { left: 88%; animation-delay: 2.5s; top: -20px; }
+
+        @keyframes drip-fall {
+            0% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(100vh) scale(1.2); opacity: 0; }
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            color: var(--crema);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Pour animation overlay */
+        .pour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+        }
+
+        .pour-overlay.active {
+            animation: pour-flash 1.2s ease-out forwards;
+        }
+
+        @keyframes pour-flash {
+            0% { opacity: 0; }
+            15% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .pour-stream {
+            position: absolute;
+            left: 50%;
+            top: -20%;
+            width: 24px;
+            height: 0;
+            background: linear-gradient(to bottom, var(--crema), var(--coffee));
+            border-radius: 0 0 12px 12px;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px var(--crema);
+        }
+
+        .pour-overlay.active .pour-stream {
+            animation: pour-down 1s ease-in forwards;
+        }
+
+        @keyframes pour-down {
+            0% { height: 0; opacity: 1; }
+            70% { height: 80vh; opacity: 0.9; }
+            100% { height: 100vh; opacity: 0; }
+        }
+
+        .cup-fill {
+            width: 120px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            background: linear-gradient(180deg, transparent 0%, var(--cup) 15%, var(--cup) 85%, var(--shadow) 100%);
+            border-radius: 0 0 20px 20px;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3), 0 6px 16px var(--shadow);
+        }
+
+        .cup-fill .liquid {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            height: 0%;
+            background: linear-gradient(180deg, var(--crema), var(--coffee));
+            border-radius: 0 0 14px 14px;
+            transition: height 0.6s ease-out;
+        }
+
+        .daily-total {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .daily-total .number {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--crema);
+        }
+
+        .daily-total .unit {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .add-form {
+            background: rgba(44, 24, 16, 0.7);
+            border: 1px solid rgba(139, 105, 20, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-form h2 {
+            font-size: 0.9rem;
+            color: var(--crema);
+            margin: 0 0 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        @media (max-width: 420px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--espresso);
+            border: 1px solid rgba(139, 105, 20, 0.4);
+            border-radius: 6px;
+            color: var(--milk);
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--crema);
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            background: linear-gradient(180deg, var(--crema), var(--coffee));
+            border: none;
+            border-radius: 8px;
+            color: var(--espresso);
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 105, 20, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--crema);
+            font-size: 0.8rem;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(139, 105, 20, 0.2);
+        }
+
+        .entries-section h2 {
+            font-size: 0.9rem;
+            color: var(--crema);
+            margin: 0 0 0.75rem;
+        }
+
+        .entries-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .entry {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(44, 24, 16, 0.5);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(139, 105, 20, 0.2);
+            animation: entry-in 0.3s ease-out;
+        }
+
+        @keyframes entry-in {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .entry-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .entry-name {
+            font-weight: 600;
+            color: var(--milk);
+        }
+
+        .entry-meta {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .entry-mg {
+            color: var(--crema);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .entry-actions button {
+            padding: 0.35rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Game: 3 cups goal */
+        .game-goal {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .game-goal .label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .cups-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cup-slot {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(180deg, var(--cup) 0%, var(--shadow) 100%);
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(139, 105, 20, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cup-slot.filled .cup-liquid {
+            height: 75%;
+        }
+
+        .cup-slot.filled {
+            border-color: var(--crema);
+            box-shadow: 0 0 12px rgba(139, 105, 20, 0.5);
+        }
+
+        .cup-slot.win {
+            animation: cup-glow 0.6s ease-out;
+        }
+
+        @keyframes cup-glow {
+            0%, 100% { box-shadow: 0 0 12px rgba(139, 105, 20, 0.5); }
+            50% { box-shadow: 0 0 24px var(--crema), 0 0 32px rgba(139, 105, 20, 0.8); transform: scale(1.08); }
+        }
+
+        .cup-slot .cup-liquid {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            right: 4px;
+            height: 0%;
+            background: linear-gradient(180deg, var(--crema), var(--coffee));
+            border-radius: 0 0 6px 6px;
+            transition: height 0.4s ease-out;
+        }
+
+        .goal-status {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--crema);
+            min-height: 1.4em;
+        }
+
+        .goal-status.win {
+            color: #c9a227;
+            animation: pulse-text 1s ease-in-out 3;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
+        }
+
+        /* Celebration */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .celebration.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .celebration-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(139, 105, 20, 0.25) 0%, transparent 70%);
+        }
+
+        .celebration-msg {
+            position: relative;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(44, 24, 16, 0.95);
+            border: 2px solid var(--crema);
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(139, 105, 20, 0.4);
+            max-width: 320px;
+        }
+
+        .celebration-msg h2 {
+            font-family: 'DM Serif Display', serif;
+            color: var(--crema);
+            margin: 0 0 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .celebration-msg p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .confetti.c1 { background: var(--crema); }
+        .confetti.c2 { background: var(--milk); }
+        .confetti.c3 { background: var(--coffee); }
+
+        .streak-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.35rem 0.75rem;
+            background: rgba(139, 105, 20, 0.3);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: var(--crema);
+        }
+
+        /* Interactive pour minigame */
+        .minigame {
+            background: rgba(26, 15, 10, 0.6);
+            border: 2px solid rgba(139, 105, 20, 0.4);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .minigame-instruction {
+            font-size: 0.85rem;
+            color: var(--crema);
+            margin-bottom: 1rem;
+        }
+
+        .minigame-instruction kbd {
+            background: rgba(139, 105, 20, 0.4);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .pour-zone {
+            position: relative;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 0.5rem;
+        }
+
+        .pot {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 56px;
+            height: 48px;
+            background: linear-gradient(180deg, #4a3728 0%, #2c1810 100%);
+            border-radius: 8px 8px 4px 4px;
+            border: 2px solid rgba(139, 105, 20, 0.5);
+            transition: transform 0.15s ease-out;
+        }
+
+        .pot::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 12px;
+            background: linear-gradient(180deg, #5a4738, #3d2318);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .pot.pouring {
+            transform: translateX(-50%) rotate(-25deg);
+        }
+
+        .pour-stream-game {
+            position: absolute;
+            left: 50%;
+            top: 44px;
+            width: 14px;
+            height: 0;
+            background: linear-gradient(to bottom, var(--crema), var(--coffee));
+            border-radius: 0 0 7px 7px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.1s;
+            pointer-events: none;
+        }
+
+        .pot.pouring + .pour-stream-game {
+            height: 80px;
+            opacity: 0.9;
+        }
+
+        .game-cup-wrap {
+            position: relative;
+            width: 100px;
+            height: 120px;
+            flex-shrink: 0;
+        }
+
+        .game-cup {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, var(--cup) 12%, var(--cup) 88%, var(--shadow) 100%);
+            border-radius: 0 0 16px 16px;
+            box-shadow: inset 0 -8px 16px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        .game-cup .target-zone {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            bottom: 8px;
+            height: 35%;
+            background: rgba(80, 180, 80, 0.35);
+            border: 2px dashed rgba(100, 220, 100, 0.8);
+            border-radius: 0 0 10px 10px;
+            pointer-events: none;
+        }
+
+        .game-cup .game-liquid {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            bottom: 8px;
+            height: 0%;
+            background: linear-gradient(180deg, var(--crema), var(--coffee));
+            border-radius: 0 0 10px 10px;
+            transition: height 0.05s linear;
+        }
+
+        .game-cup .game-liquid.overflow {
+            background: linear-gradient(180deg, #6b2a2a, #4a1818);
+        }
+
+        .minigame-feedback {
+            min-height: 1.8em;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+        }
+
+        .minigame-feedback.good {
+            color: #7acc7a;
+        }
+
+        .minigame-feedback.bad {
+            color: #e08080;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .minigame .play-hint {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+    </style>
 </head>
 <body>
+    <div class="drip-container" aria-hidden="true">
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+    </div>
 
+    <div class="pour-overlay" id="pourOverlay" aria-hidden="true">
+        <div class="pour-stream"></div>
+    </div>
+
+    <div class="celebration" id="celebration" aria-live="polite">
+        <div class="celebration-bg"></div>
+        <div class="celebration-msg">
+            <h2>☕ Perfect day!</h2>
+            <p>You hit your 3 cups. You're on your A-game.</p>
+        </div>
+    </div>
+
+    <main>
+        <h1>3 Cups a Day</h1>
+        <p class="subtitle">Your daily coffee game · Hit 3 cups to win</p>
+
+        <section class="game-goal">
+            <div class="label">Today's cups</div>
+            <div class="cups-row" id="cupsRow" aria-label="Cups progress">
+                <div class="cup-slot" id="cup1"><div class="cup-liquid"></div></div>
+                <div class="cup-slot" id="cup2"><div class="cup-liquid"></div></div>
+                <div class="cup-slot" id="cup3"><div class="cup-liquid"></div></div>
+            </div>
+            <div class="goal-status" id="goalStatus">0/3 — pour your first cup</div>
+            <div class="streak-badge" id="streakBadge" style="display: none;"></div>
+        </section>
+
+        <section class="minigame" id="minigame">
+            <p class="minigame-instruction">Hold <kbd>mouse</kbd> or <kbd>tap</kbd> to pour. Fill the cup to the <span style="color:#7acc7a">green zone</span> — not too little, not too much!</p>
+            <div class="pour-zone" id="pourZone">
+                <div class="pot" id="pot"></div>
+                <div class="pour-stream-game" aria-hidden="true"></div>
+                <div class="game-cup-wrap">
+                    <div class="game-cup">
+                        <div class="target-zone" aria-hidden="true"></div>
+                        <div class="game-liquid" id="gameLiquid"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="minigame-feedback" id="minigameFeedback"></div>
+            <p class="play-hint">Cup <span id="gameCupNum">1</span> of 3</p>
+        </section>
+
+        <div class="cup-fill">
+            <div class="liquid" id="cupLiquid"></div>
+        </div>
+        <div class="daily-total">
+            <span class="number" id="totalMg">0</span>
+            <span class="unit"> mg caffeine today</span>
+        </div>
+
+        <section class="add-form">
+            <h2>Pour a cup</h2>
+            <form id="addForm">
+                <div class="form-row">
+                    <div>
+                        <label for="drinkType">Drink</label>
+                        <select id="drinkType" required>
+                            <option value="">Choose...</option>
+                            <option value="Espresso" data-mg="64">Espresso (64 mg)</option>
+                            <option value="Drip coffee" data-mg="95">Drip coffee (95 mg)</option>
+                            <option value="Americano" data-mg="77">Americano (77 mg)</option>
+                            <option value="Latte" data-mg="77">Latte (77 mg)</option>
+                            <option value="Cappuccino" data-mg="77">Cappuccino (77 mg)</option>
+                            <option value="Cold brew" data-mg="100">Cold brew (~100 mg)</option>
+                            <option value="Black tea" data-mg="47">Black tea (47 mg)</option>
+                            <option value="Green tea" data-mg="28">Green tea (28 mg)</option>
+                            <option value="Energy drink" data-mg="80">Energy drink (~80 mg)</option>
+                            <option value="Soda (cola)" data-mg="34">Soda / cola (34 mg)</option>
+                            <option value="Custom" data-mg="">Custom</option>
+                        </select>
+                    </div>
+                    <div id="customMgWrap" style="display: none;">
+                        <label for="customMg">Mg caffeine</label>
+                        <input type="number" id="customMg" min="1" max="500" placeholder="mg">
+                    </div>
+                    <div>
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn">Add</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section class="entries-section">
+            <h2>Today's cups</h2>
+            <ul class="entries-list" id="entriesList"></ul>
+            <p class="empty-state" id="emptyState">No drinks logged yet. Add one above.</p>
+        </section>
+    </main>
+
+    <script>
+        const STORAGE_KEY = 'caffeine_db_dwayne';
+        const STREAK_KEY = 'caffeine_streak_dwayne';
+        const MAX_CUP_MG = 400;
+        const GOAL_CUPS = 3;
+
+        const POUR_SPEED = 1.8;
+        const TARGET_LOW = 50;
+        const TARGET_HIGH = 88;
+        const OVERFLOW = 98;
+
+        function today() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function yesterday() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function loadEntries() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                const data = raw ? JSON.parse(raw) : {};
+                return data;
+            } catch {
+                return {};
+            }
+        }
+
+        function saveEntries(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function getTodayEntries() {
+            const data = loadEntries();
+            const key = today();
+            return Array.isArray(data[key]) ? data[key] : [];
+        }
+
+        function setTodayEntries(entries) {
+            const data = loadEntries();
+            data[today()] = entries;
+            saveEntries(data);
+        }
+
+        function getStreak() {
+            try {
+                const raw = localStorage.getItem(STREAK_KEY);
+                return raw ? JSON.parse(raw) : { count: 0, lastDate: null };
+            } catch {
+                return { count: 0, lastDate: null };
+            }
+        }
+
+        function setStreak(count, date) {
+            localStorage.setItem(STREAK_KEY, JSON.stringify({ count, lastDate: date }));
+        }
+
+        function triggerPour() {
+            const overlay = document.getElementById('pourOverlay');
+            overlay.classList.remove('active');
+            void overlay.offsetWidth;
+            overlay.classList.add('active');
+            setTimeout(() => overlay.classList.remove('active'), 1200);
+        }
+
+        function showCelebration() {
+            const el = document.getElementById('celebration');
+            el.classList.add('active');
+            setTimeout(() => el.classList.remove('active'), 2500);
+        }
+
+        const GOAL_MESSAGES = [
+            '0/3 — pour your first cup',
+            '1/3 — two to go!',
+            '2/3 — one more cup!',
+            '3/3 — You did it!'
+        ];
+
+        function render() {
+            const entries = getTodayEntries();
+            const total = entries.reduce((sum, e) => sum + (e.mg || 0), 0);
+            const cups = Math.min(entries.length, GOAL_CUPS);
+
+            document.getElementById('totalMg').textContent = total;
+            const liquid = document.getElementById('cupLiquid');
+            const pct = Math.min(100, (total / MAX_CUP_MG) * 100);
+            liquid.style.height = pct + '%';
+
+            for (let i = 1; i <= GOAL_CUPS; i++) {
+                const slot = document.getElementById('cup' + i);
+                if (i <= cups) {
+                    slot.classList.add('filled');
+                    if (cups === GOAL_CUPS) slot.classList.add('win');
+                } else {
+                    slot.classList.remove('filled', 'win');
+                }
+            }
+
+            const goalStatus = document.getElementById('goalStatus');
+            goalStatus.textContent = GOAL_MESSAGES[cups];
+            if (cups === GOAL_CUPS) goalStatus.classList.add('win'); else goalStatus.classList.remove('win');
+
+            const streakData = getStreak();
+            const streakBadge = document.getElementById('streakBadge');
+            if (streakData.count > 0) {
+                streakBadge.style.display = 'inline-block';
+                streakBadge.textContent = streakData.count === 1 ? '1 day streak!' : streakData.count + ' day streak!';
+            } else {
+                streakBadge.style.display = 'none';
+            }
+
+            const list = document.getElementById('entriesList');
+            const empty = document.getElementById('emptyState');
+            list.innerHTML = '';
+
+            if (entries.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            entries.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.className = 'entry';
+                li.innerHTML = `
+                    <div class="entry-info">
+                        <span class="entry-name">${escapeHtml(entry.name)}</span>
+                        <div class="entry-meta">${entry.time || ''}</div>
+                    </div>
+                    <span class="entry-mg">${entry.mg} mg</span>
+                    <div class="entry-actions">
+                        <button type="button" class="btn btn-ghost" data-delete="${index}" aria-label="Delete">Delete</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+
+            document.querySelectorAll('[data-delete]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const i = parseInt(btn.getAttribute('data-delete'), 10);
+                    const entries = getTodayEntries();
+                    entries.splice(i, 1);
+                    setTodayEntries(entries);
+                    render();
+                });
+            });
+
+            if (typeof updateGameCupNum === 'function') updateGameCupNum();
+        }
+
+        function escapeHtml(s) {
+            const div = document.createElement('div');
+            div.textContent = s;
+            return div.innerHTML;
+        }
+
+        function getMgForSelection() {
+            const sel = document.getElementById('drinkType');
+            const opt = sel.options[sel.selectedIndex];
+            const custom = document.getElementById('customMgWrap').style.display !== 'none';
+            if (custom) {
+                const v = parseInt(document.getElementById('customMg').value, 10);
+                return isNaN(v) ? 0 : Math.max(0, v);
+            }
+            return parseInt(opt?.dataset?.mg || '0', 10) || 0;
+        }
+
+        document.getElementById('drinkType').addEventListener('change', () => {
+            const wrap = document.getElementById('customMgWrap');
+            wrap.style.display = document.getElementById('drinkType').value === 'Custom' ? 'block' : 'none';
+        });
+
+        document.getElementById('addForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const sel = document.getElementById('drinkType');
+            const name = sel.value;
+            if (!name) return;
+            const mg = getMgForSelection();
+            if (mg <= 0 && name === 'Custom') return;
+
+            const entries = getTodayEntries();
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            entries.push({ name, mg, time: timeStr });
+            setTodayEntries(entries);
+
+            triggerPour();
+            const cupCount = entries.length;
+
+            if (cupCount === GOAL_CUPS) {
+                const streak = getStreak();
+                const todayStr = today();
+                const yesterdayStr = yesterday();
+                if (streak.lastDate === yesterdayStr) {
+                    setStreak(streak.count + 1, todayStr);
+                } else if (streak.lastDate !== todayStr) {
+                    setStreak(1, todayStr);
+                }
+                showCelebration();
+            }
+
+            render();
+
+            sel.value = '';
+            document.getElementById('customMg').value = '';
+            document.getElementById('customMgWrap').style.display = 'none';
+        });
+
+        render();
+
+        // —— Interactive pour minigame ——
+        const pourZone = document.getElementById('pourZone');
+        const pot = document.getElementById('pot');
+        const gameLiquid = document.getElementById('gameLiquid');
+        const minigameFeedback = document.getElementById('minigameFeedback');
+        const gameCupNumEl = document.getElementById('gameCupNum');
+
+        let pourLevel = 0;
+        let isPouring = false;
+        let rafId = null;
+
+        function setGameLiquid(pct) {
+            pourLevel = Math.min(100, Math.max(0, pct));
+            gameLiquid.style.height = pourLevel + '%';
+            gameLiquid.classList.toggle('overflow', pourLevel >= OVERFLOW);
+        }
+
+        function stopPouring() {
+            if (!isPouring) return;
+            isPouring = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+            pot.classList.remove('pouring');
+
+            const entries = getTodayEntries();
+            if (pourLevel >= TARGET_LOW && pourLevel <= TARGET_HIGH) {
+                minigameFeedback.textContent = 'Perfect pour!';
+                minigameFeedback.className = 'minigame-feedback good';
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                entries.push({ name: 'Pour game', mg: 95, time: timeStr });
+                setTodayEntries(entries);
+                if (entries.length === GOAL_CUPS) {
+                    const streak = getStreak();
+                    const todayStr = today();
+                    const yesterdayStr = yesterday();
+                    if (streak.lastDate === yesterdayStr) setStreak(streak.count + 1, todayStr);
+                    else if (streak.lastDate !== todayStr) setStreak(1, todayStr);
+                    showCelebration();
+                }
+                render();
+                setGameLiquid(0);
+                setTimeout(() => { minigameFeedback.textContent = ''; minigameFeedback.className = 'minigame-feedback'; }, 1200);
+            } else if (pourLevel >= OVERFLOW) {
+                minigameFeedback.textContent = 'Overflow! Try again.';
+                minigameFeedback.className = 'minigame-feedback bad';
+                setTimeout(() => { setGameLiquid(0); minigameFeedback.textContent = ''; minigameFeedback.className = 'minigame-feedback'; }, 800);
+            } else {
+                minigameFeedback.textContent = 'Not enough! Hold longer.';
+                minigameFeedback.className = 'minigame-feedback bad';
+                setTimeout(() => { setGameLiquid(0); minigameFeedback.textContent = ''; minigameFeedback.className = 'minigame-feedback'; }, 800);
+            }
+        }
+
+        function pourStep() {
+            if (!isPouring) return;
+            setGameLiquid(pourLevel + POUR_SPEED);
+            if (pourLevel >= 100) stopPouring();
+            else rafId = requestAnimationFrame(pourStep);
+        }
+
+        function startPouring() {
+            if (isPouring) return;
+            const entries = getTodayEntries();
+            if (entries.length >= GOAL_CUPS) return;
+            isPouring = true;
+            pot.classList.add('pouring');
+            rafId = requestAnimationFrame(pourStep);
+        }
+
+        pourZone.addEventListener('pointerdown', (e) => { e.preventDefault(); startPouring(); });
+        pourZone.addEventListener('pointerup', stopPouring);
+        pourZone.addEventListener('pointerleave', stopPouring);
+        pourZone.addEventListener('pointercancel', stopPouring);
+
+        function updateGameCupNum() {
+            const n = getTodayEntries().length;
+            gameCupNumEl.textContent = Math.min(n + 1, 3);
+        }
+        updateGameCupNum();
+    </script>
 </body>
 </html>

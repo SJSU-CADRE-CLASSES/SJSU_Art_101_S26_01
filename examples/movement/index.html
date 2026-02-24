@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediaPipe Skeletal Tracking</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1a1a2e;
+      font-family: system-ui, sans-serif;
+      color: #eee;
+      padding: 1rem;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .main {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .container {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      flex-shrink: 0;
+    }
+    #video {
+      display: block;
+      transform: scaleX(-1);
+      width: 100%;
+      max-width: 640px;
+    }
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(-1);
+      pointer-events: none;
+    }
+    .data-panel {
+      background: #16213e;
+      border-radius: 12px;
+      padding: 1rem;
+      min-width: 280px;
+      max-width: 320px;
+      max-height: 70vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .data-panel h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #00ff88;
+    }
+    .data-list {
+      overflow-y: auto;
+      font-size: 0.75rem;
+      font-family: ui-monospace, monospace;
+    }
+    .landmark-row {
+      display: grid;
+      grid-template-columns: 4.5em 1fr;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      align-items: baseline;
+    }
+    .landmark-row .name { color: #aaa; }
+    .landmark-row .vals { color: #8f8; word-break: break-all; }
+    .landmark-row.low-vis .vals { color: #666; }
+    .status {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>MediaPipe Skeletal Tracking</h1>
+  <div class="main">
+    <div class="container">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+    </div>
+    <div class="data-panel">
+      <h2>Landmarks (realtime)</h2>
+      <div class="data-list" id="dataList"></div>
+    </div>
+  </div>
+  <p class="status" id="status">Starting camera…</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const dataListEl = document.getElementById('dataList');
+
+    // MediaPipe Pose landmark names (33 points)
+    const LANDMARK_NAMES = [
+      'nose', 'left_eye_inner', 'left_eye', 'left_eye_outer', 'right_eye_inner', 'right_eye', 'right_eye_outer',
+      'left_ear', 'right_ear', 'mouth_left', 'mouth_right',
+      'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow', 'left_wrist', 'right_wrist',
+      'left_pinky', 'right_pinky', 'left_index', 'right_index', 'left_thumb', 'right_thumb',
+      'left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle',
+      'left_heel', 'right_heel', 'left_foot_index', 'right_foot_index'
+    ];
+
+    function formatNum(n) { return n == null ? '—' : n.toFixed(3); }
+
+    function updateDataPanel(landmarks) {
+      if (!landmarks) {
+        dataListEl.innerHTML = '<div class="landmark-row"><span class="name">—</span><span class="vals">No pose</span></div>';
+        return;
+      }
+      dataListEl.innerHTML = landmarks.map((lm, i) => {
+        const name = LANDMARK_NAMES[i] ?? `#${i}`;
+        const vis = lm.visibility != null ? lm.visibility : 1;
+        const lowVis = vis < 0.5;
+        const text = `x: ${formatNum(lm.x)} y: ${formatNum(lm.y)} z: ${formatNum(lm.z)} vis: ${formatNum(vis)}`;
+        return `<div class="landmark-row ${lowVis ? 'low-vis' : ''}" data-i="${i}">
+          <span class="name">${name}</span>
+          <span class="vals">${text}</span>
+        </div>`;
+      }).join('');
+    }
+
+    // Skeleton connections: pairs of landmark indices to draw lines between
+    const POSE_CONNECTIONS = [
+      [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],  // arms
+      [11, 23], [12, 24], [23, 24],                        // torso
+      [23, 25], [25, 27], [24, 26], [26, 28],             // legs
+      [0, 1], [1, 2], [2, 3], [3, 7], [0, 4], [4, 5], [5, 6], [6, 8],  // face
+      [9, 10],                                             // mouth
+    ];
+
+    function drawConnectors(landmarks) {
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (const [i, j] of POSE_CONNECTIONS) {
+        const a = landmarks[i];
+        const b = landmarks[j];
+        if (a && b && a.visibility > 0.5 && b.visibility > 0.5) {
+          ctx.moveTo(a.x * canvas.width, a.y * canvas.height);
+          ctx.lineTo(b.x * canvas.width, b.y * canvas.height);
+        }
+      }
+      ctx.stroke();
+    }
+
+    function drawLandmarks(landmarks) {
+      ctx.fillStyle = '#00ff88';
+      for (const lm of landmarks) {
+        if (lm.visibility > 0.5) {
+          ctx.beginPath();
+          ctx.arc(lm.x * canvas.width, lm.y * canvas.height, 4, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+      }
+    }
+
+    async function main() {
+      const pose = new Pose({
+        locateFile: (file) =>
+          `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+      });
+
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      pose.onResults((results) => {
+        const landmarks = results.poseLandmarks;
+        updateDataPanel(landmarks);
+        if (!landmarks) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawConnectors(landmarks);
+        drawLandmarks(landmarks);
+      });
+
+      // Match canvas size to video
+      function resize() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+      video.addEventListener('loadedmetadata', resize);
+
+      // Start webcam and run detection
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480, facingMode: 'user' },
+        });
+        video.srcObject = stream;
+        await video.play();
+        resize();
+        statusEl.textContent = 'Tracking… Move to see skeleton.';
+      } catch (err) {
+        statusEl.textContent = 'Camera error: ' + err.message;
+        return;
+      }
+
+      async function detect() {
+        if (video.readyState < 2) {
+          requestAnimationFrame(detect);
+          return;
+        }
+        await pose.send({ image: video });
+        requestAnimationFrame(detect);
+      }
+      detect();
+    }
+
+    main();
+  </script>
+</body>
+</html>

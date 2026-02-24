@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arm reveal — scroll to see it take shape</title>
+  <link href="https://fonts.cdnfonts.com/css/vcr-osd-mono" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,13 +14,135 @@
       <div class="points-layer" id="pointsLayer"></div>
     </div>
   </div>
-  <p class="hint" id="hint">Scroll down to watch the points form the shape</p>
+  <p class="hint" id="hint">Scroll down</p>
+  <p class="click-star-hint" id="clickStarHint" aria-hidden="true">click a star!</p>
 
+  <!-- Workout popup (shown when clicking a star in pre-arm formation) -->
+  <div class="workout-popup" id="workoutPopup" aria-hidden="true" role="dialog" aria-label="Workout">
+    <div class="workout-popup-inner">
+      <h4 class="workout-popup-title" id="workoutPopupTitle"></h4>
+      <ul class="workout-popup-list" id="workoutPopupList"></ul>
+    </div>
+  </div>
+
+  <!-- Phase 2: explanation layout (fades in at bottom of scroll) -->
+  <div class="phase2" id="phase2">
+    <div class="legend" id="legend">
+      <div class="legend-caption-row" aria-hidden="true">
+        <span class="legend-caption-left">One Star</span>
+        <span class="legend-caption-right">One Workout</span>
+      </div>
+    </div>
+    <div class="charts" id="charts">
+      <div class="charts-expanded-placeholder" aria-hidden="true"></div>
+      <div class="chart-legend-spacer"></div>
+      <div class="chart-legend-spacer"></div>
+      <div class="chart-legend-btn-wrap">
+        <button type="button" class="chart-legend-btn" id="chartLegendBtn" aria-label="Open graph legend">Legend</button>
+      </div>
+      <div class="chart-card" data-chart="bar">
+        <div class="chart-card-inner">
+          <button type="button" class="chart-close" aria-label="Close">&times;</button>
+          <h4 class="chart-title">Workouts per week vs. strength increase</h4>
+          <div class="chart-wrapper">
+            <div class="bar-chart" id="barChart"></div>
+          </div>
+          <ul class="chart-explanation">
+            <li>Compares how often you trained each period with strength gain.</li>
+            <li>Bars show average workouts per week and strength increase by month.</li>
+            <li>More consistent weeks tend to show higher strength gains.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="chart-card" data-chart="line">
+        <div class="chart-card-inner">
+          <button type="button" class="chart-close" aria-label="Close">&times;</button>
+          <h4 class="chart-title">One-rep max increase by exercise</h4>
+          <div class="chart-wrapper-line-outer">
+            <select id="lineChartSelect" class="chart-select" aria-label="Select exercise"></select>
+            <div class="chart-wrapper">
+              <div class="line-chart" id="lineChart"></div>
+            </div>
+          </div>
+          <ul class="chart-explanation">
+            <li>Estimated one-rep max over time for the selected exercise.</li>
+            <li>Use the dropdown to switch exercises; the graph transitions smoothly.</li>
+            <li>Plateaus reflect weeks with fewer sessions.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="chart-card" data-chart="scatter">
+        <div class="chart-card-inner">
+          <button type="button" class="chart-close" aria-label="Close">&times;</button>
+          <h4 class="chart-title">Exercises sorted by frequency</h4>
+          <div class="chart-wrapper">
+            <div class="scatter-chart" id="scatterChart"></div>
+          </div>
+          <ul class="chart-explanation">
+            <li>Each point is an exercise; position shows how often you did it.</li>
+            <li>Further right = more sessions; vertical axis = estimated strength level.</li>
+            <li>Helps see which exercises you prioritize.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tooltip for bar/scatter hover (one shared element) -->
+  <div class="chart-tooltip" id="chartTooltip" aria-hidden="true"></div>
+
+  <!-- Legend popup: explains numbers and labels on the graphs -->
+  <div class="chart-legend-popup" id="chartLegendPopup" aria-hidden="true" role="dialog" aria-label="Graph legend">
+    <div class="chart-legend-popup-inner">
+      <button type="button" class="chart-legend-popup-close" id="chartLegendPopupClose" aria-label="Close">&times;</button>
+      <h4 class="chart-legend-popup-title">Graph legend</h4>
+      <div class="chart-legend-popup-content">
+        <p><strong>Bar chart (left)</strong></p>
+        <ul>
+          <li><strong>Workouts/wk</strong> — Left axis: average number of workouts per week in that period.</li>
+          <li><strong>Strength %</strong> — Right axis: strength increase compared to the first period.</li>
+          <li><strong>M1, M2, …</strong> — Each label is a 4‑week period (month).</li>
+        </ul>
+        <p><strong>Line chart (center)</strong></p>
+        <ul>
+          <li><strong>1RM (lb)</strong> — Vertical axis: estimated one‑rep max in pounds.</li>
+          <li><strong>Session</strong> — Horizontal axis: workout session number for the selected exercise.</li>
+        </ul>
+        <p><strong>Scatter plot (right)</strong></p>
+        <ul>
+          <li><strong>Frequency (sessions)</strong> — Horizontal axis: how many times you did that exercise.</li>
+          <li><strong>Max 1RM (lb)</strong> — Vertical axis: your best estimated one‑rep max for that exercise.</li>
+          <li>Each point is one exercise; hover a point to see its name.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG filters -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true">
+    <defs>
+      <filter id="pixelate" x="0" y="0">
+        <feFlood x="0" y="0" height="2" width="2"/>
+        <feComposite width="8" height="8"/>
+        <feTile result="a"/>
+        <feComposite in="SourceGraphic" in2="a" operator="in"/>
+        <feMorphology operator="dilate" radius="3"/>
+      </filter>
+      <filter id="pixelate-subtle" x="0" y="0">
+        <feFlood x="0" y="0" height="1" width="1"/>
+        <feComposite width="4" height="4"/>
+        <feTile result="a"/>
+        <feComposite in="SourceGraphic" in2="a" operator="in"/>
+        <feMorphology operator="dilate" radius="1"/>
+      </filter>
+    </defs>
+  </svg>
   <!-- Hidden SVG used only to sample the path -->
   <svg id="pathSource" xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true">
     <path id="outlinePath" fill="none" stroke="none" d="m 286.004,207.991 c 0,-7.126 -14.47,-36.059 -40.8,-49.58 -24.161,-12.407 -56.27,-20.058 -111.871,14.124 0.332,-4.678 0.521,-10.349 0.723,-17.068 0.252,-8.515 0.516,-17.319 1.328,-23.01 1.166,-8.165 10.731,-22.996 18.418,-34.911 3.264,-5.061 6.218,-9.642 8.456,-13.538 10.575,3.238 20.51,-0.984 26.795,-3.657 0.446,-0.189 0.939,-0.399 1.433,-0.603 2.189,5.514 7.426,9.705 15.146,12.015 8.658,2.592 20.212,2.468 27.168,-1.128 2.509,1.039 5.22,1.396 7.039,1.513 2.036,0.131 8.39,0.256 13.053,-2.716 5.51,-0.448 10.306,-2.793 13.072,-6.462 1.099,-1.457 1.82,-3.069 2.135,-4.719 3.707,-1.503 9.14,-3.782 11.007,-8.635 l 0.711,-1.936 -0.672,-1.91 c -0.133,-0.377 -0.608,-2.041 -1.068,-3.65 C 265.23,17.211 255.849,0.407 244.595,2.148 241.698,2.598 232.829,2.463 223.439,2.318 190.604,1.813 160.106,1.975 147.735,9.398 141.145,13.352 121.672,35.239 90.447,70.626 62.792,101.965 31.448,137.487 21.353,144.6 1.791,158.381 2.314,182.332 2.821,205.494 c 0.082,3.771 0.167,7.67 0.158,11.421 -0.007,2.928 -0.692,6.019 -1.418,9.292 C 0.792,229.666 0,233.245 0,236.867 c 0,10.686 20.529,24.933 49.984,34.722 52.791,29.135 93.836,31.971 141.317,31.971 1.089,0 2.183,-10e-4 3.278,-0.003 30.789,-0.077 78.214,-21.955 84.028,-25.587 3.277,-2.048 7.767,-4.854 7.403,-68.676 l -0.006,-1.303" />
   </svg>
 
   <script src="armPoint.js"></script>
+  <script src="charts.js"></script>
 </body>
 </html>

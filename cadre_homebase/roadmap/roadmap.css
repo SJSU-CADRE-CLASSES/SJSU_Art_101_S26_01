@@ -1,0 +1,402 @@
+/* BFA Roadmap – inherits cadre_homebase (style.css) */
+
+.roadmap-main {
+  width: 100%;
+  padding: 16px 200px 24px 300px;
+  box-sizing: border-box;
+}
+
+.roadmap-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--fg);
+}
+
+.roadmap-intro {
+  font-size: 12px;
+  color: var(--dim);
+  margin: 0 0 12px 0;
+  transition: color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-actions {
+  margin-bottom: 24px;
+}
+
+.roadmap-expand-all {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: color var(--theme-duration) var(--theme-ease), border-color var(--theme-duration) var(--theme-ease), background-color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-expand-all:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+/* ----- Legend (color balls + category labels) ----- */
+.roadmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-bottom: 24px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--dim);
+  transition: color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.roadmap-legend-dot--red { background: #c44; }
+.roadmap-legend-dot--orange { background: #d86a20; }
+.roadmap-legend-dot--yellow { background: #b8a020; }
+.roadmap-legend-dot--green { background: #2a8a2a; }
+.roadmap-legend-dot--blue { background: #3a6aab; }
+.roadmap-legend-dot--indigo { background: #4b3d8f; }
+.roadmap-legend-dot--violet { background: #6a4a9a; }
+.roadmap-legend-dot--pink { background: #c06090; }
+
+.roadmap-section-focus {
+  font-size: 11px;
+  color: var(--dim);
+  margin: 0 0 10px 0;
+  font-style: italic;
+  transition: color var(--theme-duration) var(--theme-ease);
+}
+
+/* ----- Course list + PDF first-page image side by side ----- */
+.roadmap-courselist-row {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.roadmap-courselist-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.roadmap-phase {
+  margin-bottom: 28px;
+}
+
+.roadmap-phase-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  transition: color var(--theme-duration) var(--theme-ease), border-color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-pdf-wrap {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roadmap-pdf-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0;
+  transition: color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-pdf-image {
+  width: 100%;
+  height: auto;
+  max-width: 280px;
+  border: 1px solid var(--border);
+  display: block;
+  transition: border-color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-download-inline {
+  margin: 0;
+  font-size: 11px;
+}
+
+.roadmap-pdf-wrap a,
+.roadmap-download-inline a {
+  color: var(--dim);
+}
+
+.roadmap-pdf-wrap a:hover,
+.roadmap-download-inline a:hover {
+  color: var(--hover);
+  text-decoration: underline;
+}
+
+.roadmap-download {
+  margin-bottom: 28px;
+  font-size: 12px;
+}
+
+.roadmap-download a {
+  color: var(--dim);
+}
+
+.roadmap-download a:hover {
+  color: var(--hover);
+  text-decoration: underline;
+}
+
+/* ----- 4-year table (standalone, below course list) ----- */
+.roadmap-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  transition: border-color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--fg);
+  transition: color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-table th,
+.roadmap-table td {
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  vertical-align: top;
+  text-align: left;
+  transition: border-color var(--theme-duration) var(--theme-ease), background-color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-table thead th {
+  font-weight: 700;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.roadmap-table tbody th {
+  font-weight: 700;
+  color: var(--fg);
+  background: var(--bg);
+  min-width: 5ch;
+}
+
+.roadmap-table td {
+  color: var(--dim);
+}
+
+.roadmap-table td strong {
+  color: var(--fg);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.roadmap-table ul {
+  margin: 0;
+  padding-left: 1.2em;
+  list-style: none;
+}
+
+.roadmap-table li {
+  margin-bottom: 4px;
+}
+
+.roadmap-table li::before {
+  content: "– ";
+}
+
+.roadmap-table a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.roadmap-table a:hover {
+  color: var(--hover);
+  text-decoration: underline;
+}
+
+.roadmap-table em {
+  font-style: normal;
+  color: var(--dim);
+  font-size: 11px;
+}
+
+/* ----- Roadmap notes ----- */
+.roadmap-notes {
+  margin-bottom: 32px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  transition: border-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-notes .roadmap-section-label {
+  margin-bottom: 10px;
+}
+
+.roadmap-notes ul {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.roadmap-notes li {
+  margin-bottom: 6px;
+}
+
+.roadmap-notes a {
+  color: inherit;
+}
+
+.roadmap-notes a:hover {
+  color: var(--hover);
+  text-decoration: underline;
+}
+
+.roadmap-section-label--top {
+  margin-top: 8px;
+}
+
+.roadmap-phase .roadmap-section-label {
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+
+.roadmap-phase .roadmap-section-label:first-of-type {
+  margin-top: 0;
+}
+
+.roadmap-section-label {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 12px 0;
+}
+
+.roadmap-section {
+  margin-bottom: 20px;
+}
+
+.roadmap-courses {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roadmap-milestone {
+  font-size: 12px;
+  color: var(--dim);
+  margin: 0 0 10px 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.roadmap-course {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  background: var(--bg);
+  transition: border-color var(--theme-duration) var(--theme-ease), background-color var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
+  cursor: default;
+}
+
+.roadmap-course-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--fg);
+  cursor: pointer;
+  outline: none;
+}
+
+.roadmap-course-title:hover {
+  color: var(--hover);
+}
+
+.roadmap-course-details {
+  font-size: 12px;
+  color: var(--dim);
+  line-height: 1.45;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  transition: opacity var(--theme-duration) var(--theme-ease), color var(--theme-duration) var(--theme-ease);
+}
+
+.roadmap-course-details[hidden] {
+  display: none;
+}
+
+/* Color accents (legend: red, orange, yellow, green, blue, indigo, violet, pink) */
+.roadmap-course--red { border-left: 3px solid #c44; }
+.roadmap-course--red.is-open,
+.roadmap-course--red:hover { border-color: #c44; }
+
+.roadmap-course--orange { border-left: 3px solid #d86a20; }
+.roadmap-course--orange.is-open,
+.roadmap-course--orange:hover { border-color: #d86a20; }
+
+.roadmap-course--yellow { border-left: 3px solid #b8a020; }
+.roadmap-course--yellow.is-open,
+.roadmap-course--yellow:hover { border-color: #b8a020; }
+
+.roadmap-course--green { border-left: 3px solid #2a8a2a; }
+.roadmap-course--green.is-open,
+.roadmap-course--green:hover { border-color: #2a8a2a; }
+
+.roadmap-course--blue { border-left: 3px solid #3a6aab; }
+.roadmap-course--blue.is-open,
+.roadmap-course--blue:hover { border-color: #3a6aab; }
+
+.roadmap-course--indigo { border-left: 3px solid #4b3d8f; }
+.roadmap-course--indigo.is-open,
+.roadmap-course--indigo:hover { border-color: #4b3d8f; }
+
+.roadmap-course--violet { border-left: 3px solid #6a4a9a; }
+.roadmap-course--violet.is-open,
+.roadmap-course--violet:hover { border-color: #6a4a9a; }
+
+.roadmap-course--pink { border-left: 3px solid #c06090; }
+.roadmap-course--pink.is-open,
+.roadmap-course--pink:hover { border-color: #c06090; }
+
+@media (max-width: 850px) {
+  .roadmap-main {
+    padding: 20px 20px 100px 20px;
+  }
+  .roadmap-courselist-row {
+    flex-direction: column;
+  }
+  .roadmap-pdf-wrap {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+  .roadmap-pdf-image {
+    max-width: 100%;
+  }
+}

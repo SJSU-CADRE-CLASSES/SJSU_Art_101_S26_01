@@ -5,23 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Activity — Duc Tran Data Self Portrait</title>
   <style>
-  *{box-sizing:border-box} body{font-family:"Segoe UI",system-ui,sans-serif;margin:0;background:#313338;color:#dbdee1;line-height:1.5;min-height:100vh} .wrap{max-width:52rem;margin:0 auto;padding:1.5rem} header{border-bottom:1px solid #404249;padding-bottom:1rem;margin-bottom:2rem} h1{margin:0 0 .25rem 0;font-size:1.75rem;color:#fff} .subtitle{margin:0;font-size:.95rem;color:#b5bac1} nav{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem} nav a{color:#5865f2;text-decoration:none;padding:.35rem .75rem;border-radius:4px;font-size:.9rem} nav a:hover{background:#5865f2;color:#fff} nav a.active{background:#4752c4;color:#fff} main section{margin-bottom:2rem} .card{background:#2b2d31;border-radius:8px;padding:1.25rem;margin-bottom:1rem} .card h2{margin:0 0 .75rem 0;font-size:1.1rem;color:#fff} .bar-wrap{margin-bottom:.75rem} .bar-label{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem;color:#b5bac1} .bar{height:1.5rem;background:#404249;border-radius:4px;overflow:hidden} .bar-fill{height:100%;background:linear-gradient(90deg,#5865f2,#7289da);border-radius:4px;min-width:4px} footer{margin-top:3rem;padding-top:1rem;border-top:1px solid #404249;font-size:.85rem;color:#80848e}
+  *{box-sizing:border-box}
+  body{font-family:"Courier New",Consolas,monospace;margin:0;background:#1a1a1a;color:#e0e0e0;line-height:1.6;min-height:100vh;font-size:14px}
+  .stripe{height:6px;background:repeating-linear-gradient(90deg,#c00 0,#c00 8px,#000 8px,#000 16px)}
+  .wrap{max-width:52rem;margin:0 auto;padding:1.5rem 1rem}
+  .logo{text-align:center;padding:1rem 0;border-bottom:2px solid #c00;margin-bottom:1.5rem}
+  .logo h1{margin:0;font-size:1.4rem;font-weight:700;color:#c00;letter-spacing:.1em;text-transform:uppercase}
+  .logo p{margin:.35rem 0 0;font-size:.85rem;color:#666}
+  .nav-list{list-style:none;padding:0;margin:0 0 1.5rem 0;display:flex;flex-wrap:wrap;gap:.5rem 1rem}
+  .nav-list a{color:#e0e0e0;text-decoration:none}
+  .nav-list a:hover{color:#c00}
+  .nav-list .active{color:#c00}
+  .card{background:#222;border:1px solid #333;padding:1.25rem;margin-bottom:1rem}
+  .card h2{font-size:.95rem;color:#c00;margin:0 0 .75rem 0;text-transform:uppercase;letter-spacing:.06em}
+  .bar-wrap{margin-bottom:.75rem}
+  .bar-label{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem;color:#888}
+  .bar{height:1.25rem;background:#333;overflow:hidden}
+  .bar-fill{height:100%;background:#c00;min-width:4px}
+  footer{margin-top:2rem;padding-top:1rem;border-top:2px solid #c00;font-size:.85rem;color:#666}
   </style>
 </head>
 <body>
+  <div class="stripe"></div>
   <div class="wrap">
-    <header>
+    <header class="logo">
       <h1>Data Self Portrait</h1>
-      <p class="subtitle">Duc Tran — Activity over time</p>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="activity.html" class="active">Activity</a>
-        <a href="servers.html">Servers</a>
-        <a href="words.html">Words</a>
-        <a href="about.html">About the Data</a>
-      </nav>
+      <p>Activity · When I'm active over time</p>
     </header>
+    <ul class="nav-list">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="channel-about-myself.html">About Myself</a></li>
+      <li><a href="activity.html" class="active">Activity</a></li>
+      <li><a href="servers.html">Servers</a></li>
+      <li><a href="words.html">Words</a></li>
+      <li><a href="about.html">How I got my data</a></li>
+    </ul>
     <main>
+      <p style="margin:0 0 1.5rem 0;color:#888;font-size:.9rem">Message counts from my Discord export.</p>
       <section class="card">
         <h2>Messages by month</h2>
         <div id="chart-month"></div>
@@ -33,6 +53,7 @@
     </main>
     <footer>SJSU Art 101 S26 — Project 1</footer>
   </div>
+  <div class="stripe"></div>
   <script>
   var discordPortrait = {
     messagesByMonth: [{ month: "2024-08", count: 120 }, { month: "2024-09", count: 340 }, { month: "2024-10", count: 280 }, { month: "2024-11", count: 410 }, { month: "2024-12", count: 390 }, { month: "2025-01", count: 520 }, { month: "2025-02", count: 180 }],
@@ -43,7 +64,7 @@
   <script>
     (function () {
       if (typeof discordPortrait === "undefined") {
-        document.getElementById("chart-month").innerHTML = "<p style='color:#b5bac1'>Data not loaded. Open this page from a web server or check that data/discord-data.js exists.</p>";
+        document.getElementById("chart-month").innerHTML = "<p style='color:#888'>Data not loaded.</p>";
         document.getElementById("chart-dow").innerHTML = "";
         return;
       }
@@ -55,7 +76,6 @@
         var pct = (d.count / maxMonth * 100);
         return "<div class=\"bar-wrap\"><div class=\"bar-label\"><span>" + esc(d.month) + "</span><span>" + d.count + "</span></div><div class=\"bar\"><div class=\"bar-fill\" style=\"width:" + pct + "%\"></div></div></div>";
       }).join("");
-
       var byDow = discordPortrait.messagesByDayOfWeek || [];
       var maxDow = byDow.length ? Math.max.apply(null, byDow.map(function(d) { return d.count; })) : 0;
       maxDow = maxDow || 1;

@@ -4,46 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            background: #334157;
+        }
+        body {
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle at 12% 8%, white 2px, transparent 2px),
+                radial-gradient(circle at 87% 23%, white 2px, transparent 2px),
+                radial-gradient(circle at 34% 91%, white 2px, transparent 2px),
+                radial-gradient(circle at 66% 14%, white 2px, transparent 2px),
+                radial-gradient(circle at 5% 45%, white 2px, transparent 2px),
+                radial-gradient(circle at 92% 67%, white 2px, transparent 2px),
+                radial-gradient(circle at 21% 32%, white 2px, transparent 2px),
+                radial-gradient(circle at 78% 78%, white 2px, transparent 2px),
+                radial-gradient(circle at 45% 55%, white 2px, transparent 2px),
+                radial-gradient(circle at 56% 19%, white 2px, transparent 2px),
+                radial-gradient(circle at 18% 72%, white 2px, transparent 2px),
+                radial-gradient(circle at 83% 41%, white 2px, transparent 2px),
+                radial-gradient(circle at 9% 88%, white 2px, transparent 2px),
+                radial-gradient(circle at 71% 6%, white 2px, transparent 2px),
+                radial-gradient(circle at 28% 16%, white 2px, transparent 2px),
+                radial-gradient(circle at 95% 52%, white 2px, transparent 2px),
+                radial-gradient(circle at 42% 83%, white 2px, transparent 2px),
+                radial-gradient(circle at 63% 38%, white 2px, transparent 2px),
+                radial-gradient(circle at 3% 61%, white 2px, transparent 2px),
+                radial-gradient(circle at 51% 94%, white 2px, transparent 2px);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+        h1 {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            padding-top: 1.5rem;
+            text-align: center;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+        }
+        h2 {
+            position: relative;
+            z-index: 1;
+            margin: 0.5rem 0 0;
+            text-align: center;
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1rem;
+            font-weight: normal;
+        }
+        a {
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+        .doors {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            flex-wrap: wrap;
+        }
+        .doors img {
+            max-width: 200px;
+            height: auto;
+        }
+        .doors a {
+            display: inline-block;
+        }
+        .doors a img {
+            border: none;
+        }
+    </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
 <body>
-    <button id="showGraphBtn">Show Graph</button>
-    <div id="graphContainer" style="display: none;">
-        <canvas id="hoursSlept" style="width:100%;max-width:600px"></canvas>
+    <h1>welcome to the slumber hotel</h1>
+    <h2>click a door to enter the room</h2>
+    <div class="doors">
+        <a href="garage.html"><img src="door.png" alt="Door to Garage"></a>
+        <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
     </div>
-
-    <script>
-        const xValues = [1,2,3,4,5,6,7,8,9,10];
-        const yValues = [7,8,8,9,9,9,10];
-        const barColors = ["#c8a3d9", "#d7a3d9", "#d9a3cf", "#d194b1", "#d194a6", "#d68383", "#dba291"];
-        let chartCreated = false;
-
-        document.getElementById("showGraphBtn").addEventListener("click", function() {
-            document.getElementById("graphContainer").style.display = "block";
-            if (!chartCreated) {
-                new Chart("hoursSlept", {
-                    type: "bar",
-                    data: {
-                        labels: xValues,
-                        datasets: [{
-                            backgroundColor: barColors,
-                            data: yValues
-                        }]
-                    },
-                    options: {
-                        legend: {display: false},
-                        title: {display: true,
-                            text: "Daily Hours Slept",
-                            font: {size:16}
-                        }
-                    }
-                });
-                chartCreated = true;
-            }
-        });
-    </script>
-    <a href="casino.html">Casino</a>
 </body>
 </html>
-

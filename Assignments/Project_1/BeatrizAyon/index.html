@@ -3,47 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beatriz Ayon — Data Self Portrait | Art 101 Project 1</title>
+  <title>Beatriz Ayon — Art 101 Project 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
       margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
       padding: 2rem;
-      max-width: 60rem;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.5;
-      color: #222;
+      font-family: 'Barlow', system-ui, sans-serif;
+      background: linear-gradient(160deg, #FFF0F5 0%, #E8F4F8 45%, #F0E6FA 100%);
+      color: #3d3d5c;
     }
-    h1 { margin-top: 0; }
-    .portrait-container {
-      margin: 2rem 0;
-      min-height: 200px;
-      background: #f5f5f5;
-      border-radius: 8px;
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0;
+      text-align: center;
+      color: #5a4a6a;
+    }
+    .boxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .box-option {
+      position: relative;
+    }
+    .box-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cube-wrapper {
+      width: 120px;
+      height: 150px;
+      position: relative;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #666;
     }
-    footer { margin-top: 3rem; font-size: 0.9rem; color: #666; }
+    .box {
+      position: relative;
+      width: 100px;
+      height: 125px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s ease;
+    }
+    .box svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .box .box-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: rgba(0,0,0,0.5);
+      font-family: 'Barlow', sans-serif;
+      pointer-events: none;
+    }
+    .box-option:hover .box {
+      transform: translateY(-4px);
+    }
+    .box-option input:checked + .cube-wrapper {
+      z-index: 10;
+    }
+    .box-option input:checked + .cube-wrapper .box,
+    .box-option input:focus-visible + .cube-wrapper .box {
+      transform: scale(1.45);
+      outline: 3px solid #C7CEEA;
+      outline-offset: 4px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(199, 206, 234, 0.4);
+    }
+    .box-option input:checked:hover + .cube-wrapper .box,
+    .box-option input:focus-visible:hover + .cube-wrapper .box {
+      transform: scale(1.45) translateY(-4px);
+    }
+    /* Pastel colors per box – SVG paths: (1) front, (2) top, (3) right */
+    .box-option:nth-child(1) .box path:nth-child(1) { fill: #FFB5C2; }
+    .box-option:nth-child(1) .box path:nth-child(2) { fill: #FFD6DE; }
+    .box-option:nth-child(1) .box path:nth-child(3) { fill: #F0A0B0; }
+    .box-option:nth-child(2) .box path:nth-child(1) { fill: #B5EAD7; }
+    .box-option:nth-child(2) .box path:nth-child(2) { fill: #D4F5E9; }
+    .box-option:nth-child(2) .box path:nth-child(3) { fill: #9DDFCB; }
+    .box-option:nth-child(3) .box path:nth-child(1) { fill: #C7CEEA; }
+    .box-option:nth-child(3) .box path:nth-child(2) { fill: #E0E4F5; }
+    .box-option:nth-child(3) .box path:nth-child(3) { fill: #B0B8E0; }
+    .box-option:nth-child(4) .box path:nth-child(1) { fill: #FFDAC1; }
+    .box-option:nth-child(4) .box path:nth-child(2) { fill: #FFE8D8; }
+    .box-option:nth-child(4) .box path:nth-child(3) { fill: #F5C9A8; }
+    .box-option:nth-child(5) .box path:nth-child(1) { fill: #A8D8EA; }
+    .box-option:nth-child(5) .box path:nth-child(2) { fill: #C8E8F2; }
+    .box-option:nth-child(5) .box path:nth-child(3) { fill: #8FCCE0; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Data Self Portrait</h1>
-    <p><strong>Beatriz Ayon</strong> — Art 101 S26 — Project 1</p>
-  </header>
-
-  <main>
-    <section class="portrait-container" aria-label="Data self portrait">
-      <!-- Add your data self portrait here -->
-    </section>
-  </main>
-
-  <footer>
-    SJSU Art 101 S26 — Project 1
-  </footer>
+  <h1>Choose a blindbox to open!</h1>
+  <div class="boxes" role="group" aria-label="Blindbox selection">
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="1" aria-label="Blindbox 1">
+      <div class="cube-wrapper">
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
+            <path opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
+            <path opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
+          </svg>
+          <span class="box-number">1</span>
+        </div>
+      </div>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="2" aria-label="Blindbox 2">
+      <div class="cube-wrapper">
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
+            <path opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
+            <path opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
+          </svg>
+          <span class="box-number">2</span>
+        </div>
+      </div>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="3" aria-label="Blindbox 3">
+      <div class="cube-wrapper">
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
+            <path opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
+            <path opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
+          </svg>
+          <span class="box-number">3</span>
+        </div>
+      </div>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="4" aria-label="Blindbox 4">
+      <div class="cube-wrapper">
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
+            <path opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
+            <path opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
+          </svg>
+          <span class="box-number">4</span>
+        </div>
+      </div>
+    </label>
+    <label class="box-option">
+      <input type="radio" name="blindbox" value="5" aria-label="Blindbox 5">
+      <div class="cube-wrapper">
+        <div class="box">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8.42229 20.6181C10.1779 21.5395 11.0557 22.0001 12 22.0001V12.0001L2.63802 7.07275C2.62423 7.09491 2.6107 7.11727 2.5974 7.13986C2 8.15436 2 9.41678 2 11.9416V12.0586C2 14.5834 2 15.8459 2.5974 16.8604C3.19479 17.8749 4.27063 18.4395 6.42229 19.5686L8.42229 20.6181Z"/>
+            <path opacity="0.9" d="M17.5774 4.43152L15.5774 3.38197C13.8218 2.46066 12.944 2 11.9997 2C11.0554 2 10.1776 2.46066 8.42197 3.38197L6.42197 4.43152C4.31821 5.53552 3.24291 6.09982 2.6377 7.07264L11.9997 12L21.3617 7.07264C20.7564 6.09982 19.6811 5.53552 17.5774 4.43152Z"/>
+            <path opacity="0.75" d="M21.4026 7.13986C21.3893 7.11727 21.3758 7.09491 21.362 7.07275L12 12.0001V22.0001C12.9443 22.0001 13.8221 21.5395 15.5777 20.6181L17.5777 19.5686C19.7294 18.4395 20.8052 17.8749 21.4026 16.8604C22 15.8459 22 14.5834 22 12.0586V11.9416C22 9.41678 22 8.15436 21.4026 7.13986Z"/>
+          </svg>
+          <span class="box-number">5</span>
+        </div>
+      </div>
+    </label>
+  </div>
+  <script>
+    document.querySelectorAll('input[name="blindbox"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        if (this.checked) {
+          window.location.href = 'open.html?box=' + this.value;
+        }
+      });
+    });
+  </script>
 </body>
 </html>

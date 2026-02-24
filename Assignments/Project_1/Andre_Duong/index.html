@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>February 2025 — Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0a0b12;
+      --bg-mid: #12141f;
+      --accent-cold: #4ecdc4;
+      --accent-warm: #ff6b6b;
+      --accent-mid: #a78bfa;
+      --text-soft: #94a3b8;
+      --text-bright: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-deep);
+      min-height: 100vh;
+      color: var(--text-bright);
+      overflow-x: hidden;
+    }
+
+    /* Animated gradient sky */
+    .sky {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(78, 205, 196, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 50% at 80% 20%, rgba(167, 139, 250, 0.12) 0%, transparent 40%),
+        radial-gradient(ellipse 60% 80% at 20% 60%, rgba(255, 107, 107, 0.08) 0%, transparent 45%),
+        linear-gradient(180deg, #0a0b12 0%, #12141f 50%, #0f1119 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .sky::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    nav a { color: var(--text-soft); text-decoration: none; font-size: 0.9rem; }
+    nav a:hover { color: var(--accent-cold); }
+    nav a.active { color: var(--accent-cold); font-weight: 500; }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--text-bright);
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--text-soft);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .viz-container {
+      background: rgba(18, 20, 31, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      border-radius: 24px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+      margin-bottom: 2rem;
+    }
+
+    .viz-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-soft);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      padding-left: 0.25rem;
+    }
+
+    /* Temperature bars — each day is a bar */
+    .days {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2px;
+      min-height: 200px;
+      padding: 0.5rem 0;
+    }
+
+    .day {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .day-bar-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 160px;
+    }
+
+    .day-bar {
+      width: 100%;
+      max-width: 28px;
+      border-radius: 6px 6px 0 0;
+      min-height: 4px;
+      transition: transform 0.2s ease;
+    }
+
+    .day-bar:hover {
+      transform: scaleY(1.02);
+      filter: brightness(1.2);
+    }
+
+    .day-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--text-soft);
+      opacity: 0.9;
+    }
+
+    .day-temp {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    /* Color scale: cold (teal) → warm (coral) */
+    .temp-cold { background: linear-gradient(180deg, #2dd4bf, #14b8a6); }
+    .temp-cool { background: linear-gradient(180deg, #22d3ee, #06b6d4); }
+    .temp-mid { background: linear-gradient(180deg, #a78bfa, #8b5cf6); }
+    .temp-mild { background: linear-gradient(180deg, #fb923c, #f97316); }
+    .temp-warm { background: linear-gradient(180deg, #ff6b6b, #ee5a5a); }
+
+    /* Horizon line chart */
+    .horizon-section {
+      margin-top: 3rem;
+    }
+
+    .horizon-wrap {
+      position: relative;
+      height: 180px;
+      margin: 1rem 0 2rem;
+    }
+
+    .horizon-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .horizon-fill {
+      fill: none;
+      stroke: url(#tempGradient);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.95;
+    }
+
+    .horizon-glow {
+      fill: none;
+      stroke: url(#tempGradient);
+      stroke-width: 24;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.15;
+      filter: blur(8px);
+    }
+
+    .grid-line {
+      stroke: rgba(148, 163, 184, 0.06);
+      stroke-width: 1;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 2rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      opacity: 0.7;
+      margin-top: 2rem;
+    }
+
+    .footer-note a {
+      color: var(--accent-cold);
+      text-decoration: none;
+    }
+  
+/* --- shared nav --- */
+.site-nav{
+  position: fixed;
+  left: 16px; right: 16px; top: 16px;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(18, 20, 31, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.site-nav a{
+  color: rgba(233,233,238,0.72);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.site-nav a:hover{ color: #4ecdc4; }
+.site-nav a.active{ color: #4ecdc4; font-weight: 600; }
+
+
+main{ padding-top: 6.5rem !important; }
+
+    /* Interactions */
+    .controls{
+      margin: 0 0 1.25rem;
+      padding: 0.75rem 0.75rem 0.25rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148, 163, 184, 0.10);
+    }
+    .controls-row{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap: 0.75rem 1rem;
+    }
+    .control{
+      display:flex;
+      align-items:center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+    .control span{ letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.72rem; }
+    input[type="range"]{
+      accent-color: var(--accent-cold);
+      width: 180px;
+    }
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(18, 20, 31, 0.35);
+      color: var(--text-bright);
+      padding: 0.5rem 0.85rem;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform 0.12s ease, filter 0.12s ease, background 0.12s ease;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn:hover{ filter: brightness(1.15); }
+    .btn:active{ transform: translateY(1px); }
+    .toggle{
+      display:flex; align-items:center; gap:0.45rem;
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      user-select:none;
+    }
+    .toggle input{ accent-color: var(--accent-mid); }
+    .details{
+      margin-top: 0.65rem;
+      padding: 0.6rem 0.65rem;
+      border-radius: 12px;
+      background: rgba(10, 11, 18, 0.35);
+      border: 1px solid rgba(148, 163, 184, 0.10);
+      color: rgba(226,232,240,0.9);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+    .details .muted{ color: rgba(148,163,184,0.9); font-size: 0.82rem; letter-spacing:0.06em; text-transform:uppercase; }
+    .day-bar.is-active{
+      outline: 2px solid rgba(78,205,196,0.65);
+      outline-offset: 2px;
+      filter: brightness(1.15);
+    }
+    .day-bar.is-pinned{
+      outline: 2px solid rgba(167, 139, 250, 0.75);
+      outline-offset: 2px;
+    }
+    /* Tooltip */
+    .tip{
+      position: fixed;
+      z-index: 60;
+      pointer-events:none;
+      transform: translate(10px, 10px);
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(10, 11, 18, 0.78);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--text-bright);
+      font-size: 0.85rem;
+      max-width: 260px;
+      box-shadow: 0 12px 38px rgba(0,0,0,0.35);
+      opacity: 0;
+      transition: opacity 0.08s ease;
+    }
+    .tip.show{ opacity: 1; }
+    .tip .k{ color: rgba(148,163,184,0.95); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; }
+    /* Horizon marker */
+    .horizon-dot{
+      fill: rgba(255,255,255,0.95);
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+    .horizon-dot.show{ opacity: 1; }
+    .horizon-hit{
+      fill: transparent;
+      cursor: crosshair;
+    }
+
+</style>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Site navigation">
+  <a href="index_nav.html">Weather</a>
+  <a href="subscriptions_nav.html">YouTube Subscriptions</a>
+  <a href="steamdb_nav.html">Steam PlayTime</a>
+  <a href="page4_nav.html">Browser Sonification</a>
+</nav>
+
+  <main>
+    
+    <header>
+      <h1 class="title">February 2025</h1>
+      <p class="subtitle">San Jose · Daily high temperatures</p>
+    </header>
+
+    <section class="viz-container" aria-label="Daily high temperatures">
+      <h2 class="viz-title">Each day · °F</h2>
+      <div class="controls" aria-label="Visualization controls">
+        <div class="controls-row">
+          <label class="control">
+            <span>Day</span>
+            <input id="daySlider" type="range" min="1" max="28" value="1" step="1" />
+          </label>
+          <button class="btn" id="playBtn" type="button" aria-pressed="false" title="Play / pause">Play</button>
+          <label class="toggle"><input id="showLows" type="checkbox" /> <span>Show lows</span></label>
+          <label class="toggle"><input id="pinSelection" type="checkbox" checked /> <span>Click to pin</span></label>
+          <label class="toggle"><input id="unitToggle" type="checkbox" /> <span>°C</span></label>
+        </div>
+        <div class="details" id="details" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="days" id="days"></div>
+    </section>
+
+    <section class="viz-container horizon-section" aria-label="Temperature curve">
+      <h2 class="viz-title">Horizon</h2>
+      <div class="horizon-wrap">
+        <svg class="horizon-svg" viewBox="0 0 1000 180" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="tempGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#4ecdc4"/>
+              <stop offset="50%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#ff6b6b"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="90" x2="1000" y2="90" class="grid-line"/>
+          <path id="horizonPath" class="horizon-fill" d=""/>
+          <path id="horizonGlow" class="horizon-glow" d=""/>
+        </svg>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot temp-cold" style="border-radius:4px;"></span> 50s</span>
+        <span class="legend-item"><span class="legend-dot temp-mid" style="border-radius:4px;"></span> 58–62</span>
+        <span class="legend-item"><span class="legend-dot temp-warm" style="border-radius:4px;"></span> 63+</span>
+      </div>
+    </section>
+
+    <p class="footer-note">Andre Duong · Project 1 · Art 101 · Data reflects typical February conditions</p>
+  </main>
+
+  
+  <script>
+    // February 2025 — San Jose area representative daily highs (°F)
+    const feb2025 = [
+      { day: 1,  high: 58, low: 43, cond: 'cloudy' },
+      { day: 2,  high: 56, low: 42, cond: 'rain' },
+      { day: 3,  high: 57, low: 44, cond: 'cloudy' },
+      { day: 4,  high: 60, low: 45, cond: 'partly' },
+      { day: 5,  high: 62, low: 46, cond: 'sunny' },
+      { day: 6,  high: 61, low: 45, cond: 'partly' },
+      { day: 7,  high: 59, low: 44, cond: 'cloudy' },
+      { day: 8,  high: 58, low: 43, cond: 'rain' },
+      { day: 9,  high: 56, low: 42, cond: 'cloudy' },
+      { day: 10, high: 59, low: 44, cond: 'partly' },
+      { day: 11, high: 61, low: 46, cond: 'sunny' },
+      { day: 12, high: 63, low: 47, cond: 'sunny' },
+      { day: 13, high: 62, low: 46, cond: 'partly' },
+      { day: 14, high: 60, low: 45, cond: 'cloudy' },
+      { day: 15, high: 58, low: 44, cond: 'rain' },
+      { day: 16, high: 57, low: 43, cond: 'cloudy' },
+      { day: 17, high: 59, low: 45, cond: 'partly' },
+      { day: 18, high: 61, low: 46, cond: 'sunny' },
+      { day: 19, high: 64, low: 47, cond: 'sunny' },
+      { day: 20, high: 63, low: 47, cond: 'partly' },
+      { day: 21, high: 62, low: 46, cond: 'cloudy' },
+      { day: 22, high: 60, low: 45, cond: 'partly' },
+      { day: 23, high: 61, low: 46, cond: 'sunny' },
+      { day: 24, high: 63, low: 47, cond: 'sunny' },
+      { day: 25, high: 65, low: 48, cond: 'sunny' },
+      { day: 26, high: 64, low: 47, cond: 'partly' },
+      { day: 27, high: 66, low: 48, cond: 'sunny' },
+      { day: 28, high: 67, low: 49, cond: 'sunny' }
+    ];
+
+    const minT = 52, maxT = 68;
+
+    const daysEl = document.getElementById('days');
+    const slider = document.getElementById('daySlider');
+    const playBtn = document.getElementById('playBtn');
+    const showLows = document.getElementById('showLows');
+    const pinSelection = document.getElementById('pinSelection');
+    const unitToggle = document.getElementById('unitToggle'); // checked => Celsius
+    const detailsEl = document.getElementById('details');
+
+    // Tooltip
+    const tip = document.createElement('div');
+    tip.className = 'tip';
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+
+    const condLabel = (c) => ({
+      sunny: 'Sunny',
+      partly: 'Partly cloudy',
+      cloudy: 'Cloudy',
+      rain: 'Rain'
+    }[c] || c);
+
+    const toC = (f) => Math.round(((f - 32) * 5/9) * 10) / 10;
+
+    function fmtTemp(f){
+      const useC = unitToggle.checked;
+      if(useC) return `${toC(f)}°C`;
+      return `${f}°F`;
+    }
+
+    function tempClass(high) {
+      if (high <= 55) return 'temp-cold';
+      if (high <= 58) return 'temp-cool';
+      if (high <= 62) return 'temp-mid';
+      if (high <= 65) return 'temp-mild';
+      return 'temp-warm';
+    }
+
+    function heightPct(high) {
+      return 20 + ((high - minT) / (maxT - minT)) * 75;
+    }
+
+    // State
+    let hoverDay = null;      // 1..28
+    let selectedDay = 1;      // 1..28
+    let pinnedDay = null;     // 1..28
+    let playing = false;
+    let playTimer = null;
+
+    function setDetails(dayNum){
+      const d = feb2025[dayNum-1];
+      const headline = `Feb ${d.day} · High ${fmtTemp(d.high)}${showLows.checked ? ` · Low ${fmtTemp(d.low)}` : ''}`;
+      const sub = `${condLabel(d.cond)} · San Jose`;
+      detailsEl.innerHTML = `<div>${headline}</div><div class="muted">${sub}</div>`;
+    }
+
+    function renderBars(){
+      daysEl.innerHTML = '';
+      feb2025.forEach(d => {
+        const wrap = document.createElement('div');
+        wrap.className = 'day';
+
+        const bar = document.createElement('div');
+        bar.className = `day-bar ${tempClass(d.high)}`;
+        bar.style.height = `${heightPct(d.high)}%`;
+        bar.dataset.day = d.day;
+        bar.tabIndex = 0;
+        bar.setAttribute('role','button');
+        bar.setAttribute('aria-label', `Feb ${d.day}: High ${fmtTemp(d.high)}${showLows.checked ? `, Low ${fmtTemp(d.low)}` : ''}. ${condLabel(d.cond)}.`);
+
+        const label = document.createElement('span');
+        label.className = 'day-label';
+        label.textContent = d.day;
+
+        const temp = document.createElement('span');
+        temp.className = 'day-temp';
+        temp.textContent = unitToggle.checked ? `${toC(d.high)}°` : `${d.high}°`;
+
+        const barWrap = document.createElement('div');
+        barWrap.className = 'day-bar-wrap';
+        barWrap.appendChild(bar);
+
+        // Optional low tick
+        if(showLows.checked){
+          const lowTick = document.createElement('div');
+          lowTick.style.width = '100%';
+          lowTick.style.maxWidth = '28px';
+          lowTick.style.height = '2px';
+          lowTick.style.marginTop = '6px';
+          lowTick.style.borderRadius = '999px';
+          lowTick.style.background = 'rgba(148,163,184,0.45)';
+          // Position tick inside the barWrap based on low temp
+          // (relative to the same min/max scale used for highs)
+          const lowY = 100 - heightPct(d.low);
+          lowTick.style.transform = `translateY(${(lowY/100)*160}px)`;
+          barWrap.appendChild(lowTick);
+        }
+
+        wrap.appendChild(barWrap);
+        wrap.appendChild(label);
+        wrap.appendChild(temp);
+        daysEl.appendChild(wrap);
+
+        // Active styles
+        if(d.day === selectedDay) bar.classList.add('is-active');
+        if(pinnedDay && d.day === pinnedDay) bar.classList.add('is-pinned');
+
+        // Events
+        bar.addEventListener('mousemove', (e)=>{
+          hoverDay = d.day;
+          tip.innerHTML = `<div class="k">Feb ${d.day}</div><div>High <b>${fmtTemp(d.high)}</b>${showLows.checked ? ` · Low <b>${fmtTemp(d.low)}</b>` : ''}</div><div class="k" style="margin-top:4px;">${condLabel(d.cond)}</div>`;
+          tip.style.left = `${e.clientX}px`;
+          tip.style.top = `${e.clientY}px`;
+          tip.classList.add('show');
+          highlight(d.day, false);
+        });
+        bar.addEventListener('mouseleave', ()=>{
+          hoverDay = null;
+          tip.classList.remove('show');
+          highlight(selectedDay, true);
+        });
+
+        const pick = ()=>{
+          selectedDay = d.day;
+          slider.value = String(selectedDay);
+          setDetails(selectedDay);
+          if(pinSelection.checked) pinnedDay = selectedDay;
+          highlight(selectedDay, true);
+          syncHorizonMarker(selectedDay);
+        };
+
+        bar.addEventListener('click', pick);
+        bar.addEventListener('keydown', (ev)=>{
+          if(ev.key === 'Enter' || ev.key === ' '){
+            ev.preventDefault(); pick();
+          }
+        });
+      });
+    }
+
+    function highlight(dayNum, keepPinned){
+      document.querySelectorAll('.day-bar').forEach(b=>{
+        const n = Number(b.dataset.day);
+        b.classList.toggle('is-active', n === dayNum);
+        b.classList.toggle('is-pinned', keepPinned && pinnedDay && n === pinnedDay);
+      });
+    }
+
+    // Horizon interactive overlay
+    const path = document.getElementById('horizonPath');
+    const glow = document.getElementById('horizonGlow');
+    const svg = document.querySelector('.horizon-svg');
+
+    // Add marker + hitbox
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    marker.setAttribute('r','5');
+    marker.setAttribute('class','horizon-dot');
+    svg.appendChild(marker);
+
+    const hit = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    hit.setAttribute('x','0');
+    hit.setAttribute('y','0');
+    hit.setAttribute('width','1000');
+    hit.setAttribute('height','180');
+    hit.setAttribute('class','horizon-hit');
+    hit.setAttribute('aria-label','Temperature curve interaction area');
+    svg.appendChild(hit);
+
+    const w = 1000, h = 180, pad = 40;
+    const xScale = (w - 2 * pad) / (feb2025.length - 1);
+    const yScale = (h - 2 * pad) / (maxT - minT);
+
+    function x(i) { return pad + i * xScale; }
+    function y(high) { return h - pad - (high - minT) * yScale; }
+
+    function buildHorizonPath(){
+      let d = `M ${x(0)} ${y(feb2025[0].high)}`;
+      for (let i = 1; i < feb2025.length; i++) d += ` L ${x(i)} ${y(feb2025[i].high)}`;
+      path.setAttribute('d', d);
+      glow.setAttribute('d', d);
+    }
+
+    function syncHorizonMarker(dayNum){
+      const i = dayNum - 1;
+      marker.setAttribute('cx', String(x(i)));
+      marker.setAttribute('cy', String(y(feb2025[i].high)));
+      marker.classList.add('show');
+    }
+
+    function dayFromSvgX(svgX){
+      const clamped = Math.max(pad, Math.min(w - pad, svgX));
+      const i = Math.round((clamped - pad) / xScale);
+      return Math.max(1, Math.min(28, i + 1));
+    }
+
+    hit.addEventListener('mousemove', (e)=>{
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const ctm = svg.getScreenCTM();
+      if(!ctm) return;
+      const loc = pt.matrixTransform(ctm.inverse());
+      const dayNum = dayFromSvgX(loc.x);
+      syncHorizonMarker(dayNum);
+      if(!pinnedDay){
+        highlight(dayNum, false);
+      }
+    });
+
+    hit.addEventListener('mouseleave', ()=>{
+      if(!pinnedDay){
+        highlight(selectedDay, true);
+      }
+      syncHorizonMarker(selectedDay);
+    });
+
+    hit.addEventListener('click', (e)=>{
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX; pt.y = e.clientY;
+      const ctm = svg.getScreenCTM();
+      if(!ctm) return;
+      const loc = pt.matrixTransform(ctm.inverse());
+      const dayNum = dayFromSvgX(loc.x);
+      selectedDay = dayNum;
+      slider.value = String(selectedDay);
+      setDetails(selectedDay);
+      if(pinSelection.checked) pinnedDay = selectedDay;
+      highlight(selectedDay, true);
+      syncHorizonMarker(selectedDay);
+    });
+
+    // Controls
+    slider.addEventListener('input', ()=>{
+      selectedDay = Number(slider.value);
+      setDetails(selectedDay);
+      highlight(selectedDay, true);
+      if(pinSelection.checked) pinnedDay = selectedDay;
+      syncHorizonMarker(selectedDay);
+    });
+
+    pinSelection.addEventListener('change', ()=>{
+      if(!pinSelection.checked) pinnedDay = null;
+      highlight(selectedDay, true);
+    });
+
+    showLows.addEventListener('change', ()=>{
+      renderBars();
+      setDetails(selectedDay);
+    });
+
+    unitToggle.addEventListener('change', ()=>{
+      renderBars();
+      setDetails(selectedDay);
+    });
+
+    function setPlaying(on){
+      playing = on;
+      playBtn.setAttribute('aria-pressed', String(playing));
+      playBtn.textContent = playing ? 'Pause' : 'Play';
+      if(playTimer) { clearInterval(playTimer); playTimer = null; }
+      if(playing){
+        playTimer = setInterval(()=>{
+          selectedDay = (selectedDay % 28) + 1;
+          slider.value = String(selectedDay);
+          setDetails(selectedDay);
+          if(pinSelection.checked) pinnedDay = selectedDay;
+          highlight(selectedDay, true);
+          syncHorizonMarker(selectedDay);
+        }, 650);
+      }
+    }
+
+    playBtn.addEventListener('click', ()=> setPlaying(!playing));
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        pinnedDay = null;
+        setPlaying(false);
+        highlight(selectedDay, true);
+      }
+      if(e.key === 'ArrowLeft'){
+        selectedDay = Math.max(1, selectedDay - 1);
+        slider.value = String(selectedDay);
+        setDetails(selectedDay);
+        highlight(selectedDay, true);
+        syncHorizonMarker(selectedDay);
+      }
+      if(e.key === 'ArrowRight'){
+        selectedDay = Math.min(28, selectedDay + 1);
+        slider.value = String(selectedDay);
+        setDetails(selectedDay);
+        highlight(selectedDay, true);
+        syncHorizonMarker(selectedDay);
+      }
+    });
+
+    // Init
+    buildHorizonPath();
+    renderBars();
+    setDetails(selectedDay);
+    syncHorizonMarker(selectedDay);
+  </script>
+
+<script>
+(function(){
+  try{
+    const path = (location.pathname || "").split("/").pop() || "index_nav.html";
+    document.querySelectorAll(".site-nav a").forEach(a=>{
+      const href = (a.getAttribute("href")||"").split("/").pop();
+      if(href === path) a.classList.add("active");
+    });
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

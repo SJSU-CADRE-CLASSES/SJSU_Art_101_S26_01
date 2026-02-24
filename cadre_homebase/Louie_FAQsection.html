@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Louie FAQ Section</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    .faq-tabs {
+      display: flex;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      margin: 0;
+      flex-wrap: wrap;
+      transition: border-color var(--theme-duration) var(--theme-ease);
+    }
+    .faq-tab {
+      flex: 1;
+      min-width: 200px;
+      padding: 28px 32px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 400;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.3;
+      transition: color var(--theme-duration) var(--theme-ease), border-color var(--theme-duration) var(--theme-ease);
+    }
+    .faq-tab:hover {
+      color: var(--fg);
+      border-color: var(--fg);
+    }
+    .faq-tab.active {
+      color: var(--fg);
+      border-color: var(--fg);
+      font-weight: 700;
+    }
+    .faq-panels {
+      padding: 24px 20px;
+    }
+    .faq-panel {
+      display: none;
+    }
+    .faq-panel.active {
+      display: block;
+    }
+    .faq-panel h2 { font-size: 1em; margin: 0 0 16px 0; font-weight: 700; }
+    .faq-panel h3 { font-size: 0.95em; margin: 20px 0 10px 0; font-weight: 700; }
+    .faq-panel h3:first-of-type { margin-top: 0; }
+    .faq-panel h4 { font-size: 0.9em; margin: 16px 0 8px 0; font-weight: 700; }
+    .faq-panel p, .faq-panel ul { margin: 0 0 12px 0; color: var(--dim); }
+    .faq-panel ul { padding-left: 1.5em; list-style: none; }
+    .faq-panel li { margin-bottom: 6px; }
+    .faq-panel li::before { content: "– "; }
+    .faq-panel .club-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      display: block;
+      margin: 8px 0 12px 0;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <aside class="sidebar">
+      <a href="index.html" class="home" aria-label="Home">⌂</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">☾</button>
+      <div class="vertical">homebase</div>
+    </aside>
+
+    <div class="content">
+      <header class="mobile-header">
+        <div class="logo-wrap">
+          <a href="index.html" class="logo">
+            <pre class="logo-ascii" aria-label="CADRE">
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/             
+            </pre>
+            <span class="logo-sub">Laboratory for New Media</span>
+          </a>
+          <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+        </div>
+        <nav class="nav-top">
+          <button type="button" class="theme-toggle theme-toggle-mobile" aria-label="Switch to light mode">☾</button>
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+        </nav>
+      </header>
+
+      <header class="header">
+        <div class="logo-wrap">
+          <a href="index.html" class="logo">
+            <pre class="logo-ascii" aria-label="CADRE">
+
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/ 
+            </pre>
+            <span class="logo-sub">Laboratory for New Media</span>
+          </a>
+          <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+        </div>
+        <nav class="nav-top">
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+        </nav>
+      </header>
+
+      <div class="faq-tabs">
+        <button type="button" class="faq-tab active" data-tab="dma">What is a DMA?</button>
+        <button type="button" class="faq-tab" data-tab="cadre">What is the Cadre Program</button>
+        <button type="button" class="faq-tab" data-tab="apply">How do I apply for the DMA BFA?</button>
+        <button type="button" class="faq-tab" data-tab="groups">What groups are associated with DMA?</button>
+        <button type="button" class="faq-tab" data-tab="opportunities">Where can I find on-campus opportunities?</button>
+      </div>
+
+      <main class="main">
+        <div class="faq-panels">
+          <div class="faq-panel active" id="panel-dma">
+            <h2>What is a DMA?</h2>
+            <p>The Digital Media Art program at San José State University is a multidisciplinary BFA degree offering digital art and design curriculum in the areas of computer graphics, web development, creative programming, physical computing, 3D printing, digital fabrication, prototyping, interactivity and computer games. Located in the heart of Silicon Valley, the DMA program is dedicated to the advancement of contemporary technologies through research and experimentation at the intersection of art and science.</p>
+            <p>The BFA Concentration in Digital Media Art teaches technical, creative, and critical thinking skills to empower our students as problem solvers and innovators in the field of digital technology. Students graduating from the program develop real-world skills in graphics, programming, digital video, interaction design, and computer game design using a wide range of tools, technologies, and techniques. Our curriculum is hands-on, providing project-oriented learning in collaborative workshop environments.</p>
+            <p>DMA operates several labs including the CADRE Physical Computing Lab and the DMA Game Design Lab providing research based pedagogy in a wide range of digital media arts. We offer fabrication facilities through our comprehensive wood and metal shops including laser cutters, CNC routers, and vacuform, in addition to metal and large-scale sculptural fabrication.</p>
+          </div>
+          <div class="faq-panel" id="panel-cadre">
+            <h2>What is the Cadre Program?</h2>
+            <p>CADRE stands for Computer in Art, Design, Research, and Education. Established in 1985, CADRE is the second oldest education art media lab in the US (MIT's Media Lab was the first). CADRE currently consists of the Physical Computing Lab (Art 237) and the Game Development Lab (Art 241) on the campus of San José State University.</p>
+          </div>
+          <div class="faq-panel" id="panel-apply">
+            <h2>How do I apply for the DMA BFA?</h2>
+            <h3>PROGRAM APPLICATION REQUIREMENTS</h3>
+            <p>You will need a B/ 3.0 minimum GPA or better in all art classes to be admitted to the DMA BFA. See the BFA Admission Application and Procedures form for more info. Please follow the departmental instruction to complete the required department forms and submit by the deadline along with the link to your portfolio.</p>
+            <p>Even if you have declared DMA as your intended major at SJSU, you still need to apply &amp; be admitted to DMA to graduate with the degree.</p>
+            <ul>
+              <li>You should apply as soon as you have completed 21 Units of the Preparation for the Major Courses (upper box of major form). This is usually somewhere between your Sophomore and Junior years.</li>
+              <li>Make sure you have taken Art 74 &amp; Art 75.</li>
+              <li>Apply early, if you don't get in on your first try, you can get feedback on your application from the reviewers and apply again. Many Students need to apply more than once.</li>
+              <li>You will need to apply to the DMA BFA major with a portfolio; for DMA the portfolio consists of the website that you create in the Intro to Digital Media class (ART 74).</li>
+              <li>Must included 10 pieces (the assignments in ART 74 &amp; ART 75).</li>
+              <li>Your portfolio should include at least 80% digital material. Note: If your primary focus is painting, drawing, illustration, photography, sculpture, clay, glass, metalwork, or other traditional mediums, we encourage you to apply to the Pictorial, Photo, or Spatial program areas.</li>
+              <li>The website should be built from scratch using HTML, CSS, and JavaScript (JS optional).</li>
+              <li>Make sure your images are viewable at a high resolution (at least 1000 pixels on the long side).</li>
+              <li>You should include both still images as well as links/embeds for time-based or web-based media.</li>
+              <li>In addition to the images, each piece should include a title and description of the work.</li>
+              <li>Your artist statement should be included somewhere on your website.</li>
+              <li>Make sure the Web Design reflects your best efforts; the website itself is kind of like the 'silent 11th project' and will reflect poorly on your application if there are broken links and errors in the code etc.</li>
+            </ul>
+            <h3>When do I submit my portfolio for admission to the DMA BFA program area?</h3>
+            <p>The Art Department accepts applications each semester for review. The deadlines are in late October, and early April. Notification of upcoming deadlines will be posted throughout the art building &amp; sent out via email to the DMA email list.</p>
+            <h3>What are you looking for in the DMA BFA application portfolio?</h3>
+            <p>You must include at least 10 pieces in your portfolio created using some form of digital media. The best way to present a broad range of digital media is through an online website featuring artworks created in software, code, and/ or digital fabrication mediums. You can include computer graphics, websites, software, code, 3d printing, digital fabrication and computers games, among other digital art forms. A good rule of thumb is to submit work that demonstrates the CLOs of Art 74 &amp; Art 75:</p>
+            <h4>Art 74 CLOs</h4>
+            <ul>
+              <li>Introduction to Adobe Photoshop and Illustrator image editing software.</li>
+              <li>Introduction to Premiere Pro video editing software and Audacity sound editing software.</li>
+              <li>Introduction to HTML 5/CSS.</li>
+              <li>Introduction to additional free, open source, and demo software to expand software literacy.</li>
+              <li>Develop an introductory understanding of the field of new media art.</li>
+              <li>Practice critical thinking skills to address digital art and network cultures.</li>
+              <li>Practice writing skills to articulate meaning and importance of digital art and networked cultures.</li>
+              <li>Understand the role of copyright, remix culture, and the social graph.</li>
+              <li>Develop a working understanding of software culture, open-source, and emergent social media with an emphasis on digital publics in the 21st century.</li>
+              <li>Establish nomenclature and a working understanding of digital media artworks and processes used by contemporary practitioners in the field, including non-linear, networked, interactive, environmental, performance, projection, sound, physical computing and code-based methods of digital media art production.</li>
+            </ul>
+            <h4>Art 75 CLOs</h4>
+            <ul>
+              <li>Be comfortable with DSLR camera and camera-phone recording techniques.</li>
+              <li>Know basic concepts for creating both narrative and non-narrative videos.</li>
+              <li>Use non-linear video editing software to edit digital video.</li>
+              <li>Processes for creating original artwork from concept to completion.</li>
+              <li>Be familiar with various practices for gallery installations of Video and New Media Art.</li>
+              <li>Understanding of current movements in Digital Video and New Media Art.</li>
+              <li>An introductory understanding of video as a language and how it is contextualized from other moving images like film.</li>
+            </ul>
+          </div>
+          <div class="faq-panel" id="panel-groups">
+            <h2>What groups are associated with DMA?</h2>
+            <p>Although there may not be direct affiliated student clubs or organizations DMAs, there are associated clubs that are welcoming to DMA students!</p>
+            <h3>BAD DESIGN CLUB</h3>
+            <img src="Bad Design Logo.jpg" alt="Bad Design Club logo" class="club-logo" width="80" height="80">
+            <p>Open to anyone interested in graphic design at SJSU! The club is a space for us to get together, learn from each other, and just have fun :)</p>
+            <h3>SJSU GAME DEV CLUB</h3>
+            <img src="Game Dev Logo.jpg" alt="SJSU Game Dev Club logo" class="club-logo" width="80" height="80">
+            <p>We provide tools, resources, and many forms of inspiration and motivation to help people learn about the game development process regardless of their level of experience. We also participate in game jams and reach out to industry professionals who can elaborate on their experiences and teach fundamental game making ideas to our club.</p>
+          </div>
+          <div class="faq-panel" id="panel-opportunities">
+            <h2>Where can I find on-campus opportunities?</h2>
+            <p>TBD</p>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div>
+          <code class="binary-name">01000011 01000001 01000100 01010010 01000101</code><br>
+          San José State University · Department of Art & Art History<br>
+          One Washington Square, San José, CA 95192
+        </div>
+        <div>
+          <a href="https://www.facebook.com/sjsucadre" target="_blank" rel="noopener">fb</a>
+          <a href="https://twitter.com/cadre_sjsu" target="_blank" rel="noopener">tw</a>
+          <a href="https://www.instagram.com/cadre_sjsu/" target="_blank" rel="noopener">ig</a>
+        </div>
+      </footer>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      var KEY = 'cadre-homebase-theme';
+      var html = document.documentElement;
+      var toggles = document.querySelectorAll('.theme-toggle');
+
+      function applyTheme(theme) {
+        theme = theme || 'dark';
+        html.setAttribute('data-theme', theme);
+        toggles.forEach(function(btn) {
+          btn.textContent = theme === 'light' ? '☀' : '☾';
+          btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+        });
+        try { localStorage.setItem(KEY, theme); } catch (e) {}
+      }
+
+      toggles.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          applyTheme(next);
+        });
+      });
+
+      var saved = localStorage.getItem(KEY);
+      if (saved === 'light' || saved === 'dark') applyTheme(saved);
+    })();
+
+    (function() {
+      var tabs = document.querySelectorAll('.faq-tab');
+      var panels = document.querySelectorAll('.faq-panel');
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var target = tab.getAttribute('data-tab');
+          tabs.forEach(function(t) { t.classList.remove('active'); });
+          panels.forEach(function(p) { p.classList.remove('active'); });
+          tab.classList.add('active');
+          var panel = document.getElementById('panel-' + target);
+          if (panel) panel.classList.add('active');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
