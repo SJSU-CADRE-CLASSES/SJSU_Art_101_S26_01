@@ -187,6 +187,8 @@
         let losses = 0;
         let totalWon = 0;
         let totalLost = 0;
+        let coinPlays = 0;
+        let bjPlays = 0;
         const balanceEl = document.getElementById('balance');
         const betEl = document.getElementById('bet');
         const resultEl = document.getElementById('result');
@@ -195,6 +197,16 @@
         const lossesEl = document.getElementById('losses');
         const totalWonEl = document.getElementById('totalWon');
         const totalLostEl = document.getElementById('totalLost');
+        const countCoinEl = document.getElementById('countCoin');
+        const countBJEl = document.getElementById('countBJ');
+        const countTotalEl = document.getElementById('countTotal');
+
+        function updateStatsTable() {
+            if (!countCoinEl || !countBJEl || !countTotalEl) return;
+            countCoinEl.textContent = coinPlays;
+            countBJEl.textContent = bjPlays;
+            countTotalEl.textContent = coinPlays + bjPlays;
+        }
 
         document.querySelectorAll('.choices button').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -211,6 +223,7 @@
 
             const side = Math.random() < 0.5 ? 'heads' : 'tails';
             const win = side === choice;
+            coinPlays++;
             if (win) {
                 balance += bet;
                 wins++;
@@ -229,6 +242,7 @@
                 resultEl.className = 'result lose';
             }
             balanceEl.textContent = balance;
+            updateStatsTable();
         });
 
         // Blackjack
@@ -292,6 +306,8 @@
             balanceEl.textContent = balance;
             bjResultEl.textContent = '';
             bjDeck = newDeck();
+            bjPlays++;
+            updateStatsTable();
             const four = [bjDeck.pop(), bjDeck.pop(), bjDeck.pop(), bjDeck.pop()];
             if (Math.random() < 0.6) {
                 four.sort((a, b) => cardValue(b) - cardValue(a));
