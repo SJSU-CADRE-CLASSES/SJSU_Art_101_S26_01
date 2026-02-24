@@ -960,10 +960,15 @@
         const textEl = document.getElementById('spiritResultText');
         const breakdownBtn = document.getElementById('spiritBreakdownBtn');
         const breakdownEl = document.getElementById('spiritBreakdown');
+        const spiritAnswerInput = document.getElementById('spiritAnswerInput');
 
         if (questionsEl) {
           questionsEl.classList.remove('spirit-questions--visible');
           questionsEl.setAttribute('aria-hidden', 'true');
+        }
+        if (spiritAnswerInput) {
+          spiritAnswerInput.blur();
+          spiritAnswerInput.value = '';
         }
         if (!resultEl || !canvasEl || !textEl || !breakdownBtn || !breakdownEl) return;
 
