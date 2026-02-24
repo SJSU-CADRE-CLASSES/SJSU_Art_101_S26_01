@@ -81,6 +81,10 @@
       transform: scale(1.1);
     }
 
+    .day-button:active {
+      transform: scale(0.96) translateY(2px);
+    }
+
     .foods-page {
       display: none;
       flex-direction: column;
@@ -103,6 +107,11 @@
     .food-card:nth-child(even) { transform: rotate(1deg); }
     .food-card:hover { transform: scale(1.05) rotate(0deg); }
 
+    .food-card.completed {
+      box-shadow: 0 0 25px rgba(255, 193, 7, 0.6);
+      transform: scale(1.03);
+    }
+
     @keyframes popIn {
       from { transform: scale(0.8); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -122,6 +131,18 @@
     .food-image:hover {
       box-shadow: 0 0 25px rgba(255, 200, 0, 0.8);
       transform: scale(1.03);
+    }
+
+    .food-image.wiggle {
+      animation: wiggle 0.4s ease;
+    }
+
+    @keyframes wiggle {
+      0% { transform: rotate(0deg) scale(1.03); }
+      25% { transform: rotate(-3deg) scale(1.05); }
+      50% { transform: rotate(3deg) scale(1.05); }
+      75% { transform: rotate(-2deg) scale(1.04); }
+      100% { transform: rotate(0deg) scale(1.03); }
     }
 
     .border-0 { border-image: linear-gradient(45deg,#ffd6e0,#fff176) 1; }
@@ -146,9 +167,131 @@
 
     .back-button:hover { transform: scale(1.1); }
 
+    .float-emoji {
+      position: fixed;
+      font-size: 28px;
+      pointer-events: none;
+      animation: floatUp 900ms ease-out forwards;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+      z-index: 999;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translate(-50%, 0) scale(0.9); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translate(-50%, -60px) scale(1.1); opacity: 0; }
+    }
+
+    /* Floating pixel bear */
+    .bear-floating {
+      position: fixed;
+      width: 46px;
+      height: 46px;
+      top: 10%;
+      left: 8%;
+      cursor: pointer;
+      z-index: 5;
+      animation: bearFloatPath 24s linear infinite;
+    }
+
+    .bear-head {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #d08a4a; /* warmer brown */
+      image-rendering: pixelated;
+      box-shadow: 0 0 0 4px #8a5527 inset;
+      border-radius: 10px;
+    }
+
+    .bear-head::before,
+    .bear-head::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #d08a4a;
+      top: -10px;
+      box-shadow: 0 0 0 3px #8a5527 inset;
+      border-radius: 6px;
+    }
+
+    .bear-head::before { left: 3px; }
+    .bear-head::after { right: 3px; }
+
+    .bear-eye {
+      position: absolute;
+      width: 6px;
+      height: 8px;
+      background: #3b2516;
+      top: 15px;
+      left: 11px;
+      border-radius: 3px;
+    }
+
+    .bear-eye.right {
+      left: auto;
+      right: 11px;
+    }
+
+    .bear-blush {
+      position: absolute;
+      width: 8px;
+      height: 5px;
+      background: rgba(255, 105, 180, 0.7);
+      top: 24px;
+      left: 5px;
+      border-radius: 4px;
+    }
+
+    .bear-blush.right {
+      left: auto;
+      right: 5px;
+    }
+
+    .bear-nose {
+      position: absolute;
+      width: 12px;
+      height: 8px;
+      background: #3b2516;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 8px 8px 10px 10px;
+    }
+
+    @keyframes bearFloatPath {
+      0%   { top: 12%; left: 8%; }
+      20%  { top: 8%;  left: 70%; }
+      40%  { top: 40%; left: 82%; }
+      60%  { top: 78%; left: 65%; }
+      80%  { top: 70%; left: 10%; }
+      100% { top: 12%; left: 8%; }
+    }
+
+    @keyframes bearRunAway {
+      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+      20%  { transform: translate(40px, -20px) scale(0.95); }
+      60%  { transform: translate(200px, -160px) scale(0.7); opacity: 0.7; }
+      100% { transform: translate(260px, -220px) scale(0.5); opacity: 0; }
+    }
+
+    .bear-floating.run-away {
+      animation: bearRunAway 1.2s ease-out forwards;
+    }
+
   </style>
 </head>
 <body>
+<div class="bear-floating">
+  <div class="bear-head">
+    <div class="bear-eye"></div>
+    <div class="bear-eye right"></div>
+    <div class="bear-blush"></div>
+    <div class="bear-blush right"></div>
+    <div class="bear-nose"></div>
+  </div>
+</div>
 
 <div id="calendar-page" class="container">
   <h1>Cravings of the Week</h1>
@@ -208,6 +351,35 @@ const defaultWeek = [
 ];
 
 const week = savedWeek ? JSON.parse(savedWeek) : defaultWeek;
+
+const emojiChoices = ["🍓","🍔","🍕","🍜","🍋","🧋","🍟","🍧","🥭"];
+
+function spawnEmojiBurst(x, y) {
+  for (let i = 0; i < 3; i++) {
+    const span = document.createElement("span");
+    span.className = "float-emoji";
+    span.textContent = emojiChoices[Math.floor(Math.random() * emojiChoices.length)];
+    span.style.left = x + (i - 1) * 18 + "px";
+    span.style.top = (y - 10) + "px";
+    document.body.appendChild(span);
+    setTimeout(() => span.remove(), 950);
+  }
+}
+
+// Bear run-away interaction
+const bearEl = document.querySelector(".bear-floating");
+if (bearEl) {
+  bearEl.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // If already running, ignore
+    if (bearEl.classList.contains("run-away")) return;
+    bearEl.classList.add("run-away");
+    // Respawn bear back on its float path after it runs away
+    setTimeout(() => {
+      bearEl.classList.remove("run-away");
+    }, 1400);
+  });
+}
 
 // Ensure Monday matches placeholders even with saved data
 (() => {
@@ -318,6 +490,15 @@ function showFoods(index) {
     img.alt = food.name;
     img.className = "food-image border-" + index;
 
+    img.addEventListener("click", () => {
+      img.classList.remove("wiggle");
+      // force reflow so animation can replay
+      void img.offsetWidth;
+      img.classList.add("wiggle");
+      const rect = img.getBoundingClientRect();
+      spawnEmojiBurst(rect.left + rect.width / 2, rect.top + 40);
+    });
+
     const name = document.createElement("div");
     name.innerText = "🍽 " + food.name;
 
@@ -342,6 +523,13 @@ function showFoods(index) {
     checkbox.addEventListener("change", function() {
       week[index].foods[i].satisfied = this.checked;
       localStorage.setItem("weeklyFoodData", JSON.stringify(week));
+      if (this.checked) {
+        card.classList.add("completed");
+        const rect = card.getBoundingClientRect();
+        spawnEmojiBurst(rect.left + rect.width / 2, rect.top);
+      } else {
+        card.classList.remove("completed");
+      }
     });
 
     checkboxContainer.appendChild(checkbox);
