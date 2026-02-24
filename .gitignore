@@ -20,5 +20,8 @@ Thumbs.db
 .DS_Store
 .DS_Store
 
+# Dependencies (reinstall with npm install)
+node_modules/
+
 # Exclude large audio from repo (keep locally only)
 **/album1.wav
