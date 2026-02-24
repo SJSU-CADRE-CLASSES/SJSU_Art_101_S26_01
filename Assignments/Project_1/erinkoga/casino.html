@@ -71,6 +71,15 @@
         .blackjack .bj-actions #bjDeal { background: #8b0000; }
         .blackjack .bj-actions #bjDeal:hover:not(:disabled) { background: #a00; }
         .blackjack .bj-result { min-height: 1.5rem; color: #fff; font-weight: bold; margin-top: 0.5rem; }
+        .hilo h2 { margin: 0 0 0.75rem; color: #fff; font-size: 1.25rem; }
+        .hilo .hilo-label { color: #ccc; font-size: 0.85rem; margin-bottom: 0.25rem; }
+        .hilo .hilo-bet { margin-bottom: 0.75rem; }
+        .hilo .hilo-bet input { width: 100%; padding: 0.5rem; box-sizing: border-box; }
+        .hilo .hilo-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 0.75rem 0; }
+        .hilo .hilo-actions button { padding: 0.5rem 1rem; cursor: pointer; background: #1a5f2a; color: #fff; border: none; border-radius: 4px; }
+        .hilo .hilo-actions button:hover:not(:disabled) { background: #2a7f3a; }
+        .hilo .hilo-actions button:disabled { background: #555; cursor: not-allowed; }
+        .hilo .hilo-result { min-height: 1.5rem; color: #fff; font-weight: bold; margin-top: 0.5rem; }
         .casino-header { text-align: center; padding: 1.5rem 1rem 0.5rem; }
         .casino-header h1 { margin: 0; color: #ffd700; font-size: 1.75rem; font-family: "Times New Roman", Times, serif; }
         .casino-header .subheader { margin: 0.5rem 0 0; color: #ddd; font-size: 1rem; }
@@ -160,6 +169,21 @@
             <div class="tracker" style="margin-top: 0.75rem;">Lost in blackjack: <span id="bjTotalLost">0</span> chips</div>
         </div>
 
+        <div class="game-divider hilo">
+            <h2>Higher or lower</h2>
+            <div class="hilo-label">Current number: <span id="hiloCurrent">-</span></div>
+            <div class="hilo-bet">
+                <label for="hiloBet">Bet</label>
+                <input type="number" id="hiloBet" min="1" value="10" placeholder="Bet">
+            </div>
+            <div class="hilo-actions">
+                <button type="button" id="hiloStart">Start round</button>
+                <button type="button" id="hiloHigher" disabled>Higher</button>
+                <button type="button" id="hiloLower" disabled>Lower</button>
+            </div>
+            <div class="hilo-result" id="hiloResult"></div>
+        </div>
+
         <div class="stats-table">
             <table>
                 <thead>
@@ -171,6 +195,7 @@
                 <tbody>
                     <tr><td>Coin flip</td><td id="countCoin">0</td></tr>
                     <tr><td>Blackjack</td><td id="countBJ">0</td></tr>
+                    <tr><td>Higher / lower</td><td id="countHiLo">0</td></tr>
                     <tr><td>Total</td><td id="countTotal">0</td></tr>
                 </tbody>
             </table>
@@ -189,6 +214,7 @@
         let totalLost = 0;
         let coinPlays = 0;
         let bjPlays = 0;
+        let hiloPlays = 0;
         const balanceEl = document.getElementById('balance');
         const betEl = document.getElementById('bet');
         const resultEl = document.getElementById('result');
@@ -199,13 +225,15 @@
         const totalLostEl = document.getElementById('totalLost');
         const countCoinEl = document.getElementById('countCoin');
         const countBJEl = document.getElementById('countBJ');
+        const countHiLoEl = document.getElementById('countHiLo');
         const countTotalEl = document.getElementById('countTotal');
 
         function updateStatsTable() {
-            if (!countCoinEl || !countBJEl || !countTotalEl) return;
+            if (!countCoinEl || !countBJEl || !countHiLoEl || !countTotalEl) return;
             countCoinEl.textContent = coinPlays;
             countBJEl.textContent = bjPlays;
-            countTotalEl.textContent = coinPlays + bjPlays;
+            countHiLoEl.textContent = hiloPlays;
+            countTotalEl.textContent = coinPlays + bjPlays + hiloPlays;
         }
 
         document.querySelectorAll('.choices button').forEach(btn => {
@@ -275,6 +303,7 @@
             return sum;
         }
         let bjDeck = [], playerHand = [], dealerHand = [], bjBetAmount = 0, dealerHole = null, bjTotalLost = 0;
+        let hiloCurrent = null, hiloBetAmount = 0, hiloActive = false;
         const bjDealerHandEl = document.getElementById('bjDealerHand');
         const bjPlayerHandEl = document.getElementById('bjPlayerHand');
         const bjDealerValueEl = document.getElementById('bjDealerValue');
@@ -285,6 +314,12 @@
         const bjDealBtn = document.getElementById('bjDeal');
         const bjHitBtn = document.getElementById('bjHit');
         const bjStandBtn = document.getElementById('bjStand');
+        const hiloCurrentEl = document.getElementById('hiloCurrent');
+        const hiloBetEl = document.getElementById('hiloBet');
+        const hiloResultEl = document.getElementById('hiloResult');
+        const hiloStartBtn = document.getElementById('hiloStart');
+        const hiloHigherBtn = document.getElementById('hiloHigher');
+        const hiloLowerBtn = document.getElementById('hiloLower');
 
         function bjUpdateDisplay(dealerReveal) {
             bjPlayerHandEl.textContent = playerHand.join(' ');
@@ -373,6 +408,57 @@
             bjStandBtn.disabled = true;
             bjBetEl.disabled = false;
             dealerHole = null;
+        }
+
+        // Higher or lower
+        function hiloSetButtons(roundActive) {
+            if (!hiloStartBtn || !hiloHigherBtn || !hiloLowerBtn || !hiloBetEl) return;
+            hiloStartBtn.disabled = roundActive;
+            hiloHigherBtn.disabled = !roundActive;
+            hiloLowerBtn.disabled = !roundActive;
+            hiloBetEl.disabled = roundActive;
+        }
+
+        function startHiloRound() {
+            if (!hiloBetEl || !hiloCurrentEl || !hiloResultEl) return;
+            const bet = Math.floor(Number(hiloBetEl.value)) || 0;
+            if (bet < 1) {
+                hiloResultEl.textContent = 'Enter a bet of at least 1.';
+                return;
+            }
+            hiloBetAmount = bet;
+            balance -= bet;
+            balanceEl.textContent = balance;
+            hiloCurrent = Math.floor(Math.random() * 10) + 1;
+            hiloCurrentEl.textContent = String(hiloCurrent);
+            hiloResultEl.textContent = 'Will the next number be higher or lower?';
+            hiloActive = true;
+            hiloPlays++;
+            updateStatsTable();
+            hiloSetButtons(true);
+        }
+
+        function resolveHiloGuess(guessHigher) {
+            if (!hiloActive || hiloCurrent === null || !hiloResultEl || !hiloCurrentEl) return;
+            const next = Math.floor(Math.random() * 10) + 1;
+            const win = guessHigher ? next > hiloCurrent : next < hiloCurrent;
+            if (win) {
+                balance += hiloBetAmount * 2;
+                hiloResultEl.textContent = `Next number was ${next}. You win ${hiloBetAmount} chips!`;
+            } else {
+                hiloResultEl.textContent = `Next number was ${next}. You lose ${hiloBetAmount} chips.`;
+            }
+            balanceEl.textContent = balance;
+            hiloCurrentEl.textContent = String(next);
+            hiloActive = false;
+            hiloSetButtons(false);
+        }
+
+        if (hiloStartBtn && hiloHigherBtn && hiloLowerBtn) {
+            hiloSetButtons(false);
+            hiloStartBtn.addEventListener('click', startHiloRound);
+            hiloHigherBtn.addEventListener('click', () => resolveHiloGuess(true));
+            hiloLowerBtn.addEventListener('click', () => resolveHiloGuess(false));
         }
     </script>
 </body>
