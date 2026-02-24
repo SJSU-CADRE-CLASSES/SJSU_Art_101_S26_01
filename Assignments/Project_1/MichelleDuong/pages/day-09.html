@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>February 9, 2026 · Scrapbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; min-height: 100vh; background: #e8ddd0; background-image: radial-gradient(circle at 20% 80%, rgba(210, 180, 140, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 228, 196, 0.4) 0%, transparent 50%); padding: 2rem; position: relative; }
+    .back-link { position: fixed; top: 1rem; left: 1rem; font-size: 0.9rem; color: #6b5344; text-decoration: none; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.9); border-radius: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); z-index: 10; }
+    .back-link:hover { background: #fff; }
+    .date-label { font-family: 'Caveat', cursive; font-size: 1.8rem; font-weight: 600; color: #6b5344; text-align: center; margin-bottom: 1rem; position: relative; z-index: 2; }
+    .scrapbook {
+      position: relative;
+      min-height: calc(100vh - 5rem);
+      width: 100%;
+      padding: 2rem;
+    }
+    .paper {
+      position: absolute;
+      background: #fffef9;
+      box-shadow: 3px 6px 20px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.5);
+      padding: 2rem 2.5rem;
+      width: min(380px, 42vw);
+      font-family: 'Caveat', cursive;
+      font-size: 1.75rem;
+      color: #5c4a5a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .paper::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -35px;
+      width: 70px;
+      height: 20px;
+      background: repeating-linear-gradient(90deg, #ffb8c9 0px, #ffb8c9 4px, #ff9eb5 4px, #ff9eb5 8px);
+      transform: rotate(-45deg);
+      transform-origin: center center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      z-index: 2;
+      opacity: 0.9;
+      border-radius: 2px;
+    }
+    .paper::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      right: -35px;
+      width: 70px;
+      height: 20px;
+      background: repeating-linear-gradient(90deg, #b8e6d5 0px, #b8e6d5 4px, #a0d9c4 4px, #a0d9c4 8px);
+      transform: rotate(-45deg);
+      transform-origin: center center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      z-index: 2;
+      opacity: 0.9;
+      border-radius: 2px;
+    }
+    .paper.paper-1 {
+      left: 6%;
+      top: 12%;
+      transform: rotate(-6deg);
+    }
+    .paper.paper-2 {
+      right: 8%;
+      top: 28%;
+      transform: rotate(5deg);
+    }
+    .paper-title { font-weight: 600; margin-bottom: 0.35rem; font-size: 1.6rem; color: #6b5344; }
+    .paper-amount { font-weight: 600; color: #ff9eb5; font-size: 2rem; margin-top: 0.35rem; }
+    .paper-clipart { width: 100%; height: 160px; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; }
+    .paper-clipart svg,
+    .paper-clipart img { max-width: 100%; max-height: 100%; height: auto; object-fit: contain; }
+    .paper-2 .paper-clipart img { mix-blend-mode: multiply; }
+    @media (max-width: 700px) {
+      .paper { width: 85vw; }
+      .paper.paper-1 { left: 50%; top: 15%; transform: translateX(-50%) rotate(-4deg); }
+      .paper.paper-2 { left: 50%; top: 52%; right: auto; transform: translateX(-50%) rotate(3deg); }
+    }
+    .day-total-wrap {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 2;
+      font-family: 'Caveat', cursive;
+    }
+    .day-total-sparkle {
+      font-size: 1.4rem;
+      opacity: 0.9;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+    .day-total-sparkle:nth-child(1) { animation-delay: 0s; }
+    .day-total-sparkle:nth-child(2) { animation-delay: 0.2s; }
+    .day-total-sparkle:nth-child(3) { animation-delay: 0.4s; }
+    .day-total-sparkle:nth-child(4) { animation-delay: 0.1s; }
+    .day-total-sparkle:nth-child(5) { animation-delay: 0.3s; }
+    .day-total { font-size: 1.75rem; font-weight: 700; color: #5c4a5a; }
+    @keyframes sparkle { 0%, 100% { opacity: 0.9; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+  </style>
+</head>
+<body>
+  <a href="../index.html" class="back-link">← Back to calendar</a>
+  <h1 class="date-label">February 9, 2026</h1>
+  <div class="scrapbook">
+    <div class="paper paper-1">
+      <div class="paper-clipart">
+        <img src="../budget tracker/bowling pin.png" alt="">
+      </div>
+      <div class="paper-title">Round 1</div>
+      <div class="paper-amount">$86.25</div>
+    </div>
+    <div class="paper paper-2">
+      <div class="paper-clipart">
+        <img src="../budget tracker/hotpot.png" alt="">
+      </div>
+      <div class="paper-title">Shabuya</div>
+      <div class="paper-amount">$83.38</div>
+    </div>
+  </div>
+  <div class="day-total-wrap">
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+    <span class="day-total">Total: $169.63</span>
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+    <span class="day-total-sparkle" aria-hidden="true">✨</span>
+  </div>
+</body>
+</html>
