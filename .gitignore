@@ -20,3 +20,26 @@ Thumbs.db
 .DS_Store
 .DS_Store
 
+# Exclude large audio from repo (keep locally only)
+**/album1.wav
+
+# Exclude other project folders - keep only ColeLouie_PR1 (code, images, and fonts)
+Assignments/Project_1/JohnCamacho/
+Assignments/Project_1/DucTran/
+Assignments/Project_1/AmaraCarrier/
+Assignments/Project_1/erinkoga/
+Assignments/Project_1/SamLeavitt/
+Assignments/Project_1/BeatrizAyon/
+Assignments/Project_1/Andre_Duong/
+Assignments/Project_1/YisiAi/
+Assignments/Project_1/OliviaFlorence/
+Assignments/Project_1/DwayneMoraes/
+Assignments/Project_1/AndreaArellano/
+Assignments/Project_1/AlanJacobVillareal/
+Assignments/Project_1/jerrodReyes/
+Assignments/Project_1/Ryan Redden/
+Assignments/Project_1/CassidySingman/
+Assignments/Project_1/AshleighDong/
+Assignments/Project_1/AlexandraHernandez/
+Assignments/assignment1/
+cadre_homebase/

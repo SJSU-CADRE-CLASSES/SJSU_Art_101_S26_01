@@ -1,0 +1,12 @@
+/* Comic Writer page styles */
+
+body.page-comic-writer {
+  margin: 0;
+  padding: 1rem;
+  min-height: 100vh;
+  background-color: #f5f0e8;
+  background-image: url('Paper Texture.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
