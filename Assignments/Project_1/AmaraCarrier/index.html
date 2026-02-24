@@ -6,7 +6,7 @@
   <title>Spirimal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Press+Start+2P&family=VT323&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -33,7 +33,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2rem;
+      gap: 2.5rem;
       opacity: 0;
       animation: revealContent 1.2s ease-out 0.5s forwards;
     }
@@ -43,39 +43,175 @@
     }
 
     h1 {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 9rem;
+      font-family: 'UnifrakturCook', 'Press Start 2P', monospace;
+      font-size: 9.2rem;
       font-weight: 400;
       text-align: center;
-      color: #f2e8a8;
-      letter-spacing: 0.08em;
-      line-height: 1.4;
-      /* DOS / pixel: no smoothing */
+      color: #ffffff;
+      letter-spacing: 0.12em;
+      line-height: 1.05;
+      /* 8-bit crisp pixels */
       -webkit-font-smoothing: none;
       -moz-osx-font-smoothing: unset;
       font-smooth: never;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       filter: url(#pixelate);
-      /* Black outline (thicker for larger title) */
+      /* Blocky 8-bit outline + shine */
       text-shadow:
-        -3px -3px 0 #000,
+        -4px -4px 0 #000,
+        -4px 0 0 #000,
+        -4px 4px 0 #000,
+        0 -4px 0 #000,
+        0 4px 0 #000,
+        4px -4px 0 #000,
+        4px 0 0 #000,
+        4px 4px 0 #000,
+        -2px -2px 0 rgba(255,255,230,0.9),
+        2px 2px 0 rgba(180,160,80,0.7);
+      animation:
+        titleIdle 4s ease-in-out infinite,
+        titleGlowFade 6s ease-out forwards;
+    }
+
+    .main-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      position: relative;
+      padding: 1.6rem 3rem;
+    }
+
+    .main-menu::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #ffd95a;
+      border: 4px solid #000;
+      box-shadow:
+        0 0 0 4px #000,
+        0 8px 0 #000,
+        0 14px 18px rgba(0,0,0,0.75);
+      z-index: -1;
+    }
+
+    .menu-star {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+      z-index: 0;
+      fill: #ffffff;
+    }
+
+    .menu-star--tl { top: 6px; left: 10px; }
+    .menu-star--tr { top: 6px; right: 10px; }
+    .menu-star--bl { bottom: 6px; left: 10px; }
+    .menu-star--br { bottom: 6px; right: 10px; }
+    .menu-star--tm { top: 6px; left: 50%; transform: translateX(-50%); }
+    .menu-star--bm { bottom: 6px; left: 50%; transform: translateX(-50%); }
+    .menu-star--ml { top: 50%; left: 6px; transform: translateY(-50%); }
+    .menu-star--mr { top: 50%; right: 6px; transform: translateY(-50%); }
+
+    .menu-btn {
+      min-width: 0;
+      padding: 0.3rem 0;
+      border: none;
+      border-radius: 0;
+      background: none;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.2rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+      transform: translateY(0);
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        filter 0.15s ease-out;
+    }
+
+    .menu-btn--primary {
+    }
+
+    .menu-btn--danger {
+      color: #ffffff;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-3px);
+      text-shadow:
         -3px 0 0 #000,
-        -3px 3px 0 #000,
-        0 -3px 0 #000,
         0 3px 0 #000,
-        3px -3px 0 #000,
-        3px 0 0 #000,
-        3px 3px 0 #000,
-        /* Metallic shine */
-        -1px -1px 0 rgba(255,255,230,0.9),
-        1px 1px 0 rgba(180,160,80,0.6);
-      animation: titleIdle 4s ease-in-out infinite;
+        0 0 16px rgba(255,255,255,0.9),
+        0 0 28px rgba(255, 248, 200, 0.95);
+    }
+
+    .menu-btn:active {
+      transform: translateY(1px);
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+    }
+
+    .menu-btn:focus-visible {
+      outline: 3px solid #ffd700;
+      outline-offset: 4px;
     }
 
     @keyframes titleIdle {
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-8px) scale(1.02); }
+    }
+
+    @keyframes titleGlowFade {
+      0% {
+        text-shadow:
+          -3px -3px 0 #000,
+          -3px 0 0 #000,
+          -3px 3px 0 #000,
+          0 -3px 0 #000,
+          0 3px 0 #000,
+          3px -3px 0 #000,
+          3px 0 0 #000,
+          3px 3px 0 #000,
+          -1px -1px 0 rgba(255,255,230,0.9),
+          1px 1px 0 rgba(180,160,80,0.6);
+      }
+      25% {
+        text-shadow:
+          -3px -3px 0 #000,
+          -3px 0 0 #000,
+          -3px 3px 0 #000,
+          0 -3px 0 #000,
+          0 3px 0 #000,
+          3px -3px 0 #000,
+          3px 0 0 #000,
+          3px 3px 0 #000,
+          -1px -1px 0 rgba(255,255,240,1),
+          1px 1px 0 rgba(220,190,90,0.9),
+          0 0 18px rgba(255,240,180,0.9),
+          0 0 36px rgba(255,220,120,0.85);
+      }
+      100% {
+        text-shadow:
+          -3px -3px 0 #000,
+          -3px 0 0 #000,
+          -3px 3px 0 #000,
+          0 -3px 0 #000,
+          0 3px 0 #000,
+          3px -3px 0 #000,
+          3px 0 0 #000,
+          3px 3px 0 #000,
+          -1px -1px 0 rgba(255,255,230,0.45),
+          1px 1px 0 rgba(180,160,80,0.25);
+      }
     }
 
     .star-btn {
@@ -119,45 +255,48 @@
       outline-offset: 4px;
     }
 
-    /* Cloud panels that part on load – rounded scalloped shape */
-    .cloud {
+    /* New swiping cloud bands – slide up and down to reveal scene */
+    .swipe-cloud {
       position: fixed;
-      top: 0;
-      bottom: 0;
-      width: 60%;
+      left: 0;
+      width: 100%;
       z-index: 2;
       pointer-events: none;
-    }
-
-    /* Same small-pixel pattern as background clouds; gradient keeps wipe panels opaque */
-    .cloud-left {
-      left: 0;
-      background: linear-gradient(105deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      background:
+        linear-gradient(180deg, rgba(210, 220, 235, 0.96) 0%, rgba(195, 208, 230, 0.94) 50%, rgba(185, 200, 224, 0.92) 100%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.45)'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='6' y='0' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='4' y='3' width='1' height='1'/%3E%3Crect x='7' y='3' width='1' height='1'/%3E%3Crect x='2' y='6' width='1' height='1'/%3E%3Crect x='5' y='7' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
       background-size: auto, 8px 8px;
-      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
-      animation: partLeft 1.4s ease-in-out forwards;
-      clip-path: url(#leftCloudClip);
-      -webkit-clip-path: url(#leftCloudClip);
+      box-shadow: 0 0 40px rgba(200, 212, 235, 0.6);
+      transform-origin: 50% 50%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: url(#cloudPixelate);
     }
 
-    .cloud-right {
-      right: 0;
-      background: linear-gradient(75deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
-      background-size: auto, 8px 8px;
-      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
-      animation: partRight 1.4s ease-in-out forwards;
-      clip-path: url(#rightCloudClip);
-      -webkit-clip-path: url(#rightCloudClip);
+    .swipe-cloud-top {
+      top: 0;
+      height: 55%;
+      clip-path: url(#swipeCloudTopClip);
+      -webkit-clip-path: url(#swipeCloudTopClip);
+      animation: swipeTop 3.4s ease-in-out forwards;
     }
 
-    @keyframes partLeft {
-      to { transform: translateX(-100%); }
+    .swipe-cloud-bottom {
+      bottom: 0;
+      height: 55%;
+      clip-path: url(#swipeCloudBottomClip);
+      -webkit-clip-path: url(#swipeCloudBottomClip);
+      animation: swipeBottom 3.4s ease-in-out forwards;
     }
 
-    @keyframes partRight {
-      to { transform: translateX(100%); }
+    @keyframes swipeTop {
+      from { transform: translateY(0); }
+      to { transform: translateY(-110%); }
+    }
+
+    @keyframes swipeBottom {
+      from { transform: translateY(0); }
+      to { transform: translateY(110%); }
     }
 
     /* Layered transparent background clouds – small pixel pattern */
@@ -173,11 +312,13 @@
       position: absolute;
       background-color: transparent;
       background-size: 8px 8px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(220,230,250,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
       clip-path: url(#marioCloud1);
       -webkit-clip-path: url(#marioCloud1);
       animation: cloudDriftR 22s ease-in-out infinite;
-      opacity: 0.55;
+      opacity: 0.9;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: url(#cloudPixelate);
     }
 
     @keyframes cloudDriftR {
@@ -199,18 +340,18 @@
       66% { transform: translateX(2%) translateY(0.5%); }
     }
 
-    .bg-cloud-1 { width: 46%; height: 28%; left: -4%; top: 6%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 25s; animation-delay: 0s; }
-    .bg-cloud-2 { width: 24%; height: 14%; right: -6%; top: 20%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 28s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-3 { width: 52%; height: 26%; left: 20%; bottom: 10%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 30s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-4 { width: 18%; height: 11%; right: 14%; bottom: 26%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 24s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-5 { width: 14%; height: 9%; left: 10%; top: 40%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 26s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-6 { width: 32%; height: 18%; right: 20%; top: 50%; clip-path: url(#marioCloud6); -webkit-clip-path: url(#marioCloud6); animation-name: cloudDriftL; animation-duration: 29s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-7 { width: 28%; height: 15%; left: 36%; top: 2%; clip-path: url(#marioCloud7); -webkit-clip-path: url(#marioCloud7); animation-name: cloudDriftR2; animation-duration: 21s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-8 { width: 20%; height: 12%; left: 2%; bottom: 36%; clip-path: url(#marioCloud8); -webkit-clip-path: url(#marioCloud8); animation-name: cloudDriftL2; animation-duration: 25s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-9 { width: 38%; height: 22%; left: 52%; top: 12%; clip-path: url(#marioCloud9); -webkit-clip-path: url(#marioCloud9); animation-name: cloudDriftL; animation-duration: 26s; animation-delay: 4s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,245,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-10 { width: 40%; height: 24%; right: -4%; bottom: 16%; clip-path: url(#marioCloud10); -webkit-clip-path: url(#marioCloud10); animation-name: cloudDriftR2; animation-duration: 28s; animation-delay: 7s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,240,252,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-11 { width: 50%; height: 26%; left: 8%; top: 26%; clip-path: url(#marioCloud11); -webkit-clip-path: url(#marioCloud11); animation-name: cloudDriftR; animation-duration: 27s; animation-delay: 11s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,232,248,0.26)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-12 { width: 16%; height: 10%; right: 10%; top: 46%; clip-path: url(#marioCloud12); -webkit-clip-path: url(#marioCloud12); animation-name: cloudDriftL2; animation-duration: 25s; animation-delay: 9s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.24)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-1 { width: 52%; height: 30%; left: -6%; top: 8%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 25s; animation-delay: 0s; }
+    .bg-cloud-2 { width: 32%; height: 18%; left: 28%; top: 18%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 28s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-3 { width: 50%; height: 26%; left: 10%; top: 26%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 30s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-4 { width: 26%; height: 16%; left: 54%; top: 22%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 24s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-5 { width: 22%; height: 13%; left: 6%; top: 32%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 26s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-6 { width: 34%; height: 20%; left: 38%; top: 34%; clip-path: url(#marioCloud6); -webkit-clip-path: url(#marioCloud6); animation-name: cloudDriftL; animation-duration: 29s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-7 { width: 30%; height: 18%; left: 12%; top: 20%; clip-path: url(#marioCloud7); -webkit-clip-path: url(#marioCloud7); animation-name: cloudDriftR2; animation-duration: 21s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-8 { width: 24%; height: 14%; left: 56%; top: 30%; clip-path: url(#marioCloud8); -webkit-clip-path: url(#marioCloud8); animation-name: cloudDriftL2; animation-duration: 25s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-9 { width: 42%; height: 24%; left: 6%; top: 14%; clip-path: url(#marioCloud9); -webkit-clip-path: url(#marioCloud9); animation-name: cloudDriftL; animation-duration: 26s; animation-delay: 4s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,245,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-10 { width: 38%; height: 22%; left: 44%; top: 40%; clip-path: url(#marioCloud10); -webkit-clip-path: url(#marioCloud10); animation-name: cloudDriftR2; animation-duration: 28s; animation-delay: 7s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,240,252,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-11 { width: 54%; height: 28%; left: -4%; top: 22%; clip-path: url(#marioCloud11); -webkit-clip-path: url(#marioCloud11); animation-name: cloudDriftR; animation-duration: 27s; animation-delay: 11s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,232,248,0.26)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-12 { width: 26%; height: 15%; left: 58%; top: 24%; clip-path: url(#marioCloud12); -webkit-clip-path: url(#marioCloud12); animation-name: cloudDriftL2; animation-duration: 25s; animation-delay: 9s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.24)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
 
     /* Pixel art sun and stars (sky decor) */
     .sky-decor {
@@ -235,9 +376,56 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 28%;
+      height: 100%;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
+    }
+    .pixel-stars .star {
+      fill: #ffffff;
+      opacity: 0.12;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    /* Size variants for stars */
+    .pixel-stars .star--lg { /* current largest size */ }
+    .pixel-stars .star--md { transform: scale(0.7); }
+    .pixel-stars .star--sm { transform: scale(0.5); }
+    .pixel-stars .star--dot { /* separate dot geometry, no extra scale needed */ }
+    /* Stationary (no movement), just opacity blinks with staggered timings */
+    .pixel-stars .star--a { animation: twinkleA 7s linear infinite; }
+    .pixel-stars .star--b { animation: twinkleB 9s linear infinite 1.2s; }
+    .pixel-stars .star--c { animation: twinkleC 8s linear infinite 0.8s; }
+    .pixel-stars .star--d { animation: twinkleD 10s linear infinite 2s; }
+    .pixel-stars .star--e { animation: twinkleB 11s linear infinite 3.1s; }
+    .pixel-stars .star--f { animation: twinkleA 9s linear infinite 0.4s; }
+    .pixel-stars .star--g { animation: twinkleC 10s linear infinite 1.7s; }
+    .pixel-stars .star--h { animation: twinkleD 8s linear infinite 2.6s; }
+
+    @keyframes twinkleA {
+      0%, 18%, 100% { opacity: 0.08; }
+      20%, 24% { opacity: 0.9; }
+      26%, 60% { opacity: 0.2; }
+      62%, 64% { opacity: 0.7; }
+    }
+    @keyframes twinkleB {
+      0%, 30%, 100% { opacity: 0.1; }
+      32%, 35% { opacity: 1; }
+      50% { opacity: 0.3; }
+      72%, 75% { opacity: 0.8; }
+    }
+    @keyframes twinkleC {
+      0%, 40%, 100% { opacity: 0.06; }
+      15% { opacity: 0.4; }
+      42%, 45% { opacity: 0.95; }
+      65% { opacity: 0.25; }
+      80% { opacity: 0.6; }
+    }
+    @keyframes twinkleD {
+      0%, 25%, 100% { opacity: 0.14; }
+      10%, 12% { opacity: 0.85; }
+      35% { opacity: 0.3; }
+      55%, 58% { opacity: 1; }
+      78% { opacity: 0.2; }
     }
   </style>
   <!-- Pixelate filter + scalloped cloud shapes -->
@@ -249,118 +437,256 @@
         <feMorphology in="SourceGraphic" result="dilated" operator="dilate" radius="2.8"/>
         <feMorphology in="dilated" operator="erode" radius="1.2"/>
       </filter>
-      <!-- Parting clouds: traditional puffy scalloped inner edge -->
-      <clipPath id="leftCloudClip" clipPathUnits="objectBoundingBox">
-        <path d="M 0.02,0 Q 0,0.25 0.02,0.5 Q 0,0.75 0.02,1 L 1,1
-                 L 1,0.85 Q 0.92,0.7 0.95,0.5 Q 0.92,0.3 1,0.15 L 1,0 L 0.02,0 Z" />
+      <!-- Stronger pixelation for clouds -->
+      <filter id="cloudPixelate" x="-20%" y="-20%" width="140%" height="140%">
+        <feMorphology in="SourceGraphic" result="dilatedCloud" operator="dilate" radius="4"/>
+        <feMorphology in="dilatedCloud" operator="erode" radius="2.2"/>
+      </filter>
+      <!-- Mosaic-style chunky effect for title -->
+      <filter id="mosaicTitle" x="-15%" y="-15%" width="130%" height="130%">
+        <!-- Slight blur to blend strokes -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+        <!-- Expand and shrink to create blocky / tiled edges -->
+        <feMorphology in="blur" result="dilate" operator="dilate" radius="2.5" />
+        <feMorphology in="dilate" operator="erode" radius="1.4" />
+      </filter>
+      <!-- New swiping fog bands: top and bottom, chunky 8‑bit rectangles -->
+      <clipPath id="swipeCloudTopClip" clipPathUnits="objectBoundingBox">
+        <rect x="0" y="0" width="1" height="1" />
       </clipPath>
-      <clipPath id="rightCloudClip" clipPathUnits="objectBoundingBox">
-        <path d="M 0.98,0 Q 1,0.25 0.98,0.5 Q 1,0.75 0.98,1 L 0,1
-                 L 0,0.85 Q 0.08,0.7 0.05,0.5 Q 0.08,0.3 0,0.15 L 0,0 L 0.98,0 Z" />
+      <clipPath id="swipeCloudBottomClip" clipPathUnits="objectBoundingBox">
+        <rect x="0" y="0" width="1" height="1" />
       </clipPath>
-      <!-- Fluffy varied cumulus: rounder curves, different lobe counts and proportions, no right edge -->
+      <!-- Fluffy clustered mounds built from circular blobs of varying sizes (objectBoundingBox units) -->
       <clipPath id="marioCloud1" clipPathUnits="objectBoundingBox">
-        <!-- Wide flat: 4 soft puffs, low -->
-        <path d="M 0,0.94 Q 0.05,0.9 0.15,0.94 Q 0.1,0.6 0.22,0.48 Q 0.18,0.28 0.35,0.38 Q 0.3,0.2 0.5,0.32 Q 0.45,0.18 0.65,0.38 Q 0.58,0.28 0.78,0.48 Q 0.72,0.4 0.88,0.62 Q 0.85,0.72 0.96,0.82 L 1.06,0.82 L 1.06,1 Q 0.5,1.05 0,1 Z" />
+        <circle cx="0.18" cy="0.60" r="0.18" />
+        <circle cx="0.42" cy="0.54" r="0.25" />
+        <circle cx="0.72" cy="0.60" r="0.20" />
+        <circle cx="0.55" cy="0.40" r="0.12" />
+        <ellipse cx="0.48" cy="0.90" rx="0.54" ry="0.16" />
       </clipPath>
       <clipPath id="marioCloud2" clipPathUnits="objectBoundingBox">
-        <!-- Tall classic: 3 puffs, middle highest, very round -->
-        <path d="M 0,0.88 Q 0.04,0.78 0.2,0.88 Q 0.12,0.45 0.32,0.28 Q 0.26,0.08 0.5,0.2 Q 0.44,0.02 0.68,0.28 Q 0.62,0.45 0.82,0.65 Q 0.78,0.78 0.94,0.88 L 1.05,0.88 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.26" cy="0.62" r="0.19" />
+        <circle cx="0.50" cy="0.56" r="0.23" />
+        <circle cx="0.74" cy="0.60" r="0.17" />
+        <circle cx="0.40" cy="0.46" r="0.11" />
+        <ellipse cx="0.50" cy="0.88" rx="0.50" ry="0.17" />
       </clipPath>
       <clipPath id="marioCloud3" clipPathUnits="objectBoundingBox">
-        <!-- Double puff: two big overlapping blobs -->
-        <path d="M 0,0.9 Q 0.02,0.7 0.2,0.82 Q 0.15,0.35 0.45,0.35 Q 0.4,0.15 0.65,0.35 Q 0.6,0.5 0.85,0.7 Q 0.82,0.82 0.98,0.9 L 1.05,0.9 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.22" cy="0.64" r="0.18" />
+        <circle cx="0.44" cy="0.56" r="0.24" />
+        <circle cx="0.68" cy="0.62" r="0.19" />
+        <circle cx="0.54" cy="0.44" r="0.13" />
+        <ellipse cx="0.48" cy="0.90" rx="0.52" ry="0.16" />
       </clipPath>
       <clipPath id="marioCloud4" clipPathUnits="objectBoundingBox">
-        <!-- Stretched: wide, 3 soft mounds, shallow dips -->
-        <path d="M 0,0.92 Q 0.08,0.84 0.22,0.9 Q 0.18,0.52 0.4,0.42 Q 0.34,0.25 0.58,0.38 Q 0.5,0.22 0.75,0.42 Q 0.68,0.55 0.9,0.72 Q 0.86,0.82 1,0.9 L 1.06,0.9 L 1.06,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.24" cy="0.60" r="0.17" />
+        <circle cx="0.46" cy="0.54" r="0.21" />
+        <circle cx="0.70" cy="0.62" r="0.18" />
+        <circle cx="0.35" cy="0.44" r="0.10" />
+        <ellipse cx="0.50" cy="0.90" rx="0.52" ry="0.15" />
       </clipPath>
       <clipPath id="marioCloud5" clipPathUnits="objectBoundingBox">
-        <!-- Chubby: 4 round puffs, similar size -->
-        <path d="M 0,0.9 Q 0.06,0.82 0.18,0.88 Q 0.14,0.48 0.3,0.35 Q 0.26,0.18 0.42,0.32 Q 0.36,0.15 0.54,0.35 Q 0.48,0.2 0.68,0.42 Q 0.62,0.35 0.8,0.55 Q 0.76,0.68 0.92,0.8 L 1.05,0.8 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.20" cy="0.62" r="0.16" />
+        <circle cx="0.38" cy="0.56" r="0.19" />
+        <circle cx="0.58" cy="0.60" r="0.17" />
+        <circle cx="0.78" cy="0.64" r="0.15" />
+        <circle cx="0.46" cy="0.46" r="0.11" />
+        <ellipse cx="0.48" cy="0.92" rx="0.50" ry="0.14" />
       </clipPath>
       <clipPath id="marioCloud6" clipPathUnits="objectBoundingBox">
-        <!-- Asymmetric: left big, right smaller -->
-        <path d="M 0,0.88 Q 0.02,0.65 0.22,0.82 Q 0.18,0.38 0.42,0.32 Q 0.36,0.12 0.58,0.28 Q 0.5,0.15 0.72,0.38 Q 0.65,0.5 0.85,0.68 Q 0.82,0.78 0.96,0.86 L 1.04,0.86 L 1.04,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.24" cy="0.60" r="0.22" />
+        <circle cx="0.50" cy="0.56" r="0.20" />
+        <circle cx="0.76" cy="0.64" r="0.18" />
+        <circle cx="0.60" cy="0.46" r="0.12" />
+        <ellipse cx="0.48" cy="0.90" rx="0.52" ry="0.16" />
       </clipPath>
       <clipPath id="marioCloud7" clipPathUnits="objectBoundingBox">
-        <!-- Fluffy pillow: 2 big soft mounds -->
-        <path d="M 0,0.92 Q 0.02,0.75 0.25,0.88 Q 0.2,0.4 0.5,0.4 Q 0.45,0.18 0.72,0.42 Q 0.68,0.58 0.9,0.78 Q 0.88,0.88 1,0.94 L 1.05,0.94 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.26" cy="0.60" r="0.19" />
+        <circle cx="0.48" cy="0.54" r="0.22" />
+        <circle cx="0.72" cy="0.60" r="0.18" />
+        <circle cx="0.60" cy="0.44" r="0.11" />
+        <ellipse cx="0.50" cy="0.88" rx="0.50" ry="0.15" />
       </clipPath>
       <clipPath id="marioCloud8" clipPathUnits="objectBoundingBox">
-        <!-- Scattered: 5 small bumps, irregular -->
-        <path d="M 0,0.92 Q 0.04,0.85 0.12,0.9 Q 0.08,0.55 0.2,0.45 Q 0.16,0.28 0.32,0.38 Q 0.28,0.22 0.45,0.35 Q 0.4,0.25 0.58,0.42 Q 0.52,0.35 0.7,0.52 Q 0.64,0.48 0.82,0.65 Q 0.78,0.78 0.92,0.85 L 1.05,0.85 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.22" cy="0.60" r="0.17" />
+        <circle cx="0.40" cy="0.52" r="0.20" />
+        <circle cx="0.60" cy="0.60" r="0.18" />
+        <circle cx="0.80" cy="0.66" r="0.16" />
+        <circle cx="0.50" cy="0.44" r="0.10" />
+        <ellipse cx="0.50" cy="0.90" rx="0.52" ry="0.14" />
       </clipPath>
       <clipPath id="marioCloud9" clipPathUnits="objectBoundingBox">
-        <!-- Round blob: one main dome, small side nubs -->
-        <path d="M 0,0.9 Q 0.02,0.78 0.15,0.88 Q 0.1,0.5 0.35,0.45 Q 0.28,0.2 0.55,0.35 Q 0.48,0.15 0.72,0.38 Q 0.65,0.5 0.88,0.68 Q 0.85,0.8 0.98,0.88 L 1.05,0.88 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.26" cy="0.62" r="0.19" />
+        <circle cx="0.48" cy="0.56" r="0.23" />
+        <circle cx="0.72" cy="0.60" r="0.20" />
+        <circle cx="0.36" cy="0.46" r="0.11" />
+        <ellipse cx="0.50" cy="0.90" rx="0.54" ry="0.16" />
       </clipPath>
       <clipPath id="marioCloud10" clipPathUnits="objectBoundingBox">
-        <!-- Wide and low: 5 small puffs in a row -->
-        <path d="M 0,0.95 Q 0.04,0.9 0.12,0.94 Q 0.08,0.62 0.2,0.52 Q 0.16,0.35 0.32,0.44 Q 0.28,0.3 0.45,0.42 Q 0.4,0.32 0.58,0.48 Q 0.52,0.4 0.7,0.58 Q 0.65,0.55 0.85,0.72 L 1.05,0.72 L 1.05,1 Q 0.5,1.05 0,1 Z" />
+        <circle cx="0.18" cy="0.62" r="0.16" />
+        <circle cx="0.34" cy="0.56" r="0.18" />
+        <circle cx="0.52" cy="0.58" r="0.19" />
+        <circle cx="0.74" cy="0.64" r="0.17" />
+        <circle cx="0.44" cy="0.46" r="0.10" />
+        <ellipse cx="0.50" cy="0.92" rx="0.52" ry="0.15" />
       </clipPath>
       <clipPath id="marioCloud11" clipPathUnits="objectBoundingBox">
-        <!-- Tall double: 2 tall narrow puffs -->
-        <path d="M 0,0.88 Q 0.02,0.72 0.18,0.85 Q 0.12,0.38 0.38,0.32 Q 0.32,0.1 0.55,0.28 Q 0.48,0.12 0.72,0.35 Q 0.65,0.48 0.88,0.68 Q 0.85,0.8 0.98,0.88 L 1.04,0.88 L 1.04,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.24" cy="0.60" r="0.22" />
+        <circle cx="0.50" cy="0.54" r="0.25" />
+        <circle cx="0.76" cy="0.64" r="0.21" />
+        <circle cx="0.60" cy="0.42" r="0.13" />
+        <ellipse cx="0.52" cy="0.90" rx="0.55" ry="0.17" />
       </clipPath>
       <clipPath id="marioCloud12" clipPathUnits="objectBoundingBox">
-        <!-- Lumpy: 3 puffs, different roundness -->
-        <path d="M 0,0.9 Q 0.06,0.8 0.2,0.88 Q 0.14,0.45 0.38,0.35 Q 0.32,0.18 0.55,0.32 Q 0.48,0.12 0.72,0.38 Q 0.64,0.52 0.85,0.7 Q 0.8,0.82 0.95,0.9 L 1.05,0.9 L 1.05,1 Q 0.5,1.04 0,1 Z" />
+        <circle cx="0.24" cy="0.60" r="0.18" />
+        <circle cx="0.46" cy="0.54" r="0.21" />
+        <circle cx="0.68" cy="0.62" r="0.19" />
+        <circle cx="0.36" cy="0.44" r="0.10" />
+        <ellipse cx="0.50" cy="0.90" rx="0.50" ry="0.15" />
       </clipPath>
     </defs>
   </svg>
 </head>
 <body>
   <div class="sky-decor" aria-hidden="true">
-    <svg class="pixel-sun" viewBox="0 -12 32 32" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stop-color="#ffeb3b" stop-opacity="0.95"/>
-          <stop offset="35%" stop-color="#ffd54f" stop-opacity="0.6"/>
-          <stop offset="65%" stop-color="#ffb74d" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="#ff9800" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <!-- Smooth gradient glow -->
-      <ellipse cx="16" cy="20" rx="18" ry="22" fill="url(#sunGlow)"/>
-      <!-- Half circle (rising sun disc) -->
-      <path fill="#ffd54f" d="M 6,20 A 10,10 0 0 1 26,20 L 26,32 L 6,32 Z"/>
-      <path fill="#ffeb3b" d="M 7,20 A 9,9 0 0 1 25,20 L 25,31 L 7,31 Z"/>
-    </svg>
     <svg class="pixel-stars" viewBox="0 0 400 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Stars with size variation: small (0.5), medium (1), large (1.4) -->
-      <g fill="#fff" fill-opacity="0.95" transform="translate(24,7.5) scale(0.5) translate(-24,-7.5)"><rect x="23" y="6" width="1" height="1"/><rect x="24" y="6" width="1" height="1"/><rect x="25" y="6" width="1" height="1"/><rect x="23" y="7" width="1" height="1"/><rect x="24" y="7" width="1" height="1"/><rect x="25" y="7" width="1" height="1"/><rect x="23" y="8" width="1" height="1"/><rect x="24" y="8" width="1" height="1"/><rect x="25" y="8" width="1" height="1"/><rect x="24" y="5" width="1" height="1"/><rect x="24" y="9" width="1" height="1"/><rect x="22" y="7" width="1" height="1"/><rect x="26" y="7" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.9"><rect x="87" y="18" width="1" height="1"/><rect x="88" y="18" width="1" height="1"/><rect x="89" y="18" width="1" height="1"/><rect x="87" y="19" width="1" height="1"/><rect x="88" y="19" width="1" height="1"/><rect x="89" y="19" width="1" height="1"/><rect x="87" y="20" width="1" height="1"/><rect x="88" y="20" width="1" height="1"/><rect x="89" y="20" width="1" height="1"/><rect x="88" y="17" width="1" height="1"/><rect x="88" y="21" width="1" height="1"/><rect x="86" y="19" width="1" height="1"/><rect x="90" y="19" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.85" transform="translate(160,3.5) scale(1.4) translate(-160,-3.5)"><rect x="159" y="2" width="1" height="1"/><rect x="160" y="2" width="1" height="1"/><rect x="161" y="2" width="1" height="1"/><rect x="159" y="3" width="1" height="1"/><rect x="160" y="3" width="1" height="1"/><rect x="161" y="3" width="1" height="1"/><rect x="159" y="4" width="1" height="1"/><rect x="160" y="4" width="1" height="1"/><rect x="161" y="4" width="1" height="1"/><rect x="160" y="1" width="1" height="1"/><rect x="160" y="5" width="1" height="1"/><rect x="158" y="3" width="1" height="1"/><rect x="162" y="3" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.95" transform="translate(232,13.5) scale(0.55) translate(-232,-13.5)"><rect x="231" y="12" width="1" height="1"/><rect x="232" y="12" width="1" height="1"/><rect x="233" y="12" width="1" height="1"/><rect x="231" y="13" width="1" height="1"/><rect x="232" y="13" width="1" height="1"/><rect x="233" y="13" width="1" height="1"/><rect x="231" y="14" width="1" height="1"/><rect x="232" y="14" width="1" height="1"/><rect x="233" y="14" width="1" height="1"/><rect x="232" y="11" width="1" height="1"/><rect x="232" y="15" width="1" height="1"/><rect x="230" y="13" width="1" height="1"/><rect x="234" y="13" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.88"><rect x="303" y="20" width="1" height="1"/><rect x="304" y="20" width="1" height="1"/><rect x="305" y="20" width="1" height="1"/><rect x="303" y="21" width="1" height="1"/><rect x="304" y="21" width="1" height="1"/><rect x="305" y="21" width="1" height="1"/><rect x="303" y="22" width="1" height="1"/><rect x="304" y="22" width="1" height="1"/><rect x="305" y="22" width="1" height="1"/><rect x="304" y="19" width="1" height="1"/><rect x="304" y="23" width="1" height="1"/><rect x="302" y="21" width="1" height="1"/><rect x="306" y="21" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.92" transform="translate(56,31.5) scale(1.35) translate(-56,-31.5)"><rect x="55" y="30" width="1" height="1"/><rect x="56" y="30" width="1" height="1"/><rect x="57" y="30" width="1" height="1"/><rect x="55" y="31" width="1" height="1"/><rect x="56" y="31" width="1" height="1"/><rect x="57" y="31" width="1" height="1"/><rect x="55" y="32" width="1" height="1"/><rect x="56" y="32" width="1" height="1"/><rect x="57" y="32" width="1" height="1"/><rect x="56" y="29" width="1" height="1"/><rect x="56" y="33" width="1" height="1"/><rect x="54" y="31" width="1" height="1"/><rect x="58" y="31" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.8" transform="translate(200,27.5) scale(0.5) translate(-200,-27.5)"><rect x="199" y="26" width="1" height="1"/><rect x="200" y="26" width="1" height="1"/><rect x="201" y="26" width="1" height="1"/><rect x="199" y="27" width="1" height="1"/><rect x="200" y="27" width="1" height="1"/><rect x="201" y="27" width="1" height="1"/><rect x="199" y="28" width="1" height="1"/><rect x="200" y="28" width="1" height="1"/><rect x="201" y="28" width="1" height="1"/><rect x="200" y="25" width="1" height="1"/><rect x="200" y="29" width="1" height="1"/><rect x="198" y="27" width="1" height="1"/><rect x="202" y="27" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.9" transform="translate(336,9.5) scale(0.6) translate(-336,-9.5)"><rect x="335" y="8" width="1" height="1"/><rect x="336" y="8" width="1" height="1"/><rect x="337" y="8" width="1" height="1"/><rect x="335" y="9" width="1" height="1"/><rect x="336" y="9" width="1" height="1"/><rect x="337" y="9" width="1" height="1"/><rect x="335" y="10" width="1" height="1"/><rect x="336" y="10" width="1" height="1"/><rect x="337" y="10" width="1" height="1"/><rect x="336" y="7" width="1" height="1"/><rect x="336" y="11" width="1" height="1"/><rect x="334" y="9" width="1" height="1"/><rect x="338" y="9" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.85" transform="translate(120,37.5) scale(0.55) translate(-120,-37.5)"><rect x="119" y="36" width="1" height="1"/><rect x="120" y="36" width="1" height="1"/><rect x="121" y="36" width="1" height="1"/><rect x="119" y="37" width="1" height="1"/><rect x="120" y="37" width="1" height="1"/><rect x="121" y="37" width="1" height="1"/><rect x="119" y="38" width="1" height="1"/><rect x="120" y="38" width="1" height="1"/><rect x="121" y="38" width="1" height="1"/><rect x="120" y="35" width="1" height="1"/><rect x="120" y="39" width="1" height="1"/><rect x="118" y="37" width="1" height="1"/><rect x="122" y="37" width="1" height="1"/></g>
-      <g fill="#fff" fill-opacity="0.78" transform="translate(272,5.5) scale(1.4) translate(-272,-5.5)"><rect x="271" y="4" width="1" height="1"/><rect x="272" y="4" width="1" height="1"/><rect x="273" y="4" width="1" height="1"/><rect x="271" y="5" width="1" height="1"/><rect x="272" y="5" width="1" height="1"/><rect x="273" y="5" width="1" height="1"/><rect x="271" y="6" width="1" height="1"/><rect x="272" y="6" width="1" height="1"/><rect x="273" y="6" width="1" height="1"/><rect x="272" y="3" width="1" height="1"/><rect x="272" y="7" width="1" height="1"/><rect x="270" y="5" width="1" height="1"/><rect x="274" y="5" width="1" height="1"/></g>
+      <defs>
+        <!-- 5-point star using a single polygon -->
+        <g id="star4" shape-rendering="crispEdges">
+          <polygon points="0,-3 0.9,-1 3,-1 1.4,0.4 2,3 0,1.7 -2,3 -1.4,0.4 -3,-1 -0.9,-1" />
+        </g>
+        <!-- Smaller 5-point star for tiny points of light -->
+        <g id="starDot" shape-rendering="crispEdges">
+          <polygon points="0,-1.6 0.6,-0.6 1.6,-0.6 0.8,0.2 1.1,1.6 0,0.9 -1.1,1.6 -0.8,0.2 -1.6,-0.6 -0.6,-0.6" />
+        </g>
+      </defs>
+      <!-- Largest stars (original size) -->
+      <use href="#star4" class="star star--a star--lg" x="40" y="18" />
+      <use href="#star4" class="star star--b star--lg" x="200" y="32" />
+      <use href="#star4" class="star star--c star--lg" x="360" y="20" />
+
+      <!-- Medium 4-point stars -->
+      <use href="#star4" class="star star--d star--md" x="90" y="10" />
+      <use href="#star4" class="star star--e star--md" x="290" y="14" />
+      <use href="#star4" class="star star--f star--md" x="150" y="44" />
+      <use href="#star4" class="star star--g star--md" x="330" y="52" />
+
+      <!-- Small 4-point stars -->
+      <use href="#star4" class="star star--f star--sm" x="70" y="6" />
+      <use href="#star4" class="star star--g star--sm" x="240" y="8" />
+      <use href="#star4" class="star star--a star--sm" x="20" y="60" />
+      <use href="#star4" class="star star--b star--sm" x="210" y="70" />
+      <use href="#star4" class="star star--c star--sm" x="380" y="64" />
+
+      <!-- Smallest: dot stars -->
+      <use href="#starDot" class="star star--h star--dot" x="20" y="4" />
+      <use href="#starDot" class="star star--c star--dot" x="140" y="4" />
+      <use href="#starDot" class="star star--e star--dot" x="260" y="6" />
+      <use href="#starDot" class="star star--a star--dot" x="380" y="10" />
+      <use href="#starDot" class="star star--d star--dot" x="100" y="56" />
+      <use href="#starDot" class="star star--g star--dot" x="300" y="68" />
+      <!-- Extra stars lower in the sky -->
+      <use href="#star4" class="star star--b star--sm" x="60" y="90" />
+      <use href="#star4" class="star star--c star--sm" x="220" y="96" />
+      <use href="#star4" class="star star--d star--sm" x="360" y="104" />
+      <use href="#starDot" class="star star--e star--dot" x="40" y="112" />
+      <use href="#starDot" class="star star--a star--dot" x="200" y="118" />
+      <use href="#starDot" class="star star--h star--dot" x="340" y="110" />
     </svg>
   </div>
-  <div class="bg-clouds" aria-hidden="true">
-    <div class="bg-cloud bg-cloud-1"></div>
-    <div class="bg-cloud bg-cloud-2"></div>
-    <div class="bg-cloud bg-cloud-3"></div>
-    <div class="bg-cloud bg-cloud-4"></div>
-    <div class="bg-cloud bg-cloud-5"></div>
-    <div class="bg-cloud bg-cloud-6"></div>
-    <div class="bg-cloud bg-cloud-7"></div>
-    <div class="bg-cloud bg-cloud-8"></div>
-    <div class="bg-cloud bg-cloud-9"></div>
-    <div class="bg-cloud bg-cloud-10"></div>
-    <div class="bg-cloud bg-cloud-11"></div>
-    <div class="bg-cloud bg-cloud-12"></div>
-  </div>
-  <div class="cloud cloud-left" aria-hidden="true"></div>
-  <div class="cloud cloud-right" aria-hidden="true"></div>
+  <div class="swipe-cloud swipe-cloud-top" aria-hidden="true"></div>
+  <div class="swipe-cloud swipe-cloud-bottom" aria-hidden="true"></div>
 
   <div class="content">
   <h1>Spirimal</h1>
-  <a href="page2.html" class="star-btn" aria-label="Start – go to next page">START</a>
+  <nav class="main-menu" aria-label="Main game menu">
+    <button class="menu-btn menu-btn--primary">New Game</button>
+    <button class="menu-btn">Load Saves</button>
+    <button class="menu-btn">Credits</button>
+    <button class="menu-btn menu-btn--danger" id="exitDesktopBtn">Exit to Desktop</button>
+    <svg class="menu-star menu-star--tl" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--tr" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--bl" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--br" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--tm" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--bm" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--ml" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--mr" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+  </nav>
   </div>
+
+  <script>
+    (function () {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
+      let ctx;
+      function getContext() {
+        if (!ctx) ctx = new AudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+
+      function playChime() {
+        const context = getContext();
+        const now = context.currentTime;
+
+        // Two-step ultra high-pitched "coin" ping, extra soft
+        const steps = [
+          { startFreq: 3200, endFreq: 5200, gain: 0.04, duration: 0.11, delay: 0 },
+          { startFreq: 4200, endFreq: 6500, gain: 0.03, duration: 0.09, delay: 0.04 }
+        ];
+
+        steps.forEach(step => {
+          const osc = context.createOscillator();
+          const gain = context.createGain();
+
+          osc.type = 'square';
+
+          const start = now + step.delay;
+          const end = start + step.duration;
+
+          osc.frequency.setValueAtTime(step.startFreq, start);
+          osc.frequency.exponentialRampToValueAtTime(step.endFreq, end);
+
+          gain.gain.setValueAtTime(0.0, start);
+          gain.gain.linearRampToValueAtTime(step.gain, start + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, end);
+
+          osc.connect(gain);
+          gain.connect(context.destination);
+
+          osc.start(start);
+          osc.stop(end + 0.02);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.menu-btn');
+        buttons.forEach(btn => {
+          const handler = () => {
+            try { playChime(); } catch (e) { /* ignore audio errors */ }
+          };
+          // Trigger sound on hover and keyboard focus, no click needed
+          btn.addEventListener('mouseenter', handler);
+          btn.addEventListener('focus', handler);
+        });
+
+        const exitBtn = document.getElementById('exitDesktopBtn');
+        if (exitBtn) {
+          exitBtn.addEventListener('click', function () {
+            try {
+              // Attempt to close the current window/tab
+              window.open('', '_self');
+              window.close();
+            } catch (e) {
+              // If the browser blocks closing, do nothing
+            }
+          });
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
