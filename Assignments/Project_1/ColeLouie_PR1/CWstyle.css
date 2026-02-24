@@ -1,15 +1,52 @@
 /* Comic Writer page styles */
 
+.cw-interview-group {
+  position: fixed;
+  top: 30px;
+  left: 160px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.cw-interview-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cw-interview {
+  max-width: 450px;
+  max-height: 65vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.cw-interview-group > .cw-interview:nth-child(2) {
+  transform: translate(-10px, 0);
+}
+
+.cw-interview-top-right {
+  position: fixed;
+  top: 30px;
+  right: 170px;
+  left: auto;
+}
+
 .cw-stick {
   position: fixed;
   bottom: 0;
-  left: 0;
+  right: 0;
+  left: auto;
   max-width: 200px;
   max-height: 85vh;
   width: auto;
   height: auto;
   object-fit: contain;
-  object-position: bottom left;
+  object-position: bottom right;
   vertical-align: bottom;
   opacity: 0;
   animation: cw-stick-fade-in 1s ease-out forwards;
