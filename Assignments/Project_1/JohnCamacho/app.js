@@ -60,7 +60,7 @@ async function initApp() {
   `;
 
   try {
-    const res = await fetch('data/daily_minutes.json');
+    const res = await fetch('daily_minutes.json');
     const json = await res.json();
     state.data = json;
     preprocessData(json);
