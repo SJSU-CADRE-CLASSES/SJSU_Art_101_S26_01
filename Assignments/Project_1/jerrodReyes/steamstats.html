@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Time Wasters — STEAM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            background: #000000;
+            color: #00ff88;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .bg-logo {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: url('Copland_OS_Logo.gif') center center / contain no-repeat;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.03) 2px,
+                rgba(255, 255, 255, 0.03) 4px
+            );
+            z-index: 10;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+        p {
+            font-size: 0.85rem;
+            color: rgba(0, 255, 136, 0.85);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        table {
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            border: 1px solid rgba(0, 255, 136, 0.4);
+        }
+        th, td {
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            padding: 10px 20px;
+            text-align: left;
+            color: rgba(0, 255, 136, 0.9);
+        }
+        th {
+            font-weight: 600;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        td.game-img-cell {
+            width: 88px;
+            padding: 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .game-img {
+            width: 76px;
+            height: 43px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+        .link {
+            color: #00ff88;
+            text-decoration: none;
+            border: 1px solid #00ff88;
+            padding: 10px 24px;
+            border-radius: 4px;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+            letter-spacing: 0.15em;
+        }
+        .link:hover {
+            background: rgba(0, 255, 136, 0.12);
+            box-shadow: 0 0 24px rgba(0, 255, 136, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-logo" aria-hidden="true"></div>
+    <div class="scanlines"></div>
+    <div class="content">
+        <h1>Top Time Wasters</h1>
+        <p>STEAM stats and time tracking.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Game</th>
+                    <th>Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td class="game-img-cell"><img src="tf2.jpg" alt="Team Fortress 2" class="game-img"></td><td>Team Fortress 2</td><td>3697.3</td></tr>
+                <tr><td class="game-img-cell"><img src="cs2.jpg" alt="Counter Strike 2" class="game-img"></td><td>Counter Strike 2</td><td>907.5</td></tr>
+                <tr><td class="game-img-cell"><img src="terraria.jpg" alt="Terraria" class="game-img"></td><td>Terraria</td><td>865.3</td></tr>
+                <tr><td class="game-img-cell"><img src="elden ring.jpg" alt="Elden Ring" class="game-img"></td><td>Elden Ring</td><td>697</td></tr>
+                <tr><td class="game-img-cell"><img src="starbound.jpg" alt="Starbound" class="game-img"></td><td>Starbound</td><td>656.7</td></tr>
+                <tr><td class="game-img-cell"><img src="nioh 2.jpg" alt="Nioh 2" class="game-img"></td><td>Nioh 2</td><td>642.3</td></tr>
+                <tr><td class="game-img-cell"><img src="ffxiv.jpg" alt="FINAL FANTASY XIV" class="game-img"></td><td>FINAL FANTASY XIV</td><td>498.2</td></tr>
+                <tr><td class="game-img-cell"><img src="bg3.jpg" alt="Baldur's Gate 3" class="game-img"></td><td>Baldur's Gate 3</td><td>338.9</td></tr>
+                <tr><td class="game-img-cell"><img src="pathfinder wotr.jpg" alt="Pathfinder: Wrath of the Righteous" class="game-img"></td><td>Pathfinder: Wrath of the Righteous</td><td>209.5</td></tr>
+                <tr><td class="game-img-cell"><img src="valheim.jpg" alt="Valheim" class="game-img"></td><td>Valheim</td><td>208.1</td></tr>
+            </tbody>
+        </table>
+        <a href="steampage.html" class="link">← Back to STEAM</a>
+    </div>
+</body>
+</html>

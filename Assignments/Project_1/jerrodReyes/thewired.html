@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wired</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            background: #000000;
+            color: #00ff88;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.03) 2px,
+                rgba(255, 255, 255, 0.03) 4px
+            );
+            z-index: 10;
+        }
+        .bg-logo {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: url('Copland_OS_Logo.gif') center center / contain no-repeat;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            z-index: 11;
+        }
+        .title-bar {
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+            padding: 14px 24px;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+            animation: flicker 4s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .title-bar .tagline {
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: none;
+            opacity: 0.6;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .columns {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            min-height: 0;
+        }
+        .column {
+            position: relative;
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0, 255, 136, 0.15);
+            overflow: auto;
+        }
+        .column:last-child {
+            border-right: none;
+            border-left: 1px solid rgba(0, 255, 136, 0.15);
+        }
+        .column-body {
+            flex: 1;
+            font-size: 0.8rem;
+            line-height: 1.7;
+            color: rgba(0, 255, 136, 0.8);
+        }
+        .glitch-text {
+            display: inline;
+        }
+        .static-link {
+            display: inline;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #00ff88;
+            text-decoration: none;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
+            transition: text-shadow 0.2s ease, color 0.2s ease;
+        }
+        .static-link:hover {
+            text-shadow: 0 0 14px rgba(0, 255, 136, 0.6);
+            color: #00ffaa;
+        }
+        @keyframes flicker {
+            0%, 90%, 100% { opacity: 1; }
+            92% { opacity: 0.85; }
+            94% { opacity: 1; }
+            96% { opacity: 0.9; }
+            98% { opacity: 1; }
+        }
+        .sync-rect {
+            position: fixed;
+            z-index: 0.5;
+            pointer-events: none;
+            background: transparent;
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+            opacity: 0.85;
+            animation: rectGlitch 0.15s steps(2, end) infinite;
+        }
+        @keyframes rectGlitch {
+            0%, 100% {
+                opacity: 0.9;
+                border-color: #00ff88;
+                box-shadow: 0 0 12px rgba(0, 255, 136, 0.5), 0.5px 0 0 rgba(255, 0, 100, 0.3);
+            }
+            25% {
+                opacity: 0.7;
+                border-color: #00ffaa;
+                box-shadow: 0 0 8px rgba(0, 255, 136, 0.3), -0.5px 0 0 rgba(0, 200, 255, 0.2);
+            }
+            50% {
+                opacity: 1;
+                border-color: #00ff88;
+                box-shadow: 0 0 16px rgba(0, 255, 136, 0.6);
+            }
+            75% {
+                opacity: 0.75;
+                border-color: #00cc6a;
+                box-shadow: 0 0 6px rgba(0, 255, 136, 0.2), 0 0.5px 0 rgba(255, 255, 255, 0.1);
+            }
+        }
+        .hidden-corner-btn {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            z-index: 5;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: none;
+            border-radius: 6px;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, visibility 0.2s ease, background 0.2s ease;
+        }
+        .hidden-corner-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        .hidden-corner-btn:hover {
+            background: rgba(0, 255, 136, 0.35);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-logo" aria-hidden="true"></div>
+    <div class="sync-rect" id="syncRect" aria-hidden="true"></div>
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+    <header class="title-bar">
+        <span>The Wired</span>
+        <span class="tagline">No matter where you are, everyone is always connected</span>
+    </header>
+    <div class="columns">
+        <div class="column">
+            <div class="column-body">
+                <span class="glitch-text" id="glitchLeft1" data-original=""></span>
+                <a href="steampage.html" class="static-link"> STEAM </a>
+                <span class="glitch-text" id="glitchLeft2" data-original=""></span>
+            </div>
+        </div>
+        <div class="column">
+            <div class="column-body">
+                <span class="glitch-text" id="glitchRight1" data-original=""></span>
+                <a href="index.html" class="static-link"> RETURN </a>
+                <span class="glitch-text" id="glitchRight2" data-original=""></span>
+            </div>
+            <button type="button" class="hidden-corner-btn" id="hiddenCornerBtn" title="Open link" aria-label="Open link">→</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla facilisi. Ut fringilla. Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien proin quam etiam ultrices. Suspendisse in justo eu magna luctus suscipit. Sed lectus. Integer euismod lacus luctus magna.';
+            var mid = Math.floor(lorem.length / 2);
+            while (mid < lorem.length && lorem[mid] !== ' ') mid++;
+            var lorem1 = lorem.substring(0, mid);
+            var lorem2 = mid < lorem.length ? lorem.substring(mid + 1) : '';
+
+            var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            var left1 = document.getElementById('glitchLeft1');
+            var left2 = document.getElementById('glitchLeft2');
+            var right1 = document.getElementById('glitchRight1');
+            var right2 = document.getElementById('glitchRight2');
+            left1.setAttribute('data-original', lorem1);
+            left2.setAttribute('data-original', lorem2);
+            right1.setAttribute('data-original', lorem1);
+            right2.setAttribute('data-original', lorem2);
+
+            function randomChar() {
+                return chars[Math.floor(Math.random() * chars.length)];
+            }
+
+            function tick(el) {
+                var orig = el.getAttribute('data-original');
+                var next = '';
+                for (var i = 0; i < orig.length; i++) {
+                    var c = orig[i];
+                    if (c === ' ' || c === '.' || c === ',') {
+                        next += c;
+                    } else if (Math.random() < 0.12) {
+                        next += randomChar();
+                    } else {
+                        next += c;
+                    }
+                }
+                el.textContent = next;
+            }
+
+            function animate() {
+                tick(left1);
+                tick(left2);
+                tick(right1);
+                tick(right2);
+                setTimeout(animate, 60);
+            }
+            animate();
+
+            var syncRect = document.getElementById('syncRect');
+            var hiddenCornerBtn = document.getElementById('hiddenCornerBtn');
+            var rectVisible = false;
+            var rectBounds = { left: 0, top: 0, width: 0, height: 0 };
+
+            function updateHiddenButtonVisibility() {
+                if (!hiddenCornerBtn) return;
+                if (!rectVisible || rectBounds.width <= 0 || rectBounds.height <= 0) {
+                    hiddenCornerBtn.classList.remove('visible');
+                    return;
+                }
+                var br = hiddenCornerBtn.getBoundingClientRect();
+                var r = rectBounds;
+                var rRight = r.left + r.width;
+                var rBottom = r.top + r.height;
+                var inside = br.left >= r.left && br.right <= rRight &&
+                    br.top >= r.top && br.bottom <= rBottom;
+                if (inside) {
+                    hiddenCornerBtn.classList.add('visible');
+                } else {
+                    hiddenCornerBtn.classList.remove('visible');
+                }
+            }
+
+            hiddenCornerBtn.addEventListener('click', function () {
+                window.open('https://fauux.neocities.org/Love', '_blank', 'noopener,noreferrer');
+            });
+
+            var wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            try {
+                var ws = new WebSocket(wsScheme + '//' + window.location.host);
+                ws.onopen = function () {
+                    ws.send(JSON.stringify({ type: 'register', page: 'thewired' }));
+                };
+                ws.onmessage = function (e) {
+                    var msg = JSON.parse(e.data);
+                    if (msg.type === 'browser' && msg.left != null && msg.top != null && msg.width != null && msg.height != null) {
+                        rectBounds = { left: msg.left, top: msg.top, width: msg.width, height: msg.height };
+                        syncRect.style.left = msg.left + 'px';
+                        syncRect.style.top = msg.top + 'px';
+                        syncRect.style.width = msg.width + 'px';
+                        syncRect.style.height = msg.height + 'px';
+                        if (!rectVisible) {
+                            rectVisible = true;
+                            syncRect.style.display = 'block';
+                        }
+                        requestAnimationFrame(updateHiddenButtonVisibility);
+                    }
+                };
+            } catch (err) {}
+            syncRect.style.display = 'none';
+            hiddenCornerBtn.classList.remove('visible');
+            window.addEventListener('resize', function () { requestAnimationFrame(updateHiddenButtonVisibility); });
+        })();
+    </script>
+</body>
+</html>

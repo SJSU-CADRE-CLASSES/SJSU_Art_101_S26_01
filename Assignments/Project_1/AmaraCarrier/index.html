@@ -6,7 +6,7 @@
   <title>Spirimal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Press+Start+2P&family=VT323&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -18,13 +18,28 @@
       flex-direction: column;
       gap: 2rem;
       font-family: 'Press Start 2P', monospace;
-      background-color: #87ceeb;
+      background-color: #1e3a5f;
       background-image:
-        linear-gradient(180deg, #4a90c4 0%, #6ba3d4 35%, #87ceeb 70%, #b8e0f5 100%),
+        linear-gradient(180deg, #1a2d4a 0%, #243b5c 18%, #2e5070 38%, #4a7a9e 58%, #6ba3d4 78%, #87ceeb 92%, #b8e0f5 100%),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'%3E%3Cg fill='%23fff' fill-opacity='0.9'%3E%3Crect x='8' y='12' width='2' height='2'/%3E%3Crect x='24' y='6' width='2' height='2'/%3E%3Crect x='48' y='18' width='2' height='2'/%3E%3Crect x='72' y='4' width='2' height='2'/%3E%3Crect x='96' y='14' width='2' height='2'/%3E%3Crect x='16' y='32' width='2' height='2'/%3E%3Crect x='56' y='28' width='2' height='2'/%3E%3Crect x='88' y='36' width='2' height='2'/%3E%3Crect x='4' y='48' width='2' height='2'/%3E%3Crect x='40' y='52' width='2' height='2'/%3E%3Crect x='64' y='44' width='2' height='2'/%3E%3Crect x='112' y='50' width='2' height='2'/%3E%3Crect x='20' y='64' width='2' height='2'/%3E%3Crect x='80' y='70' width='2' height='2'/%3E%3Crect x='32' y='82' width='2' height='2'/%3E%3Crect x='100' y='78' width='2' height='2'/%3E%3Crect x='12' y='96' width='2' height='2'/%3E%3Crect x='52' y='102' width='2' height='2'/%3E%3Crect x='68' y='88' width='2' height='2'/%3E%3Crect x='116' y='94' width='2' height='2'/%3E%3Crect x='44' y='112' width='2' height='2'/%3E%3C/g%3E%3Cg fill='%23e8e8ff' fill-opacity='0.5'%3E%3Crect x='36' y='8' width='1' height='1'/%3E%3Crect x='60' y='22' width='1' height='1'/%3E%3Crect x='92' y='40' width='1' height='1'/%3E%3Crect x='18' y='56' width='1' height='1'/%3E%3Crect x='76' y='58' width='1' height='1'/%3E%3Crect x='6' y='72' width='1' height='1'/%3E%3Crect x='104' y='66' width='1' height='1'/%3E%3Crect x='28' y='92' width='1' height='1'/%3E%3Crect x='84' y='108' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
       background-size: auto, 128px 128px;
       color: #eee;
       overflow-x: hidden;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='none'/%3E%3Cg fill='%23ffd95a' shape-rendering='crispEdges'%3E%3Crect x='14' y='2' width='2' height='8'/%3E%3Crect x='9' y='10' width='12' height='2'/%3E%3Crect x='4' y='12' width='22' height='2'/%3E%3Crect x='9' y='14' width='12' height='2'/%3E%3Crect x='14' y='16' width='2' height='8'/%3E%3C/g%3E%3Cg fill='%23ffeeb0' shape-rendering='crispEdges'%3E%3Crect x='14' y='1' width='2' height='1'/%3E%3Crect x='13' y='2' width='1' height='1'/%3E%3Crect x='16' y='2' width='1' height='1'/%3E%3Crect x='8' y='10' width='1' height='2'/%3E%3Crect x='21' y='10' width='1' height='2'/%3E%3Crect x='3' y='12' width='1' height='2'/%3E%3Crect x='26' y='12' width='1' height='2'/%3E%3Crect x='8' y='16' width='1' height='2'/%3E%3Crect x='21' y='16' width='1' height='2'/%3E%3Crect x='14' y='24' width='2' height='1'/%3E%3C/g%3E%3C/svg%3E") 15 7, auto;
+    }
+
+    body.cursor-pulse {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' fill='none'/%3E%3Cg fill='%23ffd95a' shape-rendering='crispEdges'%3E%3Crect x='16' y='2' width='2' height='10'/%3E%3Crect x='10' y='10' width='14' height='2'/%3E%3Crect x='5' y='12' width='24' height='2'/%3E%3Crect x='10' y='14' width='14' height='2'/%3E%3Crect x='16' y='16' width='2' height='10'/%3E%3C/g%3E%3Cg fill='%23ffeeb0' shape-rendering='crispEdges'%3E%3Crect x='16' y='1' width='2' height='1'/%3E%3Crect x='15' y='2' width='1' height='1'/%3E%3Crect x='18' y='2' width='1' height='1'/%3E%3Crect x='9' y='10' width='1' height='2'/%3E%3Crect x='24' y='10' width='1' height='2'/%3E%3Crect x='4' y='12' width='1' height='2'/%3E%3Crect x='29' y='12' width='1' height='2'/%3E%3Crect x='9' y='16' width='1' height='2'/%3E%3Crect x='24' y='16' width='1' height='2'/%3E%3Crect x='16' y='26' width='2' height='1'/%3E%3C/g%3E%3C/svg%3E") 17 8, auto;
+    }
+
+    .bg-fade-layer {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      opacity: 1;
+      z-index: 0;
+      animation: bgFadeToScene 1.8s ease-in forwards;
+      pointer-events: none;
     }
 
     .content {
@@ -33,9 +48,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2rem;
-      opacity: 0;
-      animation: revealContent 1.2s ease-out 0.5s forwards;
+      gap: 2.5rem;
+      opacity: 1;
     }
 
     @keyframes revealContent {
@@ -43,34 +57,132 @@
     }
 
     h1 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 7rem;
+      font-family: 'UnifrakturCook', 'Press Start 2P', monospace;
+      font-size: 9.8rem;
       font-weight: 400;
       text-align: center;
-      color: #f2e8a8;
-      letter-spacing: 0.02em;
-      /* Pixelated: no smoothing + strong chunky filter */
+      color: #ffffff;
+      letter-spacing: 0.12em;
+      line-height: 1.05;
+      /* 8-bit crisp pixels */
       -webkit-font-smoothing: none;
       -moz-osx-font-smoothing: unset;
       font-smooth: never;
-      text-rendering: optimizeSpeed;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
       filter: url(#pixelate);
-      /* Black outline (thicker for larger title) */
+      /* Blocky 8-bit outline + shine */
       text-shadow:
-        -3px -3px 0 #000,
+        -4px -4px 0 #000,
+        -4px 0 0 #000,
+        -4px 4px 0 #000,
+        0 -4px 0 #000,
+        0 4px 0 #000,
+        4px -4px 0 #000,
+        4px 0 0 #000,
+        4px 4px 0 #000,
+        -2px -2px 0 rgba(255,255,230,0.9),
+        2px 2px 0 rgba(180,160,80,0.7);
+      opacity: 0;
+      animation:
+        titleRevealGlow 0.8s ease-out 5s forwards,
+        titleIdle 4s ease-in-out infinite,
+        titleGlowFade 6s ease-out forwards;
+    }
+
+    .main-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      position: relative;
+      padding: 1.6rem 3rem;
+      opacity: 0;
+      animation:
+        revealContent 1.1s ease-out 7.4s forwards,
+        titleIdle 5s ease-in-out infinite;
+    }
+
+    .main-menu::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #ffd95a;
+      border: 4px solid #000;
+      box-shadow:
+        0 0 0 4px #000,
+        0 8px 0 #000,
+        0 14px 18px rgba(0,0,0,0.75);
+      z-index: -1;
+    }
+
+    .menu-star {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+      z-index: 0;
+      fill: #ffffff;
+    }
+
+    .menu-star--tl { top: 6px; left: 10px; }
+    .menu-star--tr { top: 6px; right: 10px; }
+    .menu-star--bl { bottom: 6px; left: 10px; }
+    .menu-star--br { bottom: 6px; right: 10px; }
+    .menu-star--tm { top: 6px; left: 50%; transform: translateX(-50%); }
+    .menu-star--bm { bottom: 6px; left: 50%; transform: translateX(-50%); }
+    .menu-star--ml { top: 50%; left: 6px; transform: translateY(-50%); }
+    .menu-star--mr { top: 50%; right: 6px; transform: translateY(-50%); }
+
+    .menu-btn {
+      min-width: 0;
+      padding: 0.3rem 0;
+      border: none;
+      border-radius: 0;
+      background: none;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.2rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+      transform: translateY(0);
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        filter 0.15s ease-out;
+    }
+
+    .menu-btn--primary {
+    }
+
+    .menu-btn--danger {
+      color: #ffffff;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-3px);
+      text-shadow:
         -3px 0 0 #000,
-        -3px 3px 0 #000,
-        0 -3px 0 #000,
         0 3px 0 #000,
-        3px -3px 0 #000,
-        3px 0 0 #000,
-        3px 3px 0 #000,
-        /* Metallic shine */
-        -1px -1px 0 rgba(255,255,230,0.9),
-        1px 1px 0 rgba(180,160,80,0.6),
-        0 3px 6px rgba(0,0,0,0.4),
-        0 0 28px rgba(242,232,168,0.2);
-      animation: titleIdle 4s ease-in-out infinite;
+        0 0 16px rgba(255,255,255,0.9),
+        0 0 28px rgba(255, 248, 200, 0.95);
+    }
+
+    .menu-btn:active {
+      transform: translateY(1px);
+      text-shadow:
+        -2px 0 0 #000,
+        0 2px 0 #000;
+    }
+
+    .menu-btn:focus-visible {
+      outline: 3px solid #ffd700;
+      outline-offset: 4px;
     }
 
     @keyframes titleIdle {
@@ -78,18 +190,202 @@
       50% { transform: translateY(-8px) scale(1.02); }
     }
 
+    @keyframes titleGlowFade {
+      0% {
+        text-shadow:
+          -3px -3px 0 #000,
+          -3px 0 0 #000,
+          -3px 3px 0 #000,
+          0 -3px 0 #000,
+          0 3px 0 #000,
+          3px -3px 0 #000,
+          3px 0 0 #000,
+          3px 3px 0 #000,
+          -1px -1px 0 rgba(255,255,230,0.45),
+          1px 1px 0 rgba(180,160,80,0.35);
+      }
+      25% {
+        text-shadow:
+          -3px -3px 0 #000,
+          -3px 0 0 #000,
+          -3px 3px 0 #000,
+          0 -3px 0 #000,
+          0 3px 0 #000,
+          3px -3px 0 #000,
+          3px 0 0 #000,
+          3px 3px 0 #000,
+          -1px -1px 0 rgba(255,255,240,0.6),
+          1px 1px 0 rgba(220,190,90,0.5),
+          0 0 10px rgba(255,240,180,0.55),
+          0 0 18px rgba(255,220,120,0.4);
+      }
+      100% {
+        text-shadow:
+          -3px -3px 0 #000,
+          -3px 0 0 #000,
+          -3px 3px 0 #000,
+          0 -3px 0 #000,
+          0 3px 0 #000,
+          3px -3px 0 #000,
+          3px 0 0 #000,
+          3px 3px 0 #000,
+          -1px -1px 0 rgba(255,255,230,0.45),
+          1px 1px 0 rgba(180,160,80,0.25);
+      }
+    }
+
+    @keyframes bgFadeToScene {
+      0%   { opacity: 1; }
+      60%  { opacity: 0.4; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes titleRevealGlow {
+      0% {
+        opacity: 0;
+        transform: translateY(8px) scale(1);
+        text-shadow:
+          -4px -4px 0 #000,
+          -4px 0 0 #000,
+          -4px 4px 0 #000,
+          0 -4px 0 #000,
+          0 4px 0 #000,
+          4px -4px 0 #000,
+          4px 0 0 #000,
+          4px 4px 0 #000,
+          -2px -2px 0 rgba(255,255,230,0.0),
+          2px 2px 0 rgba(180,160,80,0.0);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(2px) scale(1.04);
+        text-shadow:
+          -4px -4px 0 #000,
+          -4px 0 0 #000,
+          -4px 4px 0 #000,
+          0 -4px 0 #000,
+          0 4px 0 #000,
+          4px -4px 0 #000,
+          4px 0 0 #000,
+          4px 4px 0 #000,
+          -2px -2px 0 rgba(255,255,240,1),
+          2px 2px 0 rgba(220,190,90,0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1.02);
+      }
+    }
+
+    @keyframes menuButtonBlast {
+      0% {
+        transform: translateY(0) scale(1);
+        color: #ffffff;
+        text-shadow:
+          -2px 0 0 #000,
+          0 2px 0 #000;
+      }
+      40% {
+        transform: translateY(-4px) scale(1.35);
+        color: #ffffff;
+        text-shadow:
+          -3px 0 0 #000,
+          0 3px 0 #000,
+          0 0 18px rgba(255,255,255,1),
+          0 0 32px rgba(255,255,220,1);
+      }
+      80% {
+        transform: translateY(0) scale(1.1);
+        color: #ffffff;
+        text-shadow:
+          -3px 0 0 #000,
+          0 3px 0 #000,
+          0 0 26px rgba(255,255,255,1),
+          0 0 42px rgba(255,255,230,1);
+      }
+      100% {
+        transform: translateY(0) scale(1.1);
+        color: #ffffff;
+        text-shadow:
+          -3px 0 0 #000,
+          0 3px 0 #000,
+          0 0 32px rgba(255,255,255,1),
+          0 0 52px rgba(255,255,240,1);
+      }
+    }
+
+    @keyframes menuButtonFlash {
+      0% {
+        background-color: transparent;
+      }
+      50% {
+        background-color: rgba(255,255,255,0.85);
+      }
+      100% {
+        background-color: rgba(255,255,255,1);
+      }
+    }
+
+    .menu-btn--transitioning {
+      animation:
+        menuButtonBlast 0.7s ease-out forwards,
+        menuButtonFlash 0.7s ease-out forwards;
+    }
+
+    .screen-flash {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .screen-flash--active {
+      animation: screenFlash 0.6s ease-out forwards;
+    }
+
+    @keyframes screenFlash {
+      0% { opacity: 0; }
+      40% { opacity: 0.3; }
+      70% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
     .star-btn {
       display: block;
-      width: 360px;
-      height: 120px;
-      transition: transform 0.15s;
+      text-align: center;
       text-decoration: none;
-      filter: drop-shadow(0 4px 0 rgba(0,0,0,0.5)) drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+      font-family: 'VT323', monospace;
+      font-size: 3.5rem;
+      font-weight: bold;
+      color: #ffeb3b;
+      text-shadow:
+        -2px -2px 0 #1a1a1a,
+        -2px 0 0 #1a1a1a,
+        -2px 2px 0 #1a1a1a,
+        0 -2px 0 #1a1a1a,
+        0 2px 0 #1a1a1a,
+        2px -2px 0 #1a1a1a,
+        2px 0 0 #1a1a1a,
+        2px 2px 0 #1a1a1a;
+      transition: transform 0.15s;
+      margin-top: 0.5rem;
     }
 
     .star-btn:hover {
       transform: scale(1.08);
-      filter: drop-shadow(0 4px 0 rgba(0,0,0,0.5)) drop-shadow(0 8px 16px rgba(0,0,0,0.5)) drop-shadow(0 0 20px rgba(255,220,100,0.4));
+      color: #fff59d;
+      text-shadow:
+        -2px -2px 0 #1a1a1a,
+        -2px 0 0 #1a1a1a,
+        -2px 2px 0 #1a1a1a,
+        0 -2px 0 #1a1a1a,
+        0 2px 0 #1a1a1a,
+        2px -2px 0 #1a1a1a,
+        2px 0 0 #1a1a1a,
+        2px 2px 0 #1a1a1a,
+        0 0 24px rgba(255, 220, 100, 0.5);
     }
 
     .star-btn:focus {
@@ -97,45 +393,56 @@
       outline-offset: 4px;
     }
 
-    /* Cloud panels that part on load – rounded scalloped shape */
-    .cloud {
+    /* New swiping cloud bands – slide up and down to reveal scene */
+    .swipe-cloud {
       position: fixed;
-      top: 0;
-      bottom: 0;
-      width: 60%;
+      left: 0;
+      width: 100%;
       z-index: 2;
       pointer-events: none;
-    }
-
-    /* Same small-pixel pattern as background clouds; gradient keeps wipe panels opaque */
-    .cloud-left {
-      left: 0;
-      background: linear-gradient(105deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+      background:
+        /* Vertical opacity gradient: soft transparent edges, denser center */
+        linear-gradient(
+          180deg,
+          rgba(210, 220, 235, 0.08) 0%,
+          rgba(205, 216, 234, 0.70) 20%,
+          rgba(195, 208, 230, 0.96) 50%,
+          rgba(185, 200, 224, 0.70) 80%,
+          rgba(180, 196, 222, 0.08) 100%
+        ),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.45)'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='6' y='0' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='4' y='3' width='1' height='1'/%3E%3Crect x='7' y='3' width='1' height='1'/%3E%3Crect x='2' y='6' width='1' height='1'/%3E%3Crect x='5' y='7' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
       background-size: auto, 8px 8px;
-      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
-      animation: partLeft 1.4s ease-in-out forwards;
-      clip-path: url(#leftCloudClip);
-      -webkit-clip-path: url(#leftCloudClip);
+      box-shadow: 0 0 40px rgba(200, 212, 235, 0.6);
+      transform-origin: 50% 50%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: url(#cloudPixelate);
     }
 
-    .cloud-right {
-      right: 0;
-      background: linear-gradient(75deg, rgba(230, 238, 250, 0.96) 0%, rgba(218, 228, 248, 0.96) 50%, rgba(205, 220, 245, 0.94) 100%),
-                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(255,255,255,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
-      background-size: auto, 8px 8px;
-      box-shadow: 0 0 60px rgba(220, 230, 250, 0.25);
-      animation: partRight 1.4s ease-in-out forwards;
-      clip-path: url(#rightCloudClip);
-      -webkit-clip-path: url(#rightCloudClip);
+    .swipe-cloud-top {
+      top: 0;
+      height: 55%;
+      clip-path: url(#swipeCloudTopClip);
+      -webkit-clip-path: url(#swipeCloudTopClip);
+      animation: swipeTop 6s ease-in-out forwards;
     }
 
-    @keyframes partLeft {
-      to { transform: translateX(-100%); }
+    .swipe-cloud-bottom {
+      bottom: 0;
+      height: 55%;
+      clip-path: url(#swipeCloudBottomClip);
+      -webkit-clip-path: url(#swipeCloudBottomClip);
+      animation: swipeBottom 6s ease-in-out forwards;
     }
 
-    @keyframes partRight {
-      to { transform: translateX(100%); }
+    @keyframes swipeTop {
+      from { transform: translateY(0); }
+      to { transform: translateY(-110%); }
+    }
+
+    @keyframes swipeBottom {
+      from { transform: translateY(0); }
+      to { transform: translateY(110%); }
     }
 
     /* Layered transparent background clouds – small pixel pattern */
@@ -151,10 +458,13 @@
       position: absolute;
       background-color: transparent;
       background-size: 8px 8px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(220,230,250,0.35)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
       clip-path: url(#marioCloud1);
       -webkit-clip-path: url(#marioCloud1);
-      animation: cloudDriftR 45s ease-in-out infinite;
+      animation: cloudDriftR 22s ease-in-out infinite;
+      opacity: 0.9;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: url(#cloudPixelate);
     }
 
     @keyframes cloudDriftR {
@@ -176,136 +486,626 @@
       66% { transform: translateX(2%) translateY(0.5%); }
     }
 
-    .bg-cloud-1 { width: 38%; height: 24%; left: -4%; top: 8%; clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 50s; animation-delay: 0s; }
-    .bg-cloud-2 { width: 32%; height: 19%; right: -6%; top: 22%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 55s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-3 { width: 48%; height: 21%; left: 22%; bottom: 12%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 60s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-4 { width: 26%; height: 17%; right: 12%; bottom: 28%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 48s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-5 { width: 20%; height: 13%; left: 8%; top: 42%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 52s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-6 { width: 28%; height: 15%; right: 22%; top: 52%; clip-path: url(#marioCloud1); animation-name: cloudDriftL; animation-duration: 58s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-7 { width: 36%; height: 19%; left: 38%; top: 4%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftR2; animation-duration: 42s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
-    .bg-cloud-8 { width: 24%; height: 14%; left: 4%; bottom: 38%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftL2; animation-duration: 50s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-1 { width: 52%; height: 30%; left: -6%; top: 8%; clip-path: url(#marioCloud1); -webkit-clip-path: url(#marioCloud1); animation-name: cloudDriftR; animation-duration: 25s; animation-delay: 0s; }
+    .bg-cloud-2 { width: 32%; height: 18%; left: 28%; top: 18%; clip-path: url(#marioCloud2); -webkit-clip-path: url(#marioCloud2); animation-name: cloudDriftL; animation-duration: 28s; animation-delay: 5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(200,218,245,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-3 { width: 50%; height: 26%; left: 10%; top: 26%; clip-path: url(#marioCloud3); -webkit-clip-path: url(#marioCloud3); animation-name: cloudDriftR2; animation-duration: 30s; animation-delay: 10s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,238,252,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-4 { width: 26%; height: 16%; left: 54%; top: 22%; clip-path: url(#marioCloud4); -webkit-clip-path: url(#marioCloud4); animation-name: cloudDriftL2; animation-duration: 24s; animation-delay: 3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,248,0.3)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-5 { width: 22%; height: 13%; left: 6%; top: 32%; clip-path: url(#marioCloud5); -webkit-clip-path: url(#marioCloud5); animation-name: cloudDriftR; animation-duration: 26s; animation-delay: 8s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-6 { width: 34%; height: 20%; left: 38%; top: 34%; clip-path: url(#marioCloud6); -webkit-clip-path: url(#marioCloud6); animation-name: cloudDriftL; animation-duration: 29s; animation-delay: 12s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(205,220,242,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-7 { width: 30%; height: 18%; left: 12%; top: 20%; clip-path: url(#marioCloud7); -webkit-clip-path: url(#marioCloud7); animation-name: cloudDriftR2; animation-duration: 21s; animation-delay: 2s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,230,248,0.2)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-8 { width: 24%; height: 14%; left: 56%; top: 30%; clip-path: url(#marioCloud8); -webkit-clip-path: url(#marioCloud8); animation-name: cloudDriftL2; animation-duration: 25s; animation-delay: 6s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(225,235,250,0.25)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-9 { width: 42%; height: 24%; left: 6%; top: 14%; clip-path: url(#marioCloud9); -webkit-clip-path: url(#marioCloud9); animation-name: cloudDriftL; animation-duration: 26s; animation-delay: 4s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(210,225,245,0.28)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-10 { width: 38%; height: 22%; left: 44%; top: 40%; clip-path: url(#marioCloud10); -webkit-clip-path: url(#marioCloud10); animation-name: cloudDriftR2; animation-duration: 28s; animation-delay: 7s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(230,240,252,0.22)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-11 { width: 54%; height: 28%; left: -4%; top: 22%; clip-path: url(#marioCloud11); -webkit-clip-path: url(#marioCloud11); animation-name: cloudDriftR; animation-duration: 27s; animation-delay: 11s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(218,232,248,0.26)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+    .bg-cloud-12 { width: 26%; height: 15%; left: 58%; top: 24%; clip-path: url(#marioCloud12); -webkit-clip-path: url(#marioCloud12); animation-name: cloudDriftL2; animation-duration: 25s; animation-delay: 9s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cg fill='rgba(235,242,252,0.24)'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='4' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='6' y='2' width='2' height='2'/%3E%3Crect x='0' y='4' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='2' y='6' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E"); }
+
+    /* Pixel art sun and stars (sky decor) */
+    .sky-decor {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .pixel-sun {
+      position: absolute;
+      left: 50%;
+      bottom: -8%;
+      transform: translateX(-50%);
+      width: 360px;
+      height: 338px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .pixel-stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .shooting-star {
+      position: absolute;
+      width: 110px;
+      height: 3px;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.95), rgba(255,255,255,0));
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      opacity: 0;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      z-index: 1;
+    }
+    .rand-dot-star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #ffffff;
+      box-shadow: 0 0 4px rgba(255,255,255,0.9);
+      opacity: 0;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      z-index: 0;
+      animation: rand-dot-star-twinkle 4s linear forwards;
+    }
+    .shooting-star--right {
+      left: -20%;
+      animation: shoot-right var(--shoot-duration, 2.8s) ease-out forwards;
+    }
+    .shooting-star--left {
+      right: -20%;
+      animation: shoot-left var(--shoot-duration, 2.8s) ease-out forwards;
+    }
+
+    @keyframes shoot-right {
+      0%   { transform: translateX(0) translateY(0); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translateX(160%) translateY(12%); opacity: 0; }
+    }
+
+    @keyframes shoot-left {
+      0%   { transform: translateX(0) translateY(0); opacity: 0; }
+      10%  { opacity: 1; }
+      100% { transform: translateX(-160%) translateY(-12%); opacity: 0; }
+    }
+    @keyframes rand-dot-star-twinkle {
+      0%, 10%   { opacity: 0; }
+      20%       { opacity: 0.95; }
+      60%       { opacity: 0.3; }
+      80%, 100% { opacity: 0; }
+    }
+    .pixel-stars .star {
+      fill: #ffffff;
+      opacity: 0.12;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    /* Size variants for stars */
+    .pixel-stars .star--lg { /* current largest size */ }
+    .pixel-stars .star--md { transform: scale(0.7); }
+    .pixel-stars .star--sm { transform: scale(0.5); }
+    .pixel-stars .star--dot { /* separate dot geometry, no extra scale needed */ }
+    /* Stationary (no movement), just opacity blinks with staggered timings */
+    .pixel-stars .star--a { animation: twinkleA 7s linear infinite; }
+    .pixel-stars .star--b { animation: twinkleB 9s linear infinite 1.2s; }
+    .pixel-stars .star--c { animation: twinkleC 8s linear infinite 0.8s; }
+    .pixel-stars .star--d { animation: twinkleD 10s linear infinite 2s; }
+    .pixel-stars .star--e { animation: twinkleB 11s linear infinite 3.1s; }
+    .pixel-stars .star--f { animation: twinkleA 9s linear infinite 0.4s; }
+    .pixel-stars .star--g { animation: twinkleC 10s linear infinite 1.7s; }
+    .pixel-stars .star--h { animation: twinkleD 8s linear infinite 2.6s; }
+
+    @keyframes twinkleA {
+      0%, 18%, 100% { opacity: 0.08; }
+      20%, 24% { opacity: 0.9; }
+      26%, 60% { opacity: 0.2; }
+      62%, 64% { opacity: 0.7; }
+    }
+    @keyframes twinkleB {
+      0%, 30%, 100% { opacity: 0.1; }
+      32%, 35% { opacity: 1; }
+      50% { opacity: 0.3; }
+      72%, 75% { opacity: 0.8; }
+    }
+    @keyframes twinkleC {
+      0%, 40%, 100% { opacity: 0.06; }
+      15% { opacity: 0.4; }
+      42%, 45% { opacity: 0.95; }
+      65% { opacity: 0.25; }
+      80% { opacity: 0.6; }
+    }
+    @keyframes twinkleD {
+      0%, 25%, 100% { opacity: 0.14; }
+      10%, 12% { opacity: 0.85; }
+      35% { opacity: 0.3; }
+      55%, 58% { opacity: 1; }
+      78% { opacity: 0.2; }
+    }
   </style>
   <!-- Pixelate filter + scalloped cloud shapes -->
   <svg width="0" height="0" aria-hidden="true">
     <defs>
       <!-- Pixelated/chunky edge effect -->
-      <filter id="pixelate" x="-12%" y="-12%" width="124%" height="124%">
-        <feMorphology in="SourceGraphic" operator="dilate" radius="1.6"/>
+      <!-- Cursive pixel script: chunky blocky edges on script -->
+      <filter id="pixelate" x="-15%" y="-15%" width="130%" height="130%">
+        <feMorphology in="SourceGraphic" result="dilated" operator="dilate" radius="2.8"/>
+        <feMorphology in="dilated" operator="erode" radius="1.2"/>
       </filter>
-      <!-- Parting clouds: more lump steps and varied depths for variation -->
-      <clipPath id="leftCloudClip" clipPathUnits="objectBoundingBox">
-        <path d="M 0.02,0 L 1,0
-                 L 1,0.03 L 0.96,0.03 L 0.96,0.07 L 0.92,0.07 L 0.92,0.12 L 1,0.12 L 1,0.18 L 0.94,0.18 L 0.94,0.24 L 0.9,0.24 L 0.9,0.3 L 1,0.3 L 1,0.36 L 0.93,0.36 L 0.93,0.42 L 0.88,0.42 L 0.88,0.48 L 1,0.48 L 1,0.54 L 0.92,0.54 L 0.92,0.6 L 0.96,0.6 L 0.96,0.66 L 1,0.66 L 1,0.72 L 0.94,0.72 L 0.94,0.78 L 0.9,0.78 L 0.9,0.84 L 1,0.84 L 1,0.9 L 0.94,0.9 L 0.94,0.96 L 1,0.96 L 1,1
-                 L 0.02,1 Q -0.06,0.5 0.02,0 Z" />
+      <!-- Stronger pixelation for clouds -->
+      <filter id="cloudPixelate" x="-20%" y="-20%" width="140%" height="140%">
+        <feMorphology in="SourceGraphic" result="dilatedCloud" operator="dilate" radius="4"/>
+        <feMorphology in="dilatedCloud" operator="erode" radius="2.2"/>
+      </filter>
+      <!-- Mosaic-style chunky effect for title -->
+      <filter id="mosaicTitle" x="-15%" y="-15%" width="130%" height="130%">
+        <!-- Slight blur to blend strokes -->
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+        <!-- Expand and shrink to create blocky / tiled edges -->
+        <feMorphology in="blur" result="dilate" operator="dilate" radius="2.5" />
+        <feMorphology in="dilate" operator="erode" radius="1.4" />
+      </filter>
+      <!-- New swiping fog bands: top and bottom, with extra lumpy inner edges -->
+      <clipPath id="swipeCloudTopClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0,1
+                 Q 0.06,0.96 0.12,0.92
+                 Q 0.18,0.98 0.24,0.90
+                 Q 0.30,0.96 0.36,0.88
+                 Q 0.42,0.99 0.48,0.89
+                 Q 0.54,0.96 0.60,0.90
+                 Q 0.66,0.99 0.72,0.88
+                 Q 0.78,0.96 0.84,0.92
+                 Q 0.90,0.98 1,0.90
+                 L 1,0
+                 L 0,0 Z" />
       </clipPath>
-      <clipPath id="rightCloudClip" clipPathUnits="objectBoundingBox">
-        <path d="M 0.98,0 L 0,0
-                 L 0,0.03 L 0.04,0.03 L 0.04,0.07 L 0.08,0.07 L 0.08,0.12 L 0,0.12 L 0,0.18 L 0.06,0.18 L 0.06,0.24 L 0.1,0.24 L 0.1,0.3 L 0,0.3 L 0,0.36 L 0.07,0.36 L 0.07,0.42 L 0.12,0.42 L 0.12,0.48 L 0,0.48 L 0,0.54 L 0.08,0.54 L 0.08,0.6 L 0.04,0.6 L 0.04,0.66 L 0,0.66 L 0,0.72 L 0.06,0.72 L 0.06,0.78 L 0.1,0.78 L 0.1,0.84 L 0,0.84 L 0,0.9 L 0.06,0.9 L 0.06,0.96 L 0,0.96 L 0,1
-                 L 0.98,1 Q 1.06,0.5 0.98,0 Z" />
+      <clipPath id="swipeCloudBottomClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0,0
+                 Q 0.06,0.04 0.12,0.08
+                 Q 0.18,0.01 0.24,0.10
+                 Q 0.30,0.04 0.36,0.12
+                 Q 0.42,0.01 0.48,0.11
+                 Q 0.54,0.04 0.60,0.08
+                 Q 0.66,0.01 0.72,0.10
+                 Q 0.78,0.04 0.84,0.08
+                 Q 0.90,0.01 1,0.09
+                 L 1,1
+                 L 0,1 Z" />
       </clipPath>
-      <!-- Mario-style pixelated clouds with more lumps (multiple bumps) -->
+      <!-- Fluffy clustered mounds built from circular blobs of varying sizes (objectBoundingBox units) -->
       <clipPath id="marioCloud1" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.55 L 0.15,0.55 L 0.15,0.35 L 0.35,0.35 L 0.35,0.1 L 0.5,0.1 L 0.5,0 L 0.65,0 L 0.65,0.1 L 0.85,0.35 L 0.85,0.55 L 1,0.55 L 1,1 Z" />
+        <circle cx="0.18" cy="0.60" r="0.18" />
+        <circle cx="0.42" cy="0.54" r="0.25" />
+        <circle cx="0.72" cy="0.60" r="0.20" />
+        <circle cx="0.55" cy="0.40" r="0.12" />
+        <ellipse cx="0.48" cy="0.90" rx="0.54" ry="0.16" />
       </clipPath>
       <clipPath id="marioCloud2" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.6 L 0.12,0.6 L 0.12,0.35 L 0.28,0.35 L 0.28,0.15 L 0.45,0.15 L 0.45,0 L 0.55,0 L 0.55,0.15 L 0.72,0.35 L 0.72,0.6 L 0.88,0.6 L 0.88,0.35 L 1,0.35 L 1,1 Z" />
+        <circle cx="0.26" cy="0.62" r="0.19" />
+        <circle cx="0.50" cy="0.56" r="0.23" />
+        <circle cx="0.74" cy="0.60" r="0.17" />
+        <circle cx="0.40" cy="0.46" r="0.11" />
+        <ellipse cx="0.50" cy="0.88" rx="0.50" ry="0.17" />
       </clipPath>
       <clipPath id="marioCloud3" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.5 L 0.1,0.5 L 0.1,0.25 L 0.25,0.25 L 0.25,0.05 L 0.4,0.05 L 0.4,0 L 0.6,0 L 0.6,0.05 L 0.75,0.25 L 0.75,0.5 L 0.9,0.5 L 0.9,0.25 L 1,0.25 L 1,1 Z" />
+        <circle cx="0.22" cy="0.64" r="0.18" />
+        <circle cx="0.44" cy="0.56" r="0.24" />
+        <circle cx="0.68" cy="0.62" r="0.19" />
+        <circle cx="0.54" cy="0.44" r="0.13" />
+        <ellipse cx="0.48" cy="0.90" rx="0.52" ry="0.16" />
       </clipPath>
       <clipPath id="marioCloud4" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.5 L 0.08,0.5 L 0.08,0.3 L 0.22,0.3 L 0.22,0.08 L 0.38,0.08 L 0.38,0 L 0.5,0 L 0.5,0.08 L 0.62,0.08 L 0.62,0.3 L 0.78,0.3 L 0.78,0.5 L 1,0.5 L 1,1 Z" />
+        <circle cx="0.24" cy="0.60" r="0.17" />
+        <circle cx="0.46" cy="0.54" r="0.21" />
+        <circle cx="0.70" cy="0.62" r="0.18" />
+        <circle cx="0.35" cy="0.44" r="0.10" />
+        <ellipse cx="0.50" cy="0.90" rx="0.52" ry="0.15" />
       </clipPath>
       <clipPath id="marioCloud5" clipPathUnits="objectBoundingBox">
-        <path d="M 0,1 L 0,0.55 L 0.12,0.55 L 0.12,0.32 L 0.28,0.32 L 0.28,0.12 L 0.48,0.12 L 0.48,0 L 0.52,0 L 0.52,0.12 L 0.72,0.32 L 0.72,0.55 L 0.88,0.55 L 0.88,0.32 L 1,0.32 L 1,1 Z" />
+        <circle cx="0.20" cy="0.62" r="0.16" />
+        <circle cx="0.38" cy="0.56" r="0.19" />
+        <circle cx="0.58" cy="0.60" r="0.17" />
+        <circle cx="0.78" cy="0.64" r="0.15" />
+        <circle cx="0.46" cy="0.46" r="0.11" />
+        <ellipse cx="0.48" cy="0.92" rx="0.50" ry="0.14" />
+      </clipPath>
+      <clipPath id="marioCloud6" clipPathUnits="objectBoundingBox">
+        <circle cx="0.24" cy="0.60" r="0.22" />
+        <circle cx="0.50" cy="0.56" r="0.20" />
+        <circle cx="0.76" cy="0.64" r="0.18" />
+        <circle cx="0.60" cy="0.46" r="0.12" />
+        <ellipse cx="0.48" cy="0.90" rx="0.52" ry="0.16" />
+      </clipPath>
+      <clipPath id="marioCloud7" clipPathUnits="objectBoundingBox">
+        <circle cx="0.26" cy="0.60" r="0.19" />
+        <circle cx="0.48" cy="0.54" r="0.22" />
+        <circle cx="0.72" cy="0.60" r="0.18" />
+        <circle cx="0.60" cy="0.44" r="0.11" />
+        <ellipse cx="0.50" cy="0.88" rx="0.50" ry="0.15" />
+      </clipPath>
+      <clipPath id="marioCloud8" clipPathUnits="objectBoundingBox">
+        <circle cx="0.22" cy="0.60" r="0.17" />
+        <circle cx="0.40" cy="0.52" r="0.20" />
+        <circle cx="0.60" cy="0.60" r="0.18" />
+        <circle cx="0.80" cy="0.66" r="0.16" />
+        <circle cx="0.50" cy="0.44" r="0.10" />
+        <ellipse cx="0.50" cy="0.90" rx="0.52" ry="0.14" />
+      </clipPath>
+      <clipPath id="marioCloud9" clipPathUnits="objectBoundingBox">
+        <circle cx="0.26" cy="0.62" r="0.19" />
+        <circle cx="0.48" cy="0.56" r="0.23" />
+        <circle cx="0.72" cy="0.60" r="0.20" />
+        <circle cx="0.36" cy="0.46" r="0.11" />
+        <ellipse cx="0.50" cy="0.90" rx="0.54" ry="0.16" />
+      </clipPath>
+      <clipPath id="marioCloud10" clipPathUnits="objectBoundingBox">
+        <circle cx="0.18" cy="0.62" r="0.16" />
+        <circle cx="0.34" cy="0.56" r="0.18" />
+        <circle cx="0.52" cy="0.58" r="0.19" />
+        <circle cx="0.74" cy="0.64" r="0.17" />
+        <circle cx="0.44" cy="0.46" r="0.10" />
+        <ellipse cx="0.50" cy="0.92" rx="0.52" ry="0.15" />
+      </clipPath>
+      <clipPath id="marioCloud11" clipPathUnits="objectBoundingBox">
+        <circle cx="0.24" cy="0.60" r="0.22" />
+        <circle cx="0.50" cy="0.54" r="0.25" />
+        <circle cx="0.76" cy="0.64" r="0.21" />
+        <circle cx="0.60" cy="0.42" r="0.13" />
+        <ellipse cx="0.52" cy="0.90" rx="0.55" ry="0.17" />
+      </clipPath>
+      <clipPath id="marioCloud12" clipPathUnits="objectBoundingBox">
+        <circle cx="0.24" cy="0.60" r="0.18" />
+        <circle cx="0.46" cy="0.54" r="0.21" />
+        <circle cx="0.68" cy="0.62" r="0.19" />
+        <circle cx="0.36" cy="0.44" r="0.10" />
+        <ellipse cx="0.50" cy="0.90" rx="0.50" ry="0.15" />
       </clipPath>
     </defs>
   </svg>
 </head>
 <body>
-  <div class="bg-clouds" aria-hidden="true">
-    <div class="bg-cloud bg-cloud-1"></div>
-    <div class="bg-cloud bg-cloud-2"></div>
-    <div class="bg-cloud bg-cloud-3"></div>
-    <div class="bg-cloud bg-cloud-4"></div>
-    <div class="bg-cloud bg-cloud-5"></div>
-    <div class="bg-cloud bg-cloud-6"></div>
-    <div class="bg-cloud bg-cloud-7"></div>
-    <div class="bg-cloud bg-cloud-8"></div>
+  <div class="bg-fade-layer" aria-hidden="true"></div>
+  <div class="screen-flash" id="screenFlash"></div>
+  <div class="sky-decor" aria-hidden="true">
+    <svg class="pixel-stars" viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 5-point star using a single polygon -->
+        <g id="star4" shape-rendering="crispEdges">
+          <polygon points="0,-3 0.82,-1.13 2.85,-0.93 1.33,0.43 1.76,2.43 0,1.40 -1.76,2.43 -1.33,0.43 -2.85,-0.93 -0.82,-1.13" />
+        </g>
+        <!-- Smaller 5-point star for tiny points of light -->
+        <g id="starDot" shape-rendering="crispEdges">
+          <polygon points="0,-1.5 0.41,-0.57 1.43,-0.47 0.67,0.22 0.88,1.22 0,0.70 -0.88,1.22 -0.67,0.22 -1.43,-0.47 -0.41,-0.57" />
+        </g>
+      </defs>
+      <!-- Largest stars (original size) -->
+      <use href="#star4" class="star star--a star--lg" x="40" y="18" />
+      <use href="#star4" class="star star--b star--lg" x="200" y="32" />
+      <use href="#star4" class="star star--c star--lg" x="360" y="20" />
+
+      <!-- Medium 4-point stars -->
+      <use href="#star4" class="star star--d star--md" x="90" y="10" />
+      <use href="#star4" class="star star--e star--md" x="290" y="14" />
+      <use href="#star4" class="star star--f star--md" x="150" y="44" />
+      <use href="#star4" class="star star--g star--md" x="330" y="52" />
+
+      <!-- Small 4-point stars -->
+      <use href="#star4" class="star star--f star--sm" x="70" y="6" />
+      <use href="#star4" class="star star--g star--sm" x="240" y="8" />
+      <use href="#star4" class="star star--a star--sm" x="20" y="60" />
+      <use href="#star4" class="star star--b star--sm" x="210" y="70" />
+      <use href="#star4" class="star star--c star--sm" x="380" y="64" />
+      <use href="#star4" class="star star--d star--sm" x="120" y="32" />
+      <use href="#star4" class="star star--e star--sm" x="300" y="40" />
+      <use href="#star4" class="star star--a star--sm" x="40" y="28" />
+      <use href="#star4" class="star star--b star--sm" x="180" y="18" />
+      <use href="#star4" class="star star--c star--sm" x="320" y="30" />
+
+      <!-- Smallest: dot stars -->
+      <use href="#starDot" class="star star--h star--dot" x="20" y="4" />
+      <use href="#starDot" class="star star--c star--dot" x="140" y="4" />
+      <use href="#starDot" class="star star--e star--dot" x="260" y="6" />
+      <use href="#starDot" class="star star--a star--dot" x="380" y="10" />
+      <use href="#starDot" class="star star--d star--dot" x="100" y="56" />
+      <use href="#starDot" class="star star--g star--dot" x="300" y="68" />
+      <!-- Extra stars lower in the sky -->
+      <use href="#star4" class="star star--b star--sm" x="60" y="90" />
+      <use href="#star4" class="star star--c star--sm" x="220" y="96" />
+      <use href="#star4" class="star star--d star--sm" x="360" y="104" />
+      <use href="#starDot" class="star star--e star--dot" x="40" y="112" />
+      <use href="#starDot" class="star star--a star--dot" x="200" y="118" />
+      <use href="#starDot" class="star star--h star--dot" x="340" y="110" />
+      <use href="#starDot" class="star star--b star--dot" x="80" y="80" />
+      <use href="#starDot" class="star star--f star--dot" x="260" y="88" />
+      <use href="#starDot" class="star star--c star--dot" x="340" y="92" />
+      <use href="#starDot" class="star star--e star--dot" x="120" y="84" />
+      <use href="#starDot" class="star star--g star--dot" x="280" y="76" />
+      <use href="#starDot" class="star star--h star--dot" x="360" y="86" />
+      <!-- Additional tiny dots and specks -->
+      <use href="#starDot" class="star star--a star--dot" x="50" y="14" />
+      <use href="#starDot" class="star star--b star--dot" x="95" y="20" />
+      <use href="#starDot" class="star star--c star--dot" x="175" y="8" />
+      <use href="#starDot" class="star star--d star--dot" x="225" y="22" />
+      <use href="#starDot" class="star star--e star--dot" x="305" y="16" />
+      <use href="#starDot" class="star star--f star--dot" x="355" y="28" />
+      <use href="#starDot" class="star star--g star--dot" x="30" y="48" />
+      <use href="#starDot" class="star star--h star--dot" x="170" y="54" />
+      <use href="#starDot" class="star star--a star--dot" x="260" y="46" />
+      <use href="#starDot" class="star star--b star--dot" x="330" y="58" />
+    </svg>
   </div>
-  <div class="cloud cloud-left" aria-hidden="true"></div>
-  <div class="cloud cloud-right" aria-hidden="true"></div>
+  <div class="swipe-cloud swipe-cloud-top" aria-hidden="true"></div>
+  <div class="swipe-cloud swipe-cloud-bottom" aria-hidden="true"></div>
 
   <div class="content">
   <h1>Spirimal</h1>
-  <a href="page2.html" class="star-btn" aria-label="Start – go to next page">
-    <svg viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg" width="360" height="120">
-      <defs>
-        <linearGradient id="tailGradPx" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#ffd54f"/>
-          <stop offset="70%" stop-color="#ffb300"/>
-          <stop offset="100%" stop-color="#ffb300" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <!-- Pixel tail: black outline then fill (each row = 8px) -->
-      <g id="tail-outline">
-        <rect x="48" y="40" width="312" height="8" fill="#000"/>
-        <rect x="48" y="48" width="312" height="8" fill="#000"/>
-        <rect x="48" y="56" width="312" height="8" fill="#000"/>
-        <rect x="48" y="64" width="312" height="8" fill="#000"/>
-        <rect x="48" y="72" width="312" height="8" fill="#000"/>
-      </g>
-      <g id="tail-fill">
-        <rect x="52" y="42" width="304" height="6" fill="url(#tailGradPx)" opacity="0.95"/>
-        <rect x="52" y="50" width="300" height="6" fill="url(#tailGradPx)" opacity="0.9"/>
-        <rect x="52" y="58" width="296" height="6" fill="url(#tailGradPx)"/>
-        <rect x="52" y="66" width="292" height="6" fill="url(#tailGradPx)" opacity="0.9"/>
-        <rect x="52" y="74" width="288" height="6" fill="url(#tailGradPx)" opacity="0.85"/>
-      </g>
-      <!-- Pixel star: 5-point star made of 8x8 blocks (outline in black, fill in gold) -->
-      <g id="star-outline">
-        <rect x="8" y="44" width="8" height="8" fill="#000"/>
-        <rect x="16" y="44" width="8" height="8" fill="#000"/>
-        <rect x="24" y="44" width="8" height="8" fill="#000"/>
-        <rect x="16" y="52" width="8" height="8" fill="#000"/>
-        <rect x="24" y="52" width="8" height="8" fill="#000"/>
-        <rect x="32" y="52" width="8" height="8" fill="#000"/>
-        <rect x="0" y="60" width="8" height="8" fill="#000"/>
-        <rect x="8" y="60" width="8" height="8" fill="#000"/>
-        <rect x="16" y="60" width="8" height="8" fill="#000"/>
-        <rect x="24" y="60" width="8" height="8" fill="#000"/>
-        <rect x="32" y="60" width="8" height="8" fill="#000"/>
-        <rect x="40" y="60" width="8" height="8" fill="#000"/>
-        <rect x="8" y="68" width="8" height="8" fill="#000"/>
-        <rect x="16" y="68" width="8" height="8" fill="#000"/>
-        <rect x="24" y="68" width="8" height="8" fill="#000"/>
-        <rect x="32" y="68" width="8" height="8" fill="#000"/>
-        <rect x="16" y="76" width="8" height="8" fill="#000"/>
-        <rect x="24" y="76" width="8" height="8" fill="#000"/>
-      </g>
-      <g id="star-fill">
-        <rect x="9" y="45" width="6" height="6" fill="#ffeb3b"/>
-        <rect x="17" y="45" width="6" height="6" fill="#ffd54f"/>
-        <rect x="25" y="45" width="6" height="6" fill="#ffeb3b"/>
-        <rect x="17" y="53" width="6" height="6" fill="#ffd54f"/>
-        <rect x="25" y="53" width="6" height="6" fill="#fff59d"/>
-        <rect x="33" y="53" width="6" height="6" fill="#ffd54f"/>
-        <rect x="9" y="61" width="6" height="6" fill="#ffd54f"/>
-        <rect x="17" y="61" width="6" height="6" fill="#fff59d"/>
-        <rect x="25" y="61" width="6" height="6" fill="#ffc107"/>
-        <rect x="33" y="61" width="6" height="6" fill="#fff59d"/>
-        <rect x="41" y="61" width="6" height="6" fill="#ffd54f"/>
-        <rect x="9" y="69" width="6" height="6" fill="#ffeb3b"/>
-        <rect x="17" y="69" width="6" height="6" fill="#ffd54f"/>
-        <rect x="25" y="69" width="6" height="6" fill="#fff59d"/>
-        <rect x="33" y="69" width="6" height="6" fill="#ffd54f"/>
-        <rect x="17" y="77" width="6" height="6" fill="#ffd54f"/>
-        <rect x="25" y="77" width="6" height="6" fill="#ffeb3b"/>
-      </g>
-      <!-- "Start" text – pixel font -->
-      <text x="210" y="72" text-anchor="middle" fill="#ffeb3b" font-family="'Press Start 2P', monospace" font-size="14" font-weight="bold" stroke="#1a1a1a" stroke-width="4" paint-order="stroke">Start</text>
-    </svg>
-  </a>
+  <nav class="main-menu" aria-label="Main game menu">
+    <button class="menu-btn menu-btn--primary" data-target-page="new-game.html">New Game</button>
+    <button class="menu-btn" data-target-page="load-saves.html">Load Saves</button>
+    <button class="menu-btn" data-target-page="credits.html">Credits</button>
+    <button class="menu-btn menu-btn--danger" id="exitDesktopBtn">Exit to Desktop</button>
+    <svg class="menu-star menu-star--tl" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--tr" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--bl" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--br" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--tm" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--bm" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--ml" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+    <svg class="menu-star menu-star--mr" viewBox="-4 -4 8 8"><use href="#star4" /></svg>
+  </nav>
   </div>
+
+  <script>
+    (function () {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
+      let ctx;
+      let bgStarted = false;
+      let bgIntervalId = null;
+      function getContext() {
+        if (!ctx) ctx = new AudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+
+      function playChime() {
+        const context = getContext();
+        const now = context.currentTime;
+
+        // Subtle echo for a slightly mystical feel
+        const echoDelay = context.createDelay(0.5);
+        echoDelay.delayTime.value = 0.14;
+        const echoFeedback = context.createGain();
+        echoFeedback.gain.value = 0.22;
+        echoDelay.connect(echoFeedback);
+        echoFeedback.connect(echoDelay);
+        echoDelay.connect(context.destination);
+
+        // Two-step ultra high-pitched "coin" ping, extra soft (higher + even quieter now)
+        const steps = [
+          { startFreq: 4200, endFreq: 6800, gain: 0.018, duration: 0.10, delay: 0 },
+          { startFreq: 5200, endFreq: 8200, gain: 0.012, duration: 0.08, delay: 0.04 }
+        ];
+
+        steps.forEach(step => {
+          const osc = context.createOscillator();
+          const gain = context.createGain();
+
+          osc.type = 'square';
+
+          const start = now + step.delay;
+          const end = start + step.duration;
+
+          osc.frequency.setValueAtTime(step.startFreq, start);
+          osc.frequency.exponentialRampToValueAtTime(step.endFreq, end);
+
+          gain.gain.setValueAtTime(0.0, start);
+          gain.gain.linearRampToValueAtTime(step.gain, start + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, end);
+
+          osc.connect(gain);
+          gain.connect(context.destination);
+          gain.connect(echoDelay);
+
+          osc.start(start);
+          osc.stop(end + 0.02);
+        });
+      }
+
+      function startBackgroundMusic() {
+        if (bgStarted) return;
+        bgStarted = true;
+
+        const context = getContext();
+        const masterGain = context.createGain();
+        masterGain.gain.value = 0.06; // very soft overall level
+
+        // Simple echo to make the ambience more mystical
+        const delay = context.createDelay(1.0);
+        delay.delayTime.value = 0.28;
+        const feedback = context.createGain();
+        feedback.gain.value = 0.25;
+
+        masterGain.connect(context.destination);
+        masterGain.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(context.destination);
+
+        // Slightly mysterious minor-ish scale, higher register
+        const scale = [659.25, 783.99, 987.77, 1174.66, 1318.51]; // E5, G5, B5, D6, E6
+        let step = 0;
+
+        bgIntervalId = setInterval(() => {
+          const now = context.currentTime;
+
+          // Gentle 3-note arpeggio per step
+          for (let i = 0; i < 3; i++) {
+            const osc = context.createOscillator();
+            const gain = context.createGain();
+
+            osc.type = 'triangle';
+            const noteFreq = scale[(step + i) % scale.length];
+            const startTime = now + i * 0.24;
+            const endTime = startTime + 0.9;
+
+            osc.frequency.setValueAtTime(noteFreq, startTime);
+
+            gain.gain.setValueAtTime(0.0, startTime);
+            gain.gain.linearRampToValueAtTime(0.06, startTime + 0.12);
+            gain.gain.linearRampToValueAtTime(0.0, endTime);
+
+            osc.connect(gain);
+            gain.connect(masterGain);
+
+            osc.start(startTime);
+            osc.stop(endTime + 0.02);
+          }
+
+          step = (step + 1) % scale.length;
+        }, 1600);
+      }
+
+      function spawnShootingStar() {
+        const container = document.querySelector('.sky-decor');
+        if (!container) return;
+
+        const star = document.createElement('div');
+        const goingRight = Math.random() < 0.5;
+        star.className = 'shooting-star ' + (goingRight ? 'shooting-star--right' : 'shooting-star--left');
+
+        const topVH = 8 + Math.random() * 60; // avoid very top/bottom
+        star.style.top = topVH + 'vh';
+
+        const duration = 2.4 + Math.random() * 1.4;
+        star.style.setProperty('--shoot-duration', duration.toFixed(2) + 's');
+
+        container.appendChild(star);
+
+        // Clean up after animation
+        setTimeout(() => {
+          star.remove();
+        }, (duration + 0.3) * 1000);
+      }
+
+      function scheduleShootingStars() {
+        function loop() {
+          const delay = 7000 + Math.random() * 9000; // 7–16 seconds
+          setTimeout(() => {
+            try { spawnShootingStar(); } catch (e) { /* ignore errors */ }
+            loop();
+          }, delay);
+        }
+        loop();
+      }
+
+      function spawnRandomDotStar() {
+        const container = document.querySelector('.sky-decor');
+        if (!container) return;
+        const star = document.createElement('div');
+        star.className = 'rand-dot-star';
+
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        star.style.left = left + '%';
+        star.style.top = top + '%';
+
+        container.appendChild(star);
+
+        setTimeout(() => {
+          star.remove();
+        }, 4000);
+      }
+
+      function scheduleRandomDotStars() {
+        function loop() {
+          const delay = 3000 + Math.random() * 4000; // 3–7 seconds
+          setTimeout(() => {
+            try { spawnRandomDotStar(); } catch (e) { /* ignore errors */ }
+            loop();
+          }, delay);
+        }
+        loop();
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.menu-btn');
+        const screenFlash = document.getElementById('screenFlash');
+
+        buttons.forEach(btn => {
+          const handler = () => {
+            try { playChime(); } catch (e) { /* ignore audio errors */ }
+          };
+          // Trigger sound on hover and keyboard focus, no click needed
+          btn.addEventListener('mouseenter', handler);
+          btn.addEventListener('focus', handler);
+
+          const targetPage = btn.getAttribute('data-target-page');
+          const isExit = btn.classList.contains('menu-btn--danger');
+
+          if (targetPage && !isExit) {
+            const clickForTransition = (ev) => {
+              ev.preventDefault();
+
+              const body = document.body;
+              if (body) {
+                body.classList.add('cursor-pulse');
+                setTimeout(function () {
+                  body.classList.remove('cursor-pulse');
+                }, 160);
+              }
+              if (btn.classList.contains('menu-btn--transitioning')) return;
+              btn.classList.add('menu-btn--transitioning');
+
+              if (screenFlash) {
+                const onFlashEnd = () => {
+                  screenFlash.removeEventListener('animationend', onFlashEnd);
+                  window.location.href = targetPage;
+                };
+                screenFlash.addEventListener('animationend', onFlashEnd);
+                // trigger full-screen white flash
+                screenFlash.classList.add('screen-flash--active');
+              } else {
+                // Fallback: navigate after button animation
+                const onAnimEnd = () => {
+                  btn.removeEventListener('animationend', onAnimEnd);
+                  window.location.href = targetPage;
+                };
+                btn.addEventListener('animationend', onAnimEnd);
+              }
+            };
+            btn.addEventListener('click', clickForTransition);
+          }
+        });
+
+        const exitBtn = document.getElementById('exitDesktopBtn');
+        if (exitBtn) {
+          exitBtn.addEventListener('click', function () {
+            try {
+              // Attempt to close the current window/tab
+              window.open('', '_self');
+              window.close();
+            } catch (e) {
+              // If the browser blocks closing, do nothing
+            }
+          });
+        }
+
+        // Start random background shooting stars
+        scheduleShootingStars();
+        // Start random tiny dot stars
+        scheduleRandomDotStars();
+
+        // Try to autoplay background music on load (may be blocked by browser)
+        try {
+          startBackgroundMusic();
+        } catch (e) {
+          // If blocked, music simply won't start
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

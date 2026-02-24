@@ -6,15 +6,34 @@
   <title>Cole Louie - Project 1</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="page-index">
+  <audio id="bg-music" loop>
+    <source src="Balatro Store.mp3" type="audio/mpeg">
+  </audio>
+  <button type="button" class="index-music-btn" aria-label="Play background music">click to play music</button>
+  <div class="index-whale-block">
+    <a href="Aboutme.html" class="index-whale-link" aria-label="Go to About the Page">
+      <img src="gray whale.png" alt="Gray whale" class="index-gray-whale">
+    </a>
+    <p class="index-whale-caption">the about me whale</p>
+  </div>
   <h1 class="intro-block">
-    <span class="intro-text">
-      <span class="cole-name">Cole:</span><br>
-      A Graphic Designer? That doesn't sound like me. I'm actually a
+    <span class="cole-name">Cole:</span>
+    <span class="body-cycle-group">
+      <span class="intro-text-line">A Graphic Designer? That doesn't sound like me. I'm actually a</span>
+      <span id="cycle-scroll" class="cycle-scroll"><span class="cycle-word"><a href="marine-biologist.html" class="cycle-link">Marine Biologist</a></span><span class="cycle-word"><a href="helldiver.html" class="cycle-link">Helldiver</a></span><span class="cycle-word"><a href="comic-writer.html" class="cycle-link">Comic Writer</a></span></span>
     </span>
-    <span id="cycle-scroll" class="cycle-scroll"><span class="cycle-word"><a href="marine-biologist.html" class="cycle-link">Marine Biologist</a></span><span class="cycle-word"><a href="helldiver.html" class="cycle-link">Helldiver</a></span><span class="cycle-word"><a href="animator.html" class="cycle-link">Animator</a></span><span class="cycle-word"><a href="comic-writer.html" class="cycle-link">Comic Writer</a></span></span>
   </h1>
   <script>
+    var bgMusic = document.getElementById('bg-music');
+    var musicBtn = document.querySelector('.index-music-btn');
+    if (musicBtn && bgMusic) {
+      musicBtn.addEventListener('click', function() {
+        bgMusic.play();
+        musicBtn.textContent = 'music playing';
+        musicBtn.disabled = true;
+      });
+    }
     const words = document.querySelectorAll(".cycle-word");
     let i = 0;
     function setActive() {
