@@ -241,6 +241,40 @@
       image-rendering: pixelated;
     }
 
+    .dialogue-skip {
+      position: absolute;
+      top: 0.9rem;
+      right: 1.6rem;
+      padding: 0.16rem 0.8rem;
+      background: #120a1b;
+      border: 3px solid #000;
+      box-shadow: 0 0 0 2px #000;
+      color: #ffffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      image-rendering: pixelated;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        background-color 0.12s ease-out;
+    }
+
+    .dialogue-skip:hover {
+      transform: translateY(-2px);
+      background: #241030;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 12px rgba(200,160,255,0.85);
+    }
+
+    .dialogue-skip:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 0 2px #000;
+    }
+
     .grim-question {
       position: absolute;
       top: 35%;
@@ -578,6 +612,7 @@
   <div class="dialogue-box" aria-label="Grimmothee speaking">
     <div class="dialogue-name">Grimmothee</div>
     <div class="dialogue-text" id="grimDialogueText"></div>
+    <button class="dialogue-skip" id="grimSkipBtn" type="button" aria-label="Skip to questions">SKIP</button>
     <button class="dialogue-next" id="grimNextBtn" type="button" aria-label="Next line">
       <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <!-- simple 8-bit skull -->
@@ -1024,6 +1059,7 @@
         const textEl = document.getElementById('grimDialogueText');
         const nextBtn = document.getElementById('grimNextBtn');
         const heartBtn = document.getElementById('grimHeartBtn');
+        const skipBtn = document.getElementById('grimSkipBtn');
         const grimSvg = document.querySelector('.grim-reaper');
         const questionEl = document.getElementById('grimQuestion');
         const dialogueBox = document.querySelector('.dialogue-box');
@@ -1075,6 +1111,26 @@
         ];
         let lineIndex = 0;
         let typing = false;
+
+        function openSpiritQuestions() {
+          typing = false;
+          if (dialogueBox) {
+            dialogueBox.classList.add('dialogue-box--hidden');
+            setTimeout(function () {
+              dialogueBox.style.display = 'none';
+            }, 260);
+          }
+          if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
+            return;
+          }
+          currentQuestionIndex = 0;
+          spiritQuestionsEl.classList.add('spirit-questions--visible');
+          spiritQuestionsEl.setAttribute('aria-hidden', 'false');
+          spiritQuestionTitle.textContent = spiritQuestions[0].title;
+          spiritQuestionBody.textContent = spiritQuestions[0].prompt;
+          spiritAnswerInput.value = '';
+          spiritAnswerInput.focus();
+        }
 
         function typeLine(idx) {
           const fullText = lines[idx];
@@ -1150,7 +1206,7 @@
             }
             index += 1;
 
-            const delay = 38 + Math.random() * 60;
+            const delay = 22 + Math.random() * 32;
             setTimeout(stepType, delay);
           }
 
@@ -1170,22 +1226,13 @@
         if (heartBtn) {
           heartBtn.addEventListener('click', function () {
             if (typing) return;
-            if (dialogueBox) {
-              dialogueBox.classList.add('dialogue-box--hidden');
-              setTimeout(function () {
-                dialogueBox.style.display = 'none';
-              }, 260);
-            }
-            if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
-              return;
-            }
-            currentQuestionIndex = 0;
-            spiritQuestionsEl.classList.add('spirit-questions--visible');
-            spiritQuestionsEl.setAttribute('aria-hidden', 'false');
-            spiritQuestionTitle.textContent = spiritQuestions[0].title;
-            spiritQuestionBody.textContent = spiritQuestions[0].prompt;
-            spiritAnswerInput.value = '';
-            spiritAnswerInput.focus();
+            openSpiritQuestions();
+          });
+        }
+
+        if (skipBtn) {
+          skipBtn.addEventListener('click', function () {
+            openSpiritQuestions();
           });
         }
 
