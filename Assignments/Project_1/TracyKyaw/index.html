@@ -439,32 +439,32 @@ const savedWeek = localStorage.getItem("weeklyFoodData");
 
 const defaultWeek = [
   { date: "Monday", foods: [
-    { name: "HeyTea Cloud Mango", image: "cloudmango.jpeg", satisfied: false },
-    { name: "Mashed Potatoes", image: "mashedpotatoes.jpg.avif", satisfied: false }
+    { name: "HeyTea Cloud Mango", image: "cloudmango.jpeg", price: "$7.49", satisfied: false },
+    { name: "Mashed Potatoes", image: "mashedpotatoes.jpg.avif", price: "free! made at home", satisfied: false }
   ]},
   { date: "Tuesday", foods: [
-    { name: "Mcdonalds Fries", image: "fries.jpg", satisfied: false },
-    { name: "Banana Latte", image: "bananalatte.jpg", satisfied: false }
+    { name: "Mcdonalds Fries", image: "fries.jpg", price: "$3", satisfied: false },
+    { name: "Banana Latte", image: "bananalatte.jpg", price: "$6", satisfied: false }
   ]},
   { date: "Wednesday", foods: [
-    { name: "Caramal Frappe", image: "frappe.jpg.avif", satisfied: false },
-    { name: "Tonkotsu Ramen", image: "ramen.jpg.avif", satisfied: false }
+    { name: "Caramal Frappe", image: "frappe.jpg.avif", price: "$5", satisfied: false },
+    { name: "Tonkotsu Ramen", image: "ramen.jpg.avif", price: "$18.50", satisfied: false }
   ]},
   { date: "Thursday", foods: [
-    { name: "Strawberry Banana Smoothie", image: "smoothie.jpg.avif", satisfied: false },
-    { name: "Tuna Poke Bowl", image: "pokebowl.jpg.avif", satisfied: false }
+    { name: "Strawberry Banana Smoothie", image: "smoothie.jpg.avif", price: "$4", satisfied: false },
+    { name: "Tuna Poke Bowl", image: "pokebowl.jpg.avif", price: "$17", satisfied: false }
   ]},
   { date: "Friday", foods: [
-    { name: "Mushroom and Pineapple Pizza", image: "pizza.jpg", satisfied: false },
-    { name: "Ume Tea Mango Pomelo Sago", image: "slushies.webp", satisfied: false }
+    { name: "Mushroom and Pineapple Pizza", image: "pizza.jpg", price: "free with coupon", satisfied: false },
+    { name: "Ume Tea Mango Pomelo Sago", image: "slushies.webp", price: "$7", satisfied: false }
   ]},
   { date: "Saturday", foods: [
-    { name: "Poke Bowl", image: "pokebowl1.jpg.avif", satisfied: false },
-    { name: "Lemonade", image: "lemonade.jpg.avif", satisfied: false }
+    { name: "Poke Bowl", image: "pokebowl1.jpg.avif", price: "$17", satisfied: false },
+    { name: "Lemonade", image: "lemonade.jpg.avif", price: "free at home", satisfied: false }
   ]},
   { date: "Sunday", foods: [
-    { name: "HeyTea Cloud Mango", image: "cloudmango.jpeg", satisfied: false },
-    { name: "Mashed Potatoes", image: "mashedpotatoes.jpg.avif", satisfied: false }
+    { name: "HeyTea Cloud Mango", image: "cloudmango.jpeg", price: "$7.49", satisfied: false },
+    { name: "Mashed Potatoes", image: "mashedpotatoes.jpg.avif", price: "free! made at home", satisfied: false }
   ]}
 ];
 
@@ -542,11 +542,36 @@ window.addEventListener("load", () => {
   }, 3000);
 });
 
+function getWeeklyTotal() {
+  let total = 0;
+  week.forEach((day) => {
+    if (!day || !Array.isArray(day.foods)) return;
+    day.foods.forEach((food) => {
+      if (!food || !food.satisfied || !food.price) return;
+      if (!food.price.includes("$")) return;
+      const match = food.price.match(/[\d.]+/);
+      if (!match) return;
+      const val = parseFloat(match[0]);
+      if (!isNaN(val)) total += val;
+    });
+  });
+  return total;
+}
+
 function toggleConclusion() {
   const box = document.getElementById("conclusion-box");
   if (!box) return;
   const isHidden = box.style.display === "" || box.style.display === "none";
-  box.style.display = isHidden ? "block" : "none";
+  if (isHidden) {
+    const total = getWeeklyTotal();
+    const formatted = "$" + total.toFixed(2);
+    box.innerText =
+      "I spent more than I wanted to on food, but at least most of my cravings are satisfied :3\n\nTotal spent this week: " +
+      formatted;
+    box.style.display = "block";
+  } else {
+    box.style.display = "none";
+  }
 }
 
 // Bear run-away interaction
@@ -572,8 +597,10 @@ if (bearEl) {
   if (!monday.foods[1]) monday.foods[1] = { name: "", image: "", satisfied: false };
   monday.foods[0].name = "HeyTea Cloud Mango";
   monday.foods[0].image = "cloudmango.jpeg";
+   monday.foods[0].price = "$7.49";
   monday.foods[1].name = "Mashed Potatoes";
   monday.foods[1].image = "mashedpotatoes.jpg.avif";
+   monday.foods[1].price = "free! made at home";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -584,8 +611,10 @@ if (bearEl) {
   if (!tuesday.foods[1]) tuesday.foods[1] = { name: "", image: "", satisfied: false };
   tuesday.foods[0].name = "Mcdonalds Fries";
   tuesday.foods[0].image = "fries.jpg";
+  tuesday.foods[0].price = "$3";
   tuesday.foods[1].name = "Banana Latte";
   tuesday.foods[1].image = "bananalatte.jpg";
+  tuesday.foods[1].price = "$6";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -597,8 +626,10 @@ if (bearEl) {
   if (!wednesday.foods[1]) wednesday.foods[1] = { name: "", image: "", satisfied: false };
   wednesday.foods[0].name = "Caramal Frappe";
   wednesday.foods[0].image = "frappe.jpg.avif";
+  wednesday.foods[0].price = "$5";
   wednesday.foods[1].name = "Tonkotsu Ramen";
   wednesday.foods[1].image = "ramen.jpg.avif";
+  wednesday.foods[1].price = "$18.50";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -610,8 +641,10 @@ if (bearEl) {
   if (!thursday.foods[1]) thursday.foods[1] = { name: "", image: "", satisfied: false };
   thursday.foods[0].name = "Strawberry Banana Smoothie";
   thursday.foods[0].image = "smoothie.jpg.avif";
+  thursday.foods[0].price = "$4";
   thursday.foods[1].name = "Tuna Poke Bowl";
   thursday.foods[1].image = "pokebowl.jpg.avif";
+  thursday.foods[1].price = "$17";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -623,8 +656,10 @@ if (bearEl) {
   if (!friday.foods[1]) friday.foods[1] = { name: "", image: "", satisfied: false };
   friday.foods[0].name = "Mushroom and Pineapple Pizza";
   friday.foods[0].image = "pizza.jpg";
+  friday.foods[0].price = "free with coupon";
   friday.foods[1].name = "Ume Tea Mango Pomelo Sago";
   friday.foods[1].image = "slushies.webp";
+  friday.foods[1].price = "$7";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -636,8 +671,10 @@ if (bearEl) {
   if (!saturday.foods[1]) saturday.foods[1] = { name: "", image: "", satisfied: false };
   saturday.foods[0].name = "Poke Bowl";
   saturday.foods[0].image = "pokebowl1.jpg.avif";
+  saturday.foods[0].price = "$17";
   saturday.foods[1].name = "Lemonade";
   saturday.foods[1].image = "lemonade.jpg.avif";
+  saturday.foods[1].price = "free at home";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -649,8 +686,10 @@ if (bearEl) {
   if (!sunday.foods[1]) sunday.foods[1] = { name: "", image: "", satisfied: false };
   sunday.foods[0].name = "HeyTea Cloud Mango";
   sunday.foods[0].image = "cloudmango.jpeg";
+  sunday.foods[0].price = "$7.49";
   sunday.foods[1].name = "Mashed Potatoes";
   sunday.foods[1].image = "mashedpotatoes.jpg.avif";
+  sunday.foods[1].price = "free! made at home";
   localStorage.setItem("weeklyFoodData", JSON.stringify(week));
 })();
 
@@ -683,7 +722,8 @@ function showFoods(index) {
     });
 
     const name = document.createElement("div");
-    name.innerText = "🍽 " + food.name;
+    const priceText = food.price ? " — " + food.price : "";
+    name.innerText = "🍽 " + food.name + priceText;
 
     // Craving satisfied checkbox
     const checkboxContainer = document.createElement("div");
