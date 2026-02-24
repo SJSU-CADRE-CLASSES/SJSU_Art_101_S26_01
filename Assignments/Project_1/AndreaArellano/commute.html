@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Commute / Work Drives</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top left, #ffe6f2 0, #fff9ff 45%, #f4fbff 100%);
+        color: #3c2348;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 28px 16px;
+      }
+
+      .card {
+        max-width: 620px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 26px 24px 24px;
+        box-shadow: 0 18px 36px rgba(120, 80, 160, 0.18);
+        border: 1px solid #f0dff9;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      h1 span {
+        font-size: 1.6rem;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        background: rgba(255, 159, 191, 0.12);
+        color: #b44b7b;
+      }
+
+      .pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #ff9fbf;
+      }
+
+      p {
+        margin: 10px 0 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #6e5c89;
+      }
+
+      .list {
+        margin: 14px 0 0;
+        padding-left: 20px;
+        font-size: 0.9rem;
+        color: #6e5c89;
+      }
+
+      .list li {
+        margin-bottom: 6px;
+      }
+
+      a.back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 18px;
+        font-size: 0.9rem;
+        color: #8a4ea5;
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f9f2ff;
+        border: 1px solid #ead8ff;
+      }
+
+      a.back-link:hover {
+        background: #f3e6ff;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="pill">
+        <span class="pill-dot"></span>
+        commute / work
+      </div>
+      <h1><span>🚌</span> Everyday routes</h1>
+      <p>
+        This page is for the drives that become part of your everyday rhythm:
+        rides to work, back home, or anywhere your “normal” route takes you.
+      </p>
+      <ul class="list">
+        <li>Notice what stays the same every day.</li>
+        <li>Catch tiny changes in the sky, weather, or traffic.</li>
+        <li>Think about how your commute makes you feel.</li>
+      </ul>
+      <a href="index.html" class="back-link">
+        ← Back to main driving journal
+      </a>
+    </main>
+  </body>
+</html>
+
