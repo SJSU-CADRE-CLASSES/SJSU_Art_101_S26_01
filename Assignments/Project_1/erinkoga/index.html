@@ -45,6 +45,17 @@
             padding: 2rem;
             flex-wrap: wrap;
         }
+        .door-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .door-label {
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1rem;
+        }
         .doors img {
             max-width: 200px;
             height: auto;
@@ -78,9 +89,15 @@
     <h2>click a door to enter the room</h2>
     <div class="music-player" id="musicPlayer"></div>
     <div class="doors">
-        <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        <div class="door-column">
+            <span class="door-label">Bedroom</span>
+            <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        </div>
         <a href="stats.html"><img src="plant.png" alt="Plant stats link" class="plant"></a>
-        <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
+        <div class="door-column">
+            <span class="door-label">Casino</span>
+            <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
+        </div>
     </div>
 </body>
 </html>
