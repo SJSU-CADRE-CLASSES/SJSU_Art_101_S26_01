@@ -120,6 +120,17 @@
             background: rgba(204, 218, 240, 0.2);
             font-weight: bold;
         }
+        .music-player {
+            position: relative;
+            z-index: 1;
+            margin: 0 auto 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .music-player iframe {
+            border: none;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -149,14 +160,25 @@
             </tbody>
         </table>
     </div>
+    <div class="music-player" id="musicPlayer"></div>
 </body>
 <script>
     const bedButton = document.getElementById('bedButton');
     const hoursTable = document.getElementById('hoursTable');
-    if (bedButton && hoursTable) {
+    const musicPlayer = document.getElementById('musicPlayer');
+    if (bedButton && hoursTable && musicPlayer) {
         bedButton.addEventListener('click', () => {
             hoursTable.hidden = !hoursTable.hidden;
-            window.open('https://youtu.be/ujmCQzbhTUw?si=wCiCpu1EhvQPBJr6', '_blank');
+            musicPlayer.innerHTML = `
+                <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/ujmCQzbhTUw?autoplay=1"
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                ></iframe>
+            `;
         });
     }
 </script>
