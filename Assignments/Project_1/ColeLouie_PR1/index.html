@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-index">
+  <audio id="bg-music" loop>
+    <source src="Balatro Store.mp3" type="audio/mpeg">
+  </audio>
+  <button type="button" class="index-music-btn" aria-label="Play background music">click to play music</button>
   <div class="index-whale-block">
     <a href="Aboutme.html" class="index-whale-link" aria-label="Go to About the Page">
       <img src="gray whale.png" alt="Gray whale" class="index-gray-whale">
@@ -21,6 +25,15 @@
     </span>
   </h1>
   <script>
+    var bgMusic = document.getElementById('bg-music');
+    var musicBtn = document.querySelector('.index-music-btn');
+    if (musicBtn && bgMusic) {
+      musicBtn.addEventListener('click', function() {
+        bgMusic.play();
+        musicBtn.textContent = 'music playing';
+        musicBtn.disabled = true;
+      });
+    }
     const words = document.querySelectorAll(".cycle-word");
     let i = 0;
     function setActive() {

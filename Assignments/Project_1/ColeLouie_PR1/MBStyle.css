@@ -1,5 +1,29 @@
 /* Marine Biology page styles */
 
+.marine-music-btn {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  z-index: 10;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-family: inherit;
+  border: 1px solid #333;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.marine-music-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.marine-music-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
 body.page-marine-biologist {
   background-color: #F7FAFF;
   background-image: url('AdobeStock_101721700.jpeg');
