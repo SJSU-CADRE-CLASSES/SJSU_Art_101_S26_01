@@ -508,15 +508,17 @@
         throwHint.textContent = '';
 
         var zoneRect = pinsZone.getBoundingClientRect();
-        var laneRect = throwZone.parentElement.getBoundingClientRect();
         var arenaRect = ball.parentElement.getBoundingClientRect();
-        var startX = arenaRect.left + arenaRect.width / 2;
-        var startY = arenaRect.bottom - 110;
+        var ballRect = ball.getBoundingClientRect();
+        var ballCenterX = ballRect.left - arenaRect.left + ballRect.width / 2;
+        var ballCenterY = ballRect.top - arenaRect.top + ballRect.height / 2;
+        var startX = arenaRect.left + ballCenterX;
+        var startY = arenaRect.top + ballCenterY;
         var endX = zoneRect.left + zoneRect.width * (aimX / 100);
         var endY = zoneRect.top + zoneRect.height / 2;
 
-        ball.style.left = (arenaRect.width / 2 - 20) + 'px';
-        ball.style.bottom = '90px';
+        ball.style.left = ballCenterX + 'px';
+        ball.style.bottom = (arenaRect.height - ballCenterY - 20) + 'px';
         ball.style.transform = 'none';
 
         var duration = 800 - power * 400;
@@ -529,7 +531,7 @@
           var eased = 1 - Math.pow(1 - progress, 1.5);
           var x = startX + (endX - startX) * eased;
           var y = startY + (endY - startY) * eased;
-          ball.style.left = (x - arenaRect.left - 20) + 'px';
+          ball.style.left = (x - arenaRect.left) + 'px';
           ball.style.bottom = (arenaRect.bottom - y - 20) + 'px';
 
           if (progress < 1) {
