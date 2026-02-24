@@ -14,6 +14,57 @@ const DISPLAY_LABELS = {
 
 const PERSON_ORDER = ['you', 'dad', 'bro'];
 
+// Fallback data used when daily_minutes.json cannot be fetched (e.g., on GitHub Pages without the file)
+const FALLBACK_DAILY_MINUTES = {
+  meta: {
+    title: 'The Radius of My Life',
+    dateRange: ['2026-02-15', '2026-02-23'],
+    notes: 'Life360 driving summaries; addresses generalized.',
+  },
+  people: [
+    {
+      id: 'you',
+      label: 'You',
+      days: [
+        { date: '2026-02-15', trips: 2, minutes: 55 },
+        { date: '2026-02-16', trips: 3, minutes: 97 },
+        { date: '2026-02-17', trips: 2, minutes: 41 },
+        { date: '2026-02-18', trips: 4, minutes: 88 },
+        { date: '2026-02-19', trips: 2, minutes: 60 },
+        { date: '2026-02-20', trips: 3, minutes: 158 },
+        { date: '2026-02-21', trips: 2, minutes: 39 },
+        { date: '2026-02-22', trips: 1, minutes: 61 },
+        { date: '2026-02-23', trips: 1, minutes: 147 },
+      ],
+    },
+    {
+      id: 'dad',
+      label: 'Dad',
+      days: [
+        { date: '2026-02-15', trips: 6, minutes: 210 },
+        { date: '2026-02-16', trips: 8, minutes: 268 },
+        { date: '2026-02-17', trips: 10, minutes: 347 },
+        { date: '2026-02-18', trips: 8, minutes: 334 },
+        { date: '2026-02-19', trips: 2, minutes: 0 },
+      ],
+    },
+    {
+      id: 'bro',
+      label: 'Bro',
+      days: [
+        { date: '2026-02-16', trips: 2, minutes: 46 },
+        { date: '2026-02-17', trips: 2, minutes: 24 },
+        { date: '2026-02-18', trips: 2, minutes: 33 },
+        { date: '2026-02-19', trips: 2, minutes: 40 },
+        { date: '2026-02-20', trips: 2, minutes: 92 },
+        { date: '2026-02-21', trips: 4, minutes: 187 },
+        { date: '2026-02-22', trips: 2, minutes: 0 },
+        { date: '2026-02-23', trips: 4, minutes: 80 },
+      ],
+    },
+  ],
+};
+
 const state = {
   view: 'intro', // intro | you | compare | insights
   groupBy: 'day', // day | week
@@ -48,7 +99,7 @@ async function initApp() {
         </div>
       </div>
       <div class="app-main">
-        <div class="sidebar-toggle"><button type="button" data-toggle-sidebar>☰ Panel</button></div>
+        <div class="sidebar-toggle" id="sidebarToggle"><button type="button" data-toggle-sidebar>☰ Panel</button></div>
         <aside class="sidebar collapsed" id="sidebar"></aside>
         <main class="view-container" id="view-container"></main>
       </div>
@@ -59,15 +110,18 @@ async function initApp() {
     </div>
   `;
 
+  let payload = null;
   try {
-    const res = await fetch('data/daily_minutes.json');
-    const json = await res.json();
-    state.data = json;
-    preprocessData(json);
+    const res = await fetch('daily_minutes.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    payload = await res.json();
   } catch (e) {
-    console.error('Failed to load data', e);
-    state.data = null;
+    console.warn('Failed to load daily_minutes.json, falling back to embedded data.', e);
+    payload = FALLBACK_DAILY_MINUTES;
   }
+
+  state.data = payload;
+  preprocessData(payload);
 
   attachGlobalEvents();
   render();
@@ -375,8 +429,15 @@ function attachGlobalEvents() {
 function render() {
   const container = document.getElementById('view-container');
   const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
   container.innerHTML = '';
   sidebar.innerHTML = '';
+
+  // Hide sidebar toggle on non-comparison views
+  if (sidebarToggle) {
+    const showToggle = state.view === 'you' || state.view === 'compare';
+    sidebarToggle.style.display = showToggle ? 'block' : 'none';
+  }
 
   if (state.view === 'intro') {
     sidebar.classList.add('collapsed');
