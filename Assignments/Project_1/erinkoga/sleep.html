@@ -120,6 +120,12 @@
             background: rgba(204, 218, 240, 0.2);
             font-weight: bold;
         }
+        .coin {
+            position: absolute;
+            z-index: 2;
+            font-size: 2.5rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -159,5 +165,30 @@
             hoursTable.hidden = !hoursTable.hidden;
         });
     }
+
+    function spawnCoins(count) {
+        for (let i = 0; i < count; i++) {
+            const coin = document.createElement('span');
+            coin.textContent = '🪙';
+            coin.className = 'coin';
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const left = Math.random() * (viewportWidth - 60);
+            const top = Math.random() * (viewportHeight - 120) + 60;
+            coin.style.left = left + 'px';
+            coin.style.top = top + 'px';
+
+            coin.addEventListener('click', () => {
+                window.location.href = 'casino.html';
+            });
+
+            document.body.appendChild(coin);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        spawnCoins(6);
+    });
 </script>
 </html>
