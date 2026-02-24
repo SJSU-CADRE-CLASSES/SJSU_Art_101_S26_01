@@ -468,7 +468,8 @@
     }
 
     .spirit-next-btn,
-    .spirit-breakdown-btn {
+    .spirit-breakdown-btn,
+    .spirit-save-btn {
       margin-top: 1rem;
       padding: 0.4rem 1.4rem;
       border: 3px solid #000;
@@ -501,8 +502,20 @@
       background: #120a1b;
     }
 
+    .spirit-save-btn {
+      display: block;
+      margin: 1.2rem auto 0;
+      min-width: 11rem;
+      background: #0fd5ff;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 10px rgba(120,240,255,0.9);
+      color: #000000;
+    }
+
     .spirit-next-btn:hover,
-    .spirit-breakdown-btn:hover {
+    .spirit-breakdown-btn:hover,
+    .spirit-save-btn:hover {
       transform: translateY(-2px);
       background: #241030;
       box-shadow:
@@ -673,6 +686,9 @@
         See how this was generated
       </button>
       <div class="spirit-breakdown" id="spiritBreakdown"></div>
+      <button class="spirit-save-btn" id="spiritSaveBtn" type="button">
+        Save game &amp; go to Load Saves
+      </button>
     </div>
   </div>
 
@@ -987,6 +1003,8 @@
         `;
       }
 
+      let lastSpiritProfile = null;
+
       function renderSpiritResult(config) {
         const questionsEl = document.getElementById('spiritQuestions');
         const resultEl = document.getElementById('spiritResult');
@@ -996,6 +1014,7 @@
         const breakdownEl = document.getElementById('spiritBreakdown');
         const spiritAnswerInput = document.getElementById('spiritAnswerInput');
         const titleEl = document.getElementById('spiritResultTitle');
+        const saveBtn = document.getElementById('spiritSaveBtn');
 
         if (questionsEl) {
           questionsEl.classList.remove('spirit-questions--visible');
@@ -1023,6 +1042,12 @@
         const start = nameStarts[Math.floor(Math.random() * nameStarts.length)];
         const end = nameEnds[Math.floor(Math.random() * nameEnds.length)];
         const spiritName = start + end;
+
+        lastSpiritProfile = {
+          name: spiritName,
+          ...config,
+          createdAt: Date.now()
+        };
 
         if (titleEl) {
           titleEl.textContent = `Your Spirimal: ${spiritName}`;
@@ -1064,6 +1089,26 @@
             <div><strong>Has wings:</strong> ${config.hasWings ? 'Yes' : 'No'}</div>
           `;
         }, { once: true });
+
+        if (saveBtn) {
+          saveBtn.addEventListener('click', function () {
+            try {
+              const existing = localStorage.getItem('spirimal_saves');
+              let saves = [];
+              if (existing) {
+                try {
+                  const parsed = JSON.parse(existing);
+                  if (Array.isArray(parsed)) saves = parsed;
+                } catch (e) { /* ignore parse errors */ }
+              }
+              saves.push(lastSpiritProfile || { name: spiritName, createdAt: Date.now() });
+              localStorage.setItem('spirimal_saves', JSON.stringify(saves));
+            } catch (e) {
+              // If storage fails, still navigate
+            }
+            window.location.href = 'load-saves.html';
+          }, { once: true });
+        }
       }
 
       function startGrimithyDialogue() {
