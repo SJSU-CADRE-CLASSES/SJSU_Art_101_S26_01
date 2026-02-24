@@ -8,39 +8,74 @@
   <link rel="stylesheet" href="CWstyle.css">
 </head>
 <body class="page-comic-writer">
+  <div class="cw-content">
   <div class="cw-interview-group">
     <div class="cw-interview-left-column">
-      <div class="cw-slot cw-slot-left">
+      <div class="cw-slot cw-slot-left" data-interview="1">
         <img src="interview1.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
         <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 1"></div>
       </div>
-      <div class="cw-slot cw-slot-left cw-slot-4">
+      <div class="cw-slot cw-slot-left cw-slot-4 cw-locked" data-interview="4">
         <img src="interview 4.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
         <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 4"></div>
       </div>
     </div>
-    <div class="cw-slot cw-slot-2">
+    <div class="cw-slot cw-slot-2 cw-locked" data-interview="2">
       <img src="interview 2.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
       <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 2"></div>
     </div>
   </div>
-  <div class="cw-slot cw-slot-3">
+  <div class="cw-slot cw-slot-3 cw-locked" data-interview="3">
     <img src="interview 3.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
     <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 3"></div>
   </div>
-  <div class="cw-slot cw-slot-5">
+  <div class="cw-slot cw-slot-5 cw-locked" data-interview="5">
     <img src="interview 5.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
     <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 5"></div>
   </div>
-  <div class="cw-slot cw-slot-6">
+  <div class="cw-slot cw-slot-6 cw-locked" data-interview="6">
     <img src="interview 6.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
     <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 6"></div>
   </div>
   <img src="stick.png" alt="" class="cw-stick" aria-hidden="true">
+  </div>
+  <img src="interview 7.png" alt="" class="cw-final-image" aria-hidden="true">
   <script>
+    var finalTimerStarted = false;
+    function scheduleFinalImage() {
+      if (finalTimerStarted) return;
+      finalTimerStarted = true;
+      setTimeout(function() {
+        var content = document.querySelector('.cw-content');
+        if (content) content.remove();
+        var finalImg = document.querySelector('.cw-final-image');
+        if (finalImg) finalImg.classList.add('cw-final-visible');
+      }, 7000);
+    }
+    function canReveal(slot) {
+      var num = parseInt(slot.getAttribute('data-interview'), 10);
+      if (num === 1) return true;
+      var prev = document.querySelector('.cw-slot[data-interview="' + (num - 1) + '"]');
+      return prev && prev.classList.contains('cw-revealed');
+    }
+    function updateLockedState() {
+      document.querySelectorAll('.cw-slot[data-interview]').forEach(function(slot) {
+        if (slot.classList.contains('cw-revealed')) {
+          slot.classList.remove('cw-locked');
+        } else if (canReveal(slot)) {
+          slot.classList.remove('cw-locked');
+        } else {
+          slot.classList.add('cw-locked');
+        }
+      });
+    }
     document.querySelectorAll('.cw-reveal-box').forEach(function(box) {
       box.addEventListener('click', function() {
-        this.closest('.cw-slot').classList.add('cw-revealed');
+        var slot = this.closest('.cw-slot');
+        if (!canReveal(slot)) return;
+        slot.classList.add('cw-revealed');
+        updateLockedState();
+        if (slot.classList.contains('cw-slot-6')) scheduleFinalImage();
       });
       box.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
