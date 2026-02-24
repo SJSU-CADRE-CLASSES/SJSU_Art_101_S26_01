@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soundscape Quadrants</title>
+
+    <!-- Pixel-style font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #050505;
+        color: #ffffff;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+      }
+
+      .screen {
+        position: relative;
+        width: min(100vw, 100vh);
+        height: min(100vw, 100vh);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        height: 100%;
+        border: 4px solid #ffffff;
+        box-shadow: 0 0 0 4px #000000, 0 0 40px rgba(0, 0, 0, 0.9);
+      }
+
+      .cell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.65rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 1rem;
+        image-rendering: pixelated;
+        border: 2px solid #000000;
+        overflow: hidden;
+      }
+
+      .cell-label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.9rem 1.8rem;
+        border-radius: 0;
+        border: 3px solid #000000;
+        background-color: #ffffff;
+        color: #000000;
+        cursor: pointer;
+        box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000;
+        image-rendering: pixelated;
+        text-decoration: none;
+        transition: transform 0.1s steps(2, end), box-shadow 0.1s steps(2, end),
+          background-color 0.1s steps(2, end), color 0.1s steps(2, end);
+      }
+
+      .cell-meta {
+        margin-top: 0.7rem;
+        font-size: 0.5rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.9;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+      }
+
+      .cell-label:hover {
+        background-color: #000000;
+        color: #ffffff;
+        transform: translate(-2px, -2px);
+        box-shadow: 0 0 0 3px #000000, 0 0 0 6px #ffffff,
+          4px 4px 0 rgba(0, 0, 0, 0.8);
+      }
+
+      .cell-label:active {
+        background-color: #000000;
+        color: #ffffff;
+        transform: translate(1px, 1px);
+        box-shadow: 0 0 0 3px #000000, 0 0 0 6px #ffffff,
+          1px 1px 0 rgba(0, 0, 0, 0.9);
+      }
+
+      .cell--hype {
+        background:
+          repeating-linear-gradient(
+            130deg,
+            rgba(255, 207, 51, 0.22) 0px,
+            rgba(255, 207, 51, 0.22) 7px,
+            rgba(255, 59, 59, 0.18) 12px,
+            rgba(0, 0, 0, 0) 20px
+          ),
+          radial-gradient(circle at 0% 0%, #ffcf33, rgba(255, 207, 51, 0) 55%),
+          radial-gradient(circle at 100% 100%, #ff3b3b, rgba(41, 0, 0, 0) 60%);
+        background-size: 220% 220%, 160% 160%, 160% 160%;
+        animation: hypeBg 10s ease-in-out infinite;
+      }
+
+      .cell--calm {
+        background:
+          repeating-linear-gradient(
+            150deg,
+            rgba(176, 243, 255, 0.14) 0px,
+            rgba(176, 243, 255, 0.14) 8px,
+            rgba(47, 111, 255, 0.11) 14px,
+            rgba(0, 0, 0, 0) 24px
+          ),
+          linear-gradient(135deg, #01081a, #2f6fff 45%, #b0f3ff 85%);
+        background-size: 210% 210%, 180% 180%;
+        animation: calmBg 22s ease-in-out infinite;
+      }
+
+      .cell--reminiscent {
+        background:
+          repeating-linear-gradient(
+            135deg,
+            rgba(255, 215, 242, 0.16) 0px,
+            rgba(255, 215, 242, 0.16) 7px,
+            rgba(196, 122, 255, 0.13) 13px,
+            rgba(0, 0, 0, 0) 22px
+          ),
+          radial-gradient(circle at 0% 100%, #ffd7f2, rgba(255, 215, 242, 0) 55%),
+          radial-gradient(circle at 100% 0%, #c47aff, rgba(28, 0, 21, 0) 60%);
+        background-size: 210% 210%, 170% 170%, 170% 170%;
+        animation: reminBg 18s ease-in-out infinite;
+      }
+
+      .cell--experimental {
+        background:
+          repeating-linear-gradient(
+            120deg,
+            rgba(0, 255, 179, 0.12) 0px,
+            rgba(0, 255, 179, 0.12) 8px,
+            rgba(195, 255, 123, 0.08) 14px,
+            rgba(0, 0, 0, 0) 22px
+          ),
+          radial-gradient(circle at 20% 20%, #c3ff7b, rgba(0, 22, 15, 0) 55%),
+          radial-gradient(circle at 80% 80%, #00ffb3, rgba(0, 22, 15, 0) 60%);
+        background-size: 200% 200%, 170% 170%, 170% 170%;
+        animation: expBg 12s linear infinite;
+      }
+
+      @keyframes hypeBg {
+        0% {
+          background-position: 0% 0%, 100% 100%;
+        }
+        50% {
+          background-position: 100% 0%, 0% 100%;
+        }
+        100% {
+          background-position: 0% 0%, 100% 100%;
+        }
+      }
+
+      @keyframes calmBg {
+        0% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 100% 100%;
+        }
+        100% {
+          background-position: 0% 0%;
+        }
+      }
+
+      @keyframes reminBg {
+        0% {
+          background-position: 0% 100%, 100% 0%;
+        }
+        50% {
+          background-position: 100% 0%, 0% 100%;
+        }
+        100% {
+          background-position: 0% 100%, 100% 0%;
+        }
+      }
+
+      @keyframes expBg {
+        0% {
+          background-position: 0% 50%, 0% 0%, 100% 100%;
+        }
+        50% {
+          background-position: 100% 50%, 100% 100%, 0% 0%;
+        }
+        100% {
+          background-position: 0% 50%, 0% 0%, 100% 100%;
+        }
+      }
+
+      .center-image {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+
+      .center-image-inner {
+        pointer-events: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .center-image-inner img {
+        width: min(14vw, 110px);
+        height: auto;
+        border-radius: 16px;
+        box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000;
+        image-rendering: pixelated;
+        transition: transform 0.15s ease-out, box-shadow 0.15s ease-out,
+          filter 0.15s ease-out;
+      }
+
+      .center-label {
+        font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+      }
+
+      .center-image-inner:hover img {
+        transform: scale(1.06);
+        box-shadow: 0 0 18px 4px rgba(255, 255, 255, 0.85),
+          0 0 0 3px #ffffff, 0 0 0 6px #000000;
+        filter: drop-shadow(0 0 16px rgba(0, 255, 255, 0.8));
+      }
+
+      .center-image-inner:hover .center-label {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .back-button {
+        position: fixed;
+        right: 1.5rem;
+        bottom: 1.5rem;
+        padding: 0.5rem 1.4rem;
+        border-radius: 0;
+        border: 3px solid #000000;
+        background-color: #ffffff;
+        color: #000000;
+        font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-size: 0.55rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000;
+        image-rendering: pixelated;
+        text-decoration: none;
+        z-index: 5;
+        transition: transform 0.1s steps(2, end), box-shadow 0.1s steps(2, end),
+          background-color 0.1s steps(2, end), color 0.1s steps(2, end);
+      }
+
+      .back-button:hover {
+        background-color: #000000;
+        color: #ffffff;
+        transform: translate(-2px, -2px);
+        box-shadow: 0 0 0 3px #000000, 0 0 0 6px #ffffff,
+          4px 4px 0 rgba(0, 0, 0, 0.8);
+      }
+
+      .back-button:active {
+        background-color: #000000;
+        color: #ffffff;
+        transform: translate(1px, 1px);
+        box-shadow: 0 0 0 3px #000000, 0 0 0 6px #ffffff,
+          1px 1px 0 rgba(0, 0, 0, 0.9);
+      }
+
+      @media (max-width: 640px) {
+        .grid {
+          width: 100vw;
+          height: 100vh;
+          border-width: 2px;
+        }
+
+        .cell {
+          font-size: 0.55rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="screen">
+      <div class="grid">
+        <div class="cell cell--hype">
+            <div>
+              <a href="hype.html" class="cell-label">hype</a>
+              <div class="cell-meta">217 songs</div>
+            </div>
+        </div>
+        <div class="cell cell--calm">
+            <div>
+              <a href="calm.html" class="cell-label">calm</a>
+              <div class="cell-meta">196 songs</div>
+            </div>
+        </div>
+        <div class="cell cell--reminiscent">
+            <div>
+              <a href="reminiscent.html" class="cell-label">reminiscent</a>
+              <div class="cell-meta">67 songs</div>
+            </div>
+        </div>
+        <div class="cell cell--experimental">
+            <div>
+              <a href="experimental.html" class="cell-label">experimental</a>
+              <div class="cell-meta">389 songs</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="center-image">
+        <a href="data.html" class="center-image-inner">
+          <img src="headphonecat.jpg" alt="Headphone cat" />
+          <div class="center-label">data</div>
+        </a>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-button">back</a>
+    <script>
+      (function () {
+        let audioCtx;
+        function playClick() {
+          try {
+            audioCtx =
+              audioCtx ||
+              new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "square";
+            osc.frequency.value = 850;
+            gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.08
+            );
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.09);
+          } catch (e) {}
+        }
+
+        document.addEventListener("click", function (e) {
+          const target = e.target.closest("a, button");
+          if (target) {
+            playClick();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
+
