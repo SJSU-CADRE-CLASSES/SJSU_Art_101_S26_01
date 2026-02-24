@@ -16,7 +16,7 @@
 
         body {
             min-height: 100vh;
-            background: #1a0a2e;
+            background: #b8e0b8;
             font-family: 'Press Start 2P', cursive;
             color: #00ff88;
             display: flex;
@@ -151,9 +151,32 @@
             100% { transform: translate(0, 0); }
         }
 
+        /* Screensaver image container */
+        .screensaver-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .screensaver-wrap img {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
+    <div class="screensaver-wrap" id="screensaver-wrap">
+        <img src="arknightsicon.png" alt="Arknights" id="ss-0">
+        <img src="HSR_App.png" alt="Honkai Star Rail" id="ss-1">
+        <img src="uma_icon.png" alt="Uma Musume" id="ss-2">
+        <img src="robloxlogo.png" alt="Roblox" id="ss-3">
+        <img src="ina11title.jpg" alt="Ina" id="ss-4">
+    </div>
     <div class="chibi-corner" id="chibi-corner" title="Click to run around the corners">
         <img class="chibi-default" src="Twin_Turbo_Chibi1.png" alt="Twin Turbo Chibi">
         <img class="chibi-hover" src="Twin_Turbo_Chibi2.png" alt="Twin Turbo Chibi (hover)">
@@ -170,6 +193,65 @@
             el.addEventListener('animationend', function() {
                 el.classList.remove('chibi-tour');
             });
+        })();
+
+        (function() {
+            var wrap = document.getElementById('screensaver-wrap');
+            if (!wrap) return;
+            var imgs = wrap.querySelectorAll('img');
+            var W = 120;
+            var H = 120;
+            var speedMin = 1.5;
+            var speedMax = 3;
+            var items = [];
+            function rand(min, max) {
+                return min + Math.random() * (max - min);
+            }
+            function randSpeed() {
+                var s = rand(speedMin, speedMax);
+                return Math.random() < 0.5 ? -s : s;
+            }
+            function init() {
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var maxX = Math.max(0, vw - W);
+                var maxY = Math.max(0, vh - H);
+                items = [];
+                for (var i = 0; i < imgs.length; i++) {
+                    var dx = randSpeed();
+                    var dy = randSpeed();
+                    if (dx === 0) dx = speedMin;
+                    if (dy === 0) dy = speedMin;
+                    items.push({
+                        el: imgs[i],
+                        x: rand(0, maxX),
+                        y: rand(0, maxY),
+                        dx: dx,
+                        dy: dy
+                    });
+                }
+            }
+            function tick() {
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var maxX = Math.max(0, vw - W);
+                var maxY = Math.max(0, vh - H);
+                for (var i = 0; i < items.length; i++) {
+                    var it = items[i];
+                    it.x += it.dx;
+                    it.y += it.dy;
+                    if (it.x <= 0) { it.x = 0; it.dx = -it.dx; }
+                    if (it.x >= maxX) { it.x = maxX; it.dx = -it.dx; }
+                    if (it.y <= 0) { it.y = 0; it.dy = -it.dy; }
+                    if (it.y >= maxY) { it.y = maxY; it.dy = -it.dy; }
+                    it.el.style.left = it.x + 'px';
+                    it.el.style.top = it.y + 'px';
+                }
+                requestAnimationFrame(tick);
+            }
+            init();
+            window.addEventListener('resize', init);
+            requestAnimationFrame(tick);
         })();
     </script>
 </body>
