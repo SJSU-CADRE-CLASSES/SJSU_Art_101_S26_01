@@ -469,15 +469,12 @@
     }
 
     .spirit-animal-canvas {
-      margin: 0.8rem 0 0.6rem;
-      width: 320px;
-      height: 240px;
-      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.2), transparent 60%);
+      margin: 1rem 0 0.8rem;
+      width: 420px;
+      height: 320px;
+      background: #120918;
       border: 3px solid #000;
-      box-shadow:
-        0 0 0 2px #000,
-        0 0 28px rgba(220,210,255,0.95),
-        0 0 60px rgba(160,130,255,0.9);
+      box-shadow: 0 0 0 2px #000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -927,28 +924,16 @@
           </g>
         `;
 
-        const baseSize = 40 * scale;
+        const baseSize = 64 * scale;
 
         return `
           <svg xmlns="http://www.w3.org/2000/svg"
                width="${baseSize}" height="${baseSize}"
                viewBox="0 0 18 18"
                aria-hidden="true">
-            <defs>
-              <filter id="spiritGlow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="0.3" result="blur" />
-                <feColorMatrix in="blur" type="matrix"
-                  values="1 0 0 0 0
-                          0 1 0 0 0
-                          0 0 1 0 0
-                          0 0 0 1 0" />
-              </filter>
-            </defs>
             <rect x="0" y="0" width="18" height="18" fill="none" />
-            <g filter="url(#spiritGlow)">
-              ${bodyGroup}
-              ${accentGroup}
-            </g>
+            ${bodyGroup}
+            ${accentGroup}
           </svg>
         `;
       }
@@ -1187,6 +1172,9 @@
             if (typing) return;
             if (dialogueBox) {
               dialogueBox.classList.add('dialogue-box--hidden');
+              setTimeout(function () {
+                dialogueBox.style.display = 'none';
+              }, 260);
             }
             if (!spiritQuestionsEl || !spiritQuestionTitle || !spiritQuestionBody || !spiritAnswerInput) {
               return;

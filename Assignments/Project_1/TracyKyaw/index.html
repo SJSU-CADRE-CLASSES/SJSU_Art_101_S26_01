@@ -167,6 +167,113 @@
 
     .back-button:hover { transform: scale(1.1); }
 
+    .conclusion-button {
+      margin-top: 18px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      border: none;
+      background: #ffe082;
+      color: #6d4c41;
+      font-family: 'Baloo 2', cursive;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .conclusion-button:hover {
+      background: #ffecb3;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+    }
+
+    .conclusion-box {
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: #fffde7;
+      color: #5d4037;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 15px;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      display: none;
+    }
+
+    /* Loading overlay */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 249, 196, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 900;
+      font-family: 'Baloo 2', cursive;
+    }
+
+    #loading-screen.hidden {
+      display: none;
+    }
+
+    .loading-card {
+      background: #ffffff;
+      padding: 22px 28px;
+      border-radius: 22px;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      border: 2px dashed #ffe082;
+    }
+
+    .loading-icon {
+      font-size: 26px;
+      margin-bottom: 2px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 4px solid #ffe082;
+      border-top-color: #ffb300;
+      border-right-color: #ffecb3;
+      animation: spin 0.9s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 18px;
+      color: #ffb300;
+      max-width: 240px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Global click sparkles */
+    .sparkle-dot {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff9c4 0%, #ffe082 40%, rgba(255,255,255,0) 70%);
+      pointer-events: none;
+      animation: sparklePop 600ms ease-out forwards;
+      z-index: 998;
+      box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
+    }
+
+    @keyframes sparklePop {
+      0% { transform: scale(0.4); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: scale(1.4) translateY(-12px); opacity: 0; }
+    }
+
     .float-emoji {
       position: fixed;
       font-size: 28px;
@@ -191,7 +298,7 @@
       left: 8%;
       cursor: pointer;
       z-index: 5;
-      animation: bearFloatPath 24s linear infinite;
+      animation: bearFloatPath 40s linear infinite;
     }
 
     .bear-head {
@@ -283,6 +390,13 @@
   </style>
 </head>
 <body>
+<div id="loading-screen">
+  <div class="loading-card">
+    <div class="loading-icon">🧁</div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-message">Whisking up your cravings... ✨</div>
+  </div>
+</div>
 <div class="bear-floating">
   <div class="bear-head">
     <div class="bear-eye"></div>
@@ -293,18 +407,22 @@
   </div>
 </div>
 
-<div id="calendar-page" class="container">
+<div id="calendar-page" class="container" style="display:none;">
   <h1>Cravings of the Week</h1>
   <div class="chart">
     <div class="chart-title">Week of February 16–22</div>
     <div class="calendar-grid">
-      <button class="day-button" onclick="showFoods(0)">Monday</button>
-      <button class="day-button" onclick="showFoods(1)">Tuesday</button>
-      <button class="day-button" onclick="showFoods(2)">Wednesday</button>
-      <button class="day-button" onclick="showFoods(3)">Thursday</button>
-      <button class="day-button" onclick="showFoods(4)">Friday</button>
-      <button class="day-button" onclick="showFoods(5)">Saturday</button>
-      <button class="day-button" onclick="showFoods(6)">Sunday</button>
+      <button class="day-button" onclick="loadDay(0)">Monday</button>
+      <button class="day-button" onclick="loadDay(1)">Tuesday</button>
+      <button class="day-button" onclick="loadDay(2)">Wednesday</button>
+      <button class="day-button" onclick="loadDay(3)">Thursday</button>
+      <button class="day-button" onclick="loadDay(4)">Friday</button>
+      <button class="day-button" onclick="loadDay(5)">Saturday</button>
+      <button class="day-button" onclick="loadDay(6)">Sunday</button>
+    </div>
+    <button class="conclusion-button" onclick="toggleConclusion()">Conclusion</button>
+    <div id="conclusion-box" class="conclusion-box">
+      I spent way too much money on food, but at least all my cravings are satisfied :3
     </div>
   </div>
 </div>
@@ -364,6 +482,71 @@ function spawnEmojiBurst(x, y) {
     document.body.appendChild(span);
     setTimeout(() => span.remove(), 950);
   }
+}
+
+function spawnClickSparkles(x, y) {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.createElement("div");
+    dot.className = "sparkle-dot";
+    const angle = (Math.PI * 2 * i) / 4;
+    const radius = 10;
+    const offsetX = Math.cos(angle) * radius;
+    const offsetY = Math.sin(angle) * radius;
+    dot.style.left = x + offsetX + "px";
+    dot.style.top = y + offsetY + "px";
+    document.body.appendChild(dot);
+    setTimeout(() => dot.remove(), 650);
+  }
+}
+
+// Global click sparkles
+document.addEventListener("click", (e) => {
+  spawnClickSparkles(e.clientX, e.clientY);
+});
+
+// Loading helpers
+const loadingScreen = document.getElementById("loading-screen");
+const loadingMessage = document.getElementById("loading-message");
+
+function showLoading(message) {
+  if (!loadingScreen) return;
+  if (loadingMessage && message) {
+    loadingMessage.textContent = message;
+  }
+  loadingScreen.classList.remove("hidden");
+}
+
+function hideLoading() {
+  if (!loadingScreen) return;
+  loadingScreen.classList.add("hidden");
+}
+
+function loadDay(index) {
+  const dayName = week[index]?.date || "your day";
+  showLoading("Getting " + dayName + " snacks ready...");
+  setTimeout(() => {
+    hideLoading();
+    showFoods(index);
+  }, 650);
+}
+
+// Initial main-page loading
+window.addEventListener("load", () => {
+  showLoading("Whisking up this week's cravings...");
+  setTimeout(() => {
+    hideLoading();
+    const cal = document.getElementById("calendar-page");
+    if (cal) {
+      cal.style.display = "flex";
+    }
+  }, 3000);
+});
+
+function toggleConclusion() {
+  const box = document.getElementById("conclusion-box");
+  if (!box) return;
+  const isHidden = box.style.display === "" || box.style.display === "none";
+  box.style.display = isHidden ? "block" : "none";
 }
 
 // Bear run-away interaction
