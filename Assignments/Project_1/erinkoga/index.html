@@ -50,7 +50,8 @@
             height: auto;
         }
         .plant {
-            font-size: 16rem;
+            max-width: 180px;
+            height: auto;
             cursor: pointer;
         }
         .music-player {
@@ -78,16 +79,8 @@
     <div class="music-player" id="musicPlayer"></div>
     <div class="doors">
         <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
-        <span class="plant" id="plant">🪴</span>
+        <a href="stats.html"><img src="plant.png" alt="Plant stats link" class="plant"></a>
         <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
     </div>
-    <script>
-        const plant = document.getElementById('plant');
-        if (plant) {
-            plant.addEventListener('click', () => {
-                window.location.href = 'stats.html';
-            });
-        }
-    </script>
 </body>
 </html>
