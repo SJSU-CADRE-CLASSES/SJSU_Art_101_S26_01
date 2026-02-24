@@ -219,6 +219,66 @@
             75%  { transform: translate(calc(100vw - 100%), 0); }
             100% { transform: translate(0, 0); }
         }
+
+        /* Game area with rotating pokeballs on each side */
+        .game-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 600px;
+        }
+        .pokeball-side {
+            flex-shrink: 0;
+            width: 64px;
+            height: 64px;
+            animation: pokeball-spin 2s linear infinite;
+        }
+        .pokeball-side img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .pokeball-side.right {
+            animation-direction: reverse;
+        }
+        @keyframes pokeball-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pixelated transition overlay */
+        #pixel-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            grid-template-rows: repeat(15, 1fr);
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.05s, visibility 0.05s;
+        }
+        #pixel-transition.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        #pixel-transition .pixel {
+            background: #1a0a2e;
+            transform: scale(0);
+            transform-origin: center;
+        }
+        #pixel-transition.active .pixel {
+            animation: pixel-pop 0.35s ease-out forwards;
+        }
+        @keyframes pixel-pop {
+            to { transform: scale(1.1); }
+        }
     </style>
 </head>
 <body>
@@ -231,7 +291,11 @@
             <li><a href="#contact">CONTACT</a></li>
         </ul>
     </nav>
-    <div class="screen" id="home">
+    <div class="game-area">
+        <div class="pokeball-side left">
+            <img src="pokeball.png" alt="Pokéball">
+        </div>
+        <div class="screen" id="home">
         <h1>★ PROJECT 1 ★<br>ALAN JACOB VILLAREAL</h1>
         <p class="subtitle">ART 101 · SJSU · 2026</p>
         <p class="pixel-art">🎮 ◉ ◉ ◉</p>
@@ -242,7 +306,12 @@
             LEVEL <span>01</span>
         </div>
         <p class="footer">© 2026 · INSERT COIN TO CONTINUE</p>
+        </div>
+        <div class="pokeball-side right">
+            <img src="pokeball.png" alt="Pokéball">
+        </div>
     </div>
+    <div id="pixel-transition" aria-hidden="true"></div>
     <div class="chibi-corner" id="chibi-corner" title="Click to run around the corners">
         <img class="chibi-default" src="Twin_Turbo_Chibi1.png" alt="Twin Turbo Chibi">
         <img class="chibi-hover" src="Twin_Turbo_Chibi2.png" alt="Twin Turbo Chibi (hover)">
@@ -258,6 +327,33 @@
             });
             el.addEventListener('animationend', function() {
                 el.classList.remove('chibi-tour');
+            });
+        })();
+
+        (function() {
+            var overlay = document.getElementById('pixel-transition');
+            if (!overlay) return;
+            var cols = 20, rows = 15;
+            for (var r = 0; r < rows; r++) {
+                for (var c = 0; c < cols; c++) {
+                    var pixel = document.createElement('div');
+                    pixel.className = 'pixel';
+                    var i = r * cols + c;
+                    var delay = (i % 3) * 0.04 + Math.floor(i / 3) * 0.02;
+                    pixel.style.animationDelay = delay + 's';
+                    overlay.appendChild(pixel);
+                }
+            }
+            function goToPage2() {
+                overlay.classList.add('active');
+                setTimeout(function() {
+                    window.location.href = 'Page2.html';
+                }, 700);
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !overlay.classList.contains('active')) {
+                    goToPage2();
+                }
             });
         })();
     </script>
