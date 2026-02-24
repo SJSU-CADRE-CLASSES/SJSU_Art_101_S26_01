@@ -499,7 +499,7 @@ function renderYouView() {
         <canvas id="timeChart"></canvas>
         <small style="color:var(--muted);font-size:0.7rem;">Click a bar to focus that day/week and see detailed stats.</small>
       </section>
-      <div style="grid-column:1 / -1;display:flex;justify-content:space-between;gap:0.5rem;margin-top:0.2rem;">
+      <div style="grid-column:1 / -1;display:flex;justify-content:space-between;gap:0.5rem;margin-top:0.8rem;">
         <button class="btn btn-ghost" data-nav="intro">Back to Intro</button>
         <button class="btn btn-primary" data-nav="compare">Next: Compare</button>
       </div>
@@ -535,7 +535,7 @@ function renderCompareView() {
         <canvas id="timeChart"></canvas>
         <small style="color:var(--muted);font-size:0.7rem;">Click a bar to focus a day/week and see how each person’s minutes compare.</small>
       </section>
-      <div style="grid-column:1 / -1;display:flex;justify-content:space-between;gap:0.5rem;margin-top:0.2rem;">
+      <div style="grid-column:1 / -1;display:flex;justify-content:space-between;gap:0.5rem;margin-top:0.8rem;">
         <button class="btn btn-ghost" data-nav="you">Back</button>
         <button class="btn btn-primary" data-nav="insights">Next: Insights</button>
       </div>
@@ -601,42 +601,28 @@ function showProjectStatementModal() {
         <button type="button" data-close-statement>✕</button>
       </header>
       <p>
-        This project takes a small, two‑week slice of driving data and turns it into a chart‑based portrait of how my world
-        expands and contracts. The dataset comes from Life360 driving summaries that record approximate minutes spent
-        driving and trip counts each day. Exact locations and identifying details have been softened or removed on purpose;
-        the goal is to reveal patterns of motion, not to expose specific routes.
+        This project I wanted to understand a simple question: How big is my world, really? I used two weeks of driving data
+        from Life360 to compare my movement patterns with my father’s and brother’s. Instead of focusing on exact routes or
+        addresses, I reduced everything down to what felt more honest for this kind of reflection: minutes spent driving and
+        number of trips, grouped by day and week. Driving becomes one measurement of radius in time and routine.
       </p>
       <p>
-        I chose two weeks because it is long enough to capture a meaningful rhythm—weekdays versus weekends, commutes,
-        errands, visits home—but short enough that I can still remember what those days felt like. Within that window I
-        compare three people: Me, Father, and Brother. We share the same broad geography but occupy different roles in how
-        the car gets used: the steady commuter, the errand runner, the person who is sometimes passenger and sometimes
-        chauffeur.
+        At first I assumed this would be a straightforward comparison of who drives more and who drives less. But once I
+        organized the data, it stopped feeling like stats and started feeling like a story about our roles. Some days my
+        world stretched out with blocks of driving time; other days it collapsed into short, repetitive patterns. That
+        shift made me notice how my radius is not just a personal choice but is also shaped by university, obligations, and
+        what the day demands.
       </p>
       <p>
-        The metaphor of “radius” is a way to think about how far your world actually reaches on an average day. A day with
-        only a few minutes of driving barely lifts the bars off the baseline. A day full of trips stacks those bars higher
-        and higher, like tracing a busier orbit across time. By plotting our minutes into daily and weekly bars, the
-        visualization makes it easy to see whose life tends to be more spread out and whose remains closer to home.
+        My father’s pattern stood out the most. His driving is more consistent, and the minutes add up in a way that ties
+        directly to responsibility. My brother’s rhythm looks different: shorter trips, different timing, and a less fixed
+        routine. Placing all three side by side made me realize how much lifestyle leaks into simple repetition. Even
+        living in the same region, our radii become different because our expectations are different.
       </p>
       <p>
-        Interactions in the interface are meant to support reflection rather than raw analytics. Toggling drivers on and
-        off, switching between day and week, and clicking bars to focus specific dates all reveal how our driving patterns
-        align or drift apart. Small details, like missing days being marked as uncaptured rather than zero, are reminders
-        that any dataset is partial: sometimes we simply forgot to record, or the app mis‑logged a drive.
-      </p>
-      <p>
-        For me, this tool is a way to notice how responsibility and independence show up in ordinary numbers. When Father’s
-        totals tower over mine, it reflects how much of the household’s movement still depends on him. When my own weeks
-        suddenly spike, it hints at transitions—school, work, or new routines that push me further out. Brother’s minutes
-        often show up as bursts, suggesting dense pockets of activity rather than a single steady commute. Together these
-        traces turn the invisible infrastructure of our lives—a shared car, shared roads, shared time—into something you
-        can read at a glance.
-      </p>
-      <p>
-        Privacy is treated seriously: there are no full names, no precise addresses, and no route‑level diagrams. The
-        portrait is less about surveillance and more about understanding scale: how far we go, how often, and how those
-        distances quietly define the shape of our days when plotted as simple lines and bars.
+        This visualization is meant to be readable and reflective, not clinical. I want viewers to feel how routine easily
+        shapes identity and how the size of someone’s world is often built out of responsibilities they don’t always get
+        credit for.
       </p>
     </div>
   `;
