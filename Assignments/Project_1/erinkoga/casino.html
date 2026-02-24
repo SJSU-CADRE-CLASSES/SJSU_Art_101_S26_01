@@ -94,15 +94,6 @@
             border: none;
             max-width: 100%;
         }
-        .footer-image {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: center;
-        }
-        .footer-image img {
-            max-width: 300px;
-            height: auto;
-        }
         .stats-table {
             margin-top: 1rem;
             color: #ccc;
@@ -121,6 +112,15 @@
         }
         .stats-table th {
             font-weight: bold;
+        }
+        .game-footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+        .game-footer img {
+            max-width: 220px;
+            height: auto;
         }
     </style>
 </head>
@@ -158,6 +158,9 @@
         <div class="result" id="result"></div>
         <div class="tracker">Wins: <span id="wins">0</span><span class="losses">Losses: <span id="losses">0</span></span></div>
         <div class="tracker">Won: <span id="totalWon">0</span> chips &nbsp; Lost: <span class="losses" id="totalLost">0</span> chips</div>
+        <div class="game-footer">
+            <img src="grind.png" alt="Keep grinding">
+        </div>
 
         <div class="game-divider blackjack">
             <h2>Blackjack</h2>
@@ -176,6 +179,9 @@
             </div>
             <div class="bj-result" id="bjResult"></div>
             <div class="tracker" style="margin-top: 0.75rem;">Lost in blackjack: <span id="bjTotalLost">0</span> chips</div>
+            <div class="game-footer">
+                <img src="grind.png" alt="Keep grinding">
+            </div>
         </div>
 
         <div class="game-divider hilo">
@@ -195,6 +201,9 @@
                 HiLo wins: <span id="hiloWins">0</span>
                 &nbsp; Losses: <span class="losses" id="hiloLosses">0</span>
                 &nbsp; Lost: <span class="losses" id="hiloLost">0</span> chips
+            </div>
+            <div class="game-footer">
+                <img src="grind.png" alt="Keep grinding">
             </div>
         </div>
 
@@ -216,9 +225,6 @@
         </div>
         <div class="back"><a href="index.html">Back to lobby</a></div>
         </div>
-    </div>
-    <div class="footer-image">
-        <img src="grind.png" alt="Grind illustration">
     </div>
     <script>
         let balance = 1000;
