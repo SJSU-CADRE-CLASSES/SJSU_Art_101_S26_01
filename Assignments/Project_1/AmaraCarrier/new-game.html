@@ -961,6 +961,7 @@
         const breakdownBtn = document.getElementById('spiritBreakdownBtn');
         const breakdownEl = document.getElementById('spiritBreakdown');
         const spiritAnswerInput = document.getElementById('spiritAnswerInput');
+        const titleEl = document.getElementById('spiritResultTitle');
 
         if (questionsEl) {
           questionsEl.classList.remove('spirit-questions--visible');
@@ -977,23 +978,44 @@
 
         canvasEl.innerHTML = buildSpiritAnimalSVG(config);
 
-        const sizeText =
-          config.sizeCategory === 'small' ? 'small and nimble' :
-          config.sizeCategory === 'large' ? 'large and imposing' :
-          'balanced in size';
+        const nameStarts = [
+          'Luna','Echo','Mira','Nova','Astra','Zephy','Thistle','Ember','Willow',
+          'Moss','Nimbus','Sol','Nyx','Drift','Kiko','Rook','Pip','Fable'
+        ];
+        const nameEnds = [
+          'puff','gleam','whisk','wing','tail','shade','bloom','spark','song',
+          'paw','glow','step','curl','moss','moon','flare'
+        ];
+        const start = nameStarts[Math.floor(Math.random() * nameStarts.length)];
+        const end = nameEnds[Math.floor(Math.random() * nameEnds.length)];
+        const spiritName = start + end;
 
-        const fluffText =
-          config.fluffiness === 'ultra-fluffy' ? 'absurdly fluffy and cloud-like' :
-          config.fluffiness === 'fluffy' ? 'very fluffy and huggable' :
-          config.fluffiness === 'soft' ? 'soft with a bit of fuzz' :
-          'sleek and smooth';
+        if (titleEl) {
+          titleEl.textContent = `Your Spirimal: ${spiritName}`;
+        }
 
-        const wingsText = config.hasWings
-          ? 'You wrote so many distinct nouns that it sprouted spectral wings.'
-          : 'With fewer nouns, it stays grounded, padding through the void.';
+        const sizeSentence =
+          config.sizeCategory === 'small'
+            ? 'a tiny stray of starlight that darts ahead of you when the path feels too big.'
+            : config.sizeCategory === 'large'
+              ? 'a huge, quiet guardian that plants itself between you and whatever wants you to stay here.'
+              : 'a lantern-shaped companion that keeps perfect pace with your steps.';
+
+        const fluffSentence =
+          config.fluffiness === 'ultra-fluffy'
+            ? 'It is outrageously fluffy, like a drifting pillow-fort of fur and light.'
+            : config.fluffiness === 'fluffy'
+              ? 'It is soft and oversized, the kind of creature you could lean on until your thoughts untangle.'
+              : config.fluffiness === 'soft'
+                ? 'Its fur blurs at the edges, inviting you to rest your eyes on it instead of on the dark.'
+                : 'Its coat is sleek and clean, built for slipping through narrow ways out of this place.';
+
+        const guideSentence = config.hasWings
+          ? 'When you hesitate, it beats bright wings and circles ahead, pointing toward exits you cannot see yet.'
+          : 'When you hesitate, it pads back to your heel and nudges you forward, away from the pull of this void.';
 
         textEl.textContent =
-          `Your Spirimal is ${sizeText}, ${fluffText}. ${wingsText}`;
+          `${spiritName} is ${sizeSentence} ${fluffSentence} ${guideSentence}`;
 
         breakdownEl.textContent = '';
         breakdownBtn.addEventListener('click', function () {
