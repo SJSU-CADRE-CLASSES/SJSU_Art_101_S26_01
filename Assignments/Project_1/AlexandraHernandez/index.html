@@ -287,7 +287,8 @@
             <tr id="score-totals"></tr>
           </tbody>
         </table>
-        <div style="margin-top: 0.35rem; display: flex; gap: 0.5rem; justify-content: center;">
+        <div style="margin-top: 0.35rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+          <button type="button" id="btn-throw" style="padding: 0.35rem 1rem; font-size: 0.85rem; background: linear-gradient(180deg, #c45c41, #a04a35); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: #fff; cursor: pointer; font-weight: 600; box-shadow: 0 2px 0 rgba(0,0,0,0.3);">Throw</button>
           <button type="button" id="btn-newgame" style="padding: 0.25rem 0.6rem; font-size: 0.7rem; background: rgba(255,255,255,0.2); border: none; border-radius: 4px; color: #fff; cursor: pointer;">New game</button>
         </div>
       </div>
@@ -309,7 +310,7 @@
         </div>
 
         <div class="throw-zone" id="throw-zone">
-          <div class="throw-hint" id="throw-hint">Drag ball left/right to aim, then drag up to throw</div>
+          <div class="throw-hint" id="throw-hint">Drag ball left/right to aim, then click Throw or drag up</div>
           <div class="power-bar">
             <div class="power-fill" id="power-fill"></div>
           </div>
@@ -354,6 +355,7 @@
       var scoreRollsRow = document.getElementById('score-rolls');
       var scoreTotalsRow = document.getElementById('score-totals');
       var btnNewGame = document.getElementById('btn-newgame');
+      var btnThrow = document.getElementById('btn-throw');
 
       var frames = [];
       for (var i = 0; i < 10; i++) frames.push({ r1: null, r2: null, r3: null, total: null });
@@ -546,7 +548,7 @@
           ball.style.bottom = '110px';
           ball.style.transform = 'translateX(-50%)';
           isThrowing = false;
-          throwHint.textContent = 'Drag ball left/right to aim, then drag up to throw';
+          throwHint.textContent = 'Drag ball left/right to aim, then click Throw or drag up';
         }
         requestAnimationFrame(animate);
       }
@@ -565,6 +567,8 @@
           newCenter = Math.max(40, Math.min(arenaRect.width - 40, newCenter));
           ball.style.left = newCenter + 'px';
           ball.style.transform = 'translateX(-50%)';
+          var dy = ballDragStart.y - c.clientY;
+          if (dy > 0) powerFill.style.width = Math.min(100, (dy / 80) * 100) + '%';
           return;
         }
         if (!dragStart || isThrowing) return;
@@ -587,7 +591,7 @@
         var aimX = getBallAimX();
         dragStart = null;
         powerFill.style.width = '0%';
-        if (power > 0.15) throwBall(power, aimX);
+        if (power > 0.08) throwBall(power, aimX);
       }
       function onDragLeave() {
         if (ballDragStart) {
@@ -609,7 +613,7 @@
         var c = e.touches ? e.touches[0] : e;
         var arenaRect = ball.parentElement.getBoundingClientRect();
         var ballRect = ball.getBoundingClientRect();
-        ballDragStart = { x: c.clientX, left: ballRect.left - arenaRect.left + ballRect.width / 2 };
+        ballDragStart = { x: c.clientX, y: c.clientY, left: ballRect.left - arenaRect.left + ballRect.width / 2 };
         ball.classList.add('dragging');
       });
       ball.addEventListener('touchstart', function (e) {
@@ -618,12 +622,19 @@
         var c = e.touches[0];
         var arenaRect = ball.parentElement.getBoundingClientRect();
         var ballRect = ball.getBoundingClientRect();
-        ballDragStart = { x: c.clientX, left: ballRect.left - arenaRect.left + ballRect.width / 2 };
+        ballDragStart = { x: c.clientX, y: c.clientY, left: ballRect.left - arenaRect.left + ballRect.width / 2 };
         ball.classList.add('dragging');
       }, { passive: false });
 
       document.addEventListener('mouseup', function (e) {
         if (ballDragStart) {
+          var c = e.changedTouches ? e.changedTouches[0] : e;
+          var dy = ballDragStart.y - c.clientY;
+          var power = Math.min(1, Math.max(0, dy / 100));
+          if (power > 0.08) {
+            throwBall(power, getBallAimX());
+          }
+          powerFill.style.width = '0%';
           ballDragStart = null;
           ball.classList.remove('dragging');
         } else if (dragStart) {
@@ -632,6 +643,14 @@
       });
       document.addEventListener('touchend', function (e) {
         if (ballDragStart) {
+          var c = (e.changedTouches && e.changedTouches[0]) || null;
+          if (!c) { ballDragStart = null; ball.classList.remove('dragging'); powerFill.style.width = '0%'; return; }
+          var dy = ballDragStart.y - c.clientY;
+          var power = Math.min(1, Math.max(0, dy / 100));
+          if (power > 0.08) {
+            throwBall(power, getBallAimX());
+          }
+          powerFill.style.width = '0%';
           ballDragStart = null;
           ball.classList.remove('dragging');
         } else if (dragStart) {
@@ -651,6 +670,10 @@
         onDragStart(e);
       }, { passive: false });
 
+      btnThrow.addEventListener('click', function () {
+        if (isThrowing) return;
+        throwBall(0.6, getBallAimX());
+      });
       btnNewGame.addEventListener('click', function () {
         frames = [];
         for (var i = 0; i < 10; i++) frames.push({ r1: null, r2: null, r3: null, total: null });
@@ -658,7 +681,7 @@
         roll = 1;
         standAllPins();
         rollScoreEl.textContent = '0';
-        throwHint.textContent = 'Drag ball left/right to aim, then drag up to throw';
+        throwHint.textContent = 'Drag ball left/right to aim, then click Throw or drag up';
         renderScoreboard();
       });
 
