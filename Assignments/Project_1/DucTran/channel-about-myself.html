@@ -50,19 +50,26 @@
           <svg id="avatar-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" width="224" height="224" style="image-rendering:pixelated;image-rendering:crisp-edges">
             <title>Duc Tran — pixel portrait</title>
             <rect x="0" y="0" width="112" height="112" fill="#2b2d31"/>
-            <rect x="16" y="8" width="80" height="24" fill="#1a1a1a"/>
-            <rect x="8" y="32" width="20" height="20" fill="#1a1a1a"/>
-            <rect x="84" y="32" width="20" height="20" fill="#1a1a1a"/>
-            <rect x="24" y="32" width="64" height="72" fill="#e0b890"/>
-            <rect x="16" y="40" width="12" height="20" fill="#e0b890"/>
-            <rect x="84" y="40" width="12" height="20" fill="#e0b890"/>
+            <!-- Face (rounder: wider main, fuller cheeks) -->
+            <rect x="18" y="30" width="76" height="76" fill="#e0b890"/>
+            <rect x="10" y="42" width="10" height="32" fill="#e0b890"/>
+            <rect x="92" y="42" width="10" height="32" fill="#e0b890"/>
+            <rect x="28" y="38" width="56" height="12" fill="#e0b890"/>
             <rect x="32" y="48" width="48" height="40" fill="#e8c4a0"/>
+            <!-- Hair: short black, straight hairline, slight highlights -->
+            <rect x="18" y="6" width="76" height="24" fill="#1a1a1a"/>
+            <rect x="10" y="28" width="14" height="28" fill="#1a1a1a"/>
+            <rect x="88" y="28" width="14" height="28" fill="#1a1a1a"/>
+            <rect x="38" y="10" width="6" height="6" fill="#3a3a3a"/>
+            <rect x="68" y="12" width="6" height="6" fill="#3a3a3a"/>
+            <!-- Glasses -->
             <rect x="24" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
             <rect x="66" y="48" width="22" height="16" fill="none" stroke="#1a1a1a" stroke-width="2"/>
             <rect x="46" y="54" width="20" height="4" fill="#1a1a1a"/>
             <circle id="pupil-left" cx="35" cy="56" r="3" fill="#1a1a1a"/>
             <circle id="pupil-right" cx="77" cy="56" r="3" fill="#1a1a1a"/>
             <rect x="48" y="88" width="4" height="4" fill="#2a2020"/>
+            <path id="avatar-mouth" d="M 42 80 L 49 84 L 56 84 L 63 80" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="square" style="cursor:pointer"/>
           </svg>
         </div>
         <p>I'm Duc Tran. I'm a student at San José State and I put this site together to collect and show data about my own Discord use — when I message, where I hang out, and the words I use. The numbers on the other pages are my data; this page is a short intro to me.</p>
@@ -115,6 +122,17 @@
       right.setAttribute("cy", eyeRight.cy + dyR);
     }
     document.addEventListener("mousemove", movePupils);
+
+    var mouth = document.getElementById("avatar-mouth");
+    if (mouth) {
+      var happyPath = "M 42 80 L 49 84 L 56 84 L 63 80";
+      var sadPath = "M 42 84 L 49 80 L 56 80 L 63 84";
+      var isHappy = true;
+      mouth.addEventListener("click", function () {
+        isHappy = !isHappy;
+        mouth.setAttribute("d", isHappy ? happyPath : sadPath);
+      });
+    }
   })();
   </script>
 </body>
