@@ -15,31 +15,136 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  min-width: 450px;
+  width: 460px;
+  min-width: 460px;
+  flex-shrink: 0;
 }
 
-.cw-interview-left-column .cw-interview {
+/* Slot wrappers: contain reveal box + image */
+.cw-slot {
+  position: relative;
+}
+
+.cw-reveal-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border: 1px solid #333;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.cw-reveal-box:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.cw-slot.cw-revealed .cw-reveal-box {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cw-reveal-img {
+  display: block;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.cw-slot.cw-revealed .cw-reveal-img {
+  opacity: 1;
+}
+
+/* Left column slots – image in flow defines slot size, box overlays exactly */
+.cw-interview-left-column .cw-slot-left {
+  width: fit-content;
+}
+
+.cw-interview-left-column .cw-slot-left .cw-reveal-img {
   width: 450px;
   max-width: 450px;
-}
-
-.cw-interview {
-  max-width: 450px;
   max-height: 65vh;
-  width: auto;
   height: auto;
   object-fit: contain;
 }
 
-.cw-interview-group > .cw-interview:nth-child(2) {
-  transform: translate(-10px, 0);
+.cw-interview-left-column .cw-slot-4 .cw-reveal-img {
+  width: 460px;
+  max-width: 460px;
 }
 
-.cw-interview-top-right {
+.cw-interview-left-column .cw-slot-4 {
+  transform: translate(-5px, -5px);
+}
+
+/* Slot 2: absolute in group */
+.cw-slot-2 {
+  position: absolute;
+  left: 470px;
+  top: 0;
+  width: fit-content;
+  transform: translateX(-10px);
+}
+
+.cw-slot-2 .cw-reveal-img {
+  width: 450px;
+  max-width: 450px;
+  max-height: 65vh;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Slot 3: top right */
+.cw-slot-3 {
   position: fixed;
   top: 30px;
   right: 170px;
   left: auto;
+  width: fit-content;
+}
+
+.cw-slot-3 .cw-reveal-img {
+  width: 450px;
+  max-width: 450px;
+  max-height: 65vh;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Slot 5: center */
+.cw-slot-5 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: fit-content;
+  transform: translate(calc(-50% - 9px), calc(-50% + 50px));
+}
+
+.cw-slot-5 .cw-reveal-img {
+  width: 450px;
+  max-width: 450px;
+  max-height: 65vh;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Slot 6: right center */
+.cw-slot-6 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: fit-content;
+  transform: translate(calc(-50% + 458px), calc(-50% + 50px));
+}
+
+.cw-slot-6 .cw-reveal-img {
+  width: 450px;
+  max-width: 450px;
+  max-height: 65vh;
+  height: auto;
+  object-fit: contain;
 }
 
 .cw-stick {

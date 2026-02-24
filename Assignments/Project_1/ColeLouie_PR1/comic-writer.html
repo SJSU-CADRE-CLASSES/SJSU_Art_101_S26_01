@@ -10,12 +10,42 @@
 <body class="page-comic-writer">
   <div class="cw-interview-group">
     <div class="cw-interview-left-column">
-      <img src="interview1.png" alt="" class="cw-interview" aria-hidden="true">
-      <img src="interview 4.png" alt="" class="cw-interview" aria-hidden="true">
+      <div class="cw-slot cw-slot-left">
+        <img src="interview1.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
+        <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 1"></div>
+      </div>
+      <div class="cw-slot cw-slot-left cw-slot-4">
+        <img src="interview 4.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
+        <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 4"></div>
+      </div>
     </div>
-    <img src="interview 2.png" alt="" class="cw-interview" aria-hidden="true">
+    <div class="cw-slot cw-slot-2">
+      <img src="interview 2.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
+      <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 2"></div>
+    </div>
   </div>
-  <img src="interview 3.png" alt="" class="cw-interview cw-interview-top-right" aria-hidden="true">
+  <div class="cw-slot cw-slot-3">
+    <img src="interview 3.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
+    <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 3"></div>
+  </div>
+  <div class="cw-slot cw-slot-5">
+    <img src="interview 5.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
+    <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 5"></div>
+  </div>
+  <div class="cw-slot cw-slot-6">
+    <img src="interview 6.png" alt="" class="cw-interview cw-reveal-img" aria-hidden="true">
+    <div class="cw-reveal-box" role="button" tabindex="0" aria-label="Reveal image 6"></div>
+  </div>
   <img src="stick.png" alt="" class="cw-stick" aria-hidden="true">
+  <script>
+    document.querySelectorAll('.cw-reveal-box').forEach(function(box) {
+      box.addEventListener('click', function() {
+        this.closest('.cw-slot').classList.add('cw-revealed');
+      });
+      box.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+      });
+    });
+  </script>
 </body>
 </html>
