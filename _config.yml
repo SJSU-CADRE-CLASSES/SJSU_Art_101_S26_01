@@ -1,0 +1,10 @@
+# Jekyll config for GitHub Pages
+# Exclude paths that shouldn't be built (avoids processing node_modules, etc.)
+exclude:
+  - node_modules
+  - vendor
+  - .git
+  - .vscode
+  - .idea
+  - "*.lock"
+  - package-lock.json
