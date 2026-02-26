@@ -14,8 +14,9 @@
 
 <body>
 
-    <div class="lfo-container">
-        <h1>LFO Modulation</h1>
+    <div class="left-panel-stack">
+        <div class="lfo-container">
+            <h1>LFO Modulator</h1>
 
         <div class="control-group toggle-group">
             <label for="toggle-lfo-enabled">LFO <span id="val-lfo-enabled" class="value-display">OFF</span></label>
@@ -45,9 +46,50 @@
             </div>
         </div>
 
-        <div class="telemetry lfo-active-block">
-            <div class="lfo-active-title">Active LFO Items</div>
-            <div id="lfo-active-list" class="lfo-active-list"></div>
+            <div class="telemetry lfo-active-block">
+                <div class="lfo-active-title">Active LFO Items</div>
+                <div id="lfo-active-list" class="lfo-active-list"></div>
+            </div>
+        </div>
+
+        <div class="env-container">
+            <h1>Envelop Modulator</h1>
+
+            <div class="control-group">
+                <label for="slider-env-attack">Attack <span id="val-env-attack" class="value-display">100 ms</span></label>
+                <input type="range" id="slider-env-attack" min="0" max="5000" step="1" value="100">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-env-decay">Decay <span id="val-env-decay" class="value-display">250 ms</span></label>
+                <input type="range" id="slider-env-decay" min="0" max="5000" step="1" value="250">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-env-sustain">Sustain <span id="val-env-sustain" class="value-display">60%</span></label>
+                <input type="range" id="slider-env-sustain" min="0" max="1" step="0.01" value="0.6">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-env-release">Release <span id="val-env-release" class="value-display">300 ms</span></label>
+                <input type="range" id="slider-env-release" min="0" max="5000" step="1" value="300">
+            </div>
+
+            <div class="control-group">
+                <label for="input-env-trigger">Trigger Key <span id="val-env-trigger" class="value-display">1</span></label>
+                <input type="text" id="input-env-trigger" value="1" maxlength="1">
+            </div>
+
+            <div class="control-group">
+                <label for="select-env-param">Envelope Target</label>
+                <div class="inline-row">
+                    <select id="select-env-param"></select>
+                    <button id="btn-env-add" type="button">Add</button>
+                </div>
+            </div>
+
+            <div class="lfo-active-title">Active Envelope Items</div>
+            <div id="env-active-list" class="lfo-active-list"></div>
         </div>
     </div>
 

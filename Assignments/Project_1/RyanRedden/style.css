@@ -44,10 +44,19 @@ h1 {
     white-space: nowrap;
 }
 
-.lfo-container {
+.left-panel-stack {
     position: absolute;
     top: 20px;
     left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    transform: scale(0.5);
+    transform-origin: top left;
+}
+
+.lfo-container,
+.env-container {
     background-color: rgba(7, 12, 22, 0.9);
     padding: 1.25rem;
     border-radius: 0;
@@ -55,8 +64,6 @@ h1 {
     box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
     width: 290px;
     color: #00aaff;
-    transform: scale(0.5);
-    transform-origin: top left;
 }
 
 .control-group {
@@ -113,6 +120,19 @@ select {
     font-size: 0.8rem;
     padding: 0.35rem;
     outline: none;
+}
+
+input[type="text"] {
+    width: 100%;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.35rem;
+    outline: none;
+    box-sizing: border-box;
 }
 
 input[type="checkbox"] {
@@ -219,6 +239,11 @@ button:hover {
     min-width: 2.3rem;
     text-align: right;
     font-size: 0.72rem;
+}
+
+.env-chip-amount {
+    width: 70px;
+    height: 0.45rem;
 }
 
 .lfo-chip button {

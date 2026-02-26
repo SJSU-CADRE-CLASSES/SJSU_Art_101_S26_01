@@ -108,6 +108,17 @@ let lfoFrequency = 0.2;
 let lfoPhase = 0;
 const lfoTargets = new Map();
 const lfoSliderOverlays = new Map();
+const envTargets = new Map();
+let envAttackMs = 100;
+let envDecayMs = 250;
+let envSustain = 0.6;
+let envReleaseMs = 300;
+let envTriggerKey = '1';
+let envPhase = 'idle';
+let envValue = 0;
+let envPhaseElapsedSec = 0;
+let envPhaseStartValue = 0;
+let envKeyHeld = false;
 
 // The Object (Icosahedron)
 const geometry = new THREE.IcosahedronGeometry(0.1, 1);
@@ -204,7 +215,7 @@ const valGainZ = document.getElementById('val-gain-z');
 const btnReset = document.getElementById('btn-reset');
 const telemetryDisplay = document.getElementById('telemetry');
 const container = document.querySelector('.container');
-const lfoContainer = document.querySelector('.lfo-container');
+const leftPanelStack = document.querySelector('.left-panel-stack');
 const toggleLfoEnabled = document.getElementById('toggle-lfo-enabled');
 const valLfoEnabled = document.getElementById('val-lfo-enabled');
 const selectLfoWaveform = document.getElementById('select-lfo-waveform');
@@ -214,9 +225,22 @@ const valLfoFrequency = document.getElementById('val-lfo-frequency');
 const selectLfoParam = document.getElementById('select-lfo-param');
 const btnLfoAdd = document.getElementById('btn-lfo-add');
 const lfoActiveList = document.getElementById('lfo-active-list');
+const sliderEnvAttack = document.getElementById('slider-env-attack');
+const valEnvAttack = document.getElementById('val-env-attack');
+const sliderEnvDecay = document.getElementById('slider-env-decay');
+const valEnvDecay = document.getElementById('val-env-decay');
+const sliderEnvSustain = document.getElementById('slider-env-sustain');
+const valEnvSustain = document.getElementById('val-env-sustain');
+const sliderEnvRelease = document.getElementById('slider-env-release');
+const valEnvRelease = document.getElementById('val-env-release');
+const inputEnvTrigger = document.getElementById('input-env-trigger');
+const valEnvTrigger = document.getElementById('val-env-trigger');
+const selectEnvParam = document.getElementById('select-env-param');
+const btnEnvAdd = document.getElementById('btn-env-add');
+const envActiveList = document.getElementById('env-active-list');
 
 container.style.transform = `scale(${uiScale})`;
-lfoContainer.style.transform = `scale(${uiScale})`;
+leftPanelStack.style.transform = `scale(${uiScale})`;
 
 const lfoParamConfigs = {
     b: { label: 'Chaos (b)', slider: sliderB, min: 0.00001, max: 0.42, step: 0.00001, base: 0.19, set: (v) => { attractor.b = v; valB.textContent = v.toFixed(5); } },
@@ -232,7 +256,7 @@ const lfoParamConfigs = {
     gainX: { label: 'X Gain', slider: sliderGainX, min: 0.1, max: 4, step: 0.01, base: 1, set: (v) => { gainX = v; valGainX.textContent = v.toFixed(2); } },
     gainY: { label: 'Y Gain', slider: sliderGainY, min: 0.1, max: 4, step: 0.01, base: 1, set: (v) => { gainY = v; valGainY.textContent = v.toFixed(2); } },
     gainZ: { label: 'Z Gain', slider: sliderGainZ, min: 0.1, max: 4, step: 0.01, base: 1, set: (v) => { gainZ = v; valGainZ.textContent = v.toFixed(2); } },
-    uiSize: { label: 'UI Size', slider: sliderUiSize, min: 0.3, max: 1.2, step: 0.01, base: 0.5, set: (v) => { uiScale = v; valUiSize.textContent = `${Math.round(v * 100)}%`; container.style.transform = `scale(${uiScale})`; lfoContainer.style.transform = `scale(${uiScale})`; } }
+    uiSize: { label: 'UI Size', slider: sliderUiSize, min: 0.3, max: 1.2, step: 0.01, base: 0.5, set: (v) => { uiScale = v; valUiSize.textContent = `${Math.round(v * 100)}%`; container.style.transform = `scale(${uiScale})`; leftPanelStack.style.transform = `scale(${uiScale})`; } }
 };
 
 function clampToSlider(config, value) {
@@ -244,13 +268,13 @@ function clampToSlider(config, value) {
     return config.min + (steps * config.step);
 }
 
-function buildLfoParamOptions() {
-    selectLfoParam.innerHTML = '';
+function buildParamOptions(selectElement) {
+    selectElement.innerHTML = '';
     Object.entries(lfoParamConfigs).forEach(([key, cfg]) => {
         const option = document.createElement('option');
         option.value = key;
         option.textContent = cfg.label;
-        selectLfoParam.appendChild(option);
+        selectElement.appendChild(option);
     });
 }
 
@@ -308,7 +332,7 @@ function renderActiveLfoTargets() {
         label.textContent = cfg.label;
         const amountSlider = document.createElement('input');
         amountSlider.type = 'range';
-        amountSlider.min = '0';
+        amountSlider.min = '-1';
         amountSlider.max = '1';
         amountSlider.step = '0.01';
         amountSlider.value = String(amount);
@@ -317,7 +341,7 @@ function renderActiveLfoTargets() {
         amountValue.className = 'lfo-chip-amount-value';
         amountValue.textContent = amount.toFixed(2);
         amountSlider.addEventListener('input', (e) => {
-            const nextAmount = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+            const nextAmount = Math.max(-1, Math.min(1, parseFloat(e.target.value) || 0));
             lfoTargets.set(key, nextAmount);
             amountValue.textContent = nextAmount.toFixed(2);
         });
@@ -336,6 +360,56 @@ function renderActiveLfoTargets() {
     });
 }
 
+function renderActiveEnvTargets() {
+    envActiveList.innerHTML = '';
+    if (envTargets.size === 0) {
+        const empty = document.createElement('span');
+        empty.className = 'lfo-empty';
+        empty.textContent = 'None';
+        envActiveList.appendChild(empty);
+        return;
+    }
+
+    envTargets.forEach((amount, key) => {
+        const cfg = lfoParamConfigs[key];
+        if (!cfg) {
+            return;
+        }
+
+        const chip = document.createElement('div');
+        chip.className = 'lfo-chip';
+        const label = document.createElement('span');
+        label.textContent = cfg.label;
+        const amountSlider = document.createElement('input');
+        amountSlider.type = 'range';
+        amountSlider.min = '-1';
+        amountSlider.max = '1';
+        amountSlider.step = '0.01';
+        amountSlider.value = String(amount);
+        amountSlider.className = 'env-chip-amount';
+        const amountValue = document.createElement('span');
+        amountValue.className = 'lfo-chip-amount-value';
+        amountValue.textContent = amount.toFixed(2);
+        amountSlider.addEventListener('input', (e) => {
+            const nextAmount = Math.max(-1, Math.min(1, parseFloat(e.target.value) || 0));
+            envTargets.set(key, nextAmount);
+            amountValue.textContent = nextAmount.toFixed(2);
+        });
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.textContent = 'x';
+        removeBtn.addEventListener('click', () => {
+            envTargets.delete(key);
+            renderActiveEnvTargets();
+        });
+        chip.appendChild(label);
+        chip.appendChild(amountSlider);
+        chip.appendChild(amountValue);
+        chip.appendChild(removeBtn);
+        envActiveList.appendChild(chip);
+    });
+}
+
 function getLfoValue(phase, waveform) {
     const p = ((phase % 1) + 1) % 1;
     switch (waveform) {
@@ -351,92 +425,98 @@ function getLfoValue(phase, waveform) {
     }
 }
 
-function applyLfoToTargets(deltaSec) {
-    const hasTargets = lfoTargets.size > 0;
-    if (lfoEnabled && hasTargets) {
+function startEnvelopePhase(nextPhase) {
+    envPhase = nextPhase;
+    envPhaseElapsedSec = 0;
+    envPhaseStartValue = envValue;
+}
+
+function updateEnvelope(deltaSec) {
+    envPhaseElapsedSec += deltaSec;
+
+    if (envPhase === 'idle') {
+        envValue = 0;
+        return envValue;
+    }
+
+    if (envPhase === 'attack') {
+        const attackSec = Math.max(0, envAttackMs) / 1000;
+        if (attackSec <= 0) {
+            envValue = 1;
+            startEnvelopePhase('decay');
+            return envValue;
+        }
+        const t = Math.min(1, envPhaseElapsedSec / attackSec);
+        envValue = envPhaseStartValue + ((1 - envPhaseStartValue) * t);
+        if (t >= 1) {
+            startEnvelopePhase('decay');
+        }
+        return envValue;
+    }
+
+    if (envPhase === 'decay') {
+        const decaySec = Math.max(0, envDecayMs) / 1000;
+        if (decaySec <= 0) {
+            envValue = envSustain;
+            startEnvelopePhase('sustain');
+            return envValue;
+        }
+        const t = Math.min(1, envPhaseElapsedSec / decaySec);
+        envValue = 1 + ((envSustain - 1) * t);
+        if (t >= 1) {
+            startEnvelopePhase('sustain');
+        }
+        return envValue;
+    }
+
+    if (envPhase === 'sustain') {
+        envValue = envSustain;
+        return envValue;
+    }
+
+    if (envPhase === 'release') {
+        const releaseSec = Math.max(0, envReleaseMs) / 1000;
+        if (releaseSec <= 0) {
+            envValue = 0;
+            startEnvelopePhase('idle');
+            return envValue;
+        }
+        const t = Math.min(1, envPhaseElapsedSec / releaseSec);
+        envValue = envPhaseStartValue * (1 - t);
+        if (t >= 1) {
+            startEnvelopePhase('idle');
+        }
+        return envValue;
+    }
+
+    return envValue;
+}
+
+function applyModulationTargets(deltaSec) {
+    const hasLfoTargets = lfoTargets.size > 0;
+    if (lfoEnabled && hasLfoTargets) {
         lfoPhase = ((lfoPhase + (deltaSec * lfoFrequency)) % 1 + 1) % 1;
     }
-    const sample = hasTargets ? getLfoValue(lfoPhase, lfoWaveform) : 0;
+    const lfoSample = hasLfoTargets ? getLfoValue(lfoPhase, lfoWaveform) : 0;
+    const envelopeOutput = updateEnvelope(deltaSec);
 
     Object.entries(lfoParamConfigs).forEach(([key, cfg]) => {
-        let lfoValue = cfg.base;
-        if (lfoEnabled && lfoTargets.has(key)) {
-            const amount = lfoTargets.get(key) ?? 1;
-            const span = cfg.max - cfg.min;
-            const modulated = cfg.base + (sample * span * 0.5 * amount);
-            lfoValue = clampToSlider(cfg, modulated);
-        }
-        updateLfoOverlayValue(key, lfoValue);
-    });
-
-    lfoTargets.forEach((amount, key) => {
-        const cfg = lfoParamConfigs[key];
-        if (!cfg) {
-            return;
-        }
-
-        if (!lfoEnabled) {
-            cfg.set(cfg.base);
-            return;
-        }
-
         const span = cfg.max - cfg.min;
-        const modulated = cfg.base + (sample * span * 0.5 * amount);
-        const value = clampToSlider(cfg, modulated);
-        switch (key) {
-            case 'b':
-                attractor.b = value;
-                break;
-            case 'dt':
-                attractor.dt = value;
-                break;
-            case 'orbitRadius':
-                cameraOrbitAmplitude = value;
-                break;
-            case 'rampFrequency':
-                cameraOrbitCyclesPerSecond = value;
-                break;
-            case 'trailLength':
-                currentTrailLength = Math.max(0, Math.min(maxPoints, Math.round(value)));
-                break;
-            case 'stepsPerFrame':
-                stepsPerFrame = Math.max(1, Math.round(value));
-                break;
-            case 'internalSubsteps':
-                attractor.internalSubsteps = Math.max(1, Math.round(value));
-                break;
-            case 'integratorFidelity':
-                attractor.integratorFidelity = value;
-                break;
-            case 'arcResampleAmount':
-                arcResampleAmount = value;
-                break;
-            case 'pointJitter':
-                pointJitter = value;
-                break;
-            case 'gainX':
-                gainX = value;
-                break;
-            case 'gainY':
-                gainY = value;
-                break;
-            case 'gainZ':
-                gainZ = value;
-                break;
-            case 'uiSize':
-                uiScale = value;
-                container.style.transform = `scale(${uiScale})`;
-                lfoContainer.style.transform = `scale(${uiScale})`;
-                break;
-            default:
-                break;
-        }
+        const lfoAmount = lfoEnabled && lfoTargets.has(key) ? (lfoTargets.get(key) ?? 1) : 0;
+        const envAmount = envTargets.has(key) ? (envTargets.get(key) ?? 1) : 0;
+        const lfoContribution = lfoSample * span * 0.5 * lfoAmount;
+        const envContribution = envelopeOutput * span * envAmount;
+        const modulated = clampToSlider(cfg, cfg.base + lfoContribution + envContribution);
+        updateLfoOverlayValue(key, modulated);
+        cfg.set(modulated);
     });
 }
 
-buildLfoParamOptions();
+buildParamOptions(selectLfoParam);
+buildParamOptions(selectEnvParam);
 buildLfoSliderOverlays();
 renderActiveLfoTargets();
+renderActiveEnvTargets();
 
 sliderTrailLength.max = String(maxPoints);
 sliderTrailLength.value = String(maxPoints);
@@ -466,13 +546,24 @@ sliderCamZ.value = cameraOrbitAmplitude.toFixed(1);
 valCamZ.textContent = cameraOrbitAmplitude.toFixed(1);
 sliderRampFrequency.value = cameraOrbitCyclesPerSecond.toFixed(2);
 valRampFrequency.textContent = cameraOrbitCyclesPerSecond.toFixed(2);
+sliderEnvAttack.value = String(envAttackMs);
+valEnvAttack.textContent = `${envAttackMs.toFixed(0)} ms`;
+sliderEnvDecay.value = String(envDecayMs);
+valEnvDecay.textContent = `${envDecayMs.toFixed(0)} ms`;
+sliderEnvSustain.value = String(envSustain);
+valEnvSustain.textContent = `${Math.round(envSustain * 100)}%`;
+sliderEnvRelease.value = String(envReleaseMs);
+valEnvRelease.textContent = `${envReleaseMs.toFixed(0)} ms`;
+inputEnvTrigger.value = envTriggerKey;
+valEnvTrigger.textContent = envTriggerKey;
 
 // Event Listeners
 sliderUiSize.addEventListener('input', (e) => {
     uiScale = Math.max(0.3, Math.min(1.2, parseFloat(e.target.value) || 0.5));
     valUiSize.textContent = `${Math.round(uiScale * 100)}%`;
     container.style.transform = `scale(${uiScale})`;
-    lfoContainer.style.transform = `scale(${uiScale})`;
+    leftPanelStack.style.transform = `scale(${uiScale})`;
+    lfoParamConfigs.uiSize.base = uiScale;
 });
 
 sliderB.addEventListener('input', (e) => {
@@ -588,6 +679,67 @@ btnLfoAdd.addEventListener('click', () => {
     renderActiveLfoTargets();
 });
 
+sliderEnvAttack.addEventListener('input', (e) => {
+    envAttackMs = Math.max(0, parseFloat(e.target.value) || 0);
+    valEnvAttack.textContent = `${envAttackMs.toFixed(0)} ms`;
+});
+
+sliderEnvDecay.addEventListener('input', (e) => {
+    envDecayMs = Math.max(0, parseFloat(e.target.value) || 0);
+    valEnvDecay.textContent = `${envDecayMs.toFixed(0)} ms`;
+});
+
+sliderEnvSustain.addEventListener('input', (e) => {
+    envSustain = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+    valEnvSustain.textContent = `${Math.round(envSustain * 100)}%`;
+});
+
+sliderEnvRelease.addEventListener('input', (e) => {
+    envReleaseMs = Math.max(0, parseFloat(e.target.value) || 0);
+    valEnvRelease.textContent = `${envReleaseMs.toFixed(0)} ms`;
+});
+
+inputEnvTrigger.addEventListener('input', (e) => {
+    const next = (e.target.value || '1').trim().toLowerCase().slice(0, 1);
+    envTriggerKey = next || '1';
+    inputEnvTrigger.value = envTriggerKey;
+    valEnvTrigger.textContent = envTriggerKey;
+});
+
+btnEnvAdd.addEventListener('click', () => {
+    const key = selectEnvParam.value;
+    if (!lfoParamConfigs[key]) {
+        return;
+    }
+    if (!envTargets.has(key)) {
+        envTargets.set(key, 1);
+    }
+    renderActiveEnvTargets();
+});
+
+window.addEventListener('keydown', (e) => {
+    if ((e.key || '').toLowerCase() !== envTriggerKey) {
+        return;
+    }
+    if (document.activeElement === inputEnvTrigger) {
+        return;
+    }
+    if (!envKeyHeld) {
+        envKeyHeld = true;
+        startEnvelopePhase('attack');
+    }
+});
+
+window.addEventListener('keyup', (e) => {
+    if ((e.key || '').toLowerCase() !== envTriggerKey) {
+        return;
+    }
+    envKeyHeld = false;
+    if (envPhase !== 'idle') {
+        startEnvelopePhase('release');
+    }
+});
+
 btnReset.addEventListener('click', () => {
     attractor.reset();
 });
@@ -654,7 +806,7 @@ function loop() {
     const nowSec = performance.now() / 1000;
     const deltaSec = Math.max(0, nowSec - lastOrbitTimeSec);
     lastOrbitTimeSec = nowSec;
-    applyLfoToTargets(deltaSec);
+    applyModulationTargets(deltaSec);
     cameraOrbitRampPhase = ((cameraOrbitRampPhase + (deltaSec * cameraOrbitCyclesPerSecond)) % 1 + 1) % 1;
     updateCameraOrbitFromRamp(cameraOrbitRampPhase, cameraOrbitAmplitude);
     camera.lookAt(0, 0, 0);
