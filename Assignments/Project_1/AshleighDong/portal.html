@@ -75,6 +75,20 @@
     #hud .tip { color: rgba(232,232,255,0.7); font-size: 0.9rem; }
     #hud .status { color: rgba(232,232,255,0.8); font-size: 0.85rem; }
     #hud .status.error { color: #ff6b6b; }
+
+    #debugCanvas {
+      position: fixed;
+      right: 0.75rem;
+      bottom: 0.75rem;
+      width: 220px;
+      height: 150px;
+      border-radius: 8px;
+      border: 1px solid rgba(92, 255, 197, 0.55);
+      background: rgba(3, 4, 14, 0.95);
+      z-index: 6;
+      pointer-events: none;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.65);
+    }
   </style>
 </head>
 <body>
@@ -99,6 +113,7 @@
 
   <video id="video" playsinline></video>
   <canvas id="world"></canvas>
+  <canvas id="debugCanvas" width="220" height="150"></canvas>
 
   <script type="importmap">
     {
@@ -115,6 +130,8 @@
 
     const video = document.getElementById('video');
     const canvas = document.getElementById('world');
+    const debugCanvas = document.getElementById('debugCanvas');
+    const debugCtx = debugCanvas ? debugCanvas.getContext('2d') : null;
     const prompt = document.getElementById('cameraPrompt');
     const promptError = document.getElementById('promptError');
     const statusEl = document.getElementById('status');
@@ -126,13 +143,35 @@
 
     // Smoothed control signals (centered, normalized)
     const ctrl = {
-      x: 0,  // left/right
-      y: 0,  // up/down
-      z: 0,  // forward/back (approx)
+      x: 0,   // lateral offset
+      y: 0,   // vertical offset
+      z: 0,   // forward/back (approx)
+      rx: 0,  // head yaw (horizontal)
+      ry: 0,  // head pitch (up/down)
+      rz: 0,  // head roll (tilt)
     };
+    // Second-stage targets for extra smoothing (lerp raw -> target -> ctrl).
+    const target = { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0 };
+    // Neutral pose: when head is at rest we set this so "looking straight" = 0 and view returns to center.
+    let neutral = { yaw: 0, pitch: 0, roll: 0 };
+    let restFrames = 0;
+    const REST_ROT_THRESHOLD = 0.11;
+    const REST_FRAMES_NEEDED = 6;
+    // Blink / eye-glitch: avoid using rotation when eyes disappear or roll jumps.
+    let lastHasEyes = true;
+    let lastRotation = { yaw: 0, pitch: 0, roll: 0 };
+    // Idle reset: after 10s with no head movement, recenter view to straight.
+    let lastMovementTime = 0;
+    const IDLE_RESET_MS = 10000;
+    const MOVEMENT_THRESHOLD = 0.04;
 
     function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
     function lerp(a, b, t) { return a + (b - a) * t; }
+    // Dead zone: values near zero stay zero to reduce jitter.
+    function deadZone(v, zone) { return Math.abs(v) < zone ? 0 : v; }
+
+    // Head sensitivity: lower = less movement per head movement (0.4–1.0).
+    const HEAD_SENSITIVITY = 0.65;
 
     // ---- Three.js world ----
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -143,16 +182,20 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#070916');
     scene.fog = new THREE.Fog('#070916', 8, 45);
+    // World group: all 3D assets live here so we can move them together based on face center.
+    const worldGroup = new THREE.Group();
+    scene.add(worldGroup);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 200);
-    camera.position.set(0, 1.65, 5);
+    const EYE_HEIGHT = 1.15;
+    camera.position.set(0, EYE_HEIGHT, 5);
 
     const player = new THREE.Group();
     player.position.set(0, 0, 5);
     scene.add(player);
 
     const cameraRig = new THREE.Group();
-    cameraRig.position.set(0, 1.65, 0);
+    cameraRig.position.set(0, EYE_HEIGHT, 0);
     player.add(cameraRig);
     cameraRig.add(camera);
 
@@ -162,21 +205,36 @@
     dir.position.set(4, 8, 2);
     scene.add(dir);
 
-    const floorGeo = new THREE.PlaneGeometry(60, 60);
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0b1028, roughness: 0.95, metalness: 0.05 });
-    const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0;
-    scene.add(floor);
+    // Closed room: one box with BackSide so walls/ceiling/floor are connected and you're inside.
+    const roomW = 14, roomH = 4.5, roomD = 12;
+    const roomGeo = new THREE.BoxGeometry(roomW, roomH, roomD);
+    const roomMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1f36,
+      roughness: 0.9,
+      metalness: 0.05,
+      side: THREE.BackSide,
+    });
+    const roomBox = new THREE.Mesh(roomGeo, roomMat);
+    roomBox.position.set(0, roomH / 2, 0);
+    worldGroup.add(roomBox);
 
-    // Clickable "door" (opens a new page)
+    // Room bounds for clamping player (small margin so you can go right up to each wall).
+    const ROOM_MARGIN = 0.08;
+    const roomBounds = {
+      minX: -roomW / 2 + ROOM_MARGIN,
+      maxX: roomW / 2 - ROOM_MARGIN,
+      minZ: -roomD / 2 + ROOM_MARGIN,
+      maxZ: roomD / 2 - ROOM_MARGIN,
+    };
+
+    // Clickable "door" (opens a new page) — on the back wall of the room.
     const door = new THREE.Mesh(
       new THREE.BoxGeometry(1.2, 2.2, 0.12),
       new THREE.MeshStandardMaterial({ color: 0x5cffc5, emissive: 0x173b2f, roughness: 0.25, metalness: 0.1 })
     );
-    door.position.set(0, 1.1, 0);
+    door.position.set(0, 1.1, -roomD / 2 + 0.06);
     door.userData.href = 'portal_destination.html';
-    scene.add(door);
+    worldGroup.add(door);
 
     // Simple ambience elements so you see "a world" even without models.
     const ring = new THREE.Mesh(
@@ -185,7 +243,7 @@
     );
     ring.position.set(0, 2.2, -3.5);
     ring.rotation.x = Math.PI / 2.4;
-    scene.add(ring);
+    worldGroup.add(ring);
 
     let loadedModel = null;
     const MODEL_URL = 'assets/models/scene.glb';
@@ -219,49 +277,122 @@
     // Pose face-related landmark indices:
     // 0 nose, 1 leftEyeInner, 2 leftEye, 3 leftEyeOuter, 4 rightEyeInner, 5 rightEye, 6 rightEyeOuter
     // 7 leftEar, 8 rightEar
+    function vis(lm, thresh = 0.4) {
+      return lm && (lm.visibility == null || lm.visibility > thresh);
+    }
     function estimateHeadControls(landmarks) {
       if (!landmarks || !landmarks.length) return null;
       const nose = landmarks[0];
       const lEar = landmarks[7];
       const rEar = landmarks[8];
-      const lEye = landmarks[2];
-      const rEye = landmarks[5];
+      const lEyeInner = landmarks[1], lEye = landmarks[2], lEyeOuter = landmarks[3];
+      const rEyeInner = landmarks[4], rEye = landmarks[5], rEyeOuter = landmarks[6];
 
-      const hasEars = lEar && rEar && (lEar.visibility == null || lEar.visibility > 0.4) && (rEar.visibility == null || rEar.visibility > 0.4);
-      const hasEyes = lEye && rEye && (lEye.visibility == null || lEye.visibility > 0.4) && (rEye.visibility == null || rEye.visibility > 0.4);
-      if (!nose || (nose.visibility != null && nose.visibility < 0.3)) return null;
+      const hasEars = vis(lEar) && vis(rEar);
+      const hasNose = vis(nose, 0.3);
+      if (!hasNose) return null;
 
-      // Head center (prefer ears midpoint; else nose)
+      // Left/right eye centers from all three points each (more stable than single point).
+      let leftEyeCx = lEye?.x, leftEyeCy = lEye?.y;
+      let rightEyeCx = rEye?.x, rightEyeCy = rEye?.y;
+      if (vis(lEye) && (vis(lEyeInner) || vis(lEyeOuter))) {
+        const lx = [lEye.x];
+        const ly = [lEye.y];
+        if (vis(lEyeInner)) { lx.push(lEyeInner.x); ly.push(lEyeInner.y); }
+        if (vis(lEyeOuter)) { lx.push(lEyeOuter.x); ly.push(lEyeOuter.y); }
+        leftEyeCx = lx.reduce((a, b) => a + b, 0) / lx.length;
+        leftEyeCy = ly.reduce((a, b) => a + b, 0) / ly.length;
+      }
+      if (vis(rEye) && (vis(rEyeInner) || vis(rEyeOuter))) {
+        const rx = [rEye.x];
+        const ry = [rEye.y];
+        if (vis(rEyeInner)) { rx.push(rEyeInner.x); ry.push(rEyeInner.y); }
+        if (vis(rEyeOuter)) { rx.push(rEyeOuter.x); ry.push(rEyeOuter.y); }
+        rightEyeCx = rx.reduce((a, b) => a + b, 0) / rx.length;
+        rightEyeCy = ry.reduce((a, b) => a + b, 0) / ry.length;
+      }
+      const hasEyes = leftEyeCx != null && rightEyeCx != null;
+
+      // Head center: prefer ears midpoint, else eye midpoint, else nose.
       let cx = nose.x, cy = nose.y;
       if (hasEars) {
         cx = (lEar.x + rEar.x) / 2;
         cy = (lEar.y + rEar.y) / 2;
+      } else if (hasEyes) {
+        cx = (leftEyeCx + rightEyeCx) / 2;
+        cy = (leftEyeCy + rightEyeCy) / 2;
       }
 
-      // Size proxy: ear distance (or eye distance)
-      let size = 0.0;
+      // Size proxy: ear distance, or eye distance (from averaged eye centers).
+      let size = 0.08;
       if (hasEars) {
         const dx = lEar.x - rEar.x;
         const dy = lEar.y - rEar.y;
         size = Math.hypot(dx, dy);
       } else if (hasEyes) {
-        const dx = lEye.x - rEye.x;
-        const dy = lEye.y - rEye.y;
+        const dx = rightEyeCx - leftEyeCx;
+        const dy = rightEyeCy - leftEyeCy;
         size = Math.hypot(dx, dy);
-      } else {
-        size = 0.08;
       }
 
       // Normalize controls around center of screen.
-      // x,y in roughly [-1,1], z in [-1,1] based on size changes.
-      const x = clamp((cx - 0.5) * 2.2, -1, 1);
-      const y = clamp((cy - 0.5) * 2.2, -1, 1);
+      const x = clamp((cx - 0.5) * 3.4, -1, 1);
+      const y = clamp((cy - 0.5) * 3.4, -1, 1);
+      const z = clamp(((size - 0.20) / 0.08), -1, 1);
 
-      // Map size to z: larger size => closer => positive z.
-      // Baseline tuned for laptop webcams; user can change by moving closer.
-      const z = clamp(((size - 0.20) / 0.12), -1, 1);
+      // Head rotation: yaw/pitch from nose vs head center; roll from eye line (all 6 points).
+      const yaw = clamp((nose.x - cx) * 2.8, -0.9, 0.9);
+      const pitch = clamp((nose.y - cy) * 2.8, -0.9, 0.9);
+      let roll = 0;
+      if (hasEyes) {
+        const ex = rightEyeCx - leftEyeCx;
+        const ey = rightEyeCy - leftEyeCy;
+        roll = clamp(Math.atan2(ey, ex), -0.9, 0.9);
+      }
 
-      return { x, y, z, size };
+      return { x, y, z, size, yaw, pitch, roll, hasEyes };
+    }
+
+    function drawDebugView(landmarks) {
+      if (!debugCtx || !landmarks || !video.videoWidth) return;
+      const w = debugCanvas.width;
+      const h = debugCanvas.height;
+      debugCtx.clearRect(0, 0, w, h);
+
+      // Draw mirrored video feed.
+      debugCtx.save();
+      debugCtx.translate(w, 0);
+      debugCtx.scale(-1, 1);
+      debugCtx.drawImage(video, 0, 0, w, h);
+      debugCtx.restore();
+
+      // Draw a few key landmarks.
+      function dot(idx, color) {
+        const lm = landmarks[idx];
+        if (!lm || (lm.visibility != null && lm.visibility < 0.3)) return;
+        const x = (1 - lm.x) * w;
+        const y = lm.y * h;
+        debugCtx.fillStyle = color;
+        debugCtx.beginPath();
+        debugCtx.arc(x, y, 3, 0, Math.PI * 2);
+        debugCtx.fill();
+      }
+
+      dot(0, '#5cffc5');  // nose
+      dot(2, '#ffd54f');  // left eye
+      dot(5, '#ffd54f');  // right eye
+      dot(7, '#90caf9');  // left ear
+      dot(8, '#90caf9');  // right ear
+
+      // Crosshair in center to visualize neutral position.
+      debugCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+      debugCtx.lineWidth = 1;
+      debugCtx.beginPath();
+      debugCtx.moveTo(w / 2, h / 2 - 6);
+      debugCtx.lineTo(w / 2, h / 2 + 6);
+      debugCtx.moveTo(w / 2 - 6, h / 2);
+      debugCtx.lineTo(w / 2 + 6, h / 2);
+      debugCtx.stroke();
     }
 
     // ---- Controls: WASD movement + click interaction ----
@@ -306,13 +437,28 @@
         const v = new THREE.Vector3(dx, 0, -dz).normalize().multiplyScalar(speed * dt);
         player.position.add(v);
       }
+      // Keep player inside room bounds and feet on the ground.
+      player.position.x = Math.max(roomBounds.minX, Math.min(roomBounds.maxX, player.position.x));
+      player.position.y = 0;
+      player.position.z = Math.max(roomBounds.minZ, Math.min(roomBounds.maxZ, player.position.z));
 
-      // Head-tracked parallax: small offsets of camera inside the rig.
-      cameraRig.position.x = ctrl.x * 0.22;
-      cameraRig.position.y = 1.65 + ctrl.y * 0.12;
-      cameraRig.position.z = ctrl.z * 0.22;
+      // Keep camera rig fixed at eye height; move the world instead.
+      cameraRig.position.set(0, EYE_HEIGHT, 0);
+      cameraRig.rotation.set(0, 0, 0);
 
-      // Subtle “breathing” movement for ambience
+      // Face-centered world motion: move assets based on face center (ctrl.x, ctrl.y, ctrl.z).
+      // Make vertical motion (up/down) more sensitive than horizontal.
+      const worldPanX = ctrl.x * 1.2 * HEAD_SENSITIVITY;
+      const worldPanY = ctrl.y * 2.0 * HEAD_SENSITIVITY;
+      const worldPanZ = ctrl.z * 1.0 * HEAD_SENSITIVITY;
+      worldGroup.position.set(worldPanX, worldPanY, worldPanZ);
+
+      // Head yaw (ctrl.rx) rotates the world around Y so objects turn as you turn your head.
+      // Positive yaw rotates in the same direction as head movement.
+      const worldRotY = ctrl.rx * 3.0 * HEAD_SENSITIVITY;
+      worldGroup.rotation.set(0, worldRotY, 0);
+
+      // Subtle "breathing" movement for ambience
       ring.rotation.z += 0.002;
       door.material.emissiveIntensity = 0.4 + 0.25 * Math.sin(now * 0.002);
 
@@ -359,13 +505,15 @@
       video.srcObject = stream;
       await video.play();
 
+      lastMovementTime = Date.now();
+
       // Load user model if present. If missing, keep the procedural scene.
       statusEl.textContent = 'Loading world…';
       try {
         const gltf = await loadGlb(MODEL_URL);
         loadedModel = gltf.scene;
         fitModelIntoScene(loadedModel);
-        scene.add(loadedModel);
+        worldGroup.add(loadedModel);
         statusEl.textContent = 'World loaded. Use WASD to move. Click the door.';
       } catch (e) {
         statusEl.textContent = `No model found at ${MODEL_URL}. Add your .glb there to replace the world.`;
@@ -377,8 +525,8 @@
       pose.setOptions({
         modelComplexity: 1,
         smoothLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
+        minDetectionConfidence: 0.6,
+        minTrackingConfidence: 0.6,
       });
 
       pose.onResults((results) => {
@@ -387,10 +535,81 @@
         const est = estimateHeadControls(latestLandmarks);
         if (!est) return;
 
-        // Smooth to reduce jitter. Slightly faster on x,y than z.
-        ctrl.x = lerp(ctrl.x, est.x, 0.18);
-        ctrl.y = lerp(ctrl.y, est.y, 0.18);
-        ctrl.z = lerp(ctrl.z, est.z, 0.10);
+        const hasEyes = est.hasEyes === true;
+        // Blink: eyes disappeared or roll jumped (eye landmarks glitch).
+        const eyesJustLost = lastHasEyes && !hasEyes;
+        const rollSpike = hasEyes && (Math.abs(est.roll - lastRotation.roll) > 0.22);
+        const isBlink = eyesJustLost || rollSpike;
+
+        if (isBlink) restFrames = 0;
+        lastHasEyes = hasEyes;
+        lastRotation = { yaw: est.yaw, pitch: est.pitch, roll: est.roll };
+
+        // Use neutral pose so when head returns to rest we get 0 and view centers.
+        let ayaw = est.yaw - neutral.yaw;
+        let apitch = est.pitch - neutral.pitch;
+        let aroll = est.roll - neutral.roll;
+        // During blink/glitch don't feed rotation: hold previous so view doesn't spike.
+        if (isBlink) {
+          ayaw = (lastRotation.yaw - neutral.yaw) * 0.3;
+          apitch = (lastRotation.pitch - neutral.pitch) * 0.3;
+          aroll = (lastRotation.roll - neutral.roll) * 0.3;
+        }
+
+        const atRest = hasEyes && !isBlink &&
+          Math.abs(ayaw) < REST_ROT_THRESHOLD &&
+          Math.abs(apitch) < REST_ROT_THRESHOLD &&
+          Math.abs(aroll) < REST_ROT_THRESHOLD;
+
+        if (atRest) {
+          restFrames++;
+          if (restFrames >= REST_FRAMES_NEEDED) {
+            neutral.yaw = est.yaw;
+            neutral.pitch = est.pitch;
+            neutral.roll = est.roll;
+            target.rx = target.ry = target.rz = 0;
+            ctrl.rx = ctrl.ry = ctrl.rz = 0;
+          }
+        } else {
+          restFrames = 0;
+        }
+
+        // Idle reset: after 10s with no meaningful movement, recenter to straight.
+        const moved = Math.abs(ayaw) > MOVEMENT_THRESHOLD || Math.abs(apitch) > MOVEMENT_THRESHOLD ||
+          Math.abs(aroll) > MOVEMENT_THRESHOLD || Math.abs(est.x) > 0.06 || Math.abs(est.y) > 0.06;
+        if (moved) lastMovementTime = Date.now();
+        if (lastMovementTime > 0 && (Date.now() - lastMovementTime) >= IDLE_RESET_MS) {
+          neutral.yaw = est.yaw;
+          neutral.pitch = est.pitch;
+          neutral.roll = est.roll;
+          target.x = target.y = target.z = 0;
+          target.rx = target.ry = target.rz = 0;
+          ctrl.x = ctrl.y = ctrl.z = 0;
+          ctrl.rx = ctrl.ry = ctrl.rz = 0;
+          lastMovementTime = Date.now();
+        }
+
+        // Stage 1: adjusted estimate -> target (skip rotation update on blink so we don't spike).
+        const t1 = 0.24;
+        target.x = lerp(target.x, est.x, t1);
+        target.y = lerp(target.y, est.y, t1);
+        target.z = lerp(target.z, est.z, 0.14);
+        if (!isBlink) {
+          target.rx = lerp(target.rx, deadZone(ayaw, 0.018), t1);
+          target.ry = lerp(target.ry, deadZone(apitch, 0.018), t1);
+          target.rz = lerp(target.rz, deadZone(aroll, 0.018), t1);
+        }
+
+        // Stage 2: target -> ctrl.
+        const t2 = 0.16;
+        ctrl.x = lerp(ctrl.x, target.x, t2);
+        ctrl.y = lerp(ctrl.y, target.y, t2);
+        ctrl.z = lerp(ctrl.z, target.z, 0.10);
+        ctrl.rx = lerp(ctrl.rx, target.rx, 0.12);
+        ctrl.ry = lerp(ctrl.ry, target.ry, 0.12);
+        ctrl.rz = lerp(ctrl.rz, target.rz, 0.14);
+
+        drawDebugView(latestLandmarks);
       });
 
       async function detectLoop() {
