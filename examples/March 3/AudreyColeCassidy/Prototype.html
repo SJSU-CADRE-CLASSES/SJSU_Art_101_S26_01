@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Terminal - Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            background: #0a0f0a;
+            color: #33ff33;
+            min-height: 100vh;
+            min-width: 100vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* CRT interlacing effect - full page overlay */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        /* Horizontal scanlines (interlaced odd/even lines) */
+        .crt-scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 1px,
+                rgba(0, 0, 0, 0.4) 1px,
+                rgba(0, 0, 0, 0.4) 2px
+            );
+        }
+
+        /* Interlace pattern - alternate line intensity (odd/even fields) */
+        .crt-interlace {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.12) 2px,
+                rgba(0, 0, 0, 0.12) 4px
+            );
+        }
+
+        /* Phosphor grain / noise texture */
+        .crt-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* Screen vignette (darker edges) */
+        .crt-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 120px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px 30px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            font-size: 4rem;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px #33ff33, 0 0 20px #33ff33;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 40px;
+            min-height: 0;
+            flex-grow: 1;
+        }
+
+        /* Left panel - Folders */
+        .folders-panel {
+            flex-shrink: 0;
+            width: 200px;
+            min-width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-self: stretch;
+        }
+
+        .folders-title,
+        .content-title {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            padding: 5px;
+            text-shadow: 0 0 5px #33ff33;
+            flex-shrink: 0;
+            height: 1.5em;
+        }
+
+        .content-title {
+            min-height: 1.5em;
+        }
+
+        .folder-buttons {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 8px;
+            min-height: 0;
+        }
+
+        .folder-btn {
+            flex: 1;
+            min-height: 60px;
+            padding: 12px 15px;
+            background: transparent;
+            border: 2px solid #33ff33;
+            color: #33ff33;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+
+            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+        }
+
+        .folder-btn:hover {
+            background: rgba(51, 255, 51, 0.1);
+            box-shadow: 0 0 12px #33ff33;
+        }
+
+        .folder-btn.active {
+            background: rgba(51, 255, 51, 0.15);
+            box-shadow: 0 0 12px #33ff33, inset 0 0 8px rgba(51, 255, 51, 0.2);
+            border-color: #66ff66;
+        }
+
+        /* Right panel - Content */
+        .content-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            align-self: stretch;
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 5px;
+            min-height: 0;
+        }
+
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: #0a0f0a;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: #33ff33;
+            border-radius: 0;
+        }
+
+        .content-block {
+            border: 2px solid #33ff33;
+            padding: 15px 18px;
+            box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+            line-height: 1.5;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Chat tab - BLTMR PLC style */
+        .tab-content.chat-tab {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            flex: 1;
+            min-height: 0;
+            padding: 0;
+        }
+
+        .tab-content.chat-tab.active {
+            display: flex;
+        }
+
+        .chat-interface {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            gap: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px 18px;
+            border: 2px solid #33ff33;
+            margin-bottom: 12px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+        }
+
+        .chat-message {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #33ff33;
+        }
+
+        .chat-message .sender {
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .chat-input-wrap {
+            flex: 1;
+            min-width: 0;
+            border: 2px solid #33ff33;
+            padding: 12px 15px;
+            background: transparent;
+            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+        }
+
+        .chat-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #33ff33;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            outline: none;
+            caret-color: #33ff33;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(51, 255, 51, 0.6);
+        }
+
+        .char-keyboard-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .char-keyboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .char-key {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            min-height: 36px;
+            background: transparent;
+            border: 2px solid #33ff33;
+            color: #33ff33;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+        }
+
+        .char-key:hover {
+            background: rgba(51, 255, 51, 0.15);
+            box-shadow: 0 0 8px #33ff33;
+        }
+
+        .chat-send-btn {
+            padding: 10px 20px;
+            background: #33ff33;
+            color: #0a0f0a;
+            border: 2px solid #33ff33;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            width: 100%;
+            box-shadow: 0 0 8px rgba(51, 255, 51, 0.5);
+        }
+
+        .chat-send-btn:hover {
+            background: #44ff44;
+            box-shadow: 0 0 12px #33ff33;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 15px 0 10px;
+            text-align: center;
+            font-size: 1rem;
+            opacity: 0.9;
+            border-top: 1px solid rgba(51, 255, 51, 0.3);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- CRT interlacing overlay - covers entire viewport -->
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container">
+        <header class="header">PERSONAL TERMINAL</header>
+
+        <div class="main-content">
+            <nav class="folders-panel">
+                <div class="folders-title">FOLDERS</div>
+                <div class="folder-buttons">
+                    <button class="folder-btn active" data-tab="personal1">PERSONAL</button>
+                    <button class="folder-btn" data-tab="shared">SHARED</button>
+                    <button class="folder-btn" data-tab="utility">UTILITY</button>
+                    <button class="folder-btn" data-tab="personal2">CHAT-VOX</button>
+                </div>
+            </nav>
+
+            <div class="content-panel">
+                <div class="content-title" id="content-title">PERSONAL</div>
+                <div class="content-area">
+                <!-- Personal Tab 1 -->
+                <div id="personal1" class="tab-content active">
+                    <div class="content-block">This is a personal message</div>
+                    <div class="content-block">Welcome to your personal terminal. Select a folder to view its contents.</div>
+                    <div class="content-block">This is just going to be a really long-winded string literal that allows me to test such things as text wrapping, and scrolling.</div>
+                    <div class="content-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+                </div>
+
+                <!-- Shared Tab -->
+                <div id="shared" class="tab-content">
+                    <div class="content-block">This is a shared message</div>
+                    <div class="content-block">What is the shared folder for? Who knows! But it's in the screenshots and so we're using it.</div>
+                    <div class="content-block">This is just going to be a really long-winded string literal that allows me to test such things as text wrapping, and scrolling.</div>
+                    <div class="content-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+                </div>
+
+                <!-- Utility Tab -->
+                <div id="utility" class="tab-content">
+                    <div class="content-block">Utility tools and functions</div>
+                    <div class="content-block">This folder contains system utilities and helper applications.</div>
+                    <div class="content-block">This is just going to be a really long-winded string literal that allows me to test such things as text wrapping, and scrolling.</div>
+                    <div class="content-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+                </div>
+
+                <!-- Chat-Vox Tab -->
+                <div id="personal2" class="tab-content chat-tab">
+                    <div class="chat-interface">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message"><span class="sender">J. O'NEIL:</span> WHAT THE FUCK DID I DO??</div>
+                            <div class="chat-message"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
+                            <div class="chat-message"><span class="sender">J. O'NEIL:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
+                            <div class="chat-message"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
+                        </div>
+                        <div class="chat-input-row">
+                            <div class="chat-input-wrap">
+                                <input type="text" class="chat-input" id="chat-input" placeholder="DON'T THINK TOO MUCH ABOUT IT" autocomplete="off">
+                            </div>
+                            <div class="char-keyboard-wrap">
+                                <div class="char-keyboard" id="char-keyboard">
+                                    <button type="button" class="char-key" data-char="à">à</button>
+                                    <button type="button" class="char-key" data-char="ç">ç</button>
+                                    <button type="button" class="char-key" data-char="č">č</button>
+                                    <button type="button" class="char-key" data-char="ž">ž</button>
+                                    <button type="button" class="char-key" data-char="ť">ť</button>
+                                    <button type="button" class="char-key" data-char="ě">ě</button>
+                                    <button type="button" class="char-key" data-char="ñ">ñ</button>
+                                    <button type="button" class="char-key" data-char="ä">ä</button>
+                                    <button type="button" class="char-key" data-char="ř">ř</button>
+                                    <button type="button" class="char-key" data-char="ž">ž</button>
+                                    <button type="button" class="char-key" data-char="ů">ů</button>
+                                    <button type="button" class="char-key" data-char="é">é</button>
+                                    <button type="button" class="char-key" data-char="ĺ">ĺ</button>
+                                    <button type="button" class="char-key" data-char="ó">ó</button>
+                                    <button type="button" class="char-key" data-char="í">í</button>
+                                    <button type="button" class="char-key" data-char="§">§</button>
+                                    <button type="button" class="char-key" data-char="š">š</button>
+                                </div>
+                                <button type="button" class="chat-send-btn" id="chat-send">SEND</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">UP, DOWN: select folder | LEFT, RIGHT: scroll | q: exit</footer>
+    </div>
+
+    <script>
+        const contentTitleEl = document.getElementById('content-title');
+
+        document.querySelectorAll('.folder-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active from all buttons and tabs
+                document.querySelectorAll('.folder-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+                // Activate clicked button and corresponding tab
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+
+                // Update content title to match selected tab
+                contentTitleEl.textContent = btn.textContent.trim();
+            });
+        });
+
+        // Keyboard navigation
+        const buttons = Array.from(document.querySelectorAll('.folder-btn'));
+        let selectedIndex = 0;
+        const contentArea = document.querySelector('.content-area');
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'q' || e.key === 'Q') {
+                if (window.close) window.close();
+                return;
+            }
+
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(0, selectedIndex - 1);
+                buttons[selectedIndex].click();
+                buttons[selectedIndex].focus();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(buttons.length - 1, selectedIndex + 1);
+                buttons[selectedIndex].click();
+                buttons[selectedIndex].focus();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                contentArea.scrollBy({ top: -80, behavior: 'smooth' });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                contentArea.scrollBy({ top: 80, behavior: 'smooth' });
+            }
+        });
+
+        // Sync selectedIndex when clicking buttons
+        buttons.forEach((btn, i) => btn.addEventListener('click', () => { selectedIndex = i; }));
+
+        // Chat functionality
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatSend = document.getElementById('chat-send');
+
+        document.querySelectorAll('.char-key').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const char = btn.getAttribute('data-char');
+                const start = chatInput.selectionStart;
+                const end = chatInput.selectionEnd;
+                const val = chatInput.value;
+                chatInput.value = val.slice(0, start) + char + val.slice(end);
+                chatInput.selectionStart = chatInput.selectionEnd = start + 1;
+                chatInput.focus();
+            });
+        });
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            const msg = document.createElement('div');
+            msg.className = 'chat-message';
+            msg.innerHTML = '<span class="sender">YOU:</span> ' + text.toUpperCase();
+            chatMessages.appendChild(msg);
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
