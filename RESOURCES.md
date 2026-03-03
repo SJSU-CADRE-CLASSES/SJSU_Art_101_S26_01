@@ -72,4 +72,14 @@ Resources
 15. mutek https://mutek.org/
 16. robert henke lumiere https://www.youtube.com/watch?v=7cmkZfkuMR8
 17. buchla https://www.vintagesynth.com/buchla/200-series
+ 
+3/3
+1. Space Balls - Ludicrous Speed https://www.youtube.com/watch?v=NAWL8ejf2nM
+2. Good Luck, Have Fun, Don't Die https://www.youtube.com/watch?v=Nm4WbapDzDQ
+3. Unity Portals - https://www.youtube.com/watch?v=B7RmMsFcoqY
+4. 3D Display in Minority Report https://www.youtube.com/watch?v=OSDqZeI2WlA
+5. Prometheus Star Map - https://www.youtube.com/watch?v=NegOHzcBlHQ
+6. Bruce Sterling - https://www.youtube.com/watch?v=M7KErICTSHU
+7. The Data Drive - https://web.archive.org/web/20201108095142/https://thedatadrive.com/
+8. Make It Yourself - https://makeityourself.org/MIY.pdf
 
