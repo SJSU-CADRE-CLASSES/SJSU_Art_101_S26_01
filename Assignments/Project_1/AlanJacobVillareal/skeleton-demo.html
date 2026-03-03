@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam + Skeleton Tracking - Alan Jacob Villareal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            background: #1a0a2e;
+            color: #eee;
+            min-height: 100vh;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+        }
+        p {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 1rem;
+        }
+        .container {
+            position: relative;
+            border: 4px solid #00ff88;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        #webcam {
+            display: block;
+            width: 100%;
+            max-width: 640px;
+            transform: scaleX(-1);
+        }
+        #output {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1);
+            pointer-events: none;
+        }
+        .error {
+            color: #ff6b6b;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webcam + Skeletal Tracking</h1>
+    <p>Uses MediaPipe Pose to track your body and draw a skeleton overlay. Allow camera access when prompted.</p>
+    <div class="container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="output"></canvas>
+    </div>
+    <p id="status">Starting camera…</p>
+
+    <script>
+        (async function() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('output');
+            const ctx = canvas.getContext('2d');
+            const statusEl = document.getElementById('status');
+
+            function onResults(results) {
+                if (!results.poseLandmarks) return;
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.save();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+                // Draw skeleton
+                if (window.drawConnectors && window.POSE_CONNECTIONS) {
+                    window.drawConnectors(ctx, results.poseLandmarks, window.POSE_CONNECTIONS, {
+                        color: '#00ff88',
+                        lineWidth: 2
+                    });
+                    window.drawLandmarks(ctx, results.poseLandmarks, {
+                        color: '#ff00aa',
+                        radius: 4
+                    });
+                } else {
+                    drawSkeletonFallback(ctx, results.poseLandmarks, canvas.width, canvas.height);
+                }
+                ctx.restore();
+            }
+
+            function drawSkeletonFallback(ctx, landmarks, w, h) {
+                if (!landmarks || landmarks.length === 0) return;
+                const connections = [
+                    [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],
+                    [23, 24], [23, 25], [25, 27], [24, 26], [26, 28],
+                    [12, 24], [11, 23], [11, 12], [23, 24],
+                    [0, 11], [0, 12], [0, 23], [0, 24]
+                ];
+                ctx.strokeStyle = '#00ff88';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                connections.forEach(([i, j]) => {
+                    const a = landmarks[i], b = landmarks[j];
+                    if (a && b && a.visibility > 0.5 && b.visibility > 0.5) {
+                        ctx.moveTo(a.x * w, a.y * h);
+                        ctx.lineTo(b.x * w, b.y * h);
+                    }
+                });
+                ctx.stroke();
+                ctx.fillStyle = '#ff00aa';
+                landmarks.forEach(lm => {
+                    if (lm.visibility > 0.5) {
+                        ctx.beginPath();
+                        ctx.arc(lm.x * w, lm.y * h, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                video.srcObject = stream;
+                await new Promise((res) => { video.onloadedmetadata = res; });
+                video.play();
+
+                const Pose = window.Pose;
+                if (!Pose) {
+                    statusEl.textContent = 'MediaPipe Pose failed to load. Check console.';
+                    return;
+                }
+
+                const pose = new Pose({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${file}`
+                });
+                await pose.initialize();
+                pose.setOptions({
+                    upperBodyOnly: false,
+                    smoothLandmarks: true,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+
+                statusEl.textContent = 'Tracking active — move to see the skeleton.';
+
+                function detect() {
+                    if (video.readyState < 2) {
+                        requestAnimationFrame(detect);
+                        return;
+                    }
+                    pose.onResults(onResults);
+                    pose.send({ image: video });
+                    requestAnimationFrame(detect);
+                }
+                pose.send({ image: video }).then(() => {
+                    detect();
+                });
+            } catch (e) {
+                statusEl.className = 'error';
+                statusEl.textContent = 'Error: ' + (e.message || 'Could not access webcam. Use HTTPS or localhost.');
+            }
+        })();
+    </script>
+</body>
+</html>
