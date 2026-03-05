@@ -363,6 +363,116 @@
             box-shadow: 0 0 12px #33ff33;
         }
 
+        /* BioScan tab */
+        .bioscan-container {
+            border: 2px solid #33ff33;
+            box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bioscan-header-bar {
+            padding: 8px 16px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(51, 255, 51, 0.45);
+            text-shadow: 0 0 6px #33ff33;
+            letter-spacing: 0.12em;
+        }
+
+        .bioscan-upper {
+            display: flex;
+            gap: 0;
+            padding: 16px;
+            border-bottom: 1px solid rgba(51, 255, 51, 0.3);
+        }
+
+        .bioscan-photo {
+            flex-shrink: 0;
+            width: 155px;
+            height: 195px;
+            border: 1px solid #33ff33;
+            margin-right: 20px;
+            position: relative;
+            overflow: hidden;
+            background:
+                repeating-conic-gradient(rgba(51, 255, 51, 0.1) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
+                linear-gradient(170deg, rgba(51, 255, 51, 0.06) 0%, rgba(51, 255, 51, 0.14) 55%, rgba(51, 255, 51, 0.04) 100%),
+                #040b04;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: inset 0 0 22px rgba(51, 255, 51, 0.08), 0 0 6px rgba(51, 255, 51, 0.25);
+        }
+
+        .bioscan-photo::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(51, 255, 51, 0.04) 2px,
+                rgba(51, 255, 51, 0.04) 4px
+            );
+            pointer-events: none;
+        }
+
+        .bioscan-photo .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(51, 255, 51, 0.55);
+            box-shadow: 0 0 8px rgba(51, 255, 51, 0.8);
+            animation: scanMove 2.8s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0%   { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .bioscan-photo .scan-text {
+            font-size: 0.9rem;
+            color: rgba(51, 255, 51, 0.65);
+            text-align: center;
+            letter-spacing: 0.1em;
+            z-index: 1;
+        }
+
+        .bioscan-stats {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            justify-content: flex-start;
+        }
+
+        .bioscan-stat .stat-key {
+            display: block;
+            font-size: 0.95rem;
+            opacity: 0.65;
+            letter-spacing: 0.06em;
+            margin-bottom: 1px;
+        }
+
+        .bioscan-stat .stat-val {
+            font-size: 1.18rem;
+            text-shadow: 0 0 5px #33ff33;
+            letter-spacing: 0.04em;
+        }
+
+        .bioscan-bio {
+            padding: 15px 16px;
+            font-size: 1.05rem;
+            line-height: 1.65;
+        }
+
         /* Footer */
         .footer {
             margin-top: auto;
@@ -391,7 +501,7 @@
             <nav class="folders-panel">
                 <div class="folders-title">FOLDERS</div>
                 <div class="folder-buttons">
-                    <button class="folder-btn active" data-tab="personal1">PERSONAL</button>
+                    <button class="folder-btn active" data-tab="personal1">BIOSCAN</button>
                     <button class="folder-btn" data-tab="shared">SHARED</button>
                     <button class="folder-btn" data-tab="utility">UTILITY</button>
                     <button class="folder-btn" data-tab="personal2">CHAT-VOX</button>
@@ -399,14 +509,47 @@
             </nav>
 
             <div class="content-panel">
-                <div class="content-title" id="content-title">PERSONAL</div>
+                <div class="content-title" id="content-title">BIOSCAN</div>
                 <div class="content-area">
-                <!-- Personal Tab 1 -->
+                <!-- BioScan Tab -->
                 <div id="personal1" class="tab-content active">
-                    <div class="content-block">This is a personal message</div>
-                    <div class="content-block">Welcome to your personal terminal. Select a folder to view its contents.</div>
-                    <div class="content-block">This is just going to be a really long-winded string literal that allows me to test such things as text wrapping, and scrolling.</div>
-                    <div class="content-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+                    <div class="bioscan-container">
+                        <div class="bioscan-header-bar">SUBJECT INFO:</div>
+                        <div class="bioscan-upper">
+                            <div class="bioscan-photo">
+                                <div class="scan-line"></div>
+                                <span class="scan-text">[ ID PHOTO ]</span>
+                                <span class="scan-text">FILE N/A</span>
+                            </div>
+                            <div class="bioscan-stats">
+                                <div class="bioscan-stat">
+                                    <span class="stat-key">SUBJECT:</span>
+                                    <span class="stat-val">A. CASSIDY</span>
+                                </div>
+                                <div class="bioscan-stat">
+                                    <span class="stat-key">ID CODE:</span>
+                                    <span class="stat-val">77-ACX-04</span>
+                                </div>
+                                <div class="bioscan-stat">
+                                    <span class="stat-key">CLEARANCE:</span>
+                                    <span class="stat-val">LEVEL 3</span>
+                                </div>
+                                <div class="bioscan-stat">
+                                    <span class="stat-key">STATUS:</span>
+                                    <span class="stat-val">ACTIVE</span>
+                                </div>
+                                <div class="bioscan-stat">
+                                    <span class="stat-key">UNIT:</span>
+                                    <span class="stat-val">SECTOR 7</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bioscan-bio">
+                            CASSIDY WAS RECRUITED INTO THE PROGRAM IN THE SPRING OF 2021 AFTER COMPLETING A SERIES OF APTITUDE EVALUATIONS. DEMONSTRATED EXCEPTIONAL PERFORMANCE IN SYSTEMS ANALYSIS AND PATTERN RECOGNITION DURING THE FIRST PHASE OF TRAINING.<br><br>
+                            ASSIGNED TO THE PERSONAL TERMINAL PROJECT IN 2024. CLEARED FOR LEVEL 3 ACCESS FOLLOWING A STANDARD BACKGROUND REVIEW. ALL PRIOR RECORDS CONSISTENT WITH DEPARTMENTAL REQUIREMENTS.<br><br>
+                            NEXT EVALUATION SCHEDULED FOR REVIEW CYCLE 9. NO OUTSTANDING FLAGS ON FILE. CONTINUED DEPLOYMENT APPROVED PENDING ROUTINE QUARTERLY CHECK-IN WITH OVERSIGHT DIVISION.
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Shared Tab -->
