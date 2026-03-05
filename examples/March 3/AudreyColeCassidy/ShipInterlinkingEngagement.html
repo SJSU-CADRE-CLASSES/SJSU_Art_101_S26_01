@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Interlinking Engagement - Personal Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container">
+        <header class="header">SHIP INTERLINKING ENGAGEMENT</header>
+
+        <div class="main-content subpage-content">
+            <div class="content-panel full-width">
+                <div class="content-title">INTERLINK STATUS</div>
+                <div class="content-area">
+                    <div class="content-block">
+                        INTERLINK PROTOCOL: READY<br><br>
+                        AWAITING TARGET VESSEL IDENTIFICATION.<br>
+                        DOCKING CLAWS: DISENGAGED<br>
+                        DATA BRIDGE: STANDBY<br><br>
+                        ENGAGE INTERLINK SEQUENCE WHEN READY.
+                    </div>
+                    <a href="MainHubInterface.html#utility" class="diagnostics-btn back-link">&larr; RETURN TO SHIP EXTERIOR INTERFACE</a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">UP, DOWN: select | q: return to main</footer>
+    </div>
+    <script>
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'q' || e.key === 'Q') {
+                e.preventDefault();
+                window.location.href = 'MainHubInterface.html#utility';
+            }
+        });
+    </script>
+</body>
+</html>

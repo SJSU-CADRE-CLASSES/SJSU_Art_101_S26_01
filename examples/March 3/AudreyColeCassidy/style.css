@@ -141,13 +141,13 @@ body {
 .folder-buttons {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 0 0 auto;
     gap: 8px;
-    min-height: 0;
 }
 
 .folder-btn {
-    flex: 1;
+    flex: 0 0 60px;
+    height: 60px;
     min-height: 60px;
     padding: 12px 15px;
     background: transparent;
@@ -216,33 +216,88 @@ body {
     text-align: left;
 }
 
-/* Ship Diagnostics - box with small buttons */
+/* Ship Diagnostics - box with buttons */
 .diagnostics-box {
     border: 2px solid #33ff33;
-    padding: 18px 20px;
+    padding: 20px 24px;
     box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 360px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 14px;
+    width: 100%;
 }
 
 .diagnostics-btn {
-    padding: 10px 14px;
+    flex: 1;
+    min-width: 0;
+    padding: 14px 18px;
+    text-align: center;
     background: transparent;
     border: 2px solid #33ff33;
     color: #33ff33;
     font-family: 'VT323', monospace;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    text-align: left;
     transition: all 0.2s ease;
     box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+    text-decoration: none;
+    display: inline-block;
 }
 
 .diagnostics-btn:hover {
     background: rgba(51, 255, 51, 0.1);
     box-shadow: 0 0 10px #33ff33;
+}
+
+/* Ship Diagnostics tab - scrollable ship image + buttons */
+.tab-content.diagnostics-tab {
+    display: none;
+}
+
+.tab-content.diagnostics-tab.active {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.diagnostics-tab-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.diagnostics-image-wrap {
+    border: 2px solid #33ff33;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    justify-content: center;
+}
+
+.diagnostics-ship-image {
+    width: 70%;
+    max-width: 70%;
+    height: auto;
+    display: block;
+    vertical-align: bottom;
+}
+
+.diagnostics-tab-layout .diagnostics-box {
+    flex-shrink: 0;
+}
+
+/* Subpage layout (no sidebar) */
+.main-content.subpage-content {
+    flex: 1;
+}
+
+.content-panel.full-width {
+    flex: 1;
+    min-width: 0;
+}
+
+.back-link {
+    margin-top: 8px;
 }
 
 .tab-content {
