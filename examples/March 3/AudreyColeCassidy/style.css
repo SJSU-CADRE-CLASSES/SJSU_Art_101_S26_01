@@ -216,6 +216,35 @@ body {
     text-align: left;
 }
 
+/* Ship Diagnostics - box with small buttons */
+.diagnostics-box {
+    border: 2px solid #33ff33;
+    padding: 18px 20px;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 360px;
+}
+
+.diagnostics-btn {
+    padding: 10px 14px;
+    background: transparent;
+    border: 2px solid #33ff33;
+    color: #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+}
+
+.diagnostics-btn:hover {
+    background: rgba(51, 255, 51, 0.1);
+    box-shadow: 0 0 10px #33ff33;
+}
+
 .tab-content {
     display: none;
 }
