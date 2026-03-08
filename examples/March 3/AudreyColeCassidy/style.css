@@ -5,18 +5,20 @@
 }
 
 html {
-    overflow-x: hidden;
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
     font-family: 'VT323', monospace;
     background: #0a0f0a;
     color: #33ff33;
-    min-height: 100vh;
-    min-width: 100vw;
-    overflow-x: hidden;
-    overflow-y: auto;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 /* CRT interlacing effect - full page overlay */
@@ -87,17 +89,19 @@ body {
 .terminal-container {
     position: relative;
     z-index: 1;
+    flex: 1;
+    min-height: 0;
     width: 100%;
     max-width: 100%;
     margin: 0;
     padding: 20px 30px;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 /* Header */
 .header {
+    flex-shrink: 0;
     text-align: center;
     padding: 15px 0;
     margin-bottom: 20px;
@@ -111,7 +115,7 @@ body {
     flex: 1;
     gap: 40px;
     min-height: 0;
-    flex-grow: 1;
+    overflow: hidden;
 }
 
 /* Left panel - Folders */
@@ -136,6 +140,16 @@ body {
 
 .content-title {
     min-height: 1.5em;
+}
+
+/* In chat folder only: hide side folders, use horizontal tabs like reference */
+.main-content.chat-tab-visible .folders-panel {
+    display: none;
+}
+
+/* Hide content title when chat tab active (chat has its own header) */
+.main-content.chat-tab-visible .content-title {
+    display: none;
 }
 
 .folder-buttons {
@@ -175,13 +189,161 @@ body {
     border-color: #66ff66;
 }
 
-/* Right panel - Content */
+/* Center panel - Content */
 .content-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
+    min-height: 0;
     align-self: stretch;
+    overflow: hidden;
+}
+
+/* Right panel - Crew Info (visible only on CHAT-VOX tab) */
+.profile-panel {
+    flex-shrink: 0;
+    width: 300px;
+    min-width: 260px;
+    display: none;
+    flex-direction: column;
+    align-self: stretch;
+    gap: 0;
+    min-height: 0;
+}
+
+.main-content.chat-tab-visible .profile-panel {
+    display: flex;
+}
+
+.profile-panel-header {
+    padding: 6px 14px;
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    border: 2px solid #33ff33;
+    border-bottom: none;
+    color: #33ff33;
+    text-shadow: 0 0 6px #33ff33;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+    align-self: flex-start;
+    margin-bottom: -2px;
+    z-index: 1;
+}
+
+.profile-panel-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border: 2px solid #33ff33;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+}
+
+.profile-card {
+    display: flex;
+    gap: 0;
+    padding: 16px;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.3);
+}
+
+.profile-photo {
+    flex-shrink: 0;
+    width: 100px;
+    height: 120px;
+    border: 1px solid #33ff33;
+    margin-right: 16px;
+    position: relative;
+    overflow: hidden;
+    background:
+        repeating-conic-gradient(rgba(51, 255, 51, 0.1) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
+        linear-gradient(170deg, rgba(51, 255, 51, 0.06) 0%, rgba(51, 255, 51, 0.14) 55%, rgba(51, 255, 51, 0.04) 100%),
+        #040b04;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: inset 0 0 22px rgba(51, 255, 51, 0.08), 0 0 6px rgba(51, 255, 51, 0.25);
+}
+
+.profile-photo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(51, 255, 51, 0.04) 2px,
+        rgba(51, 255, 51, 0.04) 4px
+    );
+    pointer-events: none;
+}
+
+.profile-photo .scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(51, 255, 51, 0.55);
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.8);
+    animation: scanMove 2.8s linear infinite;
+}
+
+.profile-photo .scan-text {
+    font-size: 0.75rem;
+    color: rgba(51, 255, 51, 0.65);
+    text-align: center;
+    letter-spacing: 0.1em;
+    z-index: 1;
+}
+
+.profile-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+.profile-stat {
+    font-size: 0.95rem;
+    color: #33ff33;
+    text-shadow: 0 0 4px #33ff33;
+}
+
+.profile-stat .stat-key {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    letter-spacing: 0.06em;
+    margin-bottom: 1px;
+}
+
+.profile-stat .stat-val {
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+}
+
+.profile-bio {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-align: justify;
+    color: #33ff33;
+}
+
+.profile-panel-footer {
+    padding: 8px 0 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: rgba(51, 255, 51, 0.85);
+    text-align: right;
 }
 
 .content-area {
@@ -310,7 +472,7 @@ body {
     gap: 15px;
 }
 
-/* Chat tab - BLTMR PLC style */
+/* Chat tab - reference image layout */
 .tab-content.chat-tab {
     display: none;
     flex-direction: column;
@@ -324,12 +486,46 @@ body {
     display: flex;
 }
 
-.chat-interface {
+.chat-ref-layout {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
     gap: 0;
+}
+
+.chat-ref-header {
+    flex-shrink: 0;
+    padding: 8px 0 6px;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.4);
+    margin-bottom: 10px;
+}
+
+.chat-ref-title {
+    display: block;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    color: #33ff33;
+    margin-bottom: 8px;
+}
+
+.chat-ref-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+}
+
+.chat-ref-tab {
+    font-size: 1rem;
+    color: rgba(51, 255, 51, 0.6);
+    letter-spacing: 0.06em;
+}
+
+.chat-ref-tab.active {
+    color: #0a0f0a;
+    background: #33ff33;
+    padding: 4px 10px;
+    border: 1px solid #33ff33;
 }
 
 .chat-messages {
@@ -338,7 +534,7 @@ body {
     padding: 15px 18px;
     border: 2px solid #33ff33;
     margin-bottom: 12px;
-    min-height: 200px;
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -354,6 +550,214 @@ body {
 .chat-message .sender {
     font-weight: bold;
     margin-right: 6px;
+}
+
+/* Reference: all chat text green */
+.chat-ref-layout .chat-message.message-remote,
+.chat-ref-layout .chat-message.message-remote .sender {
+    color: #33ff33;
+}
+
+/* Chat folder only: make the view look like a single file/window (reference image) */
+.main-content.chat-tab-visible {
+    position: relative;
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 10px rgba(51, 255, 51, 0.25), 0 6px 24px rgba(0, 0, 0, 0.6);
+    background: #000000;
+    padding-top: 32px;
+    min-height: 0;
+}
+
+.main-content.chat-tab-visible::before {
+    content: 'ELTMR PLC 2.4.0.0';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    border-bottom: 1px solid #33ff33;
+    background: #000000;
+    color: #33ff33;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    padding: 4px 12px 0;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 0 6px #33ff33;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.2);
+    z-index: 1;
+}
+
+.main-content.chat-tab-visible .content-panel {
+    border: none;
+    border-right: 1px solid rgba(51, 255, 51, 0.4);
+    box-shadow: none;
+    background: #000000;
+    padding: 12px;
+}
+
+.main-content.chat-tab-visible .profile-panel {
+    border: none;
+    border-left: 1px solid rgba(51, 255, 51, 0.4);
+    box-shadow: none;
+    background: #000000;
+    padding: 12px;
+}
+
+.main-content.chat-tab-visible .chat-ref-title {
+    display: none;
+}
+
+.main-content.chat-tab-visible .chat-ref-header {
+    border-bottom: 1px solid #33ff33;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.main-content.chat-tab-visible .chat-ref-tab {
+    border: 1px solid #33ff33;
+    padding: 3px 8px;
+    color: #33ff33;
+    font-size: 0.95rem;
+}
+
+.main-content.chat-tab-visible .chat-ref-tab:not(.active) {
+    background: transparent;
+    color: rgba(51, 255, 51, 0.9);
+}
+
+.main-content.chat-tab-visible .chat-ref-tab.active {
+    background: #33ff33;
+    color: #000000;
+}
+
+.main-content.chat-tab-visible .chat-message,
+.main-content.chat-tab-visible .chat-message .sender {
+    color: #33ff33;
+    text-shadow: 0 0 5px #33ff33;
+}
+
+.main-content.chat-tab-visible .chat-messages {
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+    background: #000000;
+}
+
+.main-content.chat-tab-visible .chat-input-wrap {
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+}
+
+.main-content.chat-tab-visible .chat-input,
+.main-content.chat-tab-visible .chat-input::placeholder {
+    color: #33ff33;
+}
+
+.main-content.chat-tab-visible .chat-ref-key {
+    border: 1px solid #33ff33;
+    color: #33ff33;
+    box-shadow: 0 0 4px rgba(51, 255, 51, 0.25);
+}
+
+.main-content.chat-tab-visible .chat-send-btn {
+    background: #33ff33;
+    color: #000000;
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.4);
+}
+
+.main-content.chat-tab-visible .chat-ref-low-signal {
+    color: #33ff33;
+    text-shadow: 0 0 4px #33ff33;
+    font-size: 0.85rem;
+}
+
+.main-content.chat-tab-visible .profile-panel-header {
+    border: 1px solid #33ff33;
+    border-bottom: none;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+    color: #33ff33;
+    text-shadow: 0 0 5px #33ff33;
+}
+
+.main-content.chat-tab-visible .profile-panel-frame {
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+}
+
+.main-content.chat-tab-visible .profile-card {
+    border-bottom: 1px solid rgba(51, 255, 51, 0.4);
+}
+
+.main-content.chat-tab-visible .profile-photo {
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.4), inset 0 0 15px rgba(51, 255, 51, 0.06);
+    background:
+        repeating-conic-gradient(rgba(51, 255, 51, 0.08) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
+        linear-gradient(170deg, rgba(51, 255, 51, 0.08) 0%, rgba(51, 255, 51, 0.12) 55%, rgba(51, 255, 51, 0.04) 100%),
+        #000000;
+}
+
+.main-content.chat-tab-visible .profile-stat .stat-key,
+.main-content.chat-tab-visible .profile-stat .stat-val,
+.main-content.chat-tab-visible .profile-bio {
+    color: #33ff33;
+    text-shadow: 0 0 4px #33ff33;
+}
+
+.main-content.chat-tab-visible .profile-panel-footer {
+    color: #33ff33;
+    text-shadow: 0 0 4px rgba(51, 255, 51, 0.6);
+}
+
+.chat-ref-input-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.chat-ref-keypad-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.chat-ref-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.chat-ref-key {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    background: transparent;
+    border: 2px solid #33ff33;
+    color: #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+}
+
+.chat-ref-key:hover {
+    background: rgba(51, 255, 51, 0.15);
+    box-shadow: 0 0 8px #33ff33;
+}
+
+.chat-ref-low-signal {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    color: rgba(51, 255, 51, 0.7);
+    margin-top: 6px;
 }
 
 .chat-input-row {
@@ -441,6 +845,7 @@ body {
 
 /* Footer */
 .footer {
+    flex-shrink: 0;
     margin-top: auto;
     padding: 15px 0 10px;
     text-align: center;

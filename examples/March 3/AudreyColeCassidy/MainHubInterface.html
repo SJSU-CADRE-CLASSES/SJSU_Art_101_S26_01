@@ -96,46 +96,76 @@
                     </div>
                 </div>
 
-                <!-- Chat-Vox Tab -->
+                <!-- Chat-Vox Tab - exact reference: ELTMR PLC, tabs, chat, input+numpad, LOW SIGNAL -->
                 <div id="personal2" class="tab-content chat-tab">
-                    <div class="chat-interface">
+                    <div class="chat-ref-layout">
+                        <div class="chat-ref-header">
+                            <span class="chat-ref-title">ELTMR PLC 2.4.0.0</span>
+                            <nav class="chat-ref-tabs">
+                                <span class="chat-ref-tab">PERSONAL</span>
+                                <span class="chat-ref-tab">WARP DIALATION</span>
+                                <span class="chat-ref-tab">SHIP EXTERIOR INTERFACE</span>
+                                <span class="chat-ref-tab active">CHAT</span>
+                            </nav>
+                        </div>
                         <div class="chat-messages" id="chat-messages">
-                            <div class="chat-message"><span class="sender">J. O'NEIL:</span> WHAT THE FUCK DID I DO??</div>
+                            <div class="chat-message message-remote"><span class="sender">J. O'NEIL:</span> WHAT THE FUCK DID I DO??</div>
                             <div class="chat-message"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
-                            <div class="chat-message"><span class="sender">J. O'NEIL:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
+                            <div class="chat-message message-remote"><span class="sender">J. O'NEIL:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
                             <div class="chat-message"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
                         </div>
-                        <div class="chat-input-row">
+                        <div class="chat-ref-input-row">
                             <div class="chat-input-wrap">
                                 <input type="text" class="chat-input" id="chat-input" placeholder="DON'T THINK TOO MUCH ABOUT IT" autocomplete="off">
                             </div>
-                            <div class="char-keyboard-wrap">
-                                <div class="char-keyboard" id="char-keyboard">
-                                    <button type="button" class="char-key" data-char="à">à</button>
-                                    <button type="button" class="char-key" data-char="ç">ç</button>
-                                    <button type="button" class="char-key" data-char="č">č</button>
-                                    <button type="button" class="char-key" data-char="ž">ž</button>
-                                    <button type="button" class="char-key" data-char="ť">ť</button>
-                                    <button type="button" class="char-key" data-char="ě">ě</button>
-                                    <button type="button" class="char-key" data-char="ñ">ñ</button>
-                                    <button type="button" class="char-key" data-char="ä">ä</button>
-                                    <button type="button" class="char-key" data-char="ř">ř</button>
-                                    <button type="button" class="char-key" data-char="ž">ž</button>
-                                    <button type="button" class="char-key" data-char="ů">ů</button>
-                                    <button type="button" class="char-key" data-char="é">é</button>
-                                    <button type="button" class="char-key" data-char="ĺ">ĺ</button>
-                                    <button type="button" class="char-key" data-char="ó">ó</button>
-                                    <button type="button" class="char-key" data-char="í">í</button>
-                                    <button type="button" class="char-key" data-char="§">§</button>
-                                    <button type="button" class="char-key" data-char="š">š</button>
+                            <div class="chat-ref-keypad-wrap">
+                                <div class="chat-ref-keypad" id="char-keyboard">
+                                    <button type="button" class="chat-ref-key" data-char="1">1</button>
+                                    <button type="button" class="chat-ref-key" data-char="2">2</button>
+                                    <button type="button" class="chat-ref-key" data-char="3">3</button>
+                                    <button type="button" class="chat-ref-key" data-char="4">4</button>
+                                    <button type="button" class="chat-ref-key" data-char="5">5</button>
+                                    <button type="button" class="chat-ref-key" data-char="6">6</button>
+                                    <button type="button" class="chat-ref-key" data-char="7">7</button>
+                                    <button type="button" class="chat-ref-key" data-char="8">8</button>
+                                    <button type="button" class="chat-ref-key" data-char="9">9</button>
+                                    <button type="button" class="chat-ref-key" data-char="*">*</button>
+                                    <button type="button" class="chat-ref-key" data-char="0">0</button>
+                                    <button type="button" class="chat-ref-key" data-char="#">#</button>
                                 </div>
                                 <button type="button" class="chat-send-btn" id="chat-send">SEND</button>
                             </div>
                         </div>
+                        <div class="chat-ref-low-signal">GOOD SIGNAL</div>
                     </div>
                 </div>
                 </div>
             </div>
+
+            <!-- Right panel - POLICEMAN INFO (reference exact, visible only in chat folder) -->
+            <aside class="profile-panel">
+                <div class="profile-panel-header">POLICEMAN INFO:</div>
+                <div class="profile-panel-frame">
+                    <div class="profile-card">
+                        <div class="profile-photo">
+                            <div class="scan-line"></div>
+                            <span class="scan-text">[ ID PHOTO ]</span>
+                            <span class="scan-text">FILE N/A</span>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-stat"><span class="stat-key">OFFICER:</span><span class="stat-val">A-34-0.1</span></div>
+                            <div class="profile-stat"><span class="stat-key">LEGAL NAME:</span><span class="stat-val">JIM O'NEIL</span></div>
+                            <div class="profile-stat"><span class="stat-key">SECURITY CODE:</span><span class="stat-val">48532606-CF</span></div>
+                            <div class="profile-stat"><span class="stat-key">PERSONAL WEAPON:</span><span class="stat-val">COLT M1911A1</span></div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        O'NEIL WAS BORN TO IRISH-AMERICAN PARENTS IN THE LAURAVILLE NEIGHBORHOOD OF BALTIMORE, MARYLAND. HIS FATHER WORKED AS A STEELWORKER AT BETHLEHEM STEEL UNTIL DE-INDUSTRIALIZATION LED TO HIS FIRING IN 1973. O'NEIL ATTENDED LOYOLA UNIVERSITY MARYLAND FOR A YEAR.<br><br>
+                        HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 1984. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2000, O'NEIL HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
+                    </div>
+                </div>
+                <div class="profile-panel-footer">PROPERTY OF BALTIMORE POLICE DEPARTMENT</div>
+            </aside>
         </div>
 
         <footer class="footer">UP, DOWN: select folder | LEFT, RIGHT: scroll | q: return to dashboard</footer>
@@ -146,6 +176,12 @@
 
         const buttons = Array.from(document.querySelectorAll('.folder-btn'));
         let selectedIndex = 0;
+        const mainContent = document.querySelector('.main-content');
+
+        function updateCrewInfoVisibility() {
+            const chatTabActive = document.getElementById('personal2').classList.contains('active');
+            mainContent.classList.toggle('chat-tab-visible', chatTabActive);
+        }
 
         // Open tab from URL hash on load (e.g. MainHubInterface.html#utility)
         const hash = window.location.hash.slice(1);
@@ -161,6 +197,7 @@
                 selectedIndex = idx;
             }
         }
+        updateCrewInfoVisibility();
 
         document.querySelectorAll('.folder-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -175,6 +212,7 @@
 
                 // Update content title to match selected tab
                 contentTitleEl.textContent = btn.textContent.trim();
+                updateCrewInfoVisibility();
             });
         });
 
@@ -214,7 +252,7 @@
         const chatMessages = document.getElementById('chat-messages');
         const chatSend = document.getElementById('chat-send');
 
-        document.querySelectorAll('.char-key').forEach(btn => {
+        document.querySelectorAll('.chat-ref-key').forEach(btn => {
             btn.addEventListener('click', () => {
                 const char = btn.getAttribute('data-char');
                 const start = chatInput.selectionStart;
