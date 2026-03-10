@@ -8,8 +8,8 @@
     <link href="style.css" rel="stylesheet">
     <style>
         /* Chat page overrides - BLTMR PLC layout (mirror reference image) */
-        body.chat-page-bltmr { background: #000; color: #33ff33; }
-        body.chat-page-bltmr .terminal-container { padding: 12px 16px; max-width: none; }
+        body.chat-page-bltmr { background: #000; color: #33ff33; overflow: hidden; }
+        body.chat-page-bltmr .terminal-container { padding: 20px 26px; max-width: none; height: 100vh; overflow: hidden; }
         body.chat-page-bltmr .header { display: none; }
         body.chat-page-bltmr .footer { display: none; }
         body.chat-page-bltmr .main-content { flex-direction: column; gap: 0; }
@@ -32,7 +32,7 @@
             padding: 6px 14px;
             font-size: 1rem;
             color: #33ff33;
-            clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px);
+            clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.4);
         }
         .bltmr-tabs {
@@ -40,25 +40,25 @@
             align-items: flex-end;
             gap: 0;
             flex-wrap: wrap;
+            position: relative;
         }
         .bltmr-tab {
-            border: 2px solid #33ff33;
-            margin-left: -2px;
+            border: none;
+            margin-left: 2px;
             padding: 8px 14px;
             font-size: 1.1rem;
-            color: #33ff33;
-            background: transparent;
+            color: #000;
+            background: rgba(51, 255, 51, 0.35);
             text-decoration: none;
             font-family: 'VT323', monospace;
-            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+            clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%, 0 14px);
             box-shadow: none;
         }
         .bltmr-tab:first-child { margin-left: 0; }
-        .bltmr-tab:hover { background: rgba(51, 255, 51, 0.1); }
+        .bltmr-tab:hover { background: rgba(51, 255, 51, 0.5); }
         .bltmr-tab.active {
             background: #33ff33;
             color: #000;
-            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
         }
         .bltmr-panel-title {
             border: 2px solid #33ff33;
@@ -66,7 +66,7 @@
             font-size: 1rem;
             color: #33ff33;
             text-align: center;
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.4);
         }
 
@@ -96,18 +96,37 @@
             flex-direction: column;
             gap: 10px;
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
         }
         .bltmr-chat-messages .msg-other { color: #fff; }
         .bltmr-chat-messages .msg-you { color: #28cc28; }
         .bltmr-chat-messages .sender { margin-right: 6px; }
+        /* Large outer border around input + keyboard (chamfered) */
+        .bltmr-input-keyboard-row {
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            align-items: stretch;
+            margin-top: 8px;
+            width: 100%;
+            border: 2px solid #33ff33;
+            padding: 12px;
+            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+        }
+        /* Chat input: sharp corners, no chamfer; scrollable */
         .bltmr-chat-input-wrap {
+            flex: 1;
+            min-width: 0;
             border: 2px solid #33ff33;
             padding: 10px 12px;
-            margin-top: 8px;
-            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+            box-shadow: 0 0 4px rgba(51, 255, 51, 0.25);
+            margin-right: 12px;
         }
-        .bltmr-chat-input-wrap input {
+        .bltmr-chat-input-wrap .chat-input {
             width: 100%;
+            height: 100%;
+            min-height: 52px;
             background: transparent;
             border: none;
             color: #33ff33;
@@ -115,8 +134,13 @@
             font-size: 1.2rem;
             outline: none;
             caret-color: #33ff33;
+            resize: none;
+            overflow-y: auto;
         }
-        .bltmr-chat-input-wrap input::placeholder { color: rgba(51, 255, 51, 0.55); }
+        .bltmr-chat-input-wrap .chat-input::placeholder { color: rgba(51, 255, 51, 0.55); }
+        .bltmr-chat-input-wrap .chat-input::-webkit-scrollbar { width: 8px; }
+        .bltmr-chat-input-wrap .chat-input::-webkit-scrollbar-track { background: #0a0f0a; }
+        .bltmr-chat-input-wrap .chat-input::-webkit-scrollbar-thumb { background: #33ff33; }
 
         /* Right: Policeman info column */
         .bltmr-info-col {
@@ -126,6 +150,7 @@
             flex-direction: column;
             gap: 12px;
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
         }
         .bltmr-officer-top {
             display: flex;
@@ -144,6 +169,7 @@
             font-size: 0.75rem;
             color: rgba(51, 255, 51, 0.6);
             overflow: hidden;
+            clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
         }
         .bltmr-officer-photo img {
             width: 100%;
@@ -165,26 +191,29 @@
             padding-top: 10px;
         }
 
-        /* Character keyboard + SEND (one bordered box, grid then SEND below) */
+        /* Keyboard + SEND block */
         .bltmr-keyboard-row {
             display: flex;
             flex-direction: column;
             gap: 8px;
             border: 2px solid #33ff33;
             padding: 10px;
-            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
-            align-self: flex-start;
+            box-shadow: 0 0 4px rgba(51, 255, 51, 0.25);
+            flex-shrink: 0;
         }
         .bltmr-char-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 4px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 6px;
+            aspect-ratio: 1;
+            max-width: 180px;
         }
         .bltmr-char-key {
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
-            min-height: 32px;
+            width: 100%;
+            aspect-ratio: 1;
+            min-width: 0;
+            min-height: 0;
             background: transparent;
             border: 1px solid #33ff33;
             color: #33ff33;
@@ -223,7 +252,7 @@
             padding: 6px 12px;
             font-size: 0.95rem;
             color: #33ff33;
-            clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
             box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
         }
         .bltmr-copyright {
@@ -231,7 +260,7 @@
             padding: 6px 12px;
             font-size: 0.95rem;
             color: #33ff33;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
             box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
         }
     </style>
@@ -269,8 +298,31 @@
                                 <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
                                 <div class="chat-message msg-you"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
                             </div>
-                            <div class="bltmr-chat-input-wrap">
-                                <input type="text" class="chat-input" id="chat-input" placeholder="DON'T THINK TOO MUCH ABOUT IT" autocomplete="off">
+                            <div class="bltmr-input-keyboard-row">
+                                <div class="bltmr-chat-input-wrap">
+                                    <textarea class="chat-input" id="chat-input" placeholder="DON'T THINK TOO MUCH ABOUT IT" autocomplete="off" rows="2"></textarea>
+                                </div>
+                                <div class="bltmr-keyboard-row">
+                                    <div class="bltmr-char-grid" id="char-keyboard">
+                                        <button type="button" class="bltmr-char-key char-key" data-char="à">à</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ç">ç</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="č">č</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ž">ž</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ě">ě</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ñ">ñ</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ä">ä</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ř">ř</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ž">ž</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ů">ů</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="é">é</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ĺ">ĺ</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="ó">ó</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="í">í</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="§">§</button>
+                                        <button type="button" class="bltmr-char-key char-key" data-char="š">š</button>
+                                    </div>
+                                    <button type="button" class="bltmr-send" id="chat-send">SEND</button>
+                                </div>
                             </div>
                         </div>
                         <aside class="bltmr-info-col">
@@ -293,28 +345,6 @@
                                 HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 1994. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2000, O'NEIL HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
                             </div>
                         </aside>
-                    </div>
-                    <div class="bltmr-keyboard-row">
-                        <div class="bltmr-char-grid" id="char-keyboard">
-                            <button type="button" class="bltmr-char-key char-key" data-char="à">à</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ç">ç</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="č">č</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ž">ž</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ť">ť</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ě">ě</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ñ">ñ</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ä">ä</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ř">ř</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ž">ž</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ů">ů</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="é">é</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ĺ">ĺ</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="ó">ó</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="í">í</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="§">§</button>
-                            <button type="button" class="bltmr-char-key char-key" data-char="š">š</button>
-                        </div>
-                        <button type="button" class="bltmr-send" id="chat-send">SEND</button>
                     </div>
                 </div>
             </div>
@@ -385,6 +415,7 @@
                 sendMessage();
             }
         });
+
     </script>
 </body>
 </html>

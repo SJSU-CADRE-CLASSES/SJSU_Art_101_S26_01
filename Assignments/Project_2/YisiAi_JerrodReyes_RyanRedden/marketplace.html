@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Marketplace</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="screen">
+
+<div class="header">
+
+<div>SHADOW MARKET LISTINGS</div>
+
+<div class="header-right">
+
+<div class="balance-box">
+BALANCE: <span id="balance-display">0 CR</span>
+</div>
+
+<a href="index.html" class="retro-btn">Home</a>
+<a href="wallet.html" class="retro-btn">Wallet</a>
+
+</div>
+
+</div>
+
+<div class="layout">
+
+<div class="panel">
+
+
+<h3>Categories</h3>
+
+<p class="cat" data-base="12">Weapons (12)</p>
+<p class="cat" data-base="7">Substances (7)</p>
+<p class="cat" data-base="6">Fake IDs (6)</p>
+<p class="cat" data-base="14">Stolen Data (14)</p>
+<p class="cat" data-base="5">Black Market Medicine (5)</p>
+<p class="cat" data-base="9">Hacking Tools (9)</p>
+<p class="cat" data-base="3">Corporate Secrets (3)</p>
+<p class="cat" data-base="11">Smuggled Tech (11)</p>
+<p class="cat" data-base="2">Pre-Collapse Artifacts (2)</p>
+<p class="cat" data-base="1">Unclassified Items (1)</p>
+
+</div>
+
+
+<div class="panel">
+
+<div id="market-feed">> network activity detected</div>
+
+<h3>Listings</h3>
+
+
+<div class="listing">
+
+<img src="images/Product1.png">
+
+<h3>BLACKSITE CARBINE — Full Kit</h3>
+
+<p class="price">1,200,000 CR</p>
+
+<p>Seller: ghost_logistics ⭐⭐⭐⭐⭐</p>
+
+<button class="retro-btn" onclick="location.href='product1.html'">
+View Listing
+</button>
+
+</div>
+
+
+<div class="listing">
+
+<img src="images/Product2.png">
+
+<h3>Homegrown Problem Solver</h3>
+
+<p class="price">450,000 CR</p>
+
+<p class="warning">Seller: tinkr_tony_real ⭐⭐</p>
+
+<button class="retro-btn" onclick="location.href='product2.html'">
+View Listing
+</button>
+
+</div>
+
+
+<div class="listing">
+
+<img src="images/Product3.png">
+
+<h3>The Addictive Little Flour</h3>
+
+<p class="price">
+
+150,000 CR / ounce<br>
+1,500,000 CR / gram<br>
+50,000,000 CR / kilo
+
+</p>
+
+<p>Seller: uncle_zero ⭐⭐⭐⭐⭐</p>
+
+<button class="retro-btn" onclick="location.href='product3.html'">
+View Listing
+</button>
+
+</div>
+
+
+<!-- Product 4 -->
+
+<div class="listing">
+
+<img src="images/Product4.png">
+
+<h3>LITTLE GUY — Rare Pre-Collapse Artifact</h3>
+
+<p class="price">8,000 CR</p>
+
+<p class="warning">Seller: bunker_clearance ⭐⭐⭐</p>
+
+<button class="retro-btn" onclick="location.href='product4.html'">
+View Listing
+</button>
+
+</div>
+
+<div class="listing">
+
+<img src="images/Product5.png">
+
+<h3>NEURAL GHOST V.4</h3>
+
+<p>Synaesthetic neural interface device recovered from San Jose research sector.</p>
+
+<p class="price">1,272,000 CR</p>
+
+<p class="seller">Seller: neuro_haul ⭐⭐⭐⭐</p>
+
+<button class="retro-btn" onclick="location.href='product5.html'">
+View Listing
+</button>
+
+</div>
+
+
+</div>
+<div class="panel">
+
+<h3>Top Sellers</h3>
+
+<p>ghost_logistics ⭐ 4.9</p>
+<div class="rep-bar"><div style="width:90%"></div></div>
+
+<p>uncle_zero ⭐ 4.8</p>
+<div class="rep-bar"><div style="width:85%"></div></div>
+
+<p>DataGhost ⭐ 4.7</p>
+<div class="rep-bar"><div style="width:80%"></div></div>
+
+<h4>Nearby Buyers Network</h4>
+
+<p style="font-size:12px;color:#00ffd5;">
+Live signals from nearby anonymous buyers.
+</p>
+
+<canvas id="network"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
