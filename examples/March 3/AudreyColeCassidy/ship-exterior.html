@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Terminal - Ship Exterior Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- CRT interlacing overlay - covers entire viewport -->
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container">
+        <header class="header">PERSONAL TERMINAL</header>
+
+        <div class="main-content">
+            <nav class="folders-panel">
+                <div class="folders-title">FOLDERS</div>
+                <div class="folder-buttons">
+                    <a href="personal.html" class="folder-btn">PERSONAL</a>
+                    <a href="warp-dilation.html" class="folder-btn">WARP DILATION</a>
+                    <a href="ship-exterior.html" class="folder-btn active">SHIP EXTERIOR INTERFACE</a>
+                    <a href="chat.html" class="folder-btn">CHAT-VOX</a>
+                </div>
+            </nav>
+
+            <div class="content-panel">
+                <div class="content-title" id="content-title">SHIP EXTERIOR INTERFACE</div>
+                <div class="content-area">
+                    <div class="tab-content diagnostics-tab active">
+                        <div class="diagnostics-tab-layout">
+                            <div class="diagnostics-image-wrap">
+                                <img src="ship.png" alt="Ship schematic" class="diagnostics-ship-image">
+                            </div>
+                            <div class="diagnostics-box">
+                                <a href="RunShipDiagnostics.html" class="diagnostics-btn">RUN SHIP DIAGNOSTICS</a>
+                                <a href="PreviousShipMaintanenceRecords.html" class="diagnostics-btn">PREVIOUS SHIP MAINTANENCE RECORDS</a>
+                                <a href="ShipInterlinkingEngagement.html" class="diagnostics-btn">SHIP INTERLINKING ENGAGEMENT</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">UP, DOWN: select folder | LEFT, RIGHT: scroll | q: return to dashboard</footer>
+    </div>
+
+    <script>
+        const contentArea = document.querySelector('.content-area');
+        const pages = ['personal.html', 'warp-dilation.html', 'ship-exterior.html', 'chat.html'];
+        const currentIndex = 2;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'q' || e.key === 'Q') {
+                window.location.href = 'log-in.html';
+                return;
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                contentArea.scrollBy({ top: -80, behavior: 'smooth' });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                contentArea.scrollBy({ top: 80, behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                window.location.href = pages[(currentIndex - 1 + pages.length) % pages.length];
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                window.location.href = pages[(currentIndex + 1) % pages.length];
+            }
+        });
+    </script>
+</body>
+</html>
