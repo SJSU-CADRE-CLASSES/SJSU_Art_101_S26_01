@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <title>Marketplace</title>
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="screen">
+
+<!-- HEADER -->
 
 <div class="header">
 
@@ -19,17 +24,31 @@
 BALANCE: <span id="balance-display">0 CR</span>
 </div>
 
+<div class="balance-box">
+ID: <span id="trader-id">NODE-0000</span>
+</div>
+
+<div class="balance-box">
+SECURITY: <span style="color:#00ff88">STABLE</span>
+</div>
+
 <a href="index.html" class="retro-btn">Home</a>
 <a href="wallet.html" class="retro-btn">Wallet</a>
+<a href="scanner.html" class="retro-btn">Scanner</a>
+<a href="neural_stream.html" class="retro-btn">Neural Link</a>
 
 </div>
 
 </div>
+
 
 <div class="layout">
 
-<div class="panel">
+<!-- =========================
+LEFT PANEL (Categories)
+========================= -->
 
+<div class="panel">
 
 <h3>Categories</h3>
 
@@ -47,12 +66,18 @@ BALANCE: <span id="balance-display">0 CR</span>
 </div>
 
 
+<!-- =========================
+CENTER PANEL (Listings)
+========================= -->
+
 <div class="panel">
 
 <div id="market-feed">> network activity detected</div>
 
 <h3>Listings</h3>
 
+
+<!-- Product 1 -->
 
 <div class="listing">
 
@@ -71,6 +96,8 @@ View Listing
 </div>
 
 
+<!-- Product 2 -->
+
 <div class="listing">
 
 <img src="images/Product2.png">
@@ -87,6 +114,8 @@ View Listing
 
 </div>
 
+
+<!-- Product 3 -->
 
 <div class="listing">
 
@@ -129,6 +158,9 @@ View Listing
 
 </div>
 
+
+<!-- Product 5 -->
+
 <div class="listing">
 
 <img src="images/Product5.png">
@@ -139,7 +171,7 @@ View Listing
 
 <p class="price">1,272,000 CR</p>
 
-<p class="seller">Seller: neuro_haul ⭐⭐⭐⭐</p>
+<p>Seller: neuro_haul ⭐⭐⭐⭐</p>
 
 <button class="retro-btn" onclick="location.href='product5.html'">
 View Listing
@@ -147,8 +179,13 @@ View Listing
 
 </div>
 
-
 </div>
+
+
+<!-- =========================
+RIGHT PANEL (Top Sellers)
+========================= -->
+
 <div class="panel">
 
 <h3>Top Sellers</h3>
@@ -162,6 +199,7 @@ View Listing
 <p>DataGhost ⭐ 4.7</p>
 <div class="rep-bar"><div style="width:80%"></div></div>
 
+
 <h4>Nearby Buyers Network</h4>
 
 <p style="font-size:12px;color:#00ffd5;">
@@ -172,8 +210,8 @@ Live signals from nearby anonymous buyers.
 
 </div>
 
-</div>
 
+</div>
 </div>
 
 <script src="script.js"></script>
