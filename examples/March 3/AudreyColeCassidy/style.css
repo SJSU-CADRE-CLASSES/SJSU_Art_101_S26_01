@@ -286,6 +286,152 @@ body {
     flex-shrink: 0;
 }
 
+/* Run Ship Diagnostics - loading / scan screen */
+.diagnostics-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0a0f0a;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+    overflow: hidden;
+}
+
+.diagnostics-loading-overlay.diagnostics-loading-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Animated scanning line moving across screen */
+.diagnostics-loading-scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(51, 255, 51, 0.6), transparent);
+    box-shadow: 0 0 20px #33ff33;
+    animation: scan-sweep 2s linear infinite;
+}
+
+@keyframes scan-sweep {
+    0% { left: -10px; }
+    100% { left: 100%; }
+}
+
+.diagnostics-loading-inner {
+    position: relative;
+    text-align: center;
+    color: #33ff33;
+    font-family: 'VT323', monospace;
+    padding: 40px;
+    border: 2px solid #33ff33;
+    box-shadow: 0 0 20px rgba(51, 255, 51, 0.4);
+}
+
+.diagnostics-loading-title {
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+    text-shadow: 0 0 10px #33ff33;
+    letter-spacing: 0.1em;
+}
+
+/* Subtle flicker on title */
+.scan-flicker {
+    animation: title-flicker 0.15s ease-in-out infinite;
+}
+
+@keyframes title-flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.92; }
+}
+
+/* Random data ticker */
+.diagnostics-loading-ticker {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    text-align: left;
+    min-height: 5.2em;
+}
+
+.ticker-line {
+    opacity: 0.85;
+    animation: ticker-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.ticker-line:nth-child(1) { animation-delay: 0s; }
+.ticker-line:nth-child(2) { animation-delay: 0.1s; }
+.ticker-line:nth-child(3) { animation-delay: 0.2s; }
+.ticker-line:nth-child(4) { animation-delay: 0.3s; }
+.ticker-line:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes ticker-pulse {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.diagnostics-loading-status {
+    font-size: 1.2rem;
+    line-height: 2;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.diagnostics-loading-status .scan-line-text {
+    opacity: 0.9;
+}
+
+/* Scanning line glow pulse */
+.scanning {
+    animation: scan-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes scan-glow {
+    0% { text-shadow: 0 0 2px #33ff33; }
+    100% { text-shadow: 0 0 8px #33ff33; }
+}
+
+/* Progress bar */
+.diagnostics-loading-progress {
+    width: 100%;
+    height: 8px;
+    border: 2px solid #33ff33;
+    margin-bottom: 16px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #33ff33;
+    box-shadow: 0 0 10px #33ff33;
+    transition: width 0.5s ease;
+}
+
+.diagnostics-loading-countdown {
+    font-size: 1.5rem;
+    text-shadow: 0 0 8px #33ff33;
+}
+
+/* Blinking cursor */
+.blink-cursor {
+    animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.diagnostics-content-hidden {
+    visibility: hidden;
+}
+
 /* Subpage layout (no sidebar) */
 .main-content.subpage-content {
     flex: 1;
