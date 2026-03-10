@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Wallet</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="screen">
+
+<div class="header">
+
+<div>ANONYMOUS WALLET</div>
+
+<div>
+<a href="index.html" class="retro-btn">Home</a>
+<a href="marketplace.html" class="retro-btn">Marketplace</a>
+</div>
+
+</div>
+
+
+<h3>Wallet ID</h3>
+
+<p id="wallet-id"></p>
+
+
+<h2>Balance</h2>
+
+<h1 id="balance">0 CR</h1>
+
+
+<div class="panel">
+
+<h3>Transfer Credits</h3>
+
+<p>Send credits to another anonymous account</p>
+
+<input id="receiver" placeholder="Recipient ID">
+
+<br><br>
+
+<input id="amount" placeholder="Amount (CR)" type="number">
+
+<br><br>
+
+<button class="retro-btn" onclick="sendCredits()">Send</button>
+
+</div>
+
+
+<div class="panel">
+
+<h3>Test Deposit</h3>
+
+<p>Add credits for testing</p>
+
+<button class="retro-btn" onclick="deposit()">+ 100,000 CR</button>
+
+</div>
+
+
+<h3>Recent Transactions</h3>
+
+<div id="transactions"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
