@@ -3,38 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navigation Console</title>
+  <title>Stone Library</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="console-frame">
-    <div class="sonar-overlay" id="sonar-overlay" aria-hidden="true">
-      <canvas id="sonar-canvas"></canvas>
+  <main class="landing" id="landing">
+    <h1 class="landing-title">STONE LIBRARY</h1>
+    <p class="landing-subtitle">leave a message</p>
+    <div class="landing-buttons">
+      <button type="button" id="enter-btn">enter</button>
+      <button type="button">about</button>
+      <button type="button">creators</button>
     </div>
-    <div class="glove-wrapper">
-      <div class="glove-container glove-left">
-        <img src="gloves-silhouette-free-svg-file-SvgHeart.Com.png" alt="" class="glove-outline" />
-        <svg class="finger-map" viewBox="0 0 50 100" preserveAspectRatio="xMinYMax meet">
-          <polygon class="finger" data-dir="w" points="2,58 8,50 14,54 12,66 6,70 0,64" />
-          <polygon class="finger" data-dir="nw" points="12,50 18,30 24,18 22,32 18,48 12,52" />
-          <polygon class="finger" data-dir="n" points="22,38 26,12 32,8 30,24 26,40 22,44" />
-          <polygon class="finger" data-dir="ne" points="30,46 36,30 44,24 42,40 36,52 30,54" />
-          <polygon class="finger" data-dir="e" points="38,54 42,38 48,32 50,42 48,56 40,60" />
-        </svg>
-      </div>
-      <div class="glove-container glove-right">
-        <img src="gloves-silhouette-free-svg-file-SvgHeart.Com.png" alt="" class="glove-outline" />
-        <svg class="finger-map" viewBox="50 0 50 100" preserveAspectRatio="xMaxYMax meet">
-          <polygon class="finger" data-dir="s" points="50,54 54,38 60,32 62,42 58,52 50,56" />
-          <polygon class="finger" data-dir="se" points="58,46 62,30 70,12 72,24 68,40 60,54" />
-          <polygon class="finger" data-dir="center" points="68,46 74,30 82,24 80,40 74,52 68,54" />
-          <polygon class="finger" data-dir="sw" points="84,58 90,50 98,54 96,66 90,70 84,64" />
-        </svg>
-      </div>
-    </div>
-  </div>
+  </main>
 
-  <script src="audio.js"></script>
-  <script src="console.js"></script>
+  <script src="landing.js"></script>
 </body>
 </html>

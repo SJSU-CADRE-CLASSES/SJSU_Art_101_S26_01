@@ -79,12 +79,170 @@ class ThomasAttractor {
             this.y = euler.y + (rk4.y - euler.y) * blend;
             this.z = euler.z + (rk4.z - euler.z) * blend;
         }
+
     }
 
     getState() {
         return { x: this.x, y: this.y, z: this.z };
     }
 }
+
+// Audio System
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const masterGainNode = audioCtx.createGain();
+masterGainNode.gain.value = 0.5;
+
+let fmInterpolate = true;  // true = smooth glide, false = hard step
+let synthNode = null;
+let carrierHz = 220;
+let modDepthHz = 1000;
+let interpSec = 0.08;
+let audioXEnabled = false;
+let audioYEnabled = false;
+let audioZEnabled = false;
+let audioPmXEnabled = false;
+let audioPmYEnabled = false;
+let audioPmZEnabled = false;
+let reverbEnabled = false;
+let reverbMix = 0;
+
+// OTT routing nodes — populated once the worklet loads
+let ottNode       = null;
+let ottWetGain    = null;  // carries the OTT-processed signal
+let ottBypassGain = null;  // carries the direct (bypassed) signal
+let ottReady      = false;
+
+// Reverb routing nodes
+const postOutputGain = audioCtx.createGain();
+const reverbConvolver = audioCtx.createConvolver();
+const reverbDryGain = audioCtx.createGain();
+const reverbWetGain = audioCtx.createGain();
+
+function createImpulseResponse(ctx, durationSec = 2.2, decay = 2.5) {
+    const length = Math.max(1, Math.floor(ctx.sampleRate * durationSec));
+    const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+        const data = impulse.getChannelData(ch);
+        for (let i = 0; i < length; i++) {
+            const t = 1 - (i / length);
+            data[i] = ((Math.random() * 2) - 1) * Math.pow(t, decay);
+        }
+    }
+    return impulse;
+}
+
+reverbConvolver.buffer = createImpulseResponse(audioCtx);
+postOutputGain.connect(reverbDryGain);
+postOutputGain.connect(reverbConvolver);
+reverbConvolver.connect(reverbWetGain);
+reverbDryGain.connect(audioCtx.destination);
+reverbWetGain.connect(audioCtx.destination);
+
+function updateReverbMix() {
+    const t = audioCtx.currentTime;
+    if (!reverbEnabled) {
+        reverbDryGain.gain.setTargetAtTime(1, t, 0.02);
+        reverbWetGain.gain.setTargetAtTime(0, t, 0.02);
+        return;
+    }
+    const wet = Math.max(0, Math.min(1, reverbMix));
+    const dry = 1 - wet;
+    reverbDryGain.gain.setTargetAtTime(dry, t, 0.02);
+    reverbWetGain.gain.setTargetAtTime(wet, t, 0.02);
+}
+
+// Before the worklet loads, route master directly to destination so audio works immediately
+masterGainNode.connect(postOutputGain);
+updateReverbMix();
+
+function resumeAudioCtx() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function setSynthParam(name, value, timeConstant = 0.01) {
+    if (!synthNode) return;
+    const p = synthNode.parameters.get(name);
+    if (!p) return;
+    p.setTargetAtTime(value, audioCtx.currentTime, timeConstant);
+}
+
+function setSynthModeFromUi() {
+    // 1 = smooth / Max-like, 0 = step/crushed
+    setSynthParam('smoothMode', fmInterpolate ? 1 : 0, 0.002);
+}
+
+function setVoiceEnableParams() {
+    setSynthParam('muteX', audioXEnabled ? 1 : 0, 0.01);
+    setSynthParam('muteY', audioYEnabled ? 1 : 0, 0.01);
+    setSynthParam('muteZ', audioZEnabled ? 1 : 0, 0.01);
+    setSynthParam('mutePMX', audioPmXEnabled ? 1 : 0, 0.01);
+    setSynthParam('mutePMY', audioPmYEnabled ? 1 : 0, 0.01);
+    setSynthParam('mutePMZ', audioPmZEnabled ? 1 : 0, 0.01);
+}
+
+async function setupChaosSynth() {
+    try {
+        await audioCtx.audioWorklet.addModule('max-chaos-synth-processor.js');
+        synthNode = new AudioWorkletNode(audioCtx, 'max-chaos-synth-processor', {
+            outputChannelCount: [2]
+        });
+        synthNode.connect(masterGainNode);
+
+        setSynthParam('carrierHz', carrierHz, 0.01);
+        setSynthParam('depthHz', modDepthHz, 0.01);
+        setSynthParam('interpSec', interpSec, 0.01);
+        setSynthParam('b', attractor.b, 0.01);
+        setSynthParam('dt', attractor.dt, 0.01);
+        setSynthParam('gainX', gainX, 0.01);
+        setSynthParam('gainY', gainY, 0.01);
+        setSynthParam('gainZ', gainZ, 0.01);
+        setSynthModeFromUi();
+        setVoiceEnableParams();
+    } catch (err) {
+        console.warn('Chaos synth worklet failed to load.', err);
+    }
+}
+
+async function setupOTT() {
+    try {
+        await audioCtx.audioWorklet.addModule('ott-processor.js');
+
+        ottNode       = new AudioWorkletNode(audioCtx, 'ott-processor');
+        ottWetGain    = audioCtx.createGain();
+        ottBypassGain = audioCtx.createGain();
+
+        // Default: bypassed (OTT wet = 0, bypass = 1)
+        ottWetGain.gain.value    = 0;
+        ottBypassGain.gain.value = 1;
+
+        // Disconnect the temporary direct path set up above
+        masterGainNode.disconnect(postOutputGain);
+
+        // Wire both parallel paths to the destination
+        masterGainNode.connect(ottNode);
+        ottNode.connect(ottWetGain);
+        ottWetGain.connect(postOutputGain);
+
+        masterGainNode.connect(ottBypassGain);
+        ottBypassGain.connect(postOutputGain);
+
+        ottReady = true;
+
+        // If the bypass toggle already exists and is unchecked, activate OTT now
+        const toggle = document.getElementById('toggle-ott-bypass');
+        if (toggle && !toggle.checked) {
+            ottWetGain.gain.setTargetAtTime(1, audioCtx.currentTime, 0.02);
+            ottBypassGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.02);
+        }
+    } catch (err) {
+        console.warn('OTT worklet failed to load — continuing without it.', err);
+    }
+}
+
+// Kick off async load; does not block the rest of the synchronous setup
+setupOTT();
 
 // Initialize Engine
 const attractor = new ThomasAttractor();
@@ -121,10 +279,8 @@ let envPhaseStartValue = 0;
 let envKeyHeld = false;
 
 // The Object (Icosahedron)
-const geometry = new THREE.IcosahedronGeometry(0.1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00aaff, wireframe: true });
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+// Hidden by request: keep a null placeholder so existing update logic stays simple.
+const mesh = null;
 
 // The Trail (BufferGeometry Line)
 const maxPoints = 2000;
@@ -149,7 +305,9 @@ let pointJitter = 0;
 let gainX = 1;
 let gainY = 1;
 let gainZ = 1;
+let displayMultiplier = 1;
 let uiScale = 0.5;
+setupChaosSynth();
 
 const trailMaterial = new THREE.LineBasicMaterial({
     color: 0x00aaff,
@@ -161,9 +319,7 @@ const trailMaterial = new THREE.LineBasicMaterial({
 const trail = new THREE.Line(trailGeometry, trailMaterial);
 scene.add(trail);
 
-// The Reference (Grid Helper)
-const gridHelper = new THREE.GridHelper(10, 10);
-scene.add(gridHelper);
+// The Reference (Grid Helper) hidden by request.
 
 // Handle Window Resize
 window.addEventListener('resize', () => {
@@ -184,8 +340,12 @@ function updateCameraOrbitFromRamp(ramp, amplitude = 20) {
 // DOM Elements
 const sliderB = document.getElementById('slider-b');
 const sliderDt = document.getElementById('slider-dt');
+const sliderFineDt = document.getElementById('slider-fine-dt');
 const valB = document.getElementById('val-b');
 const valDt = document.getElementById('val-dt');
+const valFineDt = document.getElementById('val-fine-dt');
+const sliderMultiplier = document.getElementById('slider-multiplier');
+const valMultiplier = document.getElementById('val-multiplier');
 const sliderUiSize = document.getElementById('slider-ui-size');
 const valUiSize = document.getElementById('val-ui-size');
 const sliderCamZ = document.getElementById('slider-cam-z');
@@ -214,7 +374,7 @@ const sliderGainZ = document.getElementById('slider-gain-z');
 const valGainZ = document.getElementById('val-gain-z');
 const btnReset = document.getElementById('btn-reset');
 const telemetryDisplay = document.getElementById('telemetry');
-const container = document.querySelector('.container');
+const rightPanelStack = document.querySelector('.right-panel-stack');
 const leftPanelStack = document.querySelector('.left-panel-stack');
 const toggleLfoEnabled = document.getElementById('toggle-lfo-enabled');
 const valLfoEnabled = document.getElementById('val-lfo-enabled');
@@ -239,12 +399,45 @@ const selectEnvParam = document.getElementById('select-env-param');
 const btnEnvAdd = document.getElementById('btn-env-add');
 const envActiveList = document.getElementById('env-active-list');
 
-container.style.transform = `scale(${uiScale})`;
+const soundEnginePanel = document.querySelector('.sound-engine-panel');
+const sliderCarrierFreq = document.getElementById('slider-carrier-freq');
+const valCarrierFreq = document.getElementById('val-carrier-freq');
+const sliderModDepth = document.getElementById('slider-mod-depth');
+const valModDepth = document.getElementById('val-mod-depth');
+const sliderMasterVolume = document.getElementById('slider-master-volume');
+const valMasterVolume = document.getElementById('val-master-volume');
+const toggleAudioX = document.getElementById('toggle-audio-x');
+const valAudioX = document.getElementById('val-audio-x');
+const toggleAudioY = document.getElementById('toggle-audio-y');
+const valAudioY = document.getElementById('val-audio-y');
+const toggleAudioZ = document.getElementById('toggle-audio-z');
+const valAudioZ = document.getElementById('val-audio-z');
+const togglePmX = document.getElementById('toggle-pm-x');
+const valPmX = document.getElementById('val-pm-x');
+const togglePmY = document.getElementById('toggle-pm-y');
+const valPmY = document.getElementById('val-pm-y');
+const togglePmZ = document.getElementById('toggle-pm-z');
+const valPmZ = document.getElementById('val-pm-z');
+const toggleOttBypass = document.getElementById('toggle-ott-bypass');
+const valOttBypass = document.getElementById('val-ott-bypass');
+const toggleFmInterp = document.getElementById('toggle-fm-interp');
+const valFmInterp = document.getElementById('val-fm-interp');
+const sliderInterpTime = document.getElementById('slider-interp-time');
+const valInterpTime = document.getElementById('val-interp-time');
+const toggleReverbOn = document.getElementById('toggle-reverb-on');
+const valReverbOn = document.getElementById('val-reverb-on');
+const sliderReverbMix = document.getElementById('slider-reverb-mix');
+const valReverbMix = document.getElementById('val-reverb-mix');
+
+rightPanelStack.style.transform = `scale(${uiScale})`;
 leftPanelStack.style.transform = `scale(${uiScale})`;
+soundEnginePanel.style.transform = `translateX(-50%) scale(${uiScale})`;
 
 const lfoParamConfigs = {
-    b: { label: 'Chaos (b)', slider: sliderB, min: 0.00001, max: 0.42, step: 0.00001, base: 0.19, set: (v) => { attractor.b = v; valB.textContent = v.toFixed(5); } },
+    b: { label: 'Chaos (b)', slider: sliderB, min: 0.00001, max: 0.33, step: 0.00001, base: 0.19, set: (v) => { attractor.b = v; valB.textContent = v.toFixed(5); } },
     dt: { label: 'Speed (dt)', slider: sliderDt, min: 0.00001, max: 3.5, step: 0.00001, base: 0.1, set: (v) => { attractor.dt = v; valDt.textContent = v.toFixed(5); } },
+    fineDt: { label: 'Fine Speed', slider: sliderFineDt, min: 0.00001, max: 0.03, step: 0.00001, base: 0.03, set: (v) => { attractor.dt = v; valFineDt.textContent = v.toFixed(5); } },
+    multiplier: { label: 'Multiplier', slider: sliderMultiplier, min: 0, max: 5, step: 0.01, base: 1, set: (v) => { displayMultiplier = v; valMultiplier.textContent = v.toFixed(2); } },
     orbitRadius: { label: 'Camera Orbit Radius', slider: sliderCamZ, min: 1, max: 20, step: 0.1, base: 20, set: (v) => { cameraOrbitAmplitude = v; valCamZ.textContent = v.toFixed(1); } },
     rampFrequency: { label: 'Ramp Frequency', slider: sliderRampFrequency, min: -1, max: 1, step: 0.01, base: 0.03, set: (v) => { cameraOrbitCyclesPerSecond = v; valRampFrequency.textContent = v.toFixed(2); } },
     trailLength: { label: 'Trail Length', slider: sliderTrailLength, min: 0, max: maxPoints, step: 1, base: maxPoints, set: (v) => { currentTrailLength = Math.max(0, Math.min(maxPoints, Math.round(v))); valTrailLength.textContent = String(currentTrailLength); } },
@@ -256,7 +449,7 @@ const lfoParamConfigs = {
     gainX: { label: 'X Gain', slider: sliderGainX, min: 0.1, max: 4, step: 0.01, base: 1, set: (v) => { gainX = v; valGainX.textContent = v.toFixed(2); } },
     gainY: { label: 'Y Gain', slider: sliderGainY, min: 0.1, max: 4, step: 0.01, base: 1, set: (v) => { gainY = v; valGainY.textContent = v.toFixed(2); } },
     gainZ: { label: 'Z Gain', slider: sliderGainZ, min: 0.1, max: 4, step: 0.01, base: 1, set: (v) => { gainZ = v; valGainZ.textContent = v.toFixed(2); } },
-    uiSize: { label: 'UI Size', slider: sliderUiSize, min: 0.3, max: 1.2, step: 0.01, base: 0.5, set: (v) => { uiScale = v; valUiSize.textContent = `${Math.round(v * 100)}%`; container.style.transform = `scale(${uiScale})`; leftPanelStack.style.transform = `scale(${uiScale})`; } }
+    uiSize: { label: 'UI Size', slider: sliderUiSize, min: 0.3, max: 1.2, step: 0.01, base: 0.5, set: (v) => { uiScale = v; valUiSize.textContent = `${Math.round(v * 100)}%`; rightPanelStack.style.transform = `scale(${uiScale})`; leftPanelStack.style.transform = `scale(${uiScale})`; soundEnginePanel.style.transform = `translateX(-50%) scale(${uiScale})`; } }
 };
 
 function clampToSlider(config, value) {
@@ -269,8 +462,12 @@ function clampToSlider(config, value) {
 }
 
 function buildParamOptions(selectElement) {
+    const hiddenTargetKeys = new Set(['gainX', 'gainY', 'gainZ']);
     selectElement.innerHTML = '';
     Object.entries(lfoParamConfigs).forEach(([key, cfg]) => {
+        if (hiddenTargetKeys.has(key)) {
+            return;
+        }
         const option = document.createElement('option');
         option.value = key;
         option.textContent = cfg.label;
@@ -280,7 +477,7 @@ function buildParamOptions(selectElement) {
 
 function buildLfoSliderOverlays() {
     Object.entries(lfoParamConfigs).forEach(([key, cfg]) => {
-        if (!cfg.slider || !cfg.slider.closest('.container')) {
+        if (!cfg.slider || !cfg.slider.closest('.container, .trail-container')) {
             return;
         }
 
@@ -292,12 +489,23 @@ function buildLfoSliderOverlays() {
 
         const overlay = cfg.slider.cloneNode();
         overlay.removeAttribute('id');
-        overlay.disabled = true;
+        // Do NOT set disabled — some Chromium builds skip visual repaints when
+        // .value is set programmatically on a disabled range input, causing the
+        // ghost thumb to freeze.  Interaction is blocked by the shield instead.
         overlay.tabIndex = -1;
+        overlay.setAttribute('aria-hidden', 'true');
         overlay.classList.add('lfo-overlay-slider');
         overlay.value = cfg.slider.value;
-        wrapper.insertBefore(overlay, cfg.slider);
+
+        // inert + pointer-events:none on the wrapper blocks ALL interaction
+        // (mouse, keyboard, touch, accessibility) without using disabled.
+        const overlayShield = document.createElement('div');
+        overlayShield.className = 'lfo-overlay-shield';
+        overlayShield.inert = true;
+        overlayShield.appendChild(overlay);
+
         cfg.slider.classList.add('base-slider');
+        wrapper.appendChild(overlayShield);
         lfoSliderOverlays.set(key, overlay);
     });
 }
@@ -506,9 +714,15 @@ function applyModulationTargets(deltaSec) {
         const envAmount = envTargets.has(key) ? (envTargets.get(key) ?? 1) : 0;
         const lfoContribution = lfoSample * span * 0.5 * lfoAmount;
         const envContribution = envelopeOutput * span * envAmount;
-        const modulated = clampToSlider(cfg, cfg.base + lfoContribution + envContribution);
+        const combined = lfoContribution + envContribution;
+        const modulated = clampToSlider(cfg, cfg.base + combined);
         updateLfoOverlayValue(key, modulated);
-        cfg.set(modulated);
+        // Only call set when modulation is actually active.
+        // Calling set every frame for every parameter causes conflicts when
+        // two configs share the same underlying variable (e.g. dt and fineDt).
+        if (combined !== 0) {
+            cfg.set(modulated);
+        }
     });
 }
 
@@ -542,6 +756,8 @@ sliderGainZ.value = String(gainZ);
 valGainZ.textContent = gainZ.toFixed(2);
 sliderUiSize.value = String(uiScale);
 valUiSize.textContent = `${Math.round(uiScale * 100)}%`;
+sliderMultiplier.value = String(displayMultiplier);
+valMultiplier.textContent = displayMultiplier.toFixed(2);
 sliderCamZ.value = cameraOrbitAmplitude.toFixed(1);
 valCamZ.textContent = cameraOrbitAmplitude.toFixed(1);
 sliderRampFrequency.value = cameraOrbitCyclesPerSecond.toFixed(2);
@@ -561,8 +777,9 @@ valEnvTrigger.textContent = envTriggerKey;
 sliderUiSize.addEventListener('input', (e) => {
     uiScale = Math.max(0.3, Math.min(1.2, parseFloat(e.target.value) || 0.5));
     valUiSize.textContent = `${Math.round(uiScale * 100)}%`;
-    container.style.transform = `scale(${uiScale})`;
+    rightPanelStack.style.transform = `scale(${uiScale})`;
     leftPanelStack.style.transform = `scale(${uiScale})`;
+    soundEnginePanel.style.transform = `translateX(-50%) scale(${uiScale})`;
     lfoParamConfigs.uiSize.base = uiScale;
 });
 
@@ -577,7 +794,27 @@ sliderDt.addEventListener('input', (e) => {
     const value = parseFloat(e.target.value);
     attractor.dt = value;
     valDt.textContent = value.toFixed(5);
+    valFineDt.textContent = value.toFixed(5);
+    sliderFineDt.value = Math.min(0.03, Math.max(0.00001, value));
     lfoParamConfigs.dt.base = value;
+    lfoParamConfigs.fineDt.base = Math.min(0.03, Math.max(0.00001, value));
+});
+
+sliderFineDt.addEventListener('input', (e) => {
+    const value = parseFloat(e.target.value);
+    attractor.dt = value;
+    valFineDt.textContent = value.toFixed(5);
+    valDt.textContent = value.toFixed(5);
+    sliderDt.value = value;
+    lfoParamConfigs.fineDt.base = value;
+    lfoParamConfigs.dt.base = value;
+});
+
+sliderMultiplier.addEventListener('input', (e) => {
+    const value = Math.max(0, parseFloat(e.target.value) || 0);
+    displayMultiplier = value;
+    valMultiplier.textContent = value.toFixed(2);
+    lfoParamConfigs.multiplier.base = value;
 });
 
 sliderCamZ.addEventListener('input', (e) => {
@@ -740,8 +977,124 @@ window.addEventListener('keyup', (e) => {
     }
 });
 
+// Sound Engine event listeners
+sliderCarrierFreq.addEventListener('input', (e) => {
+    resumeAudioCtx();
+    const freq = Math.max(0, parseFloat(e.target.value) || 0);
+    valCarrierFreq.textContent = String(Math.round(freq));
+    carrierHz = freq;
+    setSynthParam('carrierHz', carrierHz, 0.01);
+});
+
+sliderModDepth.addEventListener('input', (e) => {
+    resumeAudioCtx();
+    const depth = Math.max(0, parseFloat(e.target.value) || 0);
+    valModDepth.textContent = String(Math.round(depth));
+    modDepthHz = depth;
+    setSynthParam('depthHz', modDepthHz, 0.01);
+});
+
+sliderMasterVolume.addEventListener('input', (e) => {
+    resumeAudioCtx();
+    const vol = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+    valMasterVolume.textContent = vol.toFixed(2);
+    masterGainNode.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.02);
+});
+
+toggleAudioX.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    audioXEnabled = !!e.target.checked;
+    setVoiceEnableParams();
+    valAudioX.textContent = e.target.checked ? 'ON' : 'OFF';
+});
+
+toggleAudioY.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    audioYEnabled = !!e.target.checked;
+    setVoiceEnableParams();
+    valAudioY.textContent = e.target.checked ? 'ON' : 'OFF';
+});
+
+toggleAudioZ.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    audioZEnabled = !!e.target.checked;
+    setVoiceEnableParams();
+    valAudioZ.textContent = e.target.checked ? 'ON' : 'OFF';
+});
+
+togglePmX.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    audioPmXEnabled = !!e.target.checked;
+    setVoiceEnableParams();
+    valPmX.textContent = e.target.checked ? 'ON' : 'OFF';
+});
+
+togglePmY.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    audioPmYEnabled = !!e.target.checked;
+    setVoiceEnableParams();
+    valPmY.textContent = e.target.checked ? 'ON' : 'OFF';
+});
+
+togglePmZ.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    audioPmZEnabled = !!e.target.checked;
+    setVoiceEnableParams();
+    valPmZ.textContent = e.target.checked ? 'ON' : 'OFF';
+});
+
+// OTT Bypass: checked = bypass (direct), unchecked = OTT active
+toggleOttBypass.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    const bypassed = e.target.checked;
+    valOttBypass.textContent = bypassed ? 'BYPASS' : 'ACTIVE';
+    if (!ottReady) return;
+    const t = audioCtx.currentTime;
+    if (bypassed) {
+        ottWetGain.gain.setTargetAtTime(0, t, 0.02);
+        ottBypassGain.gain.setTargetAtTime(1, t, 0.02);
+    } else {
+        ottWetGain.gain.setTargetAtTime(1, t, 0.02);
+        ottBypassGain.gain.setTargetAtTime(0, t, 0.02);
+    }
+});
+
+// FM interpolation mode toggle
+toggleFmInterp.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    fmInterpolate = e.target.checked;
+    valFmInterp.textContent = fmInterpolate ? 'INTERP' : 'STEP';
+    setSynthModeFromUi();
+});
+
+toggleReverbOn.addEventListener('change', (e) => {
+    resumeAudioCtx();
+    reverbEnabled = !!e.target.checked;
+    valReverbOn.textContent = reverbEnabled ? 'ON' : 'OFF';
+    updateReverbMix();
+});
+
+sliderReverbMix.addEventListener('input', (e) => {
+    resumeAudioCtx();
+    reverbMix = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+    valReverbMix.textContent = reverbMix.toFixed(2);
+    updateReverbMix();
+});
+
+// Interp Time slider — controls the linear ramp duration in ms
+sliderInterpTime.addEventListener('input', (e) => {
+    resumeAudioCtx();
+    const ms = parseFloat(e.target.value) || 80;
+    interpSec = ms / 1000;
+    valInterpTime.textContent = `${Math.round(ms)}ms`;
+    setSynthParam('interpSec', interpSec, 0.01);
+});
+
 btnReset.addEventListener('click', () => {
     attractor.reset();
+    if (synthNode) {
+        synthNode.port.postMessage({ type: 'reset' });
+    }
 });
 
 function applyArcLengthResample(buffer, pointCount, amount = 1) {
@@ -810,11 +1163,22 @@ function loop() {
     cameraOrbitRampPhase = ((cameraOrbitRampPhase + (deltaSec * cameraOrbitCyclesPerSecond)) % 1 + 1) % 1;
     updateCameraOrbitFromRamp(cameraOrbitRampPhase, cameraOrbitAmplitude);
     camera.lookAt(0, 0, 0);
+    if (synthNode) {
+        // Single-processor mode: attractor + synth run entirely in audio thread.
+        // Push current control values each frame; no chaos trajectory scheduling.
+        setSynthParam('b', attractor.b, 0.01);
+        setSynthParam('dt', attractor.dt, 0.01);
+        setSynthParam('gainX', gainX, 0.01);
+        setSynthParam('gainY', gainY, 0.01);
+        setSynthParam('gainZ', gainZ, 0.01);
+    }
 
     for (let i = 0; i < stepsPerFrame; i++) {
         attractor.update();
         const state = attractor.getState();
-
+        const displayX = state.x * displayMultiplier;
+        const displayY = state.y * displayMultiplier;
+        const displayZ = state.z * displayMultiplier;
         // Memory Shift: Shift the entire trail data down by one "point"
         positions.copyWithin(0, 3);
 
@@ -823,9 +1187,9 @@ function loop() {
         const jitterX = (Math.random() * 2 - 1) * pointJitter;
         const jitterY = (Math.random() * 2 - 1) * pointJitter;
         const jitterZ = (Math.random() * 2 - 1) * pointJitter;
-        positions[lastIndex] = state.x * gainX + jitterX;
-        positions[lastIndex + 1] = state.y * gainY + jitterY;
-        positions[lastIndex + 2] = state.z * gainZ + jitterZ;
+        positions[lastIndex] = displayX * gainX + jitterX;
+        positions[lastIndex + 1] = displayY * gainY + jitterY;
+        positions[lastIndex + 2] = displayZ * gainZ + jitterZ;
     }
 
     if (useArcLengthResample && currentTrailLength > 1 && arcResampleAmount > 0) {
@@ -835,11 +1199,18 @@ function loop() {
     // Get the very latest state for the sphere and telemetry
     const state = attractor.getState();
 
+    // Audio now runs fully in the worklet processor.
+    const displayX = state.x * displayMultiplier;
+    const displayY = state.y * displayMultiplier;
+    const displayZ = state.z * displayMultiplier;
+
     // Update 3D Object (Sphere)
-    mesh.position.set(state.x * gainX, state.y * gainY, state.z * gainZ);
+    if (mesh) {
+        mesh.position.set(displayX * gainX, displayY * gainY, displayZ * gainZ);
+    }
 
     // Update Telemetry Display
-    telemetryDisplay.textContent = `X: ${state.x.toFixed(5)} | Y: ${state.y.toFixed(5)} | Z: ${state.z.toFixed(5)}`;
+    telemetryDisplay.textContent = `X: ${displayX.toFixed(5)} | Y: ${displayY.toFixed(5)} | Z: ${displayZ.toFixed(5)}`;
 
     // Flag geometry update
     trail.geometry.attributes.position.needsUpdate = true;
