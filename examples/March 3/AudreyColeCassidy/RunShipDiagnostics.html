@@ -15,7 +15,32 @@
         <div class="crt-vignette"></div>
     </div>
 
-    <div class="terminal-container">
+    <!-- Loading / scanning overlay -->
+    <div class="diagnostics-loading-overlay" id="diagnostics-loading">
+        <div class="diagnostics-loading-scan-line"></div>
+        <div class="diagnostics-loading-inner">
+            <div class="diagnostics-loading-title scan-flicker">SHIP HEALTH SCAN IN PROGRESS</div>
+            <div class="diagnostics-loading-ticker">
+                <div id="random-ticker-1" class="ticker-line">INIT...</div>
+                <div id="random-ticker-2" class="ticker-line">INIT...</div>
+                <div id="random-ticker-3" class="ticker-line">INIT...</div>
+                <div id="random-ticker-4" class="ticker-line">INIT...</div>
+                <div id="random-ticker-5" class="ticker-line">INIT...</div>
+            </div>
+            <div class="diagnostics-loading-status">
+                <span class="scan-line-text scanning">ASSESSING HULL INTEGRITY...</span><br>
+                <span class="scan-line-text scanning">ASSESSING PROPULSION SYSTEMS...</span><br>
+                <span class="scan-line-text scanning">ASSESSING LIFE SUPPORT...</span><br>
+                <span class="scan-line-text scanning">ASSESSING CORE SYSTEMS...</span>
+            </div>
+            <div class="diagnostics-loading-progress">
+                <div class="progress-bar" id="scan-progress-bar"></div>
+            </div>
+            <div class="diagnostics-loading-countdown" id="diagnostics-countdown">COMPLETE IN: <span id="countdown-num">5</span><span class="blink-cursor">_</span></div>
+        </div>
+    </div>
+
+    <div class="terminal-container diagnostics-content-hidden" id="diagnostics-main-content">
         <header class="header">RUN SHIP DIAGNOSTICS</header>
 
         <div class="main-content subpage-content">
@@ -38,6 +63,69 @@
         <footer class="footer">UP, DOWN: select | q: return to main</footer>
     </div>
     <script>
+        (function() {
+            var loading = document.getElementById('diagnostics-loading');
+            var mainContent = document.getElementById('diagnostics-main-content');
+            var countdownEl = document.getElementById('countdown-num');
+            var countdownLabel = document.getElementById('diagnostics-countdown');
+            var progressBar = document.getElementById('scan-progress-bar');
+            var secondsLeft = 5;
+            var totalSeconds = 5;
+
+            var randomData = {
+                temps: ['21.4°C', '19.8°C', '22.1°C', '20.5°C', '18.9°C', '23.2°C'],
+                pressure: ['101.3 kPa', '99.8 kPa', '102.1 kPa', '100.5 kPa', '98.2 kPa'],
+                sectors: ['SECTOR-7A', 'SECTOR-3B', 'SECTOR-9C', 'CORE-01', 'HULL-A2', 'ENG-B4'],
+                status: ['NOMINAL', 'STABLE', 'PASS', 'OK', 'ACTIVE', 'STANDBY'],
+                codes: ['0x7F', '0x3A', '0xB2', '0x4D', '0xE1', '0x8C', '0x55'],
+                percent: ['47%', '63%', '82%', '91%', '28%', '56%', '74%'],
+                systems: ['REACTOR', 'NAV', 'COM', 'SENSORS', 'THRUST', 'O2', 'SHIELDS'],
+                readings: ['PING 12ms', 'LAT 0.04', 'DRIFT 0.001', 'FREQ 4.2kHz']
+            };
+
+            function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+            function randomLine() {
+                var templates = [
+                    'TEMP: ' + pick(randomData.temps) + ' | PRESS: ' + pick(randomData.pressure),
+                    '[' + pick(randomData.sectors) + '] STATUS: ' + pick(randomData.status),
+                    'SYS ' + pick(randomData.systems) + ' CODE ' + pick(randomData.codes),
+                    'LOAD: ' + pick(randomData.percent) + ' | ' + pick(randomData.readings),
+                    'SCAN BAND ' + (Math.floor(Math.random() * 900) + 100) + 'MHz',
+                    'CHECKSUM: 0x' + Math.random().toString(16).slice(2, 6).toUpperCase(),
+                    'VECTOR ' + (Math.random() * 360).toFixed(1) + '°',
+                    'PACKET ' + Math.floor(Math.random() * 9999) + ' RECEIVED'
+                ];
+                return pick(templates);
+            }
+
+            var tickerIds = ['random-ticker-1', 'random-ticker-2', 'random-ticker-3', 'random-ticker-4', 'random-ticker-5'];
+            var tickerInterval = setInterval(function() {
+                tickerIds.forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.textContent = randomLine();
+                });
+            }, 400);
+
+            var countdownInterval = setInterval(function() {
+                secondsLeft--;
+                var pct = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
+                progressBar.style.width = pct + '%';
+                if (secondsLeft > 0) {
+                    countdownEl.textContent = secondsLeft;
+                } else {
+                    clearInterval(countdownInterval);
+                    clearInterval(tickerInterval);
+                    countdownLabel.innerHTML = 'SCAN COMPLETE<span class="blink-cursor">_</span>';
+                    progressBar.style.width = '100%';
+                    setTimeout(function() {
+                        loading.classList.add('diagnostics-loading-hidden');
+                        mainContent.classList.remove('diagnostics-content-hidden');
+                    }, 800);
+                }
+            }, 1000);
+        })();
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'q' || e.key === 'Q') {
                 e.preventDefault();
