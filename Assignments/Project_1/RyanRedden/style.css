@@ -17,10 +17,19 @@ canvas {
     /* Behind UI */
 }
 
-.container {
+.right-panel-stack {
     position: absolute;
     top: 20px;
     right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    transform: scale(0.5);
+    transform-origin: top right;
+}
+
+.container,
+.trail-container {
     background-color: rgba(7, 12, 22, 0.9);
     /* Semi-transparent */
     padding: 1.25rem;
@@ -29,8 +38,6 @@ canvas {
     box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
     width: 290px;
     color: #00aaff;
-    transform: scale(0.5);
-    transform-origin: top right;
 }
 
 h1 {
@@ -94,14 +101,20 @@ input[type="range"] {
     margin: 0;
 }
 
-.lfo-overlay-slider {
+.lfo-overlay-shield {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     pointer-events: none;
-    opacity: 0.2;
-    z-index: 0;
+    z-index: 2;
+}
+
+.lfo-overlay-slider {
+    display: block;
+    width: 100%;
+    opacity: 0.25;
+    margin: 0;
 }
 
 .base-slider {
@@ -203,8 +216,17 @@ button:hover {
     color: #00aaff;
 }
 
+#telemetry {
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
 .lfo-active-block {
     margin-top: 0.7rem;
+}
+
+.hidden-control {
+    display: none;
 }
 
 .lfo-active-title {
@@ -261,4 +283,49 @@ button:hover {
 
 .lfo-empty {
     opacity: 0.75;
+}
+
+.sound-engine-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    background-color: rgba(7, 12, 22, 0.9);
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 480px;
+    color: #00aaff;
+    transform: translateX(-50%) scale(0.5);
+    transform-origin: bottom center;
+}
+
+.sound-engine-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.sound-toggles {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 0.3rem;
+}
+
+.sound-toggles .control-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.mini-mix-slider {
+    width: 96px;
+}
+
+.ott-toggle label {
+    color: #66ccff;
+    letter-spacing: 0.04em;
+}
+
+.ott-toggle .value-display {
+    color: #66ccff;
 }
