@@ -100,14 +100,16 @@
                 <div class="termiini-main-display">
                     <div class="main-display-frame">
                         <div class="main-display-content">
-                            <div class="diagnostics-ship-box">
-                                <img src="3d ship.png" alt="3D Ship schematic" class="diagnostics-ship-image">
-                            </div>
                             <div class="diagnostics-section-buttons">
+                                <a href="ship-exterior.html" class="diagnostics-section-btn">RETURN TO MAIN INTERFACE</a>
                                 <button type="button" class="diagnostics-section-btn" id="btn-ship-summary">SHIP SUMMARY</button>
                                 <button type="button" class="diagnostics-section-btn" id="btn-warp-health">WARP HEALTH</button>
                             </div>
-                            <div class="diagnostics-section-content" id="diagnostics-section-content">
+                            <div class="diagnostics-display-area" id="diagnostics-display-area">
+                                <div class="diagnostics-ship-box" id="diagnostics-ship-box">
+                                    <img src="3d ship.png" alt="3D Ship schematic" class="diagnostics-ship-image">
+                                </div>
+                                <div class="diagnostics-section-content" id="diagnostics-section-content">
                                 <div class="ship-summary-box diagnostics-section-panel hidden" id="panel-ship-summary">
                                 <div class="ship-summary-title">SHIP SUMMARY</div>
                                 <div class="ship-summary-section">
@@ -173,9 +175,9 @@
                                 <div class="warp-health-section">
                                     <div class="ship-summary-subtitle">WARP DRIVE SUMMARY</div>
                                     <div class="ship-summary-note warp-health-panel">
-                                        System Condition: FUNCTIONAL BUT IRREGULAR<br>
+                                        System Condition: <strong class="blink-highlight">FUNCTIONAL BUT IRREGULAR</strong><br>
                                         Operational Risk: MODERATE<br>
-                                        Maintenance Priority: ENGINEERING REVIEW ADVISED
+                                        Maintenance Priority: <strong class="blink-highlight">ENGINEERING REVIEW ADVISED</strong>
                                     </div>
                                     <div class="warp-health-subsection">AI Maintenance Recommendation</div>
                                     <ul class="warp-health-list">
@@ -184,7 +186,7 @@
                                         <li>Warp log audit for irregular travel patterns</li>
                                     </ul>
                                     <div class="ship-summary-note warp-health-panel">
-                                        <strong>NOTE:</strong> Continued use without maintenance may reduce jump stability by an estimated 11-18%.
+                                        <strong>NOTE:</strong> <strong class="blink-highlight">Continued use without maintenance may reduce jump stability by an estimated 11-18%.</strong>
                                     </div>
                                 </div>
                                 <div class="warp-health-section">
@@ -197,6 +199,7 @@
                                         <div class="warp-event">Jump 5: 18.7 LY - Vector recalibration required</div>
                                         <div class="warp-event">Jump 6: 3.8 LY - Rapid successive jump detected</div>
                                     </div>
+                                </div>
                                 </div>
                                 </div>
                             </div>
@@ -306,15 +309,30 @@
             var panelShipSummary = document.getElementById('panel-ship-summary');
             var panelWarpHealth = document.getElementById('panel-warp-health');
 
+            var displayArea = document.getElementById('diagnostics-display-area');
+            var shipBox = document.getElementById('diagnostics-ship-box');
+
             function showPanel(panel) {
+                var wasContentActive = displayArea && displayArea.classList.contains('content-active');
                 panelShipSummary.classList.add('hidden');
+                panelWarpHealth.classList.remove('retro-reveal');
+                panelShipSummary.classList.remove('retro-reveal');
                 panelWarpHealth.classList.add('hidden');
                 btnShipSummary.classList.remove('active');
                 btnWarpHealth.classList.remove('active');
+                if (displayArea) displayArea.classList.remove('content-active');
+                if (shipBox) shipBox.classList.remove('ship-animate-in');
                 if (panel) {
-                    panel.classList.remove('hidden');
                     if (panel === panelShipSummary) btnShipSummary.classList.add('active');
                     else if (panel === panelWarpHealth) btnWarpHealth.classList.add('active');
+                    if (displayArea) displayArea.classList.add('content-active');
+                    panel.classList.remove('hidden');
+                    void panel.offsetWidth;
+                    panel.classList.add('retro-reveal');
+                    if (shipBox && !wasContentActive) {
+                        void shipBox.offsetWidth;
+                        shipBox.classList.add('ship-animate-in');
+                    }
                 }
             }
 
