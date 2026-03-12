@@ -10,7 +10,7 @@
         /* Chat page overrides - BLTMR PLC layout (mirror reference image) */
         body.chat-page-bltmr { background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.25) 0%, rgba(51, 255, 51, 0.12) 40%, rgba(51, 255, 51, 0.02) 80%, transparent 100%), #000; color: #33ff33; overflow: hidden; }
         body.chat-page-bltmr .terminal-container { padding: 20px 26px; max-width: none; height: 100vh; overflow: hidden; }
-        body.chat-page-bltmr .main-content { margin-top: 8px; padding-top: 0; }
+        body.chat-page-bltmr .main-content { margin-top: 0; padding-top: 0; }
         body.chat-page-bltmr .header { display: none; }
         body.chat-page-bltmr .footer { display: none; }
         body.chat-page-bltmr .main-content { flex-direction: column; gap: 0; }
@@ -24,18 +24,17 @@
             display: grid;
             grid-template-columns: 1fr 280px;
             gap: 12px;
-            align-items: flex-end;
+            align-items: center;
             margin-bottom: 0;
         }
         .bltmr-header-left {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
         .bltmr-brand {
             padding: 6px 14px;
-            
             font-size: 1rem;
             color: #33ff33;
             clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
@@ -43,7 +42,7 @@
         }
         .bltmr-tabs {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 0;
             flex-wrap: wrap;
             position: relative;
@@ -51,8 +50,8 @@
         .bltmr-tab {
             border: none;
             margin-left: 2px;
-            padding: 8px 14px;
-            font-size: 1.1rem;
+            padding: 10.5px 14px;
+            font-size: 1rem;
             color: #000;
             background: rgba(51, 255, 51, 0.35);
             text-decoration: none;
@@ -97,34 +96,46 @@
         .bltmr-chat-messages {
             flex: 1;
             min-height: 0;
+            display: flex;
+            flex-direction: column;
             background: rgba(51, 255, 51, 0.2);
             border: 2px solid #33ff33;
             padding: 12px 14px;
             padding-right: 5px; /* gap between scrollbar and green line */
             border-right: 2px solid #33ff33; /* vibrant green line on far right */
-            display: flex;
-            flex-direction: column;
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
             clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
         }
-        .bltmr-chat-messages-inner {
+        /* Scroll wrapper: flex container for content + custom scrollbar */
+        .bltmr-chat-messages-scroll-wrap {
             flex: 1;
             min-height: 0;
+            margin: 7.5px 0;
+            display: flex;
+            gap: 0;
+        }
+        /* Scrollable content area – native scrollbar hidden */
+        .bltmr-chat-messages-content {
+            flex: 1;
+            min-height: 0;
+            min-width: 0;
             overflow-y: scroll;
-            scrollbar-gutter: stable;
-            scrollbar-color: #33ff33 #0d1f0d;
-            scrollbar-width: thin;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .bltmr-chat-messages-content::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        /* Custom scrollbar: arrows + track + thumb (arrows always visible, thumb shorter) */
+        .custom-scrollbar {
+            width: 16px;
+            flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            min-height: 0;
         }
-        /* CRT-style scrollbar: dark green track + scanlines, green thumb, green arrows */
-        .bltmr-chat-messages-inner::-webkit-scrollbar {
-            width: 14px;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        .bltmr-chat-messages-inner::-webkit-scrollbar-track {
+        .custom-scrollbar-arrow {
+            height: 24px;
+            flex-shrink: 0;
             background: #0d1f0d;
             background-image: repeating-linear-gradient(
                 0deg,
@@ -133,26 +144,55 @@
                 rgba(0, 20, 0, 0.4) 1px,
                 rgba(0, 20, 0, 0.4) 2px
             );
+            border: 1px solid #33ff33;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #33ff33;
+            font-size: 10px;
+            line-height: 1;
+            user-select: none;
         }
-        .bltmr-chat-messages-inner::-webkit-scrollbar-thumb {
+        .custom-scrollbar-arrow:hover { background: rgba(51, 255, 51, 0.15); color: #5cff5c; }
+        .custom-scrollbar-arrow:active { background: rgba(51, 255, 51, 0.25); }
+        .custom-scrollbar-track {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            background: #0d1f0d;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 1px,
+                rgba(0, 20, 0, 0.4) 1px,
+                rgba(0, 20, 0, 0.4) 2px
+            );
+            border-left: 1px solid rgba(51, 255, 51, 0.3);
+            border-right: 1px solid rgba(51, 255, 51, 0.3);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .custom-scrollbar-thumb {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            min-height: 32px;
+            border-radius: 8px;
             background: #33ff33;
             border: 2px solid #0a150a;
-            border-radius: 2px;
-            min-height: 48px;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 0.9), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+            cursor: grab;
+            pointer-events: auto;
+            transition: background 0.1s;
         }
-        .bltmr-chat-messages-inner::-webkit-scrollbar-thumb:hover { background: #5cff5c; }
-        .bltmr-chat-messages-inner::-webkit-scrollbar-thumb:active { background: #28cc28; }
-        .bltmr-chat-messages-inner::-webkit-scrollbar-button:vertical:decrement {
-            height: 24px;
-            background: #0d1f0d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath fill='%2333ff33' d='M6 0L12 10H0z'/%3E%3C/svg%3E") center/10px 8px no-repeat;
-            border: 1px solid #33ff33;
-            box-sizing: border-box;
-        }
-        .bltmr-chat-messages-inner::-webkit-scrollbar-button:vertical:increment {
-            height: 24px;
-            background: #0d1f0d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'%3E%3Cpath fill='%2333ff33' d='M0 0l6 10 6-10H0z'/%3E%3C/svg%3E") center/10px 8px no-repeat;
-            border: 1px solid #33ff33;
-            box-sizing: border-box;
+        .custom-scrollbar-thumb:hover { background: #5cff5c; }
+        .custom-scrollbar-thumb:active { background: #28cc28; cursor: grabbing; }
+        .bltmr-chat-messages-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: min-content;
         }
         .bltmr-chat-messages .msg-other { color: #fff; }
         .bltmr-chat-messages .msg-you { color: #28cc28; }
@@ -213,12 +253,14 @@
         .bltmr-officer-top {
             display: flex;
             gap: 12px;
-            align-items: flex-start;
+            align-items: stretch;
         }
         .bltmr-officer-photo {
             width: 80px;
-            height: 80px;
             flex-shrink: 0;
+            padding: 10px 0;
+            margin: 10px 0;
+            box-sizing: border-box;
             border: 2px solid #33ff33;
             background: #0a1a0a;
             display: flex;
@@ -245,7 +287,7 @@
             font-size: 0.9rem;
             line-height: 1.5;
             color: #33ff33;
-            border-top: 1px solid rgba(51, 255, 51, 0.35);
+            border-top: 1.5px solid rgba(51, 255, 51, 0.45);
             padding-top: 10px;
         }
 
@@ -357,11 +399,22 @@
                     <div class="bltmr-main">
                         <div class="bltmr-chat-col">
                             <div class="bltmr-chat-messages">
-                                <div class="bltmr-chat-messages-inner" id="chat-messages">
-                                    <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WHAT THE FUCK DID I DO??</div>
-                                    <div class="chat-message msg-you"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
-                                    <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
-                                    <div class="chat-message msg-you"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
+                                <div class="bltmr-chat-messages-scroll-wrap">
+                                    <div class="bltmr-chat-messages-content" id="chat-scroll-content">
+                                        <div class="bltmr-chat-messages-inner" id="chat-messages">
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WHAT THE FUCK DID I DO??</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
+                                        </div>
+                                    </div>
+                                    <div class="custom-scrollbar">
+                                        <div class="custom-scrollbar-arrow" id="chat-scroll-arrow-up" title="Scroll up" aria-label="Scroll up">▲</div>
+                                        <div class="custom-scrollbar-track" id="chat-scroll-track">
+                                            <div class="custom-scrollbar-thumb" id="chat-scroll-thumb"></div>
+                                        </div>
+                                        <div class="custom-scrollbar-arrow" id="chat-scroll-arrow-down" title="Scroll down" aria-label="Scroll down">▼</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="bltmr-input-keyboard-row">
@@ -401,16 +454,16 @@
                                 </div>
                                 <div class="bltmr-officer-fields">
                                     <div>OFFICER: A-34-0.1</div>
-                                    <div>LEGAL NAME: JIM O'NEIL</div>
+                                    <div>LEGAL NAME: RYAN CAYAGO</div>
                                     <div>SECURITY CODE: 48532695-CF</div>
                                     <div>PERSONAL WEAPON: COLT M1911A1</div>
                                 </div>
                             </div>
                             <div class="bltmr-bio">
-                                O'NEIL WAS BORN TO IRISH-AMERICAN PARENTS IN THE LAURAVILLE NEIGHBORHOOD OF BALTIMORE, MARYLAND. HIS FATHER WORKED AS A STEELWORKER AT BETHLEHEM STEEL UNTIL DEINDUSTRIALIZATION LED TO HIS FIRING IN 1973. O'NEIL ATTENDED LOYOLA UNIVERSITY MARYLAND FOR A YEAR.
+                                CAYAGO WAS BORN TO IRISH-AMERICAN PARENTS IN THE LAURAVILLE NEIGHBORHOOD OF BALTIMORE, MARYLAND. HIS FATHER WORKED AS A STEELWORKER AT BETHLEHEM STEEL UNTIL DEINDUSTRIALIZATION LED TO HIS FIRING IN 1973. CAYAGO ATTENDED LOYOLA UNIVERSITY MARYLAND FOR A YEAR.
                             </div>
                             <div class="bltmr-bio">
-                                HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 1994. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2000, O'NEIL HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
+                                HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 2001. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2003, CAYAGO HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
                             </div>
                         </aside>
                     </div>
@@ -465,6 +518,7 @@
             });
         });
 
+        const chatScrollContent = document.getElementById('chat-scroll-content');
         function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
@@ -473,7 +527,7 @@
             msg.innerHTML = '<span class="sender">YOU:</span> ' + text.toUpperCase();
             chatMessages.appendChild(msg);
             chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            if (chatScrollContent) chatScrollContent.scrollTop = chatScrollContent.scrollHeight;
         }
 
         chatSend.addEventListener('click', sendMessage);
@@ -484,6 +538,87 @@
             }
         });
 
+        /* Custom scrollbar: thumb always visible, arrows always visible */
+        (function() {
+            const content = document.getElementById('chat-scroll-content');
+            const track = document.getElementById('chat-scroll-track');
+            const thumb = document.getElementById('chat-scroll-thumb');
+            const arrowUp = document.getElementById('chat-scroll-arrow-up');
+            const arrowDown = document.getElementById('chat-scroll-arrow-down');
+            if (!content || !track || !thumb) return;
+
+            const MIN_THUMB = 32;
+            const ARROW_SCROLL = 80;
+
+            function updateThumb() {
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                const trackH = track.clientHeight;
+                if (sh <= ch) {
+                    thumb.style.height = trackH + 'px';
+                    thumb.style.top = '0';
+                    return;
+                }
+                const ratio = ch / sh;
+                let thumbH = Math.max(MIN_THUMB, Math.floor(trackH * ratio));
+                if (thumbH > trackH) thumbH = trackH;
+                const maxTop = trackH - thumbH;
+                const scrollRatio = content.scrollTop / (sh - ch);
+                const top = Math.round(scrollRatio * maxTop);
+                thumb.style.height = thumbH + 'px';
+                thumb.style.top = top + 'px';
+            }
+
+            content.addEventListener('scroll', updateThumb);
+            const ro = new ResizeObserver(updateThumb);
+            ro.observe(track);
+            ro.observe(content);
+            updateThumb();
+            setTimeout(updateThumb, 0);
+
+            if (arrowUp) arrowUp.addEventListener('click', () => {
+                content.scrollTop = Math.max(0, content.scrollTop - ARROW_SCROLL);
+            });
+            if (arrowDown) arrowDown.addEventListener('click', () => {
+                content.scrollTop = Math.min(content.scrollHeight - content.clientHeight, content.scrollTop + ARROW_SCROLL);
+            });
+
+            track.addEventListener('click', (e) => {
+                if (e.target === thumb) return;
+                const rect = track.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const trackH = track.clientHeight;
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                if (sh <= ch) return;
+                const ratio = y / trackH;
+                content.scrollTop = ratio * (sh - ch);
+            });
+
+            let dragging = false;
+            let startY = 0, startScrollTop = 0;
+            thumb.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                dragging = true;
+                startY = e.clientY;
+                startScrollTop = content.scrollTop;
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                const trackH = track.clientHeight;
+                if (sh <= ch) return;
+                const thumbH = thumb.offsetHeight;
+                const maxTop = trackH - thumbH;
+                const deltaY = e.clientY - startY;
+                const scrollDelta = maxTop > 0 ? (deltaY / maxTop) * (sh - ch) : 0;
+                content.scrollTop = Math.max(0, Math.min(sh - ch, startScrollTop + scrollDelta));
+                startY = e.clientY;
+                startScrollTop = content.scrollTop;
+            });
+            document.addEventListener('mouseup', () => { dragging = false; });
+        })();
     </script>
 </body>
 </html>

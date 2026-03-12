@@ -7,30 +7,83 @@
     <link rel="stylesheet" href="synthwave-theme.css" />
   </head>
   <body>
+    <div class="starfield"></div>
     <div class="sun"></div>
     <div class="grid-bg"></div>
     <div class="tree-layer"></div>
     <div class="overlay-vignette"></div>
     <div class="glow-layer"></div>
-    <div class="crt-overlay"></div>
-    <div class="shell">
-      <div class="shell-inner">
-        <h1>The Waves ™</h1>
-        <h2>Shopping · Synthwave</h2>
-        <p>
-          This page can showcase concept art or mock storefronts from the neon
-          markets: record stalls, gear shops, fashion kiosks, and any other
-          vendors that exist along the Synthwave grid.
-        </p>
-        <p>
-          Swap in layouts, galleries, or product‑style cards to sell the fantasy
-          of shopping in this utopian, retro‑futurist mall.
-        </p>
-        <div class="back">
-          <a href="synthwave.html">← Back to Synthwave hub</a>
+
+    <header>
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-title">The Waves ™</div>
         </div>
+        <nav>
+          <a href="synthwave.html">Sector Hub</a>
+          <a href="#shopping-grid">All Markets</a>
+        </nav>
       </div>
-    </div>
+    </header>
+
+    <main class="shopping-main">
+      <section class="shopping-hero">
+        <div class="shopping-hero-copy">
+          <h1 class="shopping-title">Shopping</h1>
+          <p class="shopping-tagline">
+            Curated stalls and neon markets from across the Synthwave sector.
+          </p>
+        </div>
+      </section>
+
+      <section class="shopping-filters">
+        <button class="shopping-filter is-active">All</button>
+        <button class="shopping-filter">Records</button>
+        <button class="shopping-filter">Apparel</button>
+        <button class="shopping-filter">Hardware</button>
+        <button class="shopping-filter">Tokens</button>
+      </section>
+
+      <section id="shopping-grid" class="shopping-grid">
+        <article class="shopping-item">
+          <div class="shopping-thumb shopping-thumb--records"></div>
+          <div class="shopping-meta">
+            <h2 class="shopping-name">Neon Utopia Records</h2>
+            <p class="shopping-desc">Analog synths, cassettes, live set archives.</p>
+          </div>
+        </article>
+
+        <article class="shopping-item">
+          <div class="shopping-thumb shopping-thumb--fashion"></div>
+          <div class="shopping-meta">
+            <h2 class="shopping-name">Chrome Corridor</h2>
+            <p class="shopping-desc">Reflective outerwear, techwear silhouettes.</p>
+          </div>
+        </article>
+
+        <article class="shopping-item">
+          <div class="shopping-thumb shopping-thumb--gear"></div>
+          <div class="shopping-meta">
+            <h2 class="shopping-name">Grid Hardware Lab</h2>
+            <p class="shopping-desc">Decks, samplers, and retro‑fitted consoles.</p>
+          </div>
+        </article>
+
+        <article class="shopping-item">
+          <div class="shopping-thumb shopping-thumb--tokens"></div>
+          <div class="shopping-meta">
+            <h2 class="shopping-name">Token Exchange</h2>
+            <p class="shopping-desc">Access chips, passes, limited‑run keys.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="shopping-footer">
+        <a href="synthwave.html" class="section-button">
+          <span>← Back to Synthwave hub</span>
+        </a>
+      </section>
+    </main>
 
     <script src="synthwave-theme.js" defer></script>
   </body>

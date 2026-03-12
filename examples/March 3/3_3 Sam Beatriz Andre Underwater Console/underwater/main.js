@@ -6,11 +6,22 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
+const STORAGE_KEY = 'stone-library-messages';
+const MAX_MESSAGE_LENGTH = 100;
+const LIBRARY_INTERACT_DIST = 18;
+const HOLE_READ_DIST = 6;
+
 const canvas = document.getElementById('canvas');
 const prompt = document.getElementById('prompt');
 const lightBtn = document.getElementById('light-btn');
 const compassTicks = document.getElementById('compass-ticks');
 const compassLibrary = document.getElementById('compass-library');
+const interactPrompt = document.getElementById('interact-prompt');
+const drillUI = document.getElementById('drill-ui');
+const drillInput = document.getElementById('drill-input');
+const readOverlay = document.getElementById('read-overlay');
+const readMessage = document.getElementById('read-message');
+const crosshair = document.getElementById('crosshair');
 
 const PX_PER_DEG = 2;
 const COMPASS_CENTER = 140;
@@ -28,6 +39,12 @@ const FISH = [];
 const KELP = [];
 let particlePos;
 const LIBRARY_POSITION = new THREE.Vector3(55, 0, -45);
+let libraryBoulder, raycaster, rayOrigin, rayDirection;
+let messages = [];
+let drillPromptVisible = false, readPromptVisible = false, drilling = false, reading = false;
+let hoveredHole = null;
+let pendingHoleData = null;
+let previewHole = null;
 
 function init() {
   scene = new THREE.Scene();
@@ -226,21 +243,41 @@ function init() {
     FISH.push(fish);
   }
 
-  // Library boulder — very large landmark
-  const libraryGeo = new THREE.IcosahedronGeometry(4, 2);
+  // Library boulder — very large interactible landmark
+  const libraryGeo = new THREE.IcosahedronGeometry(6, 2);
   const libraryMat = new THREE.MeshStandardMaterial({
     color: 0x2a3a3a,
     roughness: 0.9,
     metalness: 0,
   });
-  const libraryBoulder = new THREE.Mesh(libraryGeo, libraryMat);
+  libraryBoulder = new THREE.Mesh(libraryGeo, libraryMat);
   libraryBoulder.position.copy(LIBRARY_POSITION);
-  libraryBoulder.scale.set(1.2, 1, 0.9);
+  libraryBoulder.scale.set(1.8, 1.5, 1.4);
   libraryBoulder.rotation.set(0.1, 0.5, 0.05);
   libraryBoulder.castShadow = true;
   libraryBoulder.receiveShadow = true;
   libraryBoulder.name = 'library';
   scene.add(libraryBoulder);
+
+  raycaster = new THREE.Raycaster();
+  rayOrigin = new THREE.Vector3();
+  rayDirection = new THREE.Vector3();
+
+  function loadMessages() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      messages = raw ? JSON.parse(raw) : [];
+    } catch {
+      messages = [];
+    }
+    messages.forEach((m) => {
+      const pos = new THREE.Vector3(m.px, m.py, m.pz);
+      const norm = new THREE.Vector3(m.nx, m.ny, m.nz);
+      createHoleMesh(pos, norm, m.id);
+    });
+  }
+
+  loadMessages();
 
   // Float particles (plankton)
   const particleCount = 80;
@@ -307,9 +344,129 @@ function init() {
     if (cardinals[deg]) tick.dataset.dir = cardinals[deg];
     compassTicks.appendChild(tick);
   }
+
+  drillInput.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter') {
+      e.preventDefault();
+      saveDrilledMessage();
+    }
+  });
+  drillInput.addEventListener('input', () => {
+    document.getElementById('drill-hint').textContent =
+      `${drillInput.value.length}/${MAX_MESSAGE_LENGTH} characters · Enter to save`;
+  });
+
+  readOverlay.addEventListener('click', () => {
+    if (reading) closeReadOverlay();
+  });
+}
+
+function getRaycastTargets() {
+  const targets = [libraryBoulder];
+  scene.traverse((obj) => {
+    if (obj.name === 'message-hole') targets.push(obj);
+  });
+  return targets;
+}
+
+function saveDrilledMessage() {
+  const text = drillInput.value.trim();
+  if (!text || !pendingHoleData) return;
+  const id = crypto.randomUUID?.() || Date.now().toString(36);
+  const m = {
+    id,
+    px: pendingHoleData.point.x, py: pendingHoleData.point.y, pz: pendingHoleData.point.z,
+    nx: pendingHoleData.normal.x, ny: pendingHoleData.normal.y, nz: pendingHoleData.normal.z,
+    message: text,
+  };
+  messages.push(m);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  if (previewHole) {
+    scene.remove(previewHole);
+    previewHole = null;
+  }
+  createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
+  exitDrillMode();
+}
+
+function createHoleMesh(pos, normal, id) {
+  const group = new THREE.Group();
+  group.position.copy(pos);
+  group.position.add(normal.clone().multiplyScalar(0.02));
+  group.lookAt(pos.clone().add(normal));
+
+  const holeRadius = 0.05;
+  const holeGeo = new THREE.CircleGeometry(holeRadius, 12);
+  const holeMat = new THREE.MeshStandardMaterial({
+    color: 0x050508,
+    roughness: 1,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+  const holeCircle = new THREE.Mesh(holeGeo, holeMat);
+  group.add(holeCircle);
+
+  const rockMat = new THREE.MeshStandardMaterial({
+    color: 0x2a3538,
+    roughness: 0.9,
+    metalness: 0,
+  });
+  const rimRadius = holeRadius * 1.6;
+  const rimCount = 5;
+  for (let i = 0; i < rimCount; i++) {
+    const angle = (i / rimCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.2;
+    const x = Math.cos(angle) * rimRadius;
+    const z = Math.sin(angle) * rimRadius;
+    const rock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.015, 0.012, 0.018),
+      rockMat.clone()
+    );
+    rock.position.set(x, 0.006 + Math.random() * 0.006, z);
+    rock.rotation.set(Math.random() * 0.4, angle, Math.random() * 0.3);
+    rock.scale.set(0.8 + Math.random() * 0.6, 1, 0.8 + Math.random() * 0.6);
+    group.add(rock);
+  }
+
+  group.userData.messageId = id;
+  group.name = 'message-hole';
+  scene.add(group);
+  const msg = messages.find((m) => m.id === id);
+  if (msg) group.userData.message = msg.message;
+  return group;
+}
+
+function exitDrillMode() {
+  drilling = false;
+  pendingHoleData = null;
+  drillInput.value = '';
+  drillUI.classList.remove('active');
+  drillInput.blur();
+}
+
+function closeReadOverlay() {
+  reading = false;
+  readOverlay.classList.remove('active');
 }
 
 function onKeyDown(e) {
+  if (reading) {
+    if (e.code === 'KeyE' || e.code === 'Escape') {
+      e.preventDefault();
+      closeReadOverlay();
+    }
+    return;
+  }
+  if (drilling) {
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      if (previewHole) {
+        scene.remove(previewHole);
+        previewHole = null;
+      }
+      exitDrillMode();
+    }
+    return;
+  }
   if (e.code === 'KeyF' || e.code === 'KeyL' || e.key === 'f' || e.key === 'F' || e.key === 'l' || e.key === 'L') {
     if (!e.repeat) {
       e.preventDefault();
@@ -318,6 +475,32 @@ function onKeyDown(e) {
       renderer.toneMappingExposure = spotlightOn ? 0.7 : 0.4;
       lightBtn.textContent = spotlightOn ? 'Light: ON' : 'Light: OFF';
       lightBtn.classList.toggle('on', spotlightOn);
+    }
+    return;
+  }
+  if (e.code === 'KeyE' && readPromptVisible && hoveredHole) {
+    e.preventDefault();
+    const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
+    if (msg) {
+      interactPrompt.classList.remove('visible');
+      readMessage.textContent = msg.message;
+      readOverlay.classList.add('active');
+      reading = true;
+    }
+    return;
+  }
+  if (e.code === 'Enter' && drillPromptVisible && !drilling) {
+    e.preventDefault();
+    if (pendingHoleData) {
+      interactPrompt.classList.remove('visible');
+      previewHole = createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), 'preview');
+      previewHole.userData.messageId = null;
+      drilling = true;
+      drillUI.classList.add('active');
+      drillInput.value = '';
+      document.getElementById('drill-hint').textContent = `0/${MAX_MESSAGE_LENGTH} characters · Enter to save`;
+      drillInput.focus();
+      controls.unlock();
     }
     return;
   }
@@ -419,7 +602,7 @@ function animate(time) {
   _forward.y = 0;
   _forward.normalize();
   const heading = (Math.atan2(_forward.x, _forward.z) * 180 / Math.PI + 360) % 360;
-  compassTicks.style.transform = `translateX(${360 - heading * PX_PER_DEG}px)`;
+  compassTicks.style.transform = `translateX(${heading * PX_PER_DEG - 360}px)`;
 
   _toLibrary.subVectors(LIBRARY_POSITION, camera.position);
   _toLibrary.y = 0;
@@ -431,6 +614,47 @@ function animate(time) {
   if (inView) {
     compassLibrary.style.left = (COMPASS_CENTER + relAngle * PX_PER_DEG) + 'px';
   }
+
+  // Library interaction — raycast from center of screen
+  if (!drilling && !reading) {
+    const distToLibrary = camera.position.distanceTo(LIBRARY_POSITION);
+    rayOrigin.copy(camera.position);
+    camera.getWorldDirection(rayDirection);
+    raycaster.set(rayOrigin, rayDirection);
+    const targets = getRaycastTargets();
+    const hits = raycaster.intersectObjects(targets, true);
+
+    drillPromptVisible = false;
+    readPromptVisible = false;
+    hoveredHole = null;
+    if (hits.length > 0) {
+      const hit = hits[0];
+      const holeGroup = hit.object.name === 'message-hole' ? hit.object : (hit.object.parent?.name === 'message-hole' ? hit.object.parent : null);
+      if (holeGroup) {
+        if (distToLibrary < LIBRARY_INTERACT_DIST) {
+          hoveredHole = holeGroup;
+          readPromptVisible = true;
+          interactPrompt.textContent = 'Press E to read message';
+          interactPrompt.classList.add('visible');
+        }
+      } else if (hit.object.name === 'library') {
+        if (distToLibrary < LIBRARY_INTERACT_DIST) {
+          pendingHoleData = {
+            point: hit.point.clone(),
+            normal: hit.face.normal.clone().transformDirection(hit.object.matrixWorld),
+          };
+          drillPromptVisible = true;
+          interactPrompt.textContent = 'Press Enter to drill a hole and write a message';
+          interactPrompt.classList.add('visible');
+        }
+      }
+    }
+    if (!drillPromptVisible && !readPromptVisible) {
+      interactPrompt.classList.remove('visible');
+    }
+  }
+
+  crosshair.classList.toggle('interactable', drillPromptVisible || readPromptVisible);
 
   renderer.render(scene, camera);
 }

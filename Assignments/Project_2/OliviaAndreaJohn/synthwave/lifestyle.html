@@ -5,35 +5,257 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Waves ™ – Synthwave Lifestyle</title>
     <link rel="stylesheet" href="synthwave-theme.css" />
+    <style>
+      .lifestyle-layout {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr);
+        gap: 2rem;
+        align-items: stretch;
+      }
+
+      .lifestyle-panel {
+        backdrop-filter: blur(16px);
+        background: radial-gradient(
+            circle at top left,
+            rgba(255, 0, 204, 0.24),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(0, 255, 255, 0.16),
+            transparent 55%
+          );
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1.75rem 2rem;
+        box-shadow:
+          0 0 40px rgba(255, 0, 204, 0.4),
+          0 0 80px rgba(0, 255, 255, 0.3);
+      }
+
+      #lifestyle-3d-root {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow:
+          0 0 40px rgba(255, 0, 204, 0.45),
+          0 0 80px rgba(0, 255, 255, 0.3);
+        min-height: min(70vh, 640px);
+        background: radial-gradient(circle at top, #2a0040, #050010 60%);
+      }
+
+      #lifestyle-3d-root canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .lifestyle-hud {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        pointer-events: none;
+        padding: 1.5rem;
+        color: #ffeaff;
+        font-size: 0.9rem;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+      }
+
+      .lifestyle-hud-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .hud-chip {
+        background: linear-gradient(
+          120deg,
+          rgba(255, 0, 204, 0.8),
+          rgba(0, 255, 255, 0.7)
+        );
+        border-radius: 999px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: #05000a;
+        box-shadow:
+          0 0 12px rgba(255, 0, 204, 0.7),
+          0 0 24px rgba(0, 255, 255, 0.6);
+      }
+
+      .hud-help {
+        max-width: 360px;
+        background: radial-gradient(
+          circle at top left,
+          rgba(5, 0, 30, 0.9),
+          rgba(5, 0, 10, 0.95)
+        );
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+      }
+
+      .hud-help-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        opacity: 0.8;
+        margin-bottom: 0.3rem;
+      }
+
+      .hud-help-keys {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.6rem;
+        font-size: 0.78rem;
+      }
+
+      .hud-key {
+        padding: 0.12rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: radial-gradient(
+          circle at top,
+          rgba(255, 255, 255, 0.16),
+          rgba(10, 0, 40, 0.92)
+        );
+      }
+
+      .hud-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1rem;
+        font-size: 0.78rem;
+        opacity: 0.85;
+      }
+
+      .hud-prompt {
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 0, 204, 0.5),
+          rgba(5, 0, 25, 0.98)
+        );
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 900px) {
+        .lifestyle-layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        #lifestyle-3d-root {
+          min-height: 380px;
+          margin-top: 1rem;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div class="starfield"></div>
     <div class="sun"></div>
     <div class="grid-bg"></div>
     <div class="tree-layer"></div>
     <div class="overlay-vignette"></div>
     <div class="glow-layer"></div>
-    <div class="crt-overlay"></div>
-    <div class="shell">
-      <div class="shell-inner">
-        <h1>The Waves ™</h1>
-        <h2>Lifestyle · Synthwave</h2>
-        <p>
-          Use this page to dive into daily life in the Synthwave district:
-          housing, rituals, transportation, and how people spend a typical
-          twenty‑four hour loop under a permanent neon sunset.
-        </p>
-        <p>
-          You can replace this placeholder text with vignettes, character
-          sketches, or image spreads that show how residents actually live
-          inside this world.
-        </p>
-        <div class="back">
-          <a href="synthwave.html">← Back to Synthwave hub</a>
+
+    <header>
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-title">The Waves ™</div>
         </div>
+        <nav>
+          <a href="synthwave.html#about">About</a>
+          <a href="synthwave.html#lifestyle">Lifestyle</a>
+          <a href="synthwave.html#shopping">Shopping</a>
+          <a href="synthwave.html#food">Food</a>
+          <a href="synthwave.html#new">New</a>
+          <a href="synthwave.html#help">Help / FAQ</a>
+          <a href="synthwave.html#token">Token Top‑Up</a>
+        </nav>
       </div>
-    </div>
+    </header>
+
+    <main class="page-main">
+      <section class="page-shell">
+        <h1 class="page-kicker">The Waves ™</h1>
+        <h2 class="page-title">Lifestyle · Synthwave Mansion</h2>
+        <div class="lifestyle-layout">
+          <div class="lifestyle-panel">
+            <p>
+              Step into a synthwave penthouse rendered in realtime neon. This
+              3D space is a playable slice of daily life in the district: a
+              glass‑walled lounge hovering over an endless grid, with plasma
+              pillars, glowing plants, and a skyline of looping sunset bands.
+            </p>
+            <p>
+              Move through the mansion the way residents drift through the
+              night: slow, deliberate, and surrounded by color. The room tracks
+              your position, shifting light as you cross from cyan‑cooled
+              corners to magenta‑hot vistas. Look around, line up with the
+              balcony, and imagine the low thrum of retro‑futurist basslines
+              echoing off mirrored glass.
+            </p>
+            <p>
+              This is not just décor; it is an interface to the lifestyle
+              itself. Every surface hums with low‑power lumens, furniture
+              floats just above the floor grid, and the mansion acts as a
+              personal observatory over the endless synthwave horizon.
+            </p>
+            <div class="page-back">
+              <a href="synthwave.html">← Back to Synthwave hub</a>
+            </div>
+          </div>
+
+          <div id="lifestyle-3d-root" aria-label="Interactive synthwave mansion 3D scene">
+            <div class="lifestyle-hud">
+              <div class="lifestyle-hud-top">
+                <div class="hud-chip">Synthwave Mansion · Interactive</div>
+                <div class="hud-help">
+                  <div class="hud-help-title">Controls</div>
+                  <div class="hud-help-keys">
+                    <span class="hud-key">W</span>
+                    <span class="hud-key">A</span>
+                    <span class="hud-key">S</span>
+                    <span class="hud-key">D</span>
+                    <span>Move</span>
+                    <span class="hud-key">Mouse</span>
+                    <span>Look</span>
+                    <span class="hud-key">Space</span>
+                    <span>Ascend</span>
+                    <span class="hud-key">Shift</span>
+                    <span>Descend</span>
+                    <span class="hud-key">Esc</span>
+                    <span>Release cursor</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hud-bottom">
+                <div class="hud-prompt">Click inside the mansion to begin</div>
+                <div>Pointer‑lock first‑person view · WebGL / Three.js</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <script src="synthwave-theme.js" defer></script>
+    <script type="module" src="lifestyle-world.js"></script>
   </body>
 </html>
 
