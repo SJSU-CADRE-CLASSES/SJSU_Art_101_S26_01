@@ -337,6 +337,68 @@ body {
     flex-shrink: 0;
 }
 
+.diagnostics-display-area {
+    flex: 1;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.diagnostics-display-area.content-active {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-box {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: 8px;
+}
+
+.diagnostics-ship-box {
+    transition: padding 0.5s ease;
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-box.ship-animate-in {
+    animation: shipScaleAndMove 0.6s ease-out forwards;
+}
+
+@keyframes shipScaleAndMove {
+    0% {
+        transform: scale(1) translate(35%, 15%);
+    }
+    100% {
+        transform: scale(1.05) translate(0, 0);
+    }
+}
+
+.diagnostics-display-area:not(.content-active) .diagnostics-ship-box {
+    transform: scale(1) translate(0, 0);
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-box {
+    transform-origin: top left;
+}
+
+.diagnostics-ship-image {
+    width: 70%;
+    max-width: 70%;
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-image {
+    width: 180px;
+    max-width: 180px;
+}
+
+.diagnostics-display-area.content-active .diagnostics-section-content {
+    flex: 1;
+    min-width: 0;
+}
+
 .diagnostics-section-btn {
     padding: 16px 32px;
     border: 2px solid #33ff33;
@@ -360,14 +422,38 @@ body {
 }
 
 .diagnostics-section-content {
+    flex: 0;
+    min-height: 0;
+    overflow-y: auto;
+    display: none;
+}
+
+.diagnostics-display-area.content-active .diagnostics-section-content {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     min-height: 200px;
-    overflow-y: auto;
 }
 
 .diagnostics-section-panel.hidden {
     display: none !important;
 }
+
+/* Retro computer text loading - reveals from top down */
+.diagnostics-section-panel.retro-reveal {
+    overflow: hidden;
+    animation: retroTextReveal 1.2s ease-out forwards;
+}
+
+@keyframes retroTextReveal {
+    0% {
+        clip-path: inset(0 0 100% 0);
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
 
 .main-display-content::-webkit-scrollbar {
     width: 8px;
