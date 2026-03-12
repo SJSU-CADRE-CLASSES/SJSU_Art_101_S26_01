@@ -220,7 +220,7 @@ document.addEventListener("pointerlockchange", onPointerLockChange);
 document.addEventListener("mousemove", (event) => {
   if (!isPointerLocked) return;
   const sensitivity = 0.0027;
-  yaw -= event.movementX * sensitivity;
+  yaw += event.movementX * sensitivity;
   pitch -= event.movementY * sensitivity;
   const limit = Math.PI / 2 - 0.1;
   pitch = clamp(pitch, -limit, limit);

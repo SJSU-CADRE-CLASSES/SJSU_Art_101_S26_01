@@ -409,6 +409,8 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+    text-decoration: none;
+    display: inline-block;
 }
 
 .diagnostics-section-btn:hover {
@@ -763,6 +765,88 @@ body {
     text-align: left;
 }
 
+/* Previous Ship Maintenance - scrollable small window */
+.maintenance-records-scroll {
+    max-height: 620px;
+    overflow-y: auto;
+}
+
+.maintenance-records-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.maintenance-records-scroll::-webkit-scrollbar-track {
+    background: #0a0f0a;
+}
+
+.maintenance-records-scroll::-webkit-scrollbar-thumb {
+    background: #33ff33;
+}
+
+.maintenance-record {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.3);
+}
+
+.maintenance-record:last-child {
+    border-bottom: none;
+}
+
+.maintenance-record-title {
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 6px #33ff33;
+}
+
+.maintenance-record-field {
+    margin-bottom: 4px;
+    opacity: 0.95;
+}
+
+.maintenance-record-section {
+    font-size: 1.05rem;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    opacity: 0.95;
+}
+
+.maintenance-record ul {
+    margin: 4px 0 0 20px;
+    padding: 0;
+}
+
+.maintenance-record li {
+    margin-bottom: 2px;
+}
+
+.maintenance-alert {
+    color: #33ff33;
+    margin: 8px 0;
+    opacity: 1;
+}
+
+.maintenance-quote {
+    font-style: italic;
+    margin: 6px 0;
+    opacity: 0.9;
+}
+
+.maintenance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 1rem;
+}
+
+.maintenance-table th,
+.maintenance-table td {
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    padding: 6px 10px;
+    text-align: left;
+}
+
 /* Ship Diagnostics - box with buttons */
 .diagnostics-box {
     border: 2px solid #33ff33;
@@ -1000,6 +1084,16 @@ body {
 
 .back-link {
     margin-top: 8px;
+}
+
+.back-link-slim {
+    height: 30px;
+    min-height: 30px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
 }
 
 .back-btn-wrap {
