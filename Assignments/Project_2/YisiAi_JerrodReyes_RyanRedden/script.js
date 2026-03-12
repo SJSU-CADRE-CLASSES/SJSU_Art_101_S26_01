@@ -2,20 +2,20 @@
 TERMINAL TYPING EFFECT
 ========================= */
 
-const msg = "Connecting to Shadow Market encrypted node...";
-let i = 0;
+const msg="Connecting to Shadow Market encrypted node..."
+let i=0
 
 function typeText(){
 
-const el = document.getElementById("terminal");
-if(!el) return;
+const el=document.getElementById("terminal")
+if(!el) return
 
-if(i < msg.length){
+if(i<msg.length){
 
-el.innerHTML += msg.charAt(i);
-i++;
+el.innerHTML+=msg.charAt(i)
+i++
 
-setTimeout(typeText,40);
+setTimeout(typeText,40)
 
 }
 
@@ -23,78 +23,133 @@ setTimeout(typeText,40);
 
 
 /* =========================
-PAGE LOAD INITIALIZATION
+SYSTEM INITIALIZATION
 ========================= */
 
 window.addEventListener("load",()=>{
 
-typeText();
-updateBalance();
-loadTransactions();
-showBalance();
+initStorage()
+initTrader()
+updateBalance()
+loadTransactions()
+
+typeText()
+
+initNetwork()
+initNeuralMap()
+
+initMarketFeed()
+initHomeFeed()
+initCategoryCounts()
+
+initNeuralWave()
+initNeuralSync()
 
 })
 
 
 /* =========================
-MARKET FEED (Homepage)
+LOCAL STORAGE SETUP
 ========================= */
 
-const logs=[
+function initStorage(){
 
+if(!localStorage.getItem("credits")){
+localStorage.setItem("credits",2500000)
+}
+
+if(!localStorage.getItem("transactions")){
+localStorage.setItem("transactions","[]")
+}
+
+if(!localStorage.getItem("walletID")){
+
+let id="WALLET-"+Math.floor(Math.random()*900000+100000)
+localStorage.setItem("walletID",id)
+
+}
+
+}
+
+
+/* =========================
+TRADER ID SYSTEM
+========================= */
+
+function initTrader(){
+
+if(!localStorage.getItem("traderID")){
+
+let id="NODE-"+Math.floor(Math.random()*9000+1000)
+localStorage.setItem("traderID",id)
+
+}
+
+let trader=document.getElementById("trader-id")
+if(trader) trader.innerText=localStorage.getItem("traderID")
+
+let wallet=document.getElementById("wallet-id")
+if(wallet) wallet.innerText=localStorage.getItem("walletID")
+
+}
+
+
+/* =========================
+HOME TERMINAL FEED
+========================= */
+
+function initHomeFeed(){
+
+const logs=[
 "new seller joined network",
 "identity pack purchased",
 "dataset uploaded",
 "price spike detected",
 "government scan detected",
 "encrypted trade completed"
-
 ]
+
+const feed=document.getElementById("feed")
+if(!feed) return
 
 setInterval(()=>{
 
-const el=document.getElementById("feed")
-
-if(el){
-
 let r=Math.floor(Math.random()*logs.length)
 
-el.innerHTML="> "+logs[r]
-
-}
+feed.innerHTML="> "+logs[r]
 
 },3000)
+
+}
 
 
 /* =========================
 MARKETPLACE LIVE FEED
 ========================= */
 
-const trades=[
+function initMarketFeed(){
 
+const trades=[
 "ghost_logistics sold CARBINE",
 "uncle_zero shipped Whiteout",
 "DataGhost listed identity kit",
 "encrypted trade completed",
 "buyer from Sector 9 purchased item"
-
 ]
+
+const marketFeed=document.getElementById("market-feed")
+if(!marketFeed) return
 
 setInterval(()=>{
 
-let el=document.getElementById("market-feed")
-
-if(el){
-
 let r=Math.floor(Math.random()*trades.length)
+let price=Math.floor(Math.random()*2000000+10000)
 
-let price=Math.floor(Math.random()*900000+10000)
-
-el.innerText="> "+trades[r]+" | "+price.toLocaleString()+" CR"
-
-}
+marketFeed.innerText="> "+trades[r]+" | "+price.toLocaleString()+" CR"
 
 },2500)
+
+}
 
 
 /* =========================
@@ -103,80 +158,50 @@ KEYBOARD SHORTCUTS
 
 document.addEventListener("keydown",(e)=>{
 
-if(e.key==="Escape"){
-location.href="index.html"
-}
-
-if(e.key==="m"){
-location.href="marketplace.html"
-}
-
-if(e.key==="w"){
-location.href="wallet.html"
-}
+if(e.key==="Escape") location.href="index.html"
+if(e.key==="m") location.href="marketplace.html"
+if(e.key==="w") location.href="wallet.html"
 
 })
 
 
 /* =========================
-DYNAMIC PRICE SYSTEM
+CATEGORY COUNTS
 ========================= */
 
-const prices=document.querySelectorAll(".dynamic-price")
+function initCategoryCounts(){
 
-prices.forEach(p=>{
+const categories=document.querySelectorAll(".cat")
 
-let base=parseInt(p.dataset.base)
+categories.forEach(cat=>{
+
+let base=parseInt(cat.dataset.base)
 
 setInterval(()=>{
 
-let change=(Math.random()-0.5)*50000
+let change=Math.floor((Math.random()-0.5)*4)
+let value=base+change
 
-let price=Math.floor(base+change)
+if(value<0) value=0
 
-p.innerText=price.toLocaleString()+" CR"
+let name=cat.innerText.split("(")[0].trim()
+cat.innerText=name+" ("+value+")"
 
 },4000)
 
 })
 
-
-/* =========================
-TERMINAL COMMAND SYSTEM
-========================= */
-
-const cmd=document.getElementById("cmd")
-
-if(cmd){
-
-cmd.addEventListener("keydown",(e)=>{
-
-if(e.key==="Enter"){
-
-let v=cmd.value
-
-if(v==="market") location.href="marketplace.html"
-if(v==="login") location.href="login.html"
-if(v==="wallet") location.href="wallet.html"
-if(v==="home") location.href="index.html"
-if(v==="trace") triggerTrace()
-
-cmd.value=""
-
-}
-
-})
-
 }
 
 
 /* =========================
-NETWORK MAP (Nearby Buyers)
+NETWORK MAP (Marketplace)
 ========================= */
+
+function initNetwork(){
 
 const canvas=document.getElementById("network")
-
-if(canvas){
+if(!canvas) return
 
 const ctx=canvas.getContext("2d")
 
@@ -252,36 +277,112 @@ draw()
 
 
 /* =========================
-HACK ALERT
+NEURAL BROADCAST MAP
 ========================= */
 
-setTimeout(()=>{
+function initNeuralMap(){
 
-const alert=document.getElementById("alert")
+const canvas=document.getElementById("neural-map")
+if(!canvas) return
 
-if(alert){
+const ctx=canvas.getContext("2d")
 
-alert.style.display="block"
+canvas.width=canvas.clientWidth
+canvas.height=canvas.clientHeight
+
+let nodes=[]
+
+for(let i=0;i<10;i++){
+
+nodes.push({
+
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+vx:(Math.random()-0.5)*0.6,
+vy:(Math.random()-0.5)*0.6
+
+})
 
 }
 
-},20000)
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+nodes.forEach(n=>{
+
+n.x+=n.vx
+n.y+=n.vy
+
+if(n.x<0||n.x>canvas.width) n.vx*=-1
+if(n.y<0||n.y>canvas.height) n.vy*=-1
+
+ctx.fillStyle="#00ffd5"
+
+ctx.beginPath()
+ctx.arc(n.x,n.y,4,0,Math.PI*2)
+ctx.fill()
+
+})
+
+nodes.forEach(a=>{
+
+nodes.forEach(b=>{
+
+let dx=a.x-b.x
+let dy=a.y-b.y
+
+let dist=Math.sqrt(dx*dx+dy*dy)
+
+if(dist<80){
+
+ctx.strokeStyle="rgba(0,255,200,.2)"
+
+ctx.beginPath()
+ctx.moveTo(a.x,a.y)
+ctx.lineTo(b.x,b.y)
+ctx.stroke()
+
+}
+
+})
+
+})
+
+requestAnimationFrame(draw)
+
+}
+
+draw()
+
+}
 
 
 /* =========================
-WALLET SYSTEM
+TRACE ALERT
 ========================= */
 
-if(!localStorage.getItem("credits")){
-localStorage.setItem("credits",2500000)
+function triggerTrace(){
+
+let feed=document.getElementById("market-feed")
+if(!feed) return
+
+feed.innerText="> WARNING: GOVERNMENT TRACE DETECTED"
+feed.style.color="#ff4040"
+
+setTimeout(()=>{
+
+feed.innerText="> rerouting traffic..."
+feed.style.color="#00ffd5"
+
+},2000)
+
 }
 
-if(!localStorage.getItem("transactions")){
-localStorage.setItem("transactions","[]")
-}
 
-
-/* BALANCE UPDATE */
+/* =========================
+BALANCE SYSTEM
+========================= */
 
 function updateBalance(){
 
@@ -296,7 +397,9 @@ if(el2) el2.innerText=credits+" CR"
 }
 
 
-/* PURCHASE FUNCTION */
+/* =========================
+PURCHASE SYSTEM
+========================= */
 
 function buyItem(name,price){
 
@@ -310,12 +413,10 @@ return
 }
 
 credits-=price
-
 localStorage.setItem("credits",credits)
 
 let tx=JSON.parse(localStorage.getItem("transactions"))
-
-tx.unshift(name+" -"+price+" CR")
+tx.unshift("Purchased "+name+" - "+price+" CR")
 
 localStorage.setItem("transactions",JSON.stringify(tx))
 
@@ -335,12 +436,13 @@ confirm.innerHTML=
 }
 
 
-/* LOAD WALLET HISTORY */
+/* =========================
+TRANSACTION HISTORY
+========================= */
 
 function loadTransactions(){
 
 let el=document.getElementById("transactions")
-
 if(!el) return
 
 el.innerHTML=""
@@ -350,9 +452,7 @@ let tx=JSON.parse(localStorage.getItem("transactions"))
 tx.slice(0,10).forEach(t=>{
 
 let p=document.createElement("p")
-
 p.innerText=t
-
 el.appendChild(p)
 
 })
@@ -360,56 +460,13 @@ el.appendChild(p)
 }
 
 
-/* CATEGORY LIVE COUNTS */
-
-const categories=document.querySelectorAll(".cat")
-
-categories.forEach(cat=>{
-
-let base=parseInt(cat.dataset.base)
-
-setInterval(()=>{
-
-let change=Math.floor((Math.random()-0.5)*4)
-
-let value=base+change
-
-if(value<0) value=0
-
-let name=cat.innerText.split("(")[0].trim()
-
-cat.innerText=name+" ("+value+")"
-
-},4000)
-
-})
-
-
-/* WALLET ID */
-
-if(!localStorage.getItem("walletID")){
-
-let id="WALLET-"+Math.floor(Math.random()*900000+100000)
-
-localStorage.setItem("walletID",id)
-
-}
-
-let walletID=document.getElementById("wallet-id")
-
-if(walletID){
-
-walletID.innerText=localStorage.getItem("walletID")
-
-}
-
-
-/* SEND CREDITS */
+/* =========================
+TRANSFER CREDITS
+========================= */
 
 function sendCredits(){
 
 let amount=parseInt(document.getElementById("amount").value)
-
 let receiver=document.getElementById("receiver").value
 
 let credits=parseInt(localStorage.getItem("credits"))
@@ -429,11 +486,9 @@ return
 }
 
 credits-=amount
-
 localStorage.setItem("credits",credits)
 
 let tx=JSON.parse(localStorage.getItem("transactions"))
-
 tx.unshift("Sent "+amount+" CR to "+receiver)
 
 localStorage.setItem("transactions",JSON.stringify(tx))
@@ -444,7 +499,9 @@ loadTransactions()
 }
 
 
-/* TEST DEPOSIT */
+/* =========================
+TEST DEPOSIT
+========================= */
 
 function deposit(){
 
@@ -455,7 +512,6 @@ credits+=100000
 localStorage.setItem("credits",credits)
 
 let tx=JSON.parse(localStorage.getItem("transactions"))
-
 tx.unshift("Deposit +100000 CR")
 
 localStorage.setItem("transactions",JSON.stringify(tx))
@@ -466,18 +522,124 @@ loadTransactions()
 }
 
 
-/* PRODUCT PAGE BALANCE */
+/* =========================
+NEURAL STREAM
+========================= */
 
-function showBalance(){
+function tapStream(){
 
-let credits=localStorage.getItem("credits")
+const states=[
+"Adrenaline spike detected",
+"Fear response detected",
+"Memory fragment intercepted",
+"Spatial vertigo signal",
+"Limbic synchronization active",
+"Foreign sensory echo detected"
+]
 
-let el=document.getElementById("balance-display")
+let r=Math.floor(Math.random()*states.length)
+
+let el=document.getElementById("neural-status")
 
 if(el){
-
-el.innerText=credits+" CR"
+el.innerText="> "+states[r]
+}
 
 }
+
+
+/* =========================
+NEURAL LOGIN
+========================= */
+
+function neuralLogin(){
+
+let el=document.getElementById("login-status")
+if(!el) return
+
+el.innerText="> scanning neural signature..."
+
+setTimeout(()=>{
+el.innerText="> identity verified — access granted"
+},2000)
+
+setTimeout(()=>{
+location.href="marketplace.html"
+},3000)
+
+}
+
+
+/* =========================
+NEURAL SYNC LEVEL
+========================= */
+
+function initNeuralSync(){
+
+setInterval(()=>{
+
+let sync=document.getElementById("sync-level")
+
+if(sync){
+
+let value=Math.floor(Math.random()*20+70)
+
+sync.innerText=value+"%"
+
+}
+
+},3000)
+
+}
+
+
+/* =========================
+NEURAL WAVE VISUALIZER
+========================= */
+
+function initNeuralWave(){
+
+const canvas=document.getElementById("neural-wave")
+if(!canvas) return
+
+const ctx=canvas.getContext("2d")
+
+canvas.width=canvas.clientWidth
+canvas.height=canvas.clientHeight
+
+let t=0
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+ctx.beginPath()
+
+ctx.strokeStyle="#00ffd5"
+ctx.lineWidth=2
+
+for(let x=0;x<canvas.width;x++){
+
+let y=canvas.height/2 +
+Math.sin((x+t)*0.03)*20 +
+Math.sin((x+t)*0.01)*40
+
+if(x===0){
+ctx.moveTo(x,y)
+}else{
+ctx.lineTo(x,y)
+}
+
+}
+
+ctx.stroke()
+
+t+=2
+
+requestAnimationFrame(draw)
+
+}
+
+draw()
 
 }

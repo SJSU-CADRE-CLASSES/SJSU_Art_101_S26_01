@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Neural Stream Interface</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="screen">
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div>NEURAL GHOST V.4 STREAM INTERFACE</div>
+
+<div class="header-right">
+
+<div class="balance-box">
+BALANCE: <span id="balance-display">0 CR</span>
+</div>
+
+<div class="balance-box">
+ID: <span id="trader-id">NODE-0000</span>
+</div>
+
+<a href="index.html" class="retro-btn">Home</a>
+<a href="marketplace.html" class="retro-btn">Market</a>
+<a href="wallet.html" class="retro-btn">Wallet</a>
+
+</div>
+
+</div>
+
+
+<!-- DEVICE STATUS -->
+
+<div class="panel">
+
+<h3>Device Status</h3>
+
+<p>> device: Neural Ghost V.4</p>
+<p>> connection: active</p>
+<p>> neural sync: <span id="sync-level">82%</span></p>
+<p>> signal encryption: enabled</p>
+
+</div>
+
+
+<!-- NEURAL BROADCAST MAP -->
+
+<h3>Nearby Neural Broadcasts</h3>
+
+<p style="font-size:13px;color:#00ffd5;">
+Scanning nearby limbic signals from connected users.
+</p>
+
+<canvas id="neural-map"></canvas>
+
+
+<!-- STATUS -->
+
+<p id="neural-status" style="margin-top:15px;">
+> awaiting neural broadcast...
+</p>
+
+
+<!-- ACTION -->
+
+<button class="retro-btn" onclick="tapStream()">
+Tap Neural Stream
+</button>
+
+
+<!-- NEURAL SIGNAL VISUALIZER -->
+
+<h3 style="margin-top:30px;">Neural Signal Activity</h3>
+
+<p style="font-size:13px;color:#00ffd5;">
+Live neural waveform captured from the network stream.
+</p>
+
+<canvas id="neural-wave"></canvas>
+
+
+<!-- WARNING -->
+
+<div id="alert" class="alert">
+WARNING: Foreign neural trace detected
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

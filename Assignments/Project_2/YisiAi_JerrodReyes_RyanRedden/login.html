@@ -23,19 +23,25 @@
 
 <div class="login-box">
 
-<h2>Anonymous Login</h2>
+<h2>Neural Access Terminal</h2>
+
+<p id="login-status">
+> waiting for neural scan...
+</p>
 
 <label>Alias</label><br>
-<input type="text"><br><br>
+<input type="text" id="alias-input" placeholder="enter trader alias"><br><br>
 
-<label>Password</label><br>
-<input type="password"><br><br>
+<label>Access Phrase</label><br>
+<input type="password" id="access-input" placeholder="enter access phrase"><br><br>
 
-<button class="retro-btn">Connect</button>
+<button class="retro-btn" onclick="neuralLogin()">Start Neural Scan</button>
+
+</div>
 
 </div>
 
-</div>
+<script src="script.js"></script>
 
 </body>
 </html>
