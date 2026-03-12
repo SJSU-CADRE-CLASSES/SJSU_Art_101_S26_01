@@ -169,7 +169,7 @@ body {
     display: flex;
     flex: 1;
     gap: 12px;
-    min-height: 0;
+    min-height: min(600px, 70vh);
 }
 
 .termiini-pane {
@@ -331,6 +331,44 @@ body {
     gap: 15px;
 }
 
+.diagnostics-section-buttons {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.diagnostics-section-btn {
+    padding: 16px 32px;
+    border: 2px solid #33ff33;
+    color: #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 1.6rem;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+}
+
+.diagnostics-section-btn:hover {
+    background: rgba(51, 255, 51, 0.1);
+    box-shadow: 0 0 10px #33ff33;
+}
+
+.diagnostics-section-btn.active {
+    background: rgba(51, 255, 51, 0.15);
+    box-shadow: 0 0 10px #33ff33, inset 0 0 6px rgba(51, 255, 51, 0.2);
+}
+
+.diagnostics-section-content {
+    flex: 1;
+    min-height: 200px;
+    overflow-y: auto;
+}
+
+.diagnostics-section-panel.hidden {
+    display: none !important;
+}
+
 .main-display-content::-webkit-scrollbar {
     width: 8px;
 }
@@ -341,6 +379,130 @@ body {
 
 .main-display-content::-webkit-scrollbar-thumb {
     background: #33ff33;
+}
+
+/* Ship Summary section */
+.ship-summary-box {
+    border: 2px solid #33ff33;
+    padding: 16px 18px;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ship-summary-title {
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 8px #33ff33;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.5);
+}
+
+.ship-summary-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ship-summary-subtitle {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    opacity: 0.95;
+}
+
+.ship-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+}
+
+.ship-summary-table th,
+.ship-summary-table td {
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.ship-summary-table th {
+    opacity: 0.95;
+    letter-spacing: 0.05em;
+}
+
+.ship-summary-table td {
+    opacity: 0.9;
+}
+
+.ship-summary-readiness {
+    font-size: 1.05rem;
+    padding-top: 6px;
+    border-top: 1px solid rgba(51, 255, 51, 0.4);
+}
+
+.ship-summary-note {
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 10px 12px;
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    background: rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+/* Warp Health section */
+.warp-health-box {
+    border: 2px solid #33ff33;
+    padding: 16px 18px;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.warp-health-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.warp-health-diagnostic {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.warp-health-row {
+    line-height: 1.5;
+}
+
+.warp-health-panel {
+    margin: 0;
+}
+
+.warp-health-subsection {
+    font-size: 1.05rem;
+    opacity: 0.95;
+}
+
+.warp-health-list {
+    margin: 0;
+    padding-left: 24px;
+    font-size: 1rem;
+    line-height: 1.8;
+    opacity: 0.9;
+}
+
+.warp-health-events {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.warp-event {
+    line-height: 1.5;
 }
 
 .termiini-footer {
