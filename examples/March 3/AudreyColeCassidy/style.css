@@ -101,6 +101,18 @@ body {
     padding: 16px 20px;
 }
 
+/* Top nav - centered button bar */
+.termiini-top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 0 16px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #33ff33;
+    flex-shrink: 0;
+}
+
 .termiini-header {
     display: flex;
     align-items: flex-end;
@@ -550,6 +562,15 @@ body {
     box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
     display: flex;
     justify-content: center;
+}
+
+.diagnostics-ship-box {
+    border: 2px solid #33ff33;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    flex-shrink: 0;
 }
 
 .diagnostics-ship-image {

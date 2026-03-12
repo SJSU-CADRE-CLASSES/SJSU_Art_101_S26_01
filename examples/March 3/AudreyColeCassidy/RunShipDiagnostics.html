@@ -41,6 +41,13 @@
     </div>
 
     <div class="terminal-container termiini-layout diagnostics-content-hidden" id="diagnostics-main-content">
+        <!-- Top nav - centered button bar -->
+        <nav class="termiini-top-nav">
+            <a href="personal.html" class="footer-btn">PERSONAL</a>
+            <a href="warp-dilation.html" class="footer-btn">WARP DILATION</a>
+            <a href="ship-exterior.html" class="footer-btn active">SHIP EXTERIOR</a>
+            <a href="chat.html" class="footer-btn">CHAT-VOX</a>
+        </nav>
         <!-- Header - split layout -->
         <header class="termiini-header">
             <div class="header-left">
@@ -82,14 +89,6 @@
                     <div class="box-text dim">PROPULSION</div>
                     <div class="box-scrollbar"></div>
                 </div>
-                <div class="termiini-radar">
-                    <div class="radar-circle">
-                        <div class="radar-sweep"></div>
-                        <div class="radar-ring r1"></div>
-                        <div class="radar-ring r2"></div>
-                        <div class="radar-ring r3"></div>
-                    </div>
-                </div>
                 <div class="termiini-box">
                     <div class="box-text">SECTOR 7</div>
                     <div class="box-text dim">VESSEL ID: 77-ACX</div>
@@ -101,6 +100,9 @@
                 <div class="termiini-main-display">
                     <div class="main-display-frame">
                         <div class="main-display-content">
+                            <div class="diagnostics-ship-box">
+                                <img src="3d ship.png" alt="3D Ship schematic" class="diagnostics-ship-image">
+                            </div>
                             <div class="content-block">
                                 INITIALIZING SYSTEM DIAGNOSTICS...<br><br>
                                 SCANNING CORE SYSTEMS: OK<br>
@@ -139,13 +141,8 @@
             </aside>
         </div>
 
-        <!-- Footer - horizontal button bar -->
+        <!-- Footer -->
         <footer class="termiini-footer">
-            <a href="personal.html" class="footer-btn"><span class="footer-btn-icon">●</span></a>
-            <a href="personal.html" class="footer-btn">PERSONAL</a>
-            <a href="warp-dilation.html" class="footer-btn">WARP DILATION</a>
-            <a href="ship-exterior.html" class="footer-btn active">SHIP EXTERIOR</a>
-            <a href="chat.html" class="footer-btn">CHAT-VOX</a>
             <a href="log-in.html" class="footer-btn footer-btn-icon-only">⌂</a>
             <span class="footer-hint">q: return to dashboard</span>
         </footer>
