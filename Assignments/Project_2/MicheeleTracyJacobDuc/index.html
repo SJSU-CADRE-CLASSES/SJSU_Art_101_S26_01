@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarStruck // Reputation Economy</title>
+    <style>
+      :root {
+        --bg: #02030a;
+        --bg-alt: #060716;
+        --panel: #080a1a;
+        --accent: #ff6ad5;
+        --accent-soft: rgba(255, 106, 213, 0.18);
+        --accent-2: #5ad8ff;
+        --accent-warn: #ffcc00;
+        --danger: #ff375f;
+        --text: #f7f7ff;
+        --muted: #a3a9d4;
+        --border-subtle: rgba(163, 169, 212, 0.25);
+        --shadow-strong: 0 28px 80px rgba(0, 0, 0, 0.95);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 10% 0, #2d1b55 0, transparent 50%),
+          radial-gradient(circle at 90% 100%, #003847 0, transparent 55%),
+          linear-gradient(160deg, #02030a 0, #02030a 40%, #000000 100%);
+        overflow-x: hidden;
+      }
+
+      .scanlines::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: linear-gradient(
+          rgba(255, 255, 255, 0.02) 1px,
+          transparent 1px
+        );
+        background-size: 100% 3px;
+        mix-blend-mode: soft-light;
+        opacity: 0.65;
+        z-index: 0;
+      }
+
+      .noise::after {
+        content: "";
+        position: fixed;
+        inset: -40px;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+        opacity: 0.5;
+        mix-blend-mode: soft-light;
+        z-index: 0;
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 20px 20px 60px;
+      }
+
+      header {
+        position: sticky;
+        top: 14px;
+        z-index: 10;
+        margin-bottom: 26px;
+      }
+
+      .nav-shell {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-radius: 999px;
+        padding: 10px 18px;
+        background:
+          radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 55%),
+          rgba(3, 7, 27, 0.94);
+        border: 1px solid rgba(163, 169, 212, 0.6);
+        backdrop-filter: blur(22px);
+        box-shadow:
+          0 18px 60px rgba(0, 0, 0, 0.9),
+          0 0 26px rgba(90, 216, 255, 0.45);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        background:
+          radial-gradient(circle at 30% 10%, #ffffff 0, #ffccfb 28%, #ff6ad5 45%, #02030a 80%);
+        box-shadow:
+          0 0 18px rgba(255, 106, 213, 0.8),
+          0 0 26px rgba(90, 216, 255, 0.9);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .brand-mark::after {
+        content: "★";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #02030a;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+
+      .brand-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .brand-name {
+        font-size: 1.02rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+      }
+
+      nav {
+        display: flex;
+        gap: 8px;
+      }
+
+      nav a {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        padding: 6px 12px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: var(--muted);
+        border: 1px solid transparent;
+        transition:
+          background 0.16s ease,
+          color 0.16s ease,
+          border-color 0.16s ease,
+          transform 0.1s ease;
+      }
+
+      nav a:hover {
+        color: var(--text);
+        border-color: rgba(90, 216, 255, 0.8);
+        background: rgba(3, 9, 38, 0.92);
+        transform: translateY(-1px);
+      }
+
+      nav a.active {
+        color: #02030a;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        border-color: transparent;
+        box-shadow:
+          0 0 18px rgba(90, 216, 255, 0.9),
+          0 0 26px rgba(255, 106, 213, 0.85);
+      }
+
+      .credit-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 204, 0, 0.75);
+        background: radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.2), transparent 55%);
+        color: #ffe36f;
+      }
+
+      .credit-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ffe36f;
+        box-shadow: 0 0 12px rgba(255, 204, 0, 0.9);
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: 60px;
+      }
+
+      .section {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 32px;
+        align-items: center;
+        padding: 30px 24px 32px;
+        border-radius: 26px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 45%),
+          radial-gradient(circle at 100% 0, rgba(90, 216, 255, 0.16), transparent 55%),
+          radial-gradient(circle at 0 100%, rgba(255, 106, 213, 0.16), transparent 55%),
+          rgba(3, 5, 23, 0.95);
+        border: 1px solid rgba(163, 169, 212, 0.45);
+        box-shadow: var(--shadow-strong);
+      }
+
+      .section--alt {
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.02), transparent 35%),
+          radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.12), transparent 60%),
+          radial-gradient(circle at 100% 100%, rgba(255, 55, 95, 0.22), transparent 60%),
+          #050516;
+      }
+
+      .section--reverse {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      }
+
+      .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      h1,
+      h2 {
+        margin: 0 0 10px;
+        letter-spacing: 0.04em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        line-height: 1.02;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+      }
+
+      h1 span,
+      h2 span {
+        background: linear-gradient(135deg, #ffffff, #ff9ff3);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .lede {
+        font-size: 1rem;
+        color: var(--muted);
+        max-width: 36rem;
+        line-height: 1.7;
+        margin-bottom: 20px;
+      }
+
+      .warning-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 204, 0, 0.8);
+        background: radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.14), transparent 60%),
+          rgba(12, 10, 3, 0.95);
+        font-size: 0.86rem;
+        color: #ffe36f;
+        margin-bottom: 18px;
+      }
+
+      .warning-symbol {
+        font-size: 0.9rem;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .pill {
+        font-size: 0.75rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 6px 11px;
+        border-radius: 999px;
+        border: 1px dashed var(--border-subtle);
+        color: var(--muted);
+        background: rgba(5, 6, 25, 0.9);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .pill-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        box-shadow: 0 0 12px rgba(90, 216, 255, 0.9);
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .btn-primary {
+        border: none;
+        border-radius: 999px;
+        padding: 11px 22px;
+        font-size: 0.9rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        color: #02030a;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        box-shadow:
+          0 18px 52px rgba(0, 0, 0, 0.9),
+          0 0 32px rgba(90, 216, 255, 0.9);
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 24px 62px rgba(0, 0, 0, 0.95),
+          0 0 40px rgba(255, 106, 213, 0.95);
+      }
+
+      .btn-ghost {
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-size: 0.85rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        border: 1px solid var(--border-subtle);
+        background: rgba(5, 7, 26, 0.85);
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        backdrop-filter: blur(12px);
+        transition:
+          background 0.16s ease,
+          color 0.16s ease,
+          border-color 0.16s ease,
+          transform 0.1s ease;
+      }
+
+      .btn-ghost:hover {
+        transform: translateY(-1px);
+        background: rgba(10, 12, 40, 0.98);
+        color: var(--text);
+        border-color: rgba(163, 169, 212, 0.8);
+      }
+
+      .btn-icon {
+        font-size: 1.1rem;
+      }
+
+      .panel {
+        border-radius: 22px;
+        padding: 16px 16px 14px;
+        background:
+          radial-gradient(circle at 20% 0, rgba(255, 255, 255, 0.12), transparent 55%),
+          radial-gradient(circle at 100% 100%, rgba(90, 216, 255, 0.18), transparent 60%),
+          var(--panel);
+        border: 1px solid rgba(163, 169, 212, 0.5);
+        box-shadow:
+          0 18px 50px rgba(0, 0, 0, 0.9),
+          0 0 22px rgba(90, 216, 255, 0.6);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 0.78rem;
+      }
+
+      .panel-title {
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .panel-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(90, 216, 255, 0.8);
+        background: rgba(4, 18, 29, 0.95);
+        color: var(--accent-2);
+      }
+
+      .panel-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent-2);
+        box-shadow: 0 0 14px rgba(90, 216, 255, 1);
+      }
+
+      .world-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .world-card {
+        border-radius: 16px;
+        padding: 10px 10px 9px;
+        position: relative;
+        cursor: pointer;
+        transition:
+          transform 0.12s ease,
+          box-shadow 0.12s ease,
+          border-color 0.12s ease;
+        border: 1px solid rgba(163, 169, 212, 0.45);
+        background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.07), transparent 55%);
+      }
+
+      .world-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.9);
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+
+      .world-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 2px;
+      }
+
+      .world-name {
+        font-size: 0.86rem;
+        font-weight: 600;
+      }
+
+      .world-stars {
+        margin-top: 4px;
+        font-size: 0.8rem;
+      }
+
+      .world-stars span {
+        color: #ffcc66;
+        text-shadow: 0 0 10px rgba(255, 204, 102, 0.9);
+      }
+
+      .world-meta {
+        margin-top: 4px;
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .divider {
+        margin: 12px 0 10px;
+        border-top: 1px dashed rgba(163, 169, 212, 0.5);
+      }
+
+      .rating-panel {
+        display: grid;
+        grid-template-columns: 2.1fr 1.3fr;
+        gap: 14px;
+        font-size: 0.82rem;
+      }
+
+      .rating-copy {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .rating-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .field-label {
+        font-size: 0.68rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .field-input {
+        border-radius: 999px;
+        padding: 6px 9px;
+        border: 1px solid rgba(163, 169, 212, 0.7);
+        background: rgba(3, 6, 25, 0.9);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .field-input span {
+        font-size: 0.78rem;
+      }
+
+      .field-input button {
+        background: transparent;
+        border: none;
+        color: #ffcc66;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      .field-hint {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .economy {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .economy-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .economy-card {
+        border-radius: 16px;
+        padding: 10px 10px 9px;
+        border: 1px dashed rgba(163, 169, 212, 0.55);
+        background: rgba(7, 9, 28, 0.9);
+        font-size: 0.78rem;
+      }
+
+      .economy-title {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .economy-value {
+        font-size: 0.9rem;
+      }
+
+      .highlight {
+        color: #ffcc66;
+      }
+
+      footer {
+        margin-top: 10px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 2px 0;
+        border-top: 1px dashed rgba(163, 169, 212, 0.45);
+      }
+
+      footer span {
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 880px) {
+        .section,
+        .section--reverse {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .section--reverse {
+          display: flex;
+          flex-direction: column-reverse;
+        }
+      }
+
+      @media (max-width: 720px) {
+        header .nav-shell {
+          flex-direction: column;
+          align-items: flex-start;
+          border-radius: 20px;
+        }
+
+        nav {
+          flex-wrap: wrap;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .page {
+          padding: 16px 14px 40px;
+        }
+
+        .section {
+          padding: 22px 16px 24px;
+          border-radius: 20px;
+        }
+
+        h1 {
+          font-size: 2.05rem;
+        }
+
+        .world-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .rating-panel {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body class="scanlines noise">
+    <div class="page">
+      <header>
+        <div class="nav-shell">
+          <div class="brand">
+            <div class="brand-mark"></div>
+            <div class="brand-text">
+              <span class="brand-label">Multi‑World Access Gate</span>
+              <span class="brand-name">StarStruck</span>
+            </div>
+          </div>
+
+          <nav>
+            <a href="#intro" class="active">Origin</a>
+            <a href="#worlds">Worlds</a>
+            <a href="#economy">Currency</a>
+          </nav>
+
+          <div class="credit-chip">
+            <span class="credit-dot"></span>
+            <span>0.00 ★ balance</span>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="intro" class="section">
+          <div>
+            <p class="eyebrow">Dystopian reputation engine</p>
+            <h1>
+              Enter worlds where<br />
+              <span>kindness is currency.</span>
+            </h1>
+            <p class="lede">
+              In the StarStruck system, every interaction is logged as a star.
+              The more generously you move through each world, the brighter your
+              account glows. Coldness, cruelty, or apathy dim your balance—
+              closing doors you did not know you needed.
+            </p>
+
+            <div class="warning-banner">
+              <span class="warning-symbol">⚠︎</span>
+              <span>
+                Star ratings are legal tender across connected worlds. A careless
+                comment can cost more than you can earn back in a cycle. Tread
+                gently.
+              </span>
+            </div>
+
+            <div class="pill-row">
+              <span class="pill">
+                <span class="pill-dot"></span>
+                Scroll to change realities
+              </span>
+              <span class="pill">
+                <span class="pill-dot"></span>
+                Rate every encounter
+              </span>
+              <span class="pill">
+                <span class="pill-dot"></span>
+                Empathy grows your balance
+              </span>
+            </div>
+
+            <div class="cta-row">
+              <button class="btn-primary" type="button">
+                Jack in to first world
+                <span>⇣</span>
+              </button>
+              <button class="btn-ghost" type="button">
+                <span class="btn-icon">◎</span>
+                View system rules
+              </button>
+            </div>
+          </div>
+
+          <div class="panel" aria-label="Portal selector mockup">
+            <div class="panel-header">
+              <span class="panel-title">World index · /scroll to enter</span>
+              <span class="panel-status">
+                <span class="panel-status-dot"></span>
+                online
+              </span>
+            </div>
+
+            <div class="world-grid">
+              <button class="world-card" type="button">
+                <div class="world-label">001 · upper tiers</div>
+                <div class="world-name">Glass City</div>
+                <div class="world-stars">
+                  <span>★★★★★</span> / entry cost: 4.7★
+                </div>
+                <div class="world-meta">low conflict · polite masks</div>
+              </button>
+
+              <button class="world-card" type="button">
+                <div class="world-label">002 · street level</div>
+                <div class="world-name">Neon Underpass</div>
+                <div class="world-stars">
+                  <span>★★★☆☆</span> / entry cost: 2.3★
+                </div>
+                <div class="world-meta">barter talk · fast judgements</div>
+              </button>
+
+              <button class="world-card" type="button">
+                <div class="world-label">003 · fringe</div>
+                <div class="world-name">Signal Market</div>
+                <div class="world-stars">
+                  <span>★★☆☆☆</span> / entry cost: 1.0★
+                </div>
+                <div class="world-meta">unstable trust · sharp smiles</div>
+              </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="rating-panel">
+              <p class="rating-copy">
+                When you step through a portal, every conversation becomes a
+                transaction. Listen closely. Offer patience. The person in front
+                of you is also trying to afford tomorrow.
+              </p>
+
+              <div class="rating-field">
+                <span class="field-label">Simulated encounter rating</span>
+                <div class="field-input">
+                  <span>How many stars would you give this interaction?</span>
+                  <button type="button">★ ★ ★ ★ ☆</button>
+                </div>
+                <span class="field-hint">
+                  Remember: your rating determines their rent, rations, and
+                  routes home.
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="worlds" class="section section--reverse section--alt">
+          <div class="panel" aria-label="World interaction log">
+            <div class="panel-header">
+              <span class="panel-title">Live log · recent crossings</span>
+              <span class="panel-status">
+                <span class="panel-status-dot"></span>
+                recording
+              </span>
+            </div>
+
+            <div class="economy">
+              <p>
+                Scroll down this page as if you were gliding across sectors.
+                Each block below represents a new world, each world a different
+                expectation of you. The constant? You always pay in stars.
+              </p>
+            </div>
+
+            <div class="economy-grid">
+              <div class="economy-card">
+                <div class="economy-title">Glass City / 001</div>
+                <div class="economy-value">
+                  Smiles are rehearsed, compliments are compulsory. Failing to
+                  rate someone at least four stars is read as an attack.
+                </div>
+              </div>
+
+              <div class="economy-card">
+                <div class="economy-title">Neon Underpass / 002</div>
+                <div class="economy-value">
+                  Jokes are currency, favors are receipts. Every shared secret
+                  is worth half a star—until someone leaks it.
+                </div>
+              </div>
+
+              <div class="economy-card">
+                <div class="economy-title">Signal Market / 003</div>
+                <div class="economy-value">
+                  Here, people rent borrowed ratings just to cross the street.
+                  If you speak gently, you might be the highest balance they see
+                  all week.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p class="eyebrow">Scrolling as portal travel</p>
+            <h2>
+              Every swipe drops you<br />
+              into a <span>new social law.</span>
+            </h2>
+            <p class="lede">
+              This site is a vertical corridor of realities. As you move down,
+              imagine the rules shifting under your feet. Would you change how
+              you speak if you knew every gesture translated directly into food,
+              shelter, and safety for someone else?
+            </p>
+            <p class="lede">
+              StarStruck invites you to practice a different reflex: assume
+              everyone you meet is quietly trying to survive the rating system
+              too.
+            </p>
+          </div>
+        </section>
+
+        <section id="economy" class="section">
+          <div>
+            <p class="eyebrow">Star economy manifesto</p>
+            <h2>
+              In this universe,<br />
+              <span>kindness accrues interest.</span>
+            </h2>
+            <p class="lede">
+              Stars here are more than icons. They are wages, transit passes,
+              medical access, and music tokens. You cannot see anyone else’s
+              balance, only the light in their eyes when you choose to rate them
+              higher than the world expects.
+            </p>
+            <p class="lede">
+              The only strategy that works in every world you scroll through:
+              be deliberately kind. Generosity multiplies in ways that data
+              cannot fully measure.
+            </p>
+          </div>
+
+          <div class="panel" aria-label="Personal balance breakdown">
+            <div class="panel-header">
+              <span class="panel-title">Account summary · star ledger</span>
+              <span class="panel-status">
+                <span class="panel-status-dot"></span>
+                simulated
+              </span>
+            </div>
+
+            <div class="economy">
+              <p>
+                Imagine this panel updating in real time as you wander between
+                worlds on this site. Every small kindness adds a fraction of a
+                star; every careless dismissal quietly subtracts.
+              </p>
+
+              <div class="economy-grid">
+                <div class="economy-card">
+                  <div class="economy-title">earned today</div>
+                  <div class="economy-value highlight">+1.7★</div>
+                  <p>Listening without interrupting, sharing safe routes.</p>
+                </div>
+
+                <div class="economy-card">
+                  <div class="economy-title">spent today</div>
+                  <div class="economy-value highlight">−0.9★</div>
+                  <p>Cross‑world travel fees, late message penalties.</p>
+                </div>
+
+                <div class="economy-card">
+                  <div class="economy-title">projected impact</div>
+                  <div class="economy-value">
+                    Treat every interaction as a chance to fund someone else’s
+                    future.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>StarStruck · scroll through worlds</span>
+        <span>In this future, be kind on purpose.</span>
+      </footer>
+    </div>
+  </body>
+</html>
