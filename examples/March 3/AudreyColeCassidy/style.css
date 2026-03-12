@@ -454,6 +454,15 @@ body {
     }
 }
 
+/* Occasional blink for highlighted Warp Health text */
+.blink-highlight {
+    animation: blinkOccasional 4s ease-in-out infinite;
+}
+
+@keyframes blinkOccasional {
+    0%, 90%, 100% { opacity: 1; }
+    92%, 96% { opacity: 0.3; }
+}
 
 .main-display-content::-webkit-scrollbar {
     width: 8px;
