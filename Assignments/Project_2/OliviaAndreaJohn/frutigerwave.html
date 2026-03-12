@@ -1,11 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frutiger Aero Wave</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #scene {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    .watermark {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(231, 245, 255, 0.9);
+      text-shadow:
+        0 0 6px rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+  </style>
+
+  <!-- Three.js CDN -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
 </head>
+
 <body>
-    
+  <canvas id="scene"></canvas>
+  <div class="watermark">FRUTIGER AERO • DOLPHIN OCEAN</div>
+
+  <!-- Three.js scene setup -->
+  <script>
+    const canvas = document.getElementById("scene");
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+
+    const textureLoader = new THREE.TextureLoader();
+    const dolphinsTexture = textureLoader.load("image/Dolphins.jpg");
+
+    const skyBackdrop = new THREE.Mesh(
+      new THREE.PlaneGeometry(26, 13),
+      new THREE.MeshBasicMaterial({
+        map: dolphinsTexture,
+        depthWrite: false,
+        transparent: true,
+      })
+    );
+    skyBackdrop.position.set(0, 3.4, -11);
+    scene.add(skyBackdrop);
+
+    const camera = new THREE.PerspectiveCamera(
+      32,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+    camera.position.set(0, 2.2, 7.5);
+
+    const controls = new THREE.OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.8;
+    controls.maxDistance = 11;
+    controls.minDistance = 4;
+
+    const ambient = new THREE.AmbientLight(0xcfe9ff, 0.8);
+    scene.add(ambient);
+
+    const skyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+    skyLight.position.set(4, 6, 4);
+    skyLight.castShadow = true;
+    scene.add(skyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x62d9ff, 0.7);
+    rimLight.position.set(-5, 3, -4);
+    scene.add(rimLight);
+
+    const envColorTop = new THREE.Color(0x4fd9ff);
+    const envColorBottom = new THREE.Color(0x003a7a);
+
+    const environment = new THREE.Mesh(
+      new THREE.SphereGeometry(25, 32, 32),
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: {
+          topColor: { value: envColorTop },
+          bottomColor: { value: envColorBottom },
+        },
+        vertexShader: `
+          varying vec3 vWorldPosition;
+          void main() {
+            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+            vWorldPosition = worldPosition.xyz;
+            gl_Position = projectionMatrix * viewMatrix * worldPosition;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vWorldPosition;
+          uniform vec3 topColor;
+          uniform vec3 bottomColor;
+          void main() {
+            float h = normalize(vWorldPosition).y * 0.5 + 0.5;
+            gl_FragColor = vec4(mix(bottomColor, topColor, h), 1.0);
+          }
+        `,
+      })
+    );
+    scene.add(environment);
+
+    const waveMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x0096ff,
+      roughness: 0.1,
+      metalness: 0.1,
+      transmission: 0.85,
+      thickness: 1.4,
+      transparent: true,
+      opacity: 0.92,
+      envMapIntensity: 1.4,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+    });
+
+    const waveGeometry = new THREE.PlaneGeometry(8, 5, 80, 60);
+    const waveMesh = new THREE.Mesh(waveGeometry, waveMaterial);
+    waveMesh.rotation.x = -Math.PI / 2.6;
+    waveMesh.position.y = -0.9;
+    scene.add(waveMesh);
+
+    const bubbleMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      roughness: 0.05,
+      metalness: 0.0,
+      transmission: 0.98,
+      transparent: true,
+      opacity: 0.98,
+      envMapIntensity: 1.9,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.15,
+    });
+
+    const bubbles = [];
+    const bubbleGeometry = new THREE.SphereGeometry(0.25, 32, 32);
+
+    for (let i = 0; i < 26; i++) {
+      const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
+      bubble.position.set(
+        (Math.random() - 0.5) * 6,
+        Math.random() * 3.5,
+        (Math.random() - 0.5) * 5
+      );
+      bubble.scale.setScalar(0.5 + Math.random() * 1.4);
+      bubble.userData = {
+        baseY: bubble.position.y,
+        speed: 0.4 + Math.random() * 0.6,
+        offset: Math.random() * Math.PI * 2,
+      };
+      bubbles.push(bubble);
+      scene.add(bubble);
+    }
+
+    const torusMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x00ffb8,
+      metalness: 0.85,
+      roughness: 0.18,
+      envMapIntensity: 1.6,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+    });
+
+    const torus = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(0.9, 0.24, 200, 32, 2, 5),
+      torusMaterial
+    );
+    torus.position.set(0, 0.6, 0);
+    scene.add(torus);
+
+    const ringMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      metalness: 0.4,
+      roughness: 0.1,
+      transmission: 0.75,
+      transparent: true,
+      envMapIntensity: 2.0,
+    });
+
+    const rings = [];
+    const ringGeometry = new THREE.TorusGeometry(1.6, 0.06, 24, 80);
+
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+      ring.rotation.x = Math.PI / 2.3 + i * 0.3;
+      ring.rotation.z = i * 0.7;
+      ring.position.y = 0.2 + i * 0.25;
+      rings.push(ring);
+      scene.add(ring);
+    }
+
+    const particleGeometry = new THREE.BufferGeometry();
+    const particleCount = 450;
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    const color = new THREE.Color();
+
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      positions[i3 + 0] = (Math.random() - 0.5) * 10;
+      positions[i3 + 1] = Math.random() * 5 + 0.2;
+      positions[i3 + 2] = (Math.random() - 0.5) * 8;
+
+      color.setHSL(0.45 + Math.random() * 0.15, 0.8, 0.7 + Math.random() * 0.15);
+      colors[i3 + 0] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
+    }
+
+    particleGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    particleGeometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(colors, 3)
+    );
+
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.06,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+
+    const clock = new THREE.Clock();
+
+    function resizeRenderer() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener("resize", resizeRenderer);
+    resizeRenderer();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      for (let i = 0; i < waveGeometry.attributes.position.count; i++) {
+        const x = waveGeometry.attributes.position.getX(i);
+        const y = waveGeometry.attributes.position.getY(i);
+        const wave =
+          Math.sin(x * 0.8 + t * 1.1) * 0.25 +
+          Math.cos(y * 0.9 + t * 1.3) * 0.18;
+        waveGeometry.attributes.position.setZ(i, wave);
+      }
+      waveGeometry.attributes.position.needsUpdate = true;
+      waveGeometry.computeVertexNormals();
+
+      torus.rotation.x += 0.008;
+      torus.rotation.y += 0.01;
+
+      rings.forEach((ring, index) => {
+        ring.rotation.y += 0.006 + index * 0.003;
+      });
+
+      bubbles.forEach((bubble, idx) => {
+        const d = bubble.userData;
+        const hover = Math.sin(t * d.speed + d.offset + idx * 0.2) * 0.4;
+        bubble.position.y = d.baseY + hover;
+      });
+
+      particles.rotation.y += 0.0007;
+      particles.rotation.x = Math.sin(t * 0.04) * 0.08;
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
 </body>
+
 </html>
