@@ -110,14 +110,100 @@
       transition: opacity 0.15s;
       pointer-events: none;
     }
-    #compass-library.visible {
-      opacity: 1;
+    #compass-library.visible { opacity: 1; }
+    #compass-library::before { content: '◉'; margin-right: 3px; font-size: 8px; vertical-align: middle; }
+    #crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      border: 1px solid rgba(180,190,200,0.7);
+      background: transparent;
+      pointer-events: none;
+      z-index: 12;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    #compass-library::before {
-      content: '◉';
-      margin-right: 3px;
-      font-size: 8px;
-      vertical-align: middle;
+    #crosshair.interactable {
+      border-color: rgba(255,255,255,0.95);
+      box-shadow: 0 0 6px rgba(255,255,255,0.4);
+    }
+    #interact-prompt {
+      position: fixed;
+      bottom: 25%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(200,230,255,0.95);
+      font-family: system-ui, sans-serif;
+      font-size: 1rem;
+      pointer-events: none;
+      z-index: 15;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #interact-prompt.visible { opacity: 1; }
+    #drill-ui {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 25%;
+      pointer-events: none;
+    }
+    #drill-ui.active { display: flex; pointer-events: auto; }
+    #drill-input {
+      width: min(400px, 90vw);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-family: system-ui, sans-serif;
+      background: rgba(0,30,50,0.9);
+      border: 1px solid rgba(100,180,220,0.5);
+      color: #e0f0ff;
+      border-radius: 6px;
+      outline: none;
+    }
+    #drill-input::placeholder { color: rgba(180,220,255,0.5); }
+    #drill-hint {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: rgba(160,200,230,0.7);
+    }
+    #read-close {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(180,220,255,0.8);
+      font-size: 0.9rem;
+    }
+    #read-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 25;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,15,30,0.85);
+      pointer-events: none;
+    }
+    #read-overlay.active { display: flex; pointer-events: auto; }
+    #read-message {
+      max-width: 400px;
+      padding: 1.5rem;
+      background: rgba(0,35,60,0.95);
+      border: 1px solid rgba(80,150,200,0.4);
+      border-radius: 8px;
+      color: #c8e4ff;
+      font-family: system-ui, sans-serif;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -127,10 +213,20 @@
     <div id="compass-ticks"></div>
     <div id="compass-library">Library</div>
   </div>
+  <div id="crosshair"></div>
   <canvas id="canvas"></canvas>
   <div id="ocean-filter" aria-hidden="true"></div>
   <div id="prompt">Click to explore · WASD to move · Space/Shift to rise · F or L to toggle light · Mouse to look</div>
   <button id="light-btn" type="button">Light: OFF</button>
+  <div id="interact-prompt"></div>
+  <div id="drill-ui">
+    <input type="text" id="drill-input" maxlength="100" placeholder="Write your message..." autocomplete="off" />
+    <span id="drill-hint">Max 100 characters · Enter to save</span>
+  </div>
+  <div id="read-overlay">
+    <div id="read-message"></div>
+    <span id="read-close">Press E or click to close</span>
+  </div>
   <script type="module" src="./main.js"></script>
 </body>
 </html>
