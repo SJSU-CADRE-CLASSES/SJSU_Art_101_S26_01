@@ -169,7 +169,7 @@ body {
     display: flex;
     flex: 1;
     gap: 12px;
-    min-height: 0;
+    min-height: min(600px, 70vh);
 }
 
 .termiini-pane {
@@ -331,6 +331,141 @@ body {
     gap: 15px;
 }
 
+.diagnostics-section-buttons {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.diagnostics-display-area {
+    flex: 1;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.diagnostics-display-area.content-active {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-box {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: 8px;
+}
+
+.diagnostics-ship-box {
+    transition: padding 0.5s ease;
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-box.ship-animate-in {
+    animation: shipScaleAndMove 0.6s ease-out forwards;
+}
+
+@keyframes shipScaleAndMove {
+    0% {
+        transform: scale(1) translate(35%, 15%);
+    }
+    100% {
+        transform: scale(1.05) translate(0, 0);
+    }
+}
+
+.diagnostics-display-area:not(.content-active) .diagnostics-ship-box {
+    transform: scale(1) translate(0, 0);
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-box {
+    transform-origin: top left;
+}
+
+.diagnostics-ship-image {
+    width: 70%;
+    max-width: 70%;
+}
+
+.diagnostics-display-area.content-active .diagnostics-ship-image {
+    width: 180px;
+    max-width: 180px;
+}
+
+.diagnostics-display-area.content-active .diagnostics-section-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.diagnostics-section-btn {
+    padding: 16px 32px;
+    border: 2px solid #33ff33;
+    color: #33ff33;
+    font-family: 'VT323', monospace;
+    font-size: 1.6rem;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.diagnostics-section-btn:hover {
+    background: rgba(51, 255, 51, 0.1);
+    box-shadow: 0 0 10px #33ff33;
+}
+
+.diagnostics-section-btn.active {
+    background: rgba(51, 255, 51, 0.15);
+    box-shadow: 0 0 10px #33ff33, inset 0 0 6px rgba(51, 255, 51, 0.2);
+}
+
+.diagnostics-section-content {
+    flex: 0;
+    min-height: 0;
+    overflow-y: auto;
+    display: none;
+}
+
+.diagnostics-display-area.content-active .diagnostics-section-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 200px;
+}
+
+.diagnostics-section-panel.hidden {
+    display: none !important;
+}
+
+/* Retro computer text loading - reveals from top down */
+.diagnostics-section-panel.retro-reveal {
+    overflow: hidden;
+    animation: retroTextReveal 1.2s ease-out forwards;
+}
+
+@keyframes retroTextReveal {
+    0% {
+        clip-path: inset(0 0 100% 0);
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* Occasional blink for highlighted Warp Health text */
+.blink-highlight {
+    animation: blinkOccasional 4s ease-in-out infinite;
+}
+
+@keyframes blinkOccasional {
+    0%, 90%, 100% { opacity: 1; }
+    92%, 96% { opacity: 0.3; }
+}
+
 .main-display-content::-webkit-scrollbar {
     width: 8px;
 }
@@ -341,6 +476,130 @@ body {
 
 .main-display-content::-webkit-scrollbar-thumb {
     background: #33ff33;
+}
+
+/* Ship Summary section */
+.ship-summary-box {
+    border: 2px solid #33ff33;
+    padding: 16px 18px;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ship-summary-title {
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 8px #33ff33;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.5);
+}
+
+.ship-summary-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ship-summary-subtitle {
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    opacity: 0.95;
+}
+
+.ship-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+}
+
+.ship-summary-table th,
+.ship-summary-table td {
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.ship-summary-table th {
+    opacity: 0.95;
+    letter-spacing: 0.05em;
+}
+
+.ship-summary-table td {
+    opacity: 0.9;
+}
+
+.ship-summary-readiness {
+    font-size: 1.05rem;
+    padding-top: 6px;
+    border-top: 1px solid rgba(51, 255, 51, 0.4);
+}
+
+.ship-summary-note {
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 10px 12px;
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    background: rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+/* Warp Health section */
+.warp-health-box {
+    border: 2px solid #33ff33;
+    padding: 16px 18px;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.warp-health-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.warp-health-diagnostic {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.warp-health-row {
+    line-height: 1.5;
+}
+
+.warp-health-panel {
+    margin: 0;
+}
+
+.warp-health-subsection {
+    font-size: 1.05rem;
+    opacity: 0.95;
+}
+
+.warp-health-list {
+    margin: 0;
+    padding-left: 24px;
+    font-size: 1rem;
+    line-height: 1.8;
+    opacity: 0.9;
+}
+
+.warp-health-events {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.warp-event {
+    line-height: 1.5;
 }
 
 .termiini-footer {
@@ -503,6 +762,88 @@ body {
     box-shadow: 0 0 8px rgba(51, 255, 51, 0.3);
     line-height: 1.5;
     font-size: 1.1rem;
+    text-align: left;
+}
+
+/* Previous Ship Maintenance - scrollable small window */
+.maintenance-records-scroll {
+    max-height: 620px;
+    overflow-y: auto;
+}
+
+.maintenance-records-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.maintenance-records-scroll::-webkit-scrollbar-track {
+    background: #0a0f0a;
+}
+
+.maintenance-records-scroll::-webkit-scrollbar-thumb {
+    background: #33ff33;
+}
+
+.maintenance-record {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.3);
+}
+
+.maintenance-record:last-child {
+    border-bottom: none;
+}
+
+.maintenance-record-title {
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 6px #33ff33;
+}
+
+.maintenance-record-field {
+    margin-bottom: 4px;
+    opacity: 0.95;
+}
+
+.maintenance-record-section {
+    font-size: 1.05rem;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    opacity: 0.95;
+}
+
+.maintenance-record ul {
+    margin: 4px 0 0 20px;
+    padding: 0;
+}
+
+.maintenance-record li {
+    margin-bottom: 2px;
+}
+
+.maintenance-alert {
+    color: #33ff33;
+    margin: 8px 0;
+    opacity: 1;
+}
+
+.maintenance-quote {
+    font-style: italic;
+    margin: 6px 0;
+    opacity: 0.9;
+}
+
+.maintenance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 1rem;
+}
+
+.maintenance-table th,
+.maintenance-table td {
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    padding: 6px 10px;
     text-align: left;
 }
 
@@ -743,6 +1084,16 @@ body {
 
 .back-link {
     margin-top: 8px;
+}
+
+.back-link-slim {
+    height: 30px;
+    min-height: 30px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
 }
 
 .back-btn-wrap {
