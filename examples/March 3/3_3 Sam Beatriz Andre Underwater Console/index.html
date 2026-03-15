@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submarine Command — Hatch Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Share Tech Mono', 'Consolas', monospace;
+      background: #0a0e14;
+      color: #8ae234;
+    }
+
+    /* Ocean / pressure door */
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% 50%, #0d1f2d 0%, #050a0f 50%, #000 100%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 4px,
+          rgba(0, 60, 100, 0.03) 4px,
+          rgba(0, 60, 100, 0.03) 5px
+        );
+    }
+
+    /* Hatch frame */
+    .hatch-frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .hatch-frame::before {
+      content: '';
+      position: absolute;
+      width: 92vmin;
+      height: 92vmin;
+      max-width: 420px;
+      max-height: 420px;
+      border: 12px solid #1a2332;
+      border-radius: 50%;
+      box-shadow:
+        inset 0 0 40px rgba(0,0,0,0.8),
+        0 0 0 4px #0d1520,
+        0 0 30px rgba(0,80,120,0.2);
+    }
+    .hatch-frame::after {
+      content: 'CLASSIFIED';
+      position: absolute;
+      bottom: 12%;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.6rem, 2vmin, 0.85rem);
+      letter-spacing: 0.4em;
+      color: #3d5a73;
+      opacity: 0.8;
+    }
+
+    /* The circular door */
+    .hatch-door {
+      position: absolute;
+      width: 78vmin;
+      height: 78vmin;
+      max-width: 340px;
+      max-height: 340px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, #1e2d3d, #0f1822 50%, #080d12),
+        linear-gradient(145deg, #1a2836 0%, #0d1520 100%);
+      border: 8px solid #15202b;
+      box-shadow:
+        inset 0 0 60px rgba(0,0,0,0.9),
+        inset 0 0 20px rgba(0,60,100,0.1),
+        0 0 0 2px #0a1219,
+        0 20px 60px rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: auto;
+    }
+    .hatch-door.opening {
+      transform: scale(0.2) rotate(-90deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Wheel / handle */
+    .hatch-wheel {
+      width: 28%;
+      height: 28%;
+      border: 6px solid #2a3a4a;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #252f3d, #141a24);
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .hatch-wheel::before {
+      content: '';
+      position: absolute;
+      width: 50%;
+      height: 8px;
+      background: linear-gradient(90deg, transparent, #3d4f5f, transparent);
+      border-radius: 4px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+    }
+    .hatch-wheel::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 50%;
+      background: linear-gradient(180deg, transparent, #3d4f5f, transparent);
+      border-radius: 4px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+    }
+
+    /* Open hatch button */
+    .open-hatch-wrap {
+      position: absolute;
+      bottom: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+    .open-hatch {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.75rem, 2.2vmin, 1rem);
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      padding: 14px 32px;
+      border: 2px solid #2d4a5e;
+      background: linear-gradient(180deg, #1a2d3d 0%, #0d1822 100%);
+      color: #7eb8da;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow:
+        inset 0 1px 0 rgba(100,160,200,0.1),
+        0 4px 20px rgba(0,0,0,0.5);
+      transition: all 0.2s ease;
+    }
+    .open-hatch:hover {
+      border-color: #3d6a82;
+      color: #9ed4f0;
+      box-shadow: 0 0 20px rgba(0,120,180,0.2);
+    }
+    .open-hatch:active { transform: scale(0.98); }
+    .open-hatch.hidden { opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+
+    /* Interior: boot screen (hidden until hatch opens) */
+    .interior {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      background: #06090c;
+      background-image:
+        linear-gradient(rgba(0,40,60,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,40,60,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .interior.visible {
+      display: flex;
+      animation: interiorFade 0.6s ease-out;
+    }
+    @keyframes interiorFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Header strip */
+    .interior-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: #0a0f14;
+      border-bottom: 2px solid #1a2a3a;
+      flex-shrink: 0;
+    }
+    .interior-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.85rem, 2vmin, 1.1rem);
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      margin: 0;
+      color: #5a9bb8;
+    }
+    .status-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1a2a1a;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.8);
+      animation: ledOff 0.5s ease infinite;
+    }
+    .status-led.on {
+      background: #2d8a2d;
+      box-shadow: 0 0 10px #3dba3d, inset 0 0 4px rgba(80,255,80,0.4);
+      animation: ledPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes ledOff { }
+    @keyframes ledPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Main console area */
+    .console {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      min-height: 0;
+    }
+    @media (max-width: 600px) {
+      .console { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: #0a0e12;
+      border: 2px solid #1a2530;
+      border-radius: 6px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 140px;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+    }
+    .panel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: #4a6a7a;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #1a2530;
+    }
+    .panel-content {
+      flex: 1;
+      font-size: clamp(0.65rem, 1.8vmin, 0.8rem);
+      line-height: 1.7;
+      color: #7eb8a0;
+      overflow: hidden;
+    }
+    .panel-content .line {
+      display: block;
+      opacity: 0;
+      animation: typeIn 0.3s ease forwards;
+    }
+    .panel-content .line.cursor::after {
+      content: '_';
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes typeIn {
+      to { opacity: 1; }
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Gauges */
+    .gauges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .gauge {
+      text-align: center;
+    }
+    .gauge-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: #3d5a6a;
+      margin-bottom: 4px;
+    }
+    .gauge-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: #8ae234;
+      min-width: 3ch;
+    }
+    .gauge-bar {
+      width: 60px;
+      height: 6px;
+      background: #0d1520;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .gauge-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2d5a2d, #8ae234);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    /* Boot complete CTA */
+    .boot-cta {
+      padding: 16px 20px;
+      background: #0a0f14;
+      border-top: 2px solid #1a2a3a;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .boot-cta p {
+      margin: 0 0 10px 0;
+      font-size: 0.75rem;
+      color: #5a7a8a;
+    }
+    .boot-cta .btn-main {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      padding: 12px 28px;
+      border: 2px solid #2d6a4a;
+      background: linear-gradient(180deg, #1a3d2a 0%, #0d2018 100%);
+      color: #8ae234;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .boot-cta .btn-main:hover {
+      border-color: #3d8a5a;
+      box-shadow: 0 0 20px rgba(138, 226, 52, 0.2);
+    }
+    .boot-cta .btn-main:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <!-- Hatch phase -->
+    <div class="hatch-frame" id="hatchFrame">
+      <div class="hatch-door" id="hatchDoor">
+        <div class="hatch-wheel"></div>
+      </div>
+      <div class="open-hatch-wrap" id="openHatchWrap">
+        <button type="button" class="open-hatch" id="openHatchBtn">OPEN HATCH</button>
+      </div>
+    </div>
+
+    <!-- Interior / boot phase -->
+    <div class="interior" id="interior">
+      <header class="interior-header">
+        <h1>NCS-71 COMMAND CONSOLE</h1>
+        <div class="status-led" id="statusLed"></div>
+      </header>
+
+      <div class="console">
+        <div class="panel">
+          <div class="panel-title">SYSTEM BOOT</div>
+          <div class="panel-content" id="bootLog"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">SYSTEM STATUS</div>
+          <div class="panel-content" id="statusLog"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">POWER & PROPULSION</div>
+          <div class="gauges" id="gauges">
+            <div class="gauge">
+              <div class="gauge-label">REACTOR</div>
+              <div class="gauge-value" id="gaugeReactor">0%</div>
+              <div class="gauge-bar"><div class="gauge-fill" id="fillReactor"></div></div>
+            </div>
+            <div class="gauge">
+              <div class="gauge-label">HULL</div>
+              <div class="gauge-value" id="gaugeHull">0%</div>
+              <div class="gauge-bar"><div class="gauge-fill" id="fillHull"></div></div>
+            </div>
+            <div class="gauge">
+              <div class="gauge-label">O2</div>
+              <div class="gauge-value" id="gaugeO2">0%</div>
+              <div class="gauge-bar"><div class="gauge-fill" id="fillO2"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">SENSORS</div>
+          <div class="gauges" id="sensorGauges">
+            <div class="gauge">
+              <div class="gauge-label">SONAR</div>
+              <div class="gauge-value" id="gaugeSonar">OFF</div>
+              <div class="gauge-bar"><div class="gauge-fill" id="fillSonar"></div></div>
+            </div>
+            <div class="gauge">
+              <div class="gauge-label">RADAR</div>
+              <div class="gauge-value" id="gaugeRadar">OFF</div>
+              <div class="gauge-bar"><div class="gauge-fill" id="fillRadar"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="boot-cta">
+        <p>All systems nominal. Proceed to mission control.</p>
+        <button type="button" class="btn-main" id="enterBtn" disabled>Begin Navigation</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const hatchDoor = document.getElementById('hatchDoor');
+    const openHatchWrap = document.getElementById('openHatchWrap');
+    const openHatchBtn = document.getElementById('openHatchBtn');
+    const interior = document.getElementById('interior');
+    const bootLog = document.getElementById('bootLog');
+    const statusLog = document.getElementById('statusLog');
+    const statusLed = document.getElementById('statusLed');
+    const enterBtn = document.getElementById('enterBtn');
+
+    const bootLines = [
+      '> INITIALIZING CORE...',
+      '> HULL SEAL VERIFIED',
+      '> REACTOR SEQUENCE START',
+      '> COOLANT PUMP ENGAGED',
+      '> AUXILIARY POWER ONLINE',
+      '> MAIN BUS CONNECTED',
+      '> LIFE SUPPORT INIT',
+      '> O2 REGULATION NOMINAL',
+      '> SONAR ARRAY BOOT',
+      '> RADAR STANDBY',
+      '> NAV COMPUTER READY',
+      '> ALL SYSTEMS GREEN',
+      '> NCS-71 READY FOR DEPLOYMENT',
+    ];
+
+    const statusLines = [
+      'HATCH: SECURED',
+      'PRESSURE: NOMINAL',
+      'DEPTH: 0 M',
+      'BEARING: ---',
+      'WEAPONS: SAFE',
+      'COMMS: STANDBY',
+    ];
+
+    function addLine(container, text, isCursor) {
+      const span = document.createElement('span');
+      span.className = 'line' + (isCursor ? ' cursor' : '');
+      span.textContent = text;
+      container.appendChild(span);
+      return span;
+    }
+
+    function setGauge(id, value, label) {
+      const fill = document.getElementById('fill' + id);
+      const valueEl = document.getElementById('gauge' + id);
+      if (fill) fill.style.width = value + '%';
+      if (valueEl) valueEl.textContent = label !== undefined ? label : value + '%';
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    let humStarted = false;
+
+    async function startHum() {
+      if (humStarted) return;
+      humStarted = true;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') {
+          await ctx.resume();
+        }
+        const t = ctx.currentTime;
+        const master = ctx.createGain();
+        master.gain.setValueAtTime(0, t);
+        master.gain.linearRampToValueAtTime(0.12, t + 1.5);
+        master.connect(ctx.destination);
+
+        // Low hum: 60 Hz (audible, in human range 20 Hz–20 kHz)
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(60, t);
+        osc.connect(master);
+        osc.start(t);
+
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(120, t);
+        osc2.connect(master);
+        osc2.start(t);
+
+        // Very soft higher harmonic for a slight buzz
+        const osc3 = ctx.createOscillator();
+        osc3.type = 'sine';
+        osc3.frequency.setValueAtTime(240, t);
+        osc3.connect(master);
+        osc3.start(t);
+
+        const noise = ctx.createBufferSource();
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+        noise.buffer = buf;
+        noise.loop = true;
+        const nGain = ctx.createGain();
+        nGain.gain.value = 0.03;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 150;
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(ctx.destination);
+        noise.start(t);
+      } catch (e) {}
+    }
+
+    // Start background hum on first user interaction (browsers require gesture for audio)
+    ['click', 'touchstart', 'keydown'].forEach(ev => {
+      document.addEventListener(ev, () => startHum(), { once: true, passive: true });
+    });
+
+    openHatchBtn.addEventListener('click', async () => {
+      await startHum();
+
+      openHatchBtn.classList.add('hidden');
+      hatchDoor.classList.add('opening');
+      await delay(1000);
+      document.getElementById('hatchFrame').style.display = 'none';
+      interior.classList.add('visible');
+
+      // Boot sequence
+      statusLed.classList.add('on');
+      await delay(400);
+
+      for (let i = 0; i < bootLines.length; i++) {
+        addLine(bootLog, bootLines[i], i === bootLines.length - 1);
+        await delay(180 + Math.random() * 120);
+      }
+
+      await delay(300);
+      for (let i = 0; i < statusLines.length; i++) {
+        addLine(statusLog, statusLines[i], i === statusLines.length - 1);
+        await delay(120);
+      }
+
+      // Gauges animate up
+      const gaugeTargets = [
+        { id: 'Reactor', v: 98 },
+        { id: 'Hull', v: 100 },
+        { id: 'O2', v: 100 },
+        { id: 'Sonar', v: 100 },
+        { id: 'Radar', v: 100 },
+      ];
+      for (const g of gaugeTargets) {
+        const fill = document.getElementById('fill' + g.id);
+        const valueEl = document.getElementById('gauge' + g.id);
+        const label = g.id === 'Sonar' || g.id === 'Radar' ? 'ON' : g.v + '%';
+        if (fill && valueEl) {
+          let v = 0;
+          const step = () => {
+            v += 4;
+            if (v >= g.v) v = g.v;
+            fill.style.width = v + '%';
+            valueEl.textContent = g.id === 'Sonar' || g.id === 'Radar' ? (v >= 100 ? 'ON' : '...') : v + '%';
+            if (v < g.v) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+        await delay(200);
+      }
+
+      await delay(400);
+      enterBtn.disabled = false;
+      enterBtn.focus();
+    });
+
+    enterBtn.addEventListener('click', () => {
+      window.location.href = 'library.html';
+    });
+  </script>
+</body>
+</html>
