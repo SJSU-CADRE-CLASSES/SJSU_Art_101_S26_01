@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
-const STORAGE_KEY = 'stone-library-messages';
+const API_MESSAGES = '/api/messages';
 const MAX_MESSAGE_LENGTH = 100;
 const LIBRARY_INTERACT_DIST = 18;
 const HOLE_READ_DIST = 6;
@@ -48,7 +48,7 @@ let hoveredHole = null;
 let pendingHoleData = null;
 let previewHole = null;
 
-function init() {
+async function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x001a33);
   scene.fog = new THREE.FogExp2(0x001a33, 0.04);
@@ -307,10 +307,11 @@ function init() {
   rayOrigin = new THREE.Vector3();
   rayDirection = new THREE.Vector3();
 
-  function loadMessages() {
+  async function loadMessages() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      messages = raw ? JSON.parse(raw) : [];
+      const res = await fetch(API_MESSAGES);
+      if (res.ok) messages = await res.json();
+      else messages = [];
     } catch {
       messages = [];
     }
@@ -321,7 +322,7 @@ function init() {
     });
   }
 
-  loadMessages();
+  await loadMessages();
 
   // Float particles (plankton)
   const particleCount = 80;
@@ -413,7 +414,7 @@ function getRaycastTargets() {
   return targets;
 }
 
-function saveDrilledMessage() {
+async function saveDrilledMessage() {
   const text = drillInput.value.trim();
   if (!text || !pendingHoleData) return;
   const id = crypto.randomUUID?.() || Date.now().toString(36);
@@ -423,14 +424,24 @@ function saveDrilledMessage() {
     nx: pendingHoleData.normal.x, ny: pendingHoleData.normal.y, nz: pendingHoleData.normal.z,
     message: text,
   };
-  messages.push(m);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-  if (previewHole) {
-    scene.remove(previewHole);
-    previewHole = null;
+  try {
+    const res = await fetch(API_MESSAGES, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(m),
+    });
+    if (res.ok) {
+      messages.push(m);
+      if (previewHole) {
+        scene.remove(previewHole);
+        previewHole = null;
+      }
+      createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
+      exitDrillMode();
+    }
+  } catch {
+    // Server unreachable — could fall back to localStorage if desired
   }
-  createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
-  exitDrillMode();
 }
 
 function createHoleMesh(pos, normal, id) {
@@ -713,5 +724,4 @@ function animate(time) {
   renderer.render(scene, camera);
 }
 
-init();
-animate();
+init().then(() => animate());
