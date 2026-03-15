@@ -5,6 +5,7 @@
 
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const STORAGE_KEY = 'stone-library-messages';
 const MAX_MESSAGE_LENGTH = 100;
@@ -34,8 +35,9 @@ const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const _forward = new THREE.Vector3();
 const _toLibrary = new THREE.Vector3();
-const MOVE_SPEED = 8;
+const MOVE_SPEED = 16;
 const FISH = [];
+const FISH_SCHOOLS = [];
 const KELP = [];
 let particlePos;
 const LIBRARY_POSITION = new THREE.Vector3(55, 0, -45);
@@ -242,6 +244,48 @@ function init() {
     scene.add(fish);
     FISH.push(fish);
   }
+
+  // Fish schools — single merged mesh per school (20+ thin triangles each)
+  function createSchool() {
+    const geos = [];
+    for (let i = 0; i < 24; i++) {
+      const size = 0.06 + Math.random() * 0.08;
+      const shape = new THREE.Shape();
+      shape.moveTo(0, size);
+      shape.lineTo(-size, -size);
+      shape.lineTo(size, -size);
+      shape.closePath();
+      const g = new THREE.ExtrudeGeometry(shape, {
+        depth: 0.02,
+        bevelEnabled: false,
+      });
+      g.rotateX(-Math.PI / 2);
+      g.translate(
+        (Math.random() - 0.5) * 1.2,
+        (Math.random() - 0.5) * 0.6,
+        (Math.random() - 0.5) * 0.8
+      );
+      g.rotateY(Math.random() * Math.PI * 2);
+      geos.push(g);
+    }
+    const merged = mergeGeometries(geos);
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0x3d5a4a + Math.floor(Math.random() * 3) * 0x001010,
+      roughness: 0.6,
+      metalness: 0.05,
+    });
+    const school = new THREE.Mesh(merged, mat);
+    school.castShadow = true;
+    school.position.set(
+      (Math.random() - 0.5) * 160,
+      1 + Math.random() * 2.5,
+      (Math.random() - 0.5) * 160
+    );
+    school.userData = { angle: Math.random() * Math.PI * 2, speed: 0.4 + Math.random() * 0.3 };
+    scene.add(school);
+    FISH_SCHOOLS.push(school);
+  }
+  for (let i = 0; i < 4; i++) createSchool();
 
   // Library boulder — very large interactible landmark
   const libraryGeo = new THREE.IcosahedronGeometry(6, 2);
@@ -589,6 +633,16 @@ function animate(time) {
     fish.rotation.y = -fish.userData.angle;
     fish.position.x = ((fish.position.x + 100) % 200) - 100;
     fish.position.z = ((fish.position.z + 100) % 200) - 100;
+  });
+
+  // Fish schools swim (single mesh each)
+  FISH_SCHOOLS.forEach((school) => {
+    school.userData.angle += delta * school.userData.speed;
+    school.position.x += Math.sin(school.userData.angle) * delta * 1.5;
+    school.position.z += Math.cos(school.userData.angle) * delta * 1.5;
+    school.rotation.y = -school.userData.angle;
+    school.position.x = ((school.position.x + 100) % 200) - 100;
+    school.position.z = ((school.position.z + 100) % 200) - 100;
   });
 
   // Particle drift

@@ -7,9 +7,9 @@ const PORT = process.env.PORT || 8000;
 // Serve all static files from this directory
 app.use(express.static(__dirname));
 
-// Default route -> index.html
+// Default route -> library.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'library.html'));
 });
 
 app.listen(PORT, () => {
