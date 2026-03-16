@@ -17,6 +17,9 @@ const HOLE_READ_DIST = 6;
 
 const BOUND_MIN = -45;
 const BOUND_MAX = 45;
+const CEILING_Y = 150;
+const WATER_COLOR_DEEP = new THREE.Color(0x001a33);
+const WATER_COLOR_SURFACE = new THREE.Color(0x5a9fd4);
 const FLAT_EXTEND = 25;
 const CLIFF_EXTEND = 45;
 const CLIFF_HEIGHT = 28;
@@ -32,6 +35,7 @@ const drillInput = document.getElementById('drill-input');
 const readOverlay = document.getElementById('read-overlay');
 const readMessage = document.getElementById('read-message');
 const crosshair = document.getElementById('crosshair');
+const boostMeterFill = document.getElementById('boost-meter-fill');
 
 const PX_PER_DEG = 2;
 const COMPASS_CENTER = 140;
@@ -39,12 +43,17 @@ const COMPASS_CENTER = 140;
 let scene, camera, renderer, controls, playerLight, composer;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let moveUp = false, moveDown = false;
+let boost = false;
+let boostAmount = 1;
 let spotlightOn = true;
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const _forward = new THREE.Vector3();
 const _toLibrary = new THREE.Vector3();
 const MOVE_SPEED = 16;
+const BOOST_SPEED_MULT = 1.75;
+const BOOST_DEPLETE_RATE = 0.08;
+const BOOST_REGEN_RATE = 0.05;
 const FISH = [];
 const FISH_SCHOOLS = [];
 const KELP = [];
@@ -60,6 +69,48 @@ let drillPromptVisible = false, readPromptVisible = false, drilling = false, rea
 let hoveredHole = null;
 let pendingHoleData = null;
 let previewHole = null;
+
+// Message-entry animation: tube from shoulder to boulder + water spray
+let drillSpray = null;
+const TUBE_EXTEND_DURATION = 0.5;
+const CONNECTED_DURATION = 1.4;   // time tube stays at rock with water from tip
+const TUBE_RETRACT_DURATION = 0.5; // snake back out same path
+const DRILL_SPRAY_DURATION = TUBE_EXTEND_DURATION + CONNECTED_DURATION + TUBE_RETRACT_DURATION;
+const TUBE_RADIUS = 0.07;
+const SPRAY_JET_COUNT = 14;
+const SPRAY_SPEED = 2.2;
+const SPRAY_PULSE_INTERVAL = 0.18; // re-emit jets so water flows whole time
+const _right = new THREE.Vector3();
+const _up = new THREE.Vector3(0, 1, 0);
+
+// Read-message animation: small tube from top-left to hole, speaker tip, sonar ping + ripples
+let readTube = null;
+const READ_TUBE_RADIUS = 0.028;
+const READ_TUBE_EXTEND_DURATION = 0.55;
+const READ_TUBE_CONNECTED_DURATION = 1.1;  // ping + ripples then retract
+const READ_TUBE_RETRACT_DURATION = 0.5;
+const READ_TUBE_DURATION = READ_TUBE_EXTEND_DURATION + READ_TUBE_CONNECTED_DURATION + READ_TUBE_RETRACT_DURATION;
+const SPEAKER_TIP_SIZE = 0.11;
+const RIPPLE_COUNT = 6;
+const RIPPLE_EXPAND_SPEED = 1.4;
+const RIPPLE_DURATION = 0.9;
+const _holeWorldPos = new THREE.Vector3();
+
+let pendingReadMessage = null;
+let typewriterTargetText = null;
+let typewriterIndex = 0;
+let typewriterLastTime = 0;
+const TYPEWRITER_CHAR_DELAY = 0.068;
+let currentMessageText = null;
+let messageDisplayStartTime = 0;
+let messageDisplayDuration = 0;
+const DISPLAY_DURATION_MIN = 5;
+const DISPLAY_DURATION_MAX = 10;
+const DISPLAY_DURATION_PER_CHAR = 0.04;
+let deleteTargetText = null;
+let deleteIndex = 0;
+let deleteLastTime = 0;
+const DELETE_CHAR_DELAY = 0.045;
 
 async function init() {
   scene = new THREE.Scene();
@@ -176,7 +227,7 @@ async function init() {
   floorGeo.computeVertexNormals();
 
   const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x2a4a3a,
+    color: 0xc4a574,
     roughness: 0.95,
     metalness: 0,
   });
@@ -187,7 +238,7 @@ async function init() {
 
   // Cliffs beyond flat extension (visual only, no collision)
   const floorMatExt = new THREE.MeshStandardMaterial({
-    color: 0x2a4a3a,
+    color: 0xc4a574,
     roughness: 0.95,
     metalness: 0,
   });
@@ -759,7 +810,7 @@ async function init() {
   });
 
   readOverlay.addEventListener('click', () => {
-    if (reading) closeReadOverlay();
+    if (readOverlay.classList.contains('active')) closeReadOverlay();
   });
 }
 
@@ -771,9 +822,417 @@ function getRaycastTargets() {
   return targets;
 }
 
+function startDrillSprayAnimation(worldPoint, worldNormal) {
+  if (drillSpray) return;
+  camera.getWorldDirection(_forward);
+  _right.crossVectors(_up, _forward).normalize();
+  // Enter from top-right of view: right + up, slightly in front
+  const topRightOffset = _right.clone().multiplyScalar(1.4)
+    .add(_up.clone().multiplyScalar(1.0))
+    .add(_forward.clone().multiplyScalar(0.4));
+  const startPos = camera.position.clone().add(topRightOffset);
+
+  // Snake path: curve from top-right to rock with a bend in the middle
+  const mid = startPos.clone().lerp(worldPoint, 0.5);
+  const perp = new THREE.Vector3().subVectors(worldPoint, startPos).cross(_up).normalize();
+  if (perp.lengthSq() < 0.01) perp.set(1, 0, 0);
+  mid.add(perp.multiplyScalar(2.5)); // bulge for snake
+  mid.add(_up.clone().multiplyScalar(1.2));
+  const curve = new THREE.QuadraticBezierCurve3(startPos, mid, worldPoint);
+  const pathPoints = curve.getPoints(24);
+  if (pathPoints.length < 2) return;
+
+  const group = new THREE.Group();
+  const tubeMat = new THREE.MeshStandardMaterial({
+    color: 0x4a5055,
+    roughness: 0.85,
+    metalness: 0.15,
+  });
+  const segments = [];
+  for (let i = 0; i < pathPoints.length - 1; i++) {
+    const a = pathPoints[i];
+    const b = pathPoints[i + 1];
+    const segDir = new THREE.Vector3().subVectors(b, a);
+    const len = segDir.length();
+    if (len < 0.01) continue;
+    segDir.normalize();
+    const segGeo = new THREE.CylinderGeometry(TUBE_RADIUS, TUBE_RADIUS * 1.02, len, 8);
+    const seg = new THREE.Mesh(segGeo, tubeMat);
+    seg.position.copy(a).add(segDir.clone().multiplyScalar(len * 0.5));
+    seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), segDir);
+    seg.scale.y = 0;
+    seg.visible = false; // only show when segment is actually growing (avoids black dots)
+    seg.castShadow = true;
+    group.add(seg);
+    segments.push(seg);
+  }
+  const tubeDir = new THREE.Vector3().subVectors(worldPoint, pathPoints[pathPoints.length - 2]).normalize();
+
+  const jets = [];
+  const tangent = new THREE.Vector3().crossVectors(tubeDir, _up).normalize();
+  if (tangent.lengthSq() < 0.01) tangent.set(1, 0, 0);
+  const tangent2 = new THREE.Vector3().crossVectors(tubeDir, tangent).normalize();
+  const waterMat = new THREE.MeshBasicMaterial({
+    color: 0x7ab8d4,
+    transparent: true,
+    opacity: 0.9,
+  });
+  for (let i = 0; i < SPRAY_JET_COUNT; i++) {
+    const angle = (i / SPRAY_JET_COUNT) * Math.PI * 2;
+    const out = tangent.clone().multiplyScalar(Math.cos(angle))
+      .add(tangent2.clone().multiplyScalar(Math.sin(angle)));
+    const intoRock = worldNormal.clone().multiplyScalar(0.4);
+    const jetDir = out.add(intoRock).normalize();
+    const jetGeo = new THREE.BoxGeometry(0.04, 0.08, 0.03);
+    const jet = new THREE.Mesh(jetGeo, waterMat.clone());
+    jet.position.copy(worldPoint);
+    jet.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), jetDir);
+    jet.visible = false;
+    group.add(jet);
+    jets.push({
+      mesh: jet,
+      dir: jetDir.clone(),
+      dist: 0,
+      speed: SPRAY_SPEED * (0.7 + Math.random() * 0.6),
+    });
+  }
+
+  // Jagged blue splash ring at tube tip (in plane perpendicular to tube)
+  const ringSegs = 24;
+  const baseR = 0.14;
+  const jagAmp = 0.04;
+  const ringShape = new THREE.Shape();
+  for (let i = 0; i <= ringSegs; i++) {
+    const a = (i / ringSegs) * Math.PI * 2;
+    const jag = jagAmp * (Math.sin(a * 4) + 0.7 * Math.sin(a * 7));
+    const r = baseR + jag;
+    const x = r * Math.cos(a);
+    const y = r * Math.sin(a);
+    if (i === 0) ringShape.moveTo(x, y);
+    else ringShape.lineTo(x, y);
+  }
+  ringShape.closePath();
+  const ringGeo = new THREE.ShapeGeometry(ringShape);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: 0x3399dd,
+    transparent: true,
+    opacity: 0.65,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const splashRing = new THREE.Mesh(ringGeo, ringMat);
+  splashRing.position.copy(worldPoint);
+  splashRing.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), tubeDir);
+  splashRing.visible = false;
+  group.add(splashRing);
+
+  group.userData = { worldPoint, worldNormal };
+  scene.add(group);
+  drillSpray = {
+    group,
+    segments,
+    segmentCount: segments.length,
+    jets,
+    splashRing,
+    startTime: performance.now() / 1000,
+    lastSprayPulse: 0,
+  };
+}
+
+function updateDrillSpray(elapsed, delta = 0.016) {
+  if (!drillSpray) return;
+  const { segments, segmentCount, jets } = drillSpray;
+  const worldPoint = drillSpray.group.userData.worldPoint;
+
+  const extendEnd = TUBE_EXTEND_DURATION;
+  const connectedEnd = extendEnd + CONNECTED_DURATION;
+  const retractEnd = connectedEnd + TUBE_RETRACT_DURATION;
+
+  if (elapsed < extendEnd) {
+    // Snake in: reveal segments from start (top-right) to end (rock); hide until segment is actually growing
+    const extendT = elapsed / extendEnd;
+    const smoothT = extendT * extendT * (3 - 2 * extendT);
+    segments.forEach((seg, i) => {
+      const segT = Math.max(0, Math.min(1, (smoothT - i / segmentCount) * segmentCount));
+      const smoothSeg = segT * segT * (3 - 2 * segT);
+      seg.visible = smoothSeg > 0.02;
+      seg.scale.y = smoothSeg;
+    });
+  } else if (elapsed < connectedEnd) {
+    // Connected: tube full, water from tip the whole time
+    segments.forEach((seg) => {
+      seg.visible = true;
+      seg.scale.y = 1;
+    });
+  } else if (elapsed < retractEnd) {
+    // Snake back: retract from rock end to top-right (reverse order)
+    const retractElapsed = elapsed - connectedEnd;
+    const retractT = Math.min(1, retractElapsed / TUBE_RETRACT_DURATION);
+    const smoothRetract = retractT * retractT * (3 - 2 * retractT);
+    segments.forEach((seg, i) => {
+      const j = segmentCount - 1 - i; // j=0 is last segment (rock end)
+      const segRetractT = Math.max(0, Math.min(1, (smoothRetract - j / segmentCount) * segmentCount));
+      const smoothSeg = segRetractT * segRetractT * (3 - 2 * segRetractT);
+      seg.scale.y = 1 - smoothSeg;
+      seg.visible = seg.scale.y > 0.02;
+    });
+  }
+
+  // Water from tip only while tube is connected; cut as soon as tube leaves (retract starts)
+  const sprayActive = elapsed >= extendEnd && elapsed < connectedEnd;
+  const { splashRing } = drillSpray;
+  if (sprayActive) {
+    const timeInSpray = elapsed - extendEnd;
+    if (timeInSpray - drillSpray.lastSprayPulse >= SPRAY_PULSE_INTERVAL) {
+      drillSpray.lastSprayPulse = timeInSpray;
+      jets.forEach((j) => {
+        j.dist = 0;
+        j.mesh.material.opacity = 0.9;
+        j.mesh.scale.setScalar(1);
+      });
+    }
+    jets.forEach((j) => {
+      j.mesh.visible = true;
+      j.dist += j.speed * delta;
+      j.mesh.position.copy(worldPoint).add(j.dir.clone().multiplyScalar(j.dist));
+      j.mesh.material.opacity = Math.max(0, (j.mesh.material.opacity ?? 0.9) - delta * 2.2);
+      j.mesh.scale.setScalar(1 + j.dist * 1.5);
+    });
+    // Jagged blue splash ring at tip — visible and shifting while connected
+    splashRing.visible = true;
+    splashRing.rotation.z += delta * 5.5; // shifting
+    splashRing.material.opacity = 0.5 + 0.2 * Math.sin(elapsed * 12);
+  } else {
+    jets.forEach((j) => { j.mesh.visible = false; });
+    splashRing.visible = false;
+  }
+
+  if (elapsed >= DRILL_SPRAY_DURATION) {
+    scene.remove(drillSpray.group);
+    drillSpray = null;
+  }
+}
+
+function playSonarPing() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    if (ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(440, now + 0.08);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+    gain.gain.setValueAtTime(0, now + 0.12);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const delay = ctx.createDelay(0.5);
+    delay.delayTime.value = 0.18;
+    const echoGain = ctx.createGain();
+    echoGain.gain.value = 0.45;
+    gain.connect(delay);
+    delay.connect(echoGain);
+    echoGain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  } catch (_) {}
+}
+
+function startReadTubeAnimation(holeWorldPosition) {
+  if (readTube) return;
+  camera.getWorldDirection(_forward);
+  _right.crossVectors(_up, _forward).normalize();
+  const left = _right.clone().negate();
+  const topLeftOffset = left.clone().multiplyScalar(1.4)
+    .add(_up.clone().multiplyScalar(1.0))
+    .add(_forward.clone().multiplyScalar(0.4));
+  const startPos = camera.position.clone().add(topLeftOffset);
+  const worldPoint = holeWorldPosition.clone();
+
+  const mid = startPos.clone().lerp(worldPoint, 0.5);
+  const perp = new THREE.Vector3().subVectors(worldPoint, startPos).cross(_up).normalize();
+  if (perp.lengthSq() < 0.01) perp.set(-1, 0, 0);
+  mid.add(perp.multiplyScalar(-2.2));
+  mid.add(_up.clone().multiplyScalar(1.0));
+  const curve = new THREE.QuadraticBezierCurve3(startPos, mid, worldPoint);
+  const pathPoints = curve.getPoints(20);
+  if (pathPoints.length < 2) return;
+
+  const group = new THREE.Group();
+  const tubeMat = new THREE.MeshStandardMaterial({
+    color: 0x3d4348,
+    roughness: 0.85,
+    metalness: 0.12,
+  });
+  const segments = [];
+  for (let i = 0; i < pathPoints.length - 1; i++) {
+    const a = pathPoints[i];
+    const b = pathPoints[i + 1];
+    const segDir = new THREE.Vector3().subVectors(b, a);
+    const len = segDir.length();
+    if (len < 0.01) continue;
+    segDir.normalize();
+    const segGeo = new THREE.CylinderGeometry(READ_TUBE_RADIUS, READ_TUBE_RADIUS * 1.02, len, 6);
+    const seg = new THREE.Mesh(segGeo, tubeMat);
+    seg.position.copy(a).add(segDir.clone().multiplyScalar(len * 0.5));
+    seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), segDir);
+    seg.scale.y = 0;
+    seg.visible = false;
+    seg.castShadow = true;
+    group.add(seg);
+    segments.push(seg);
+  }
+  const tubeDir = new THREE.Vector3().subVectors(worldPoint, pathPoints[pathPoints.length - 2]).normalize();
+
+  const speakerTip = new THREE.Mesh(
+    new THREE.BoxGeometry(SPEAKER_TIP_SIZE, SPEAKER_TIP_SIZE * 0.7, SPEAKER_TIP_SIZE * 1.1),
+    new THREE.MeshStandardMaterial({ color: 0x353a3f, roughness: 0.8, metalness: 0.1 })
+  );
+  speakerTip.position.copy(worldPoint);
+  speakerTip.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tubeDir);
+  speakerTip.scale.set(0, 0, 0);
+  speakerTip.visible = false;
+  group.add(speakerTip);
+
+  const ripples = [];
+  const rippleMat = new THREE.MeshBasicMaterial({
+    color: 0x44aaff,
+    transparent: true,
+    opacity: 0.85,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  for (let r = 0; r < RIPPLE_COUNT; r++) {
+    const pts = [];
+    const segs = 32;
+    for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      pts.push(new THREE.Vector3(0.08 * Math.cos(a), 0.08 * Math.sin(a), 0));
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    const line = new THREE.LineLoop(geo, new THREE.LineBasicMaterial({
+      color: 0x66bbff,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+    }));
+    line.position.copy(worldPoint);
+    line.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), tubeDir);
+    line.scale.setScalar(0);
+    line.visible = false;
+    group.add(line);
+    ripples.push({ line, startTime: -1 });
+  }
+
+  group.userData = { worldPoint };
+  scene.add(group);
+  readTube = {
+    group,
+    segments,
+    segmentCount: segments.length,
+    speakerTip,
+    ripples,
+    pingPlayed: false,
+    startTime: performance.now() / 1000,
+  };
+}
+
+function updateReadTube(elapsed, delta = 0.016) {
+  if (!readTube) return;
+  const { segments, segmentCount, speakerTip, ripples } = readTube;
+  const worldPoint = readTube.group.userData.worldPoint;
+
+  const extendEnd = READ_TUBE_EXTEND_DURATION;
+  const connectedEnd = extendEnd + READ_TUBE_CONNECTED_DURATION;
+  const retractEnd = connectedEnd + READ_TUBE_RETRACT_DURATION;
+
+  if (elapsed < extendEnd) {
+    const extendT = elapsed / extendEnd;
+    const smoothT = extendT * extendT * (3 - 2 * extendT);
+    segments.forEach((seg, i) => {
+      const segT = Math.max(0, Math.min(1, (smoothT - i / segmentCount) * segmentCount));
+      const smoothSeg = segT * segT * (3 - 2 * segT);
+      seg.visible = smoothSeg > 0.02;
+      seg.scale.y = smoothSeg;
+    });
+    const tipT = Math.max(0, (smoothT - (segmentCount - 1) / segmentCount) * segmentCount);
+    const smoothTip = tipT * tipT * (3 - 2 * tipT);
+    if (smoothTip > 0.02) {
+      speakerTip.visible = true;
+      speakerTip.scale.setScalar(smoothTip);
+    }
+  } else if (elapsed < connectedEnd) {
+    segments.forEach((seg) => { seg.visible = true; seg.scale.y = 1; });
+    speakerTip.visible = true;
+    speakerTip.scale.setScalar(1);
+    if (!readTube.pingPlayed) {
+      readTube.pingPlayed = true;
+      playSonarPing();
+      const t = performance.now() / 1000;
+      ripples.forEach((r, i) => {
+        r.startTime = t + i * 0.08;
+      });
+    }
+    ripples.forEach((r) => {
+      if (r.startTime < 0) return;
+      const age = (performance.now() / 1000) - r.startTime;
+      if (age <= 0) return;
+      r.line.visible = true;
+      const scale = age * RIPPLE_EXPAND_SPEED;
+      r.line.scale.setScalar(scale);
+      r.line.material.opacity = Math.max(0, 0.9 * (1 - age / RIPPLE_DURATION));
+    });
+  } else if (elapsed < retractEnd) {
+    ripples.forEach((r) => {
+      const age = r.startTime >= 0 ? (performance.now() / 1000) - r.startTime : 0;
+      if (age > 0) {
+        r.line.visible = true;
+        r.line.scale.setScalar(age * RIPPLE_EXPAND_SPEED);
+        r.line.material.opacity = Math.max(0, 0.9 * (1 - age / RIPPLE_DURATION));
+      }
+    });
+    const retractElapsed = elapsed - connectedEnd;
+    const retractT = Math.min(1, retractElapsed / READ_TUBE_RETRACT_DURATION);
+    const smoothRetract = retractT * retractT * (3 - 2 * retractT);
+    segments.forEach((seg, i) => {
+      const j = segmentCount - 1 - i;
+      const segRetractT = Math.max(0, Math.min(1, (smoothRetract - j / segmentCount) * segmentCount));
+      const smoothSeg = segRetractT * segRetractT * (3 - 2 * segRetractT);
+      seg.scale.y = 1 - smoothSeg;
+      seg.visible = seg.scale.y > 0.02;
+    });
+    const tipRetractT = Math.max(0, (smoothRetract - (segmentCount - 1) / segmentCount) * segmentCount);
+    const smoothTipRetract = tipRetractT * tipRetractT * (3 - 2 * tipRetractT);
+    speakerTip.scale.setScalar(1 - smoothTipRetract);
+    speakerTip.visible = speakerTip.scale.x > 0.02;
+  }
+
+  if (elapsed >= READ_TUBE_DURATION) {
+    scene.remove(readTube.group);
+    readTube = null;
+    if (pendingReadMessage !== null) {
+      reading = false;
+      deleteTargetText = null;
+      currentMessageText = null;
+      readOverlay.classList.add('active');
+      typewriterTargetText = pendingReadMessage;
+      typewriterIndex = 0;
+      typewriterLastTime = performance.now() / 1000;
+      readMessage.textContent = '';
+      pendingReadMessage = null;
+    }
+  }
+}
+
 async function saveDrilledMessage() {
   const text = drillInput.value.trim();
   if (!text || !pendingHoleData) return;
+  startDrillSprayAnimation(pendingHoleData.point.clone(), pendingHoleData.normal.clone());
   const id = crypto.randomUUID?.() || Date.now().toString(36);
   const m = {
     id,
@@ -858,12 +1317,40 @@ function exitDrillMode() {
 function closeReadOverlay() {
   reading = false;
   readOverlay.classList.remove('active');
+  typewriterTargetText = null;
+  currentMessageText = null;
+  deleteTargetText = null;
+}
+
+function startDeleteAnimation() {
+  const text = readMessage.textContent;
+  if (!text) {
+    readOverlay.classList.remove('active');
+    currentMessageText = null;
+    return;
+  }
+  typewriterTargetText = null;
+  typewriterIndex = 0;
+  deleteTargetText = text;
+  deleteIndex = text.length;
+  deleteLastTime = performance.now() / 1000;
 }
 
 function onKeyDown(e) {
-  if (reading) {
-    if (e.code === 'KeyE' || e.code === 'Escape') {
-      e.preventDefault();
+  if (reading) return;
+  if (readOverlay.classList.contains('active') && (e.code === 'KeyE' || e.code === 'Escape')) {
+    e.preventDefault();
+    if (readPromptVisible && hoveredHole && e.code === 'KeyE') {
+      const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
+      if (msg) {
+        interactPrompt.classList.remove('visible');
+        startDeleteAnimation();
+        pendingReadMessage = msg.message;
+        hoveredHole.getWorldPosition(_holeWorldPos);
+        startReadTubeAnimation(_holeWorldPos.clone());
+        reading = true;
+      }
+    } else {
       closeReadOverlay();
     }
     return;
@@ -895,8 +1382,12 @@ function onKeyDown(e) {
     const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
     if (msg) {
       interactPrompt.classList.remove('visible');
-      readMessage.textContent = msg.message;
-      readOverlay.classList.add('active');
+      if (readOverlay.classList.contains('active') && (currentMessageText !== null || typewriterTargetText !== null)) {
+        startDeleteAnimation();
+      }
+      pendingReadMessage = msg.message;
+      hoveredHole.getWorldPosition(_holeWorldPos);
+      startReadTubeAnimation(_holeWorldPos.clone());
       reading = true;
     }
     return;
@@ -922,7 +1413,8 @@ function onKeyDown(e) {
     case 'KeyA': moveLeft = true; break;
     case 'KeyD': moveRight = true; break;
     case 'Space': moveUp = true; break;
-    case 'ShiftLeft': moveDown = true; break;
+    case 'ControlLeft': case 'ControlRight': moveDown = true; break;
+    case 'ShiftLeft': case 'ShiftRight': boost = true; break;
   }
 }
 
@@ -933,12 +1425,26 @@ function onKeyUp(e) {
     case 'KeyA': moveLeft = false; break;
     case 'KeyD': moveRight = false; break;
     case 'Space': moveUp = false; break;
-    case 'ShiftLeft': moveDown = false; break;
+    case 'ControlLeft': case 'ControlRight': moveDown = false; break;
+    case 'ShiftLeft': case 'ShiftRight': boost = false; break;
   }
 }
 
 function updateMovement(delta) {
   if (!controls.isLocked) return;
+
+  const anyHorizontal = moveForward || moveBackward || moveLeft || moveRight;
+  const boosting = boost && boostAmount > 0 && anyHorizontal;
+  const speed = boosting ? MOVE_SPEED * BOOST_SPEED_MULT : MOVE_SPEED;
+
+  if (boosting) {
+    boostAmount = Math.max(0, boostAmount - BOOST_DEPLETE_RATE * delta);
+  } else {
+    boostAmount = Math.min(1, boostAmount + BOOST_REGEN_RATE * delta);
+  }
+  if (boostMeterFill) {
+    boostMeterFill.style.transform = `scaleX(${boostAmount})`;
+  }
 
   velocity.x -= velocity.x * 5.0 * delta;
   velocity.y -= velocity.y * 5.0 * delta;
@@ -949,15 +1455,15 @@ function updateMovement(delta) {
   direction.y = Number(moveUp) - Number(moveDown);
   direction.normalize();
 
-  if (moveForward || moveBackward) velocity.z -= direction.z * MOVE_SPEED * delta;
-  if (moveLeft || moveRight) velocity.x -= direction.x * MOVE_SPEED * delta;
+  if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+  if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
   if (moveUp || moveDown) velocity.y += direction.y * MOVE_SPEED * delta;
 
   controls.moveRight(-velocity.x * delta);
   controls.moveForward(-velocity.z * delta);
   camera.position.y += velocity.y * delta;
 
-  camera.position.y = Math.max(0.5, Math.min(15, camera.position.y));
+  camera.position.y = Math.max(0.5, Math.min(CEILING_Y, camera.position.y));
   camera.position.x = Math.max(BOUND_MIN, Math.min(BOUND_MAX, camera.position.x));
   camera.position.z = Math.max(BOUND_MIN, Math.min(BOUND_MAX, camera.position.z));
 }
@@ -968,6 +1474,11 @@ function animate(time) {
   const delta = Math.min(0.05, 0.016);
 
   updateMovement(delta);
+
+  // Water color lightens as player swims up
+  const depthT = Math.max(0, Math.min(1, (camera.position.y - 0.5) / (CEILING_Y - 0.5)));
+  scene.background.lerpColors(WATER_COLOR_DEEP, WATER_COLOR_SURFACE, depthT);
+  scene.fog.color.lerpColors(WATER_COLOR_DEEP, WATER_COLOR_SURFACE, depthT);
 
   // Player light follows camera
   playerLight.position.copy(camera.position);
@@ -1055,6 +1566,53 @@ function animate(time) {
     dustUniforms.uLightIntensity.value = spotlightOn ? 45 : 0;
   }
 
+  // Message-entry spray animation
+  if (drillSpray) {
+    const elapsed = (time ?? performance.now()) / 1000 - drillSpray.startTime;
+    updateDrillSpray(elapsed, delta);
+  }
+  // Read-message tube animation (snake to hole, sonar ping + ripples)
+  if (readTube) {
+    const elapsed = (time ?? performance.now()) / 1000 - readTube.startTime;
+    updateReadTube(elapsed, delta);
+  }
+  const nowSec = (time ?? performance.now()) / 1000;
+  // Typewriter for read message
+  if (typewriterTargetText !== null && typewriterIndex < typewriterTargetText.length) {
+    if (nowSec - typewriterLastTime >= TYPEWRITER_CHAR_DELAY) {
+      typewriterLastTime = nowSec;
+      typewriterIndex += 1;
+      readMessage.textContent = typewriterTargetText.slice(0, typewriterIndex);
+    }
+  } else if (typewriterTargetText !== null) {
+    currentMessageText = typewriterTargetText;
+    messageDisplayStartTime = nowSec;
+    messageDisplayDuration = Math.min(DISPLAY_DURATION_MAX, DISPLAY_DURATION_MIN + typewriterTargetText.length * DISPLAY_DURATION_PER_CHAR);
+    typewriterTargetText = null;
+  }
+  // Display timer: after 5–10 s (by length), start delete animation
+  if (currentMessageText !== null && deleteTargetText === null && readOverlay.classList.contains('active')) {
+    if (nowSec >= messageDisplayStartTime + messageDisplayDuration) {
+      startDeleteAnimation();
+      currentMessageText = null;
+    }
+  }
+  // Delete animation (one letter at a time)
+  if (deleteTargetText !== null) {
+    if (nowSec - deleteLastTime >= DELETE_CHAR_DELAY) {
+      deleteLastTime = nowSec;
+      deleteIndex -= 1;
+      if (deleteIndex <= 0) {
+        readMessage.textContent = '';
+        readOverlay.classList.remove('active');
+        deleteTargetText = null;
+        currentMessageText = null;
+      } else {
+        readMessage.textContent = deleteTargetText.slice(0, deleteIndex);
+      }
+    }
+  }
+
   // Compass — rotate ticks, position library icon when in view
   camera.getWorldDirection(_forward);
   _forward.y = 0;
@@ -1073,8 +1631,8 @@ function animate(time) {
     compassLibrary.style.left = (COMPASS_CENTER + relAngle * PX_PER_DEG) + 'px';
   }
 
-  // Library interaction — raycast from center of screen
-  if (!drilling && !reading) {
+  // Library interaction — raycast from center of screen (allowed while read message is up so user can select another message)
+  if (!drilling) {
     const distToLibrary = camera.position.distanceTo(LIBRARY_POSITION);
     rayOrigin.copy(camera.position);
     camera.getWorldDirection(rayDirection);

@@ -85,6 +85,15 @@
     #underwater-view #crosshair.interactable {
       border-color: rgba(255,255,255,0.95); box-shadow: 0 0 6px rgba(255,255,255,0.4);
     }
+    #underwater-view #boost-meter {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 14px));
+      width: 60px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;
+      pointer-events: none; z-index: 12; overflow: hidden;
+    }
+    #underwater-view #boost-meter-fill {
+      height: 100%; width: 100%; background: rgba(255,255,255,0.9); border-radius: 2px;
+      transform-origin: left; transition: transform 0.08s ease-out;
+    }
     #underwater-view #interact-prompt {
       position: fixed; bottom: 25%; left: 50%; transform: translateX(-50%);
       color: rgba(200,230,255,0.95); font-family: system-ui, sans-serif; font-size: 1rem;
@@ -105,20 +114,22 @@
     #underwater-view #drill-input::placeholder { color: rgba(180,220,255,0.5); }
     #underwater-view #drill-hint { margin-top: 0.5rem; font-size: 0.8rem; color: rgba(160,200,230,0.7); }
     #underwater-view #read-close {
-      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-      color: rgba(180,220,255,0.8); font-size: 0.9rem;
+      position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      color: rgba(180,220,255,0.8); font-size: 0.85rem; font-family: "Courier New", Courier, monospace;
     }
     #underwater-view #read-overlay {
       position: fixed; inset: 0; z-index: 25; display: none;
-      align-items: center; justify-content: center;
-      background: rgba(0,15,30,0.85); pointer-events: none;
+      flex-direction: column; align-items: center; justify-content: flex-start;
+      padding-top: 48px; pointer-events: none;
     }
     #underwater-view #read-overlay.active { display: flex; pointer-events: auto; }
     #underwater-view #read-message {
-      max-width: 400px; padding: 1.5rem;
-      background: rgba(0,35,60,0.95); border: 1px solid rgba(80,150,200,0.4);
-      border-radius: 8px; color: #c8e4ff; font-family: system-ui, sans-serif;
-      font-size: 1.1rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+      width: min(90vw, 560px); padding: 0.5rem 0.25rem 0;
+      color: #d8ecff;
+      font-family: "Courier New", Courier, monospace; font-size: 1.45rem;
+      line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+      text-align: left;
+      text-shadow: 0 0 12px rgba(150,210,255,0.7), 0 0 24px rgba(100,180,240,0.4);
     }
   </style>
 </head>
@@ -130,9 +141,10 @@
       <div id="compass-library">Library</div>
     </div>
     <div id="crosshair"></div>
+    <div id="boost-meter"><div id="boost-meter-fill"></div></div>
     <canvas id="canvas"></canvas>
     <div id="ocean-filter" aria-hidden="true"></div>
-    <div id="prompt">Click to explore · WASD to move · Space/Shift to rise · F or L to toggle light · Mouse to look</div>
+    <div id="prompt">Click to explore · WASD to move · Space to rise, Ctrl to lower · Shift to boost (1.5× speed) · F or L for light · Mouse to look</div>
     <button id="light-btn" type="button">Light: ON</button>
     <div id="interact-prompt"></div>
     <div id="drill-ui">
@@ -147,6 +159,81 @@
 
   <script type="module">
     import('./underwater/main.js');
+  </script>
+  <script>
+    (function () {
+      var ctx = null;
+      function getCtx() {
+        if (ctx) return ctx;
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        ctx = new Ctx();
+        return ctx;
+      }
+      function startBass() {
+        if (ctx) {
+          if (ctx.state === 'suspended') ctx.resume();
+          return;
+        }
+        if (!getCtx()) return;
+        var gain = ctx.createGain();
+        gain.gain.value = 0.06;
+        gain.connect(ctx.destination);
+        var osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = 55;
+        osc.connect(gain);
+        osc.start(0);
+        if (ctx.state === 'suspended') ctx.resume();
+      }
+      function playKsh() {
+        var audioCtx = getCtx();
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        var sr = audioCtx.sampleRate;
+        var length = Math.floor(sr * 0.2);
+        var buffer = audioCtx.createBuffer(1, length, sr);
+        var data = buffer.getChannelData(0);
+        for (var i = 0; i < length; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.55;
+        }
+        var hp = audioCtx.createBiquadFilter();
+        hp.type = 'highpass';
+        hp.frequency.value = 120;
+        var bp = audioCtx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = 1100;
+        bp.Q.value = 1.2;
+        hp.connect(bp);
+        bp.connect(audioCtx.destination);
+        var gain = audioCtx.createGain();
+        var t = audioCtx.currentTime;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.048, t + 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+        gain.connect(hp);
+        var source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(gain);
+        source.start(0);
+      }
+      var moveKeys = { KeyW: false, KeyA: false, KeyS: false, KeyD: false };
+      var moveKeyList = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];
+      window.addEventListener('keydown', function (e) {
+        if (moveKeyList.indexOf(e.code) === -1 || e.repeat) return;
+        var otherDown = moveKeyList.some(function (k) { return k !== e.code && moveKeys[k]; });
+        if (!otherDown) playKsh();
+        moveKeys[e.code] = true;
+      });
+      window.addEventListener('keyup', function (e) {
+        if (moveKeyList.indexOf(e.code) !== -1) moveKeys[e.code] = false;
+      });
+      document.body.addEventListener('click', function once() {
+        startBass();
+        document.body.removeEventListener('click', once);
+      });
+      window.addEventListener('load', startBass);
+    })();
   </script>
 </body>
 </html>
