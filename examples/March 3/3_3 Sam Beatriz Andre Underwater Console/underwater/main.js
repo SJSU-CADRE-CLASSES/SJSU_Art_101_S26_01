@@ -319,6 +319,7 @@ async function init() {
     metalness: 0.08,
   });
   for (let i = 0; i < 5; i++) {
+    // Rounded stone pebbles (back to icosahedrons)
     const geo = new THREE.IcosahedronGeometry(0.6, 1);
     const stone = new THREE.Mesh(geo, floatingStoneMat.clone());
     stone.castShadow = true;
@@ -333,6 +334,10 @@ async function init() {
       joystick: null,
       joystickTiltX: 0,
       joystickTiltZ: 0,
+      radar: null,
+      radarSweep: null,
+      radarPing: null,
+      radarStartTime: 0,
     };
 
     // Slightly flatten the stones and widen them so the top surface reads more like a pad
@@ -342,9 +347,9 @@ async function init() {
     if (i === 0) {
       const baseGeo = new THREE.CylinderGeometry(0.25, 0.28, 0.12, 18);
       const baseMat = new THREE.MeshStandardMaterial({
-        color: 0x1b2428,
-        roughness: 0.9,
-        metalness: 0.2,
+        color: 0xbec7d1,
+        roughness: 0.35,
+        metalness: 0.85,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
       base.position.set(0, 0.42, 0);
@@ -353,9 +358,9 @@ async function init() {
 
       const stickGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.45, 14);
       const stickMat = new THREE.MeshStandardMaterial({
-        color: 0x6f8a9a,
-        roughness: 0.4,
-        metalness: 0.5,
+        color: 0xd5dde6,
+        roughness: 0.3,
+        metalness: 0.9,
       });
       const stick = new THREE.Mesh(stickGeo, stickMat);
       stick.position.set(0, 0.75, 0);
@@ -364,11 +369,11 @@ async function init() {
 
       const knobGeo = new THREE.SphereGeometry(0.12, 18, 18);
       const knobMat = new THREE.MeshStandardMaterial({
-        color: 0xaad4ff,
-        roughness: 0.2,
-        metalness: 0.7,
-        emissive: new THREE.Color(0x88b4ff),
-        emissiveIntensity: 0.3,
+        color: 0xf5f7fb,
+        roughness: 0.15,
+        metalness: 0.95,
+        emissive: new THREE.Color(0xbcc7ff),
+        emissiveIntensity: 0.25,
       });
       const knob = new THREE.Mesh(knobGeo, knobMat);
       knob.position.set(0, 1.02, 0);
@@ -382,6 +387,128 @@ async function init() {
 
       stone.add(joystick);
       stone.userData.joystick = joystick;
+    }
+
+    // Add rows of small buttons on a different stone
+    if (i === 2) {
+      const buttonsGroup = new THREE.Group();
+
+      const silverMat = new THREE.MeshStandardMaterial({
+        color: 0xd8dde5,
+        roughness: 0.25,
+        metalness: 0.85,
+      });
+      const redMat = new THREE.MeshStandardMaterial({
+        color: 0xc43737,
+        roughness: 0.35,
+        metalness: 0.6,
+        emissive: new THREE.Color(0x5a1010),
+        emissiveIntensity: 0.4,
+      });
+
+      const rows = 3;
+      const cols = 4;
+      const spacingX = 0.22;
+      const spacingZ = 0.22;
+      const startX = -((cols - 1) * spacingX) / 2;
+      const startZ = -((rows - 1) * spacingZ) / 2;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const btnGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.05, 16);
+          // Randomly select a few buttons to be red, rest silver
+          const isRed = Math.random() < 0.22;
+          const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
+          const x = startX + c * spacingX;
+          const z = startZ + r * spacingZ;
+          // Sit the buttons directly on the pebble surface
+          btn.position.set(x, 0.6, z);
+          btn.castShadow = true;
+          btn.receiveShadow = true;
+
+          buttonsGroup.add(btn);
+        }
+      }
+
+      stone.add(buttonsGroup);
+    }
+
+    // Add a flush radar disc to the second stone
+    if (i === 1) {
+      const radarGroup = new THREE.Group();
+      const radius = 0.45;
+
+      // Base disc
+      const baseGeo = new THREE.CircleGeometry(radius, 48);
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: 0x06171f,
+        roughness: 0.9,
+        metalness: 0.1,
+      });
+      const base = new THREE.Mesh(baseGeo, baseMat);
+      // Nudge the base slightly down so the radar feels embedded, not hovering
+      base.position.y = -0.012;
+      base.receiveShadow = false;
+      base.castShadow = false;
+      radarGroup.add(base);
+
+      // Concentric rings
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x4ad3b5,
+        transparent: true,
+        opacity: 0.55,
+        side: THREE.DoubleSide,
+      });
+      for (let r = 0.18; r < radius; r += 0.12) {
+        const ringGeo = new THREE.RingGeometry(r - 0.002, r + 0.002, 48);
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        radarGroup.add(ring);
+      }
+
+      // Sweep wedge
+      const sweepGeo = new THREE.RingGeometry(0, radius, 64, 1, 0, Math.PI / 4);
+      const sweepMat = new THREE.MeshBasicMaterial({
+        color: 0x6dffe2,
+        transparent: true,
+        opacity: 0.5,
+        side: THREE.DoubleSide,
+      });
+      const sweep = new THREE.Mesh(sweepGeo, sweepMat);
+      radarGroup.add(sweep);
+
+      // Ping marker representing the library direction
+      const pingGeo = new THREE.CircleGeometry(0.04, 16);
+      const pingMat = new THREE.MeshBasicMaterial({
+        color: 0x9dffde,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide,
+      });
+      const ping = new THREE.Mesh(pingGeo, pingMat);
+      ping.position.set(0, 0.002, radius * 0.75);
+      radarGroup.add(ping);
+
+      // Simple compass "N" marker at north (world +Z)
+      const northGeo = new THREE.CircleGeometry(0.028, 16);
+      const northMat = new THREE.MeshBasicMaterial({
+        color: 0x4ad3b5,
+        transparent: true,
+        opacity: 0.8,
+        side: THREE.DoubleSide,
+      });
+      const northMarker = new THREE.Mesh(northGeo, northMat);
+      northMarker.position.set(0, 0.002, radius - 0.06);
+      radarGroup.add(northMarker);
+
+      radarGroup.rotation.x = -Math.PI / 2;
+      // Sink the whole radar a bit into the flattened top of the stone
+      radarGroup.position.set(0, 0.6, 0);
+
+      stone.add(radarGroup);
+      stone.userData.radar = radarGroup;
+      stone.userData.radarSweep = sweep;
+      stone.userData.radarPing = ping;
+      stone.userData.radarStartTime = performance.now() / 1000;
     }
 
     scene.add(stone);
@@ -1628,6 +1755,31 @@ function animate(time) {
       const maxTilt = 0.32; // radians
       d.joystick.rotation.x = d.joystickTiltX * maxTilt;
       d.joystick.rotation.z = d.joystickTiltZ * maxTilt;
+    }
+
+    // Radar sweep animation — full rotation every 3 seconds
+    if (d.radar && d.radarSweep) {
+      const elapsed = tSec - d.radarStartTime;
+      const period = 3.0;
+      const t = (elapsed % period) / period;
+      d.radarSweep.rotation.z = -t * Math.PI * 2;
+    }
+
+    // Radar library ping — show library bearing relative to world north (+Z)
+    if (d.radar && d.radarPing) {
+      const toLib = new THREE.Vector3().subVectors(LIBRARY_POSITION, camera.position);
+      toLib.y = 0;
+      if (toLib.lengthSq() > 1e-4) {
+        const ang = Math.atan2(toLib.x, toLib.z); // 0 = +Z, increasing toward +X
+        const r = 0.75 * 0.45; // 75% of radar radius
+        const x = Math.sin(ang) * r;
+        const z = Math.cos(ang) * r;
+        d.radarPing.position.set(x, 0.002, z);
+
+        // Gentle pulse so the ping feels alive
+        const pulse = 0.8 + 0.25 * Math.sin(tSec * 2.0);
+        d.radarPing.scale.setScalar(pulse);
+      }
     }
   });
 
