@@ -6,11 +6,20 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 const API_MESSAGES = '/api/messages';
 const MAX_MESSAGE_LENGTH = 100;
 const LIBRARY_INTERACT_DIST = 18;
 const HOLE_READ_DIST = 6;
+
+const BOUND_MIN = -45;
+const BOUND_MAX = 45;
+const FLAT_EXTEND = 25;
+const CLIFF_EXTEND = 45;
+const CLIFF_HEIGHT = 28;
 
 const canvas = document.getElementById('canvas');
 const prompt = document.getElementById('prompt');
@@ -27,10 +36,10 @@ const crosshair = document.getElementById('crosshair');
 const PX_PER_DEG = 2;
 const COMPASS_CENTER = 140;
 
-let scene, camera, renderer, controls, playerLight;
+let scene, camera, renderer, controls, playerLight, composer;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let moveUp = false, moveDown = false;
-let spotlightOn = false;
+let spotlightOn = true;
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const _forward = new THREE.Vector3();
@@ -39,8 +48,12 @@ const MOVE_SPEED = 16;
 const FISH = [];
 const FISH_SCHOOLS = [];
 const KELP = [];
+const VEGETATION = [];
 let particlePos;
-const LIBRARY_POSITION = new THREE.Vector3(55, 0, -45);
+let dustPos;
+let dustUniforms;
+const LIBRARY_POSITION = new THREE.Vector3(30, 0, -30);
+const LIBRARY_CLEARANCE = 12;
 let libraryBoulder, raycaster, rayOrigin, rayDirection;
 let messages = [];
 let drillPromptVisible = false, readPromptVisible = false, drilling = false, reading = false;
@@ -60,32 +73,105 @@ async function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.4;
+  renderer.toneMappingExposure = spotlightOn ? 0.95 : 0.6;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.BasicShadowMap;
+  renderer.shadowMap.size = 1024;
+
+  const CRTShader = {
+    uniforms: {
+      tDiffuse: { value: null },
+      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+      uTime: { value: 0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D tDiffuse;
+      uniform vec2 uResolution;
+      uniform float uTime;
+      varying vec2 vUv;
+
+      void main() {
+        vec2 uv = vUv - 0.5;
+        float aspect = uResolution.x / uResolution.y;
+        uv.x *= aspect;
+        float r2 = dot(uv, uv);
+        float barrel = 0.12;
+        uv *= 1.0 + barrel * r2;
+        uv.x /= aspect;
+        uv += 0.5;
+        if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+          gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+          return;
+        }
+        float pixelSize = 2.8;
+        vec2 pixelGrid = uResolution.xy / pixelSize;
+        uv = floor(uv * pixelGrid + 0.5) / pixelGrid;
+        vec4 col = texture2D(tDiffuse, uv);
+        float scanline = sin(uv.y * uResolution.y * 1.5) * 0.06 + 0.94;
+        col.rgb *= scanline;
+        vec2 vigUv = vUv - 0.5;
+        vigUv.x *= aspect;
+        float vigR2 = dot(vigUv, vigUv);
+        float vig = 1.0 - 0.35 * smoothstep(0.25, 1.0, vigR2 * 4.0);
+        col.rgb *= vig;
+        col.rgb = pow(col.rgb, vec3(0.97));
+        col.rgb *= 1.12;
+        gl_FragColor = col;
+      }
+    `,
+  };
+
+  composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const crtPass = new ShaderPass(CRTShader);
+  composer.addPass(crtPass);
 
   // Player light (toggle with F) — PointLight for reliable illumination
-  playerLight = new THREE.PointLight(0xaae5ff, 0, 30, 0.5);
+  playerLight = new THREE.PointLight(0xaae5ff, spotlightOn ? 45 : 0, 30, 0.5);
   playerLight.castShadow = false;
   scene.add(playerLight);
 
   // Deep ocean lighting — dim, blue-green
-  const ambient = new THREE.AmbientLight(0x1a3a4a, 0.15);
+  const ambient = new THREE.AmbientLight(0x1a3a4a, 0.24);
   scene.add(ambient);
 
-  const dirLight = new THREE.DirectionalLight(0x2d5a6a, 0.3);
+  const dirLight = new THREE.DirectionalLight(0x2d5a6a, 0.45);
   dirLight.position.set(10, 20, 10);
   scene.add(dirLight);
 
-  const hemi = new THREE.HemisphereLight(0x0a2a3a, 0x001520, 0.2);
+  const hemi = new THREE.HemisphereLight(0x0a2a3a, 0x001520, 0.32);
   scene.add(hemi);
 
-  // Seafloor
-  const floorGeo = new THREE.PlaneGeometry(200, 200, 50, 50);
+  // Seafloor — extends flat through bounds and into flat extension (collision via bounds clamp)
+  const floorExtent = BOUND_MAX + FLAT_EXTEND;
+  const floorSize = floorExtent * 2;
+  const floorGeo = new THREE.PlaneGeometry(floorSize, floorSize, 28, 28);
   const floorVerts = floorGeo.attributes.position;
   for (let i = 0; i < floorVerts.count; i++) {
     floorVerts.setZ(i, floorVerts.getZ(i) + (Math.random() - 0.5) * 2);
+  }
+  // Crater divot around library (floor local: x→world X, y→world -Z, so library at (30, 30))
+  const libX = LIBRARY_POSITION.x;
+  const libZ = LIBRARY_POSITION.z;
+  const craterRadius = 14;
+  const craterDepth = 2.2;
+  for (let i = 0; i < floorVerts.count; i++) {
+    const vx = floorVerts.getX(i);
+    const vy = floorVerts.getY(i);
+    const dist = Math.hypot(vx - libX, vy + libZ);
+    if (dist < craterRadius) {
+      const t = 1 - dist / craterRadius;
+      const dip = craterDepth * (1 - t * t);
+      floorVerts.setZ(i, floorVerts.getZ(i) - dip);
+    }
   }
   floorGeo.computeVertexNormals();
 
@@ -98,6 +184,46 @@ async function init() {
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
+
+  // Cliffs beyond flat extension (visual only, no collision)
+  const floorMatExt = new THREE.MeshStandardMaterial({
+    color: 0x2a4a3a,
+    roughness: 0.95,
+    metalness: 0,
+  });
+  function createCliffStrip(axis, sign) {
+    const w = floorSize + 20;
+    const len = CLIFF_EXTEND;
+    const geo = axis === 'z'
+      ? new THREE.PlaneGeometry(w, len, 16, 12)
+      : new THREE.PlaneGeometry(len, w, 12, 16);
+    const pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const along = axis === 'z' ? pos.getY(i) : pos.getX(i);
+      const dist = sign > 0 ? along + len / 2 : len / 2 - along;
+      const cliffT = dist / CLIFF_EXTEND;
+      const height = CLIFF_HEIGHT * cliffT * cliffT + (Math.random() - 0.5) * 2;
+      pos.setZ(i, -height);
+    }
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, floorMatExt.clone());
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.receiveShadow = true;
+    const edge = floorExtent + len / 2;
+    if (axis === 'z') mesh.position.set(0, 0, sign * edge);
+    else {
+      mesh.position.set(sign * edge, 0, 0);
+      mesh.rotation.y = sign > 0 ? -Math.PI / 2 : Math.PI / 2;
+    }
+    scene.add(mesh);
+  }
+  createCliffStrip('z', 1);
+  createCliffStrip('z', -1);
+  createCliffStrip('x', 1);
+  createCliffStrip('x', -1);
+
+  const visualExtent = BOUND_MAX + FLAT_EXTEND;
+  const visualRange = visualExtent * 2;
 
   // Rocks — clean icosahedrons with uniform scale, no per-vertex distortion
   const rockMat = new THREE.MeshStandardMaterial({
@@ -113,57 +239,165 @@ async function init() {
     () => new THREE.DodecahedronGeometry(0.5, 0),
   ];
 
-  for (let i = 0; i < 80; i++) {
+  function posAwayFromLibrary() {
+    let x, z;
+    do {
+      x = BOUND_MIN + Math.random() * (BOUND_MAX - BOUND_MIN);
+      z = BOUND_MIN + Math.random() * (BOUND_MAX - BOUND_MIN);
+    } while (Math.hypot(x - LIBRARY_POSITION.x, z - LIBRARY_POSITION.z) < LIBRARY_CLEARANCE);
+    return { x, z };
+  }
+
+  for (let i = 0; i < 55; i++) {
     const geo = rockShapes[i % rockShapes.length]();
     const rock = new THREE.Mesh(geo, rockMat.clone());
-    rock.castShadow = true;
     rock.receiveShadow = true;
     const s = 0.4 + Math.random() * 0.9;
     rock.scale.set(s, s * (0.85 + Math.random() * 0.3), s);
-    rock.position.set(
-      (Math.random() - 0.5) * 180,
-      0,
-      (Math.random() - 0.5) * 180
-    );
+    const { x, z } = posAwayFromLibrary();
+    rock.position.set(x, 0, z);
     rock.rotation.set(Math.random() * 0.4, Math.random() * Math.PI, Math.random() * 0.2);
     scene.add(rock);
   }
 
-  // Kelp plants — vertex deformation, rope-like ripples from base upward
-  const kelpMat = new THREE.MeshStandardMaterial({
+  function createOvalGeometry(width, height, segments = 14) {
+    const shape = new THREE.Shape();
+    const a = width / 2;
+    const b = height / 2;
+    const curve = new THREE.EllipseCurve(0, 0, a, b, 0, Math.PI * 2, false, 0);
+    const points = curve.getPoints(segments);
+    shape.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) shape.lineTo(points[i].x, points[i].y);
+    return new THREE.ShapeGeometry(shape);
+  }
+
+  // Kelp plants — stalk with leaves surrounding it, both sway in current
+  const kelpStalkMat = new THREE.MeshStandardMaterial({
     color: 0x1a4a2a,
     roughness: 0.9,
     metalness: 0,
   });
+  const kelpLeafMat = new THREE.MeshStandardMaterial({
+    color: 0x1e5a32,
+    roughness: 0.85,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
 
-  for (let i = 0; i < 120; i++) {
-    const height = 1.5 + Math.random() * 3;
-    const geo = new THREE.CylinderGeometry(0.02, 0.08, height, 6, 14);
-    const pos = geo.attributes.position;
+  for (let i = 0; i < 55; i++) {
+    const r = Math.random();
+    const height = r < 0.5 ? 1.5 + Math.random() * 3
+      : r < 0.85 ? 5 + Math.random() * 12
+      : 18 + Math.random() * 25;
+    const thickness = 0.008 + height * 0.0025;
+    const topRad = thickness * 0.4;
+    const botRad = thickness * 2.2;
+    const stalkGeo = new THREE.CylinderGeometry(topRad, botRad, height, 5, Math.max(8, Math.min(20, Math.floor(height * 1.2))));
+    const pos = stalkGeo.attributes.position;
     const origPos = new Float32Array(pos.array.length);
     origPos.set(pos.array);
 
-    const kelpMesh = new THREE.Mesh(geo, kelpMat.clone());
-    kelpMesh.castShadow = true;
-    kelpMesh.position.y = height / 2;
+    const stalkMesh = new THREE.Mesh(stalkGeo, kelpStalkMat.clone());
+    stalkMesh.position.y = height / 2;
 
     const kelpGroup = new THREE.Group();
-    kelpGroup.add(kelpMesh);
-    kelpGroup.position.set(
-      (Math.random() - 0.5) * 180,
-      0,
-      (Math.random() - 0.5) * 180
-    );
+    kelpGroup.add(stalkMesh);
+
+    const leafCount = Math.min(28, Math.max(8, Math.floor(height * 1.8)));
+    const leaves = [];
+    for (let l = 0; l < leafCount; l++) {
+      const leafHeight = Math.max(0.05, Math.min(height - 0.05, (l / (leafCount - 1 || 1)) * height + (Math.random() - 0.5) * (height / leafCount)));
+      const leafW = 0.35 + Math.random() * 0.45;
+      const leafH = 0.45 + Math.random() * 0.5;
+      const leafGeo = createOvalGeometry(leafW, leafH, 14);
+      const leafMesh = new THREE.Mesh(leafGeo, kelpLeafMat.clone());
+      leafMesh.position.set(0, leafHeight, 0);
+      leafMesh.rotation.x = -Math.PI / 2;
+      leafMesh.rotation.z = (l / leafCount) * Math.PI * 2 + Math.random() * 0.5;
+      leafMesh.rotation.y = (Math.random() - 0.5) * 0.4;
+      kelpGroup.add(leafMesh);
+      leaves.push({
+        mesh: leafMesh,
+        height: leafHeight,
+        phase: Math.random() * Math.PI * 2,
+        amp: 0.12 + Math.random() * 0.1,
+        baseRotY: leafMesh.rotation.y,
+        baseRotZ: leafMesh.rotation.z,
+      });
+    }
+
+    const { x, z } = posAwayFromLibrary();
+    kelpGroup.position.set(x, 0, z);
     kelpGroup.userData = {
       height,
       origPos,
+      leaves,
       freq: 0.0025 + Math.random() * 0.001,
       phase: Math.random() * Math.PI * 2,
-      amp: 0.15 + Math.random() * 0.12,
+      amp: 0.12 + Math.random() * 0.1,
       waveSpeed: 2 + Math.random() * 2,
     };
     scene.add(kelpGroup);
     KELP.push(kelpGroup);
+  }
+
+  // Flat leaves — large oval leaves on the seafloor
+  const flatLeafMat = new THREE.MeshStandardMaterial({
+    color: 0x2a5a3a,
+    roughness: 0.9,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+  for (let i = 0; i < 25; i++) {
+    const w = 0.8 + Math.random() * 1.2;
+    const h = 0.5 + Math.random() * 0.8;
+    const geo = createOvalGeometry(w, h, 18);
+    const mesh = new THREE.Mesh(geo, flatLeafMat.clone());
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.rotation.z = Math.random() * Math.PI * 2;
+    const { x, z } = posAwayFromLibrary();
+    mesh.position.set(x, 0.02, z);
+    mesh.userData = {
+      phase: Math.random() * Math.PI * 2,
+      amp: 0.03 + Math.random() * 0.04,
+      baseRotZ: mesh.rotation.z,
+    };
+    scene.add(mesh);
+    VEGETATION.push(mesh);
+  }
+
+  // Shrubs — clusters of large oval leaves
+  const shrubLeafMat = new THREE.MeshStandardMaterial({
+    color: 0x1e4a2e,
+    roughness: 0.9,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+  for (let i = 0; i < 18; i++) {
+    const shrubGroup = new THREE.Group();
+    const leafCount = 5 + Math.floor(Math.random() * 6);
+    for (let c = 0; c < leafCount; c++) {
+      const lw = 0.25 + Math.random() * 0.35;
+      const lh = 0.4 + Math.random() * 0.5;
+      const g = createOvalGeometry(lw, lh, 14);
+      const m = new THREE.Mesh(g, shrubLeafMat.clone());
+      m.rotation.x = -Math.PI / 2 + (Math.random() - 0.5) * 0.6;
+      m.rotation.z = Math.random() * Math.PI * 2;
+      m.position.set(
+        (Math.random() - 0.5) * 0.5,
+        0.02 + Math.random() * 0.15,
+        (Math.random() - 0.5) * 0.5
+      );
+      shrubGroup.add(m);
+    }
+    const { x, z } = posAwayFromLibrary();
+    shrubGroup.position.set(x, 0, z);
+    shrubGroup.userData = {
+      phase: Math.random() * Math.PI * 2,
+      amp: 0.02 + Math.random() * 0.03,
+    };
+    scene.add(shrubGroup);
+    VEGETATION.push(shrubGroup);
   }
 
   // Fish — varied size and shape
@@ -226,69 +460,134 @@ async function init() {
     body.scale.multiplyScalar(scale);
     const group = new THREE.Group();
     group.add(body);
+    // Tail fin — at rear (furthest from swim direction) and thinnest cross-section
+    body.geometry.computeBoundingBox();
+    const bbox = body.geometry.boundingBox;
+    const m = new THREE.Matrix4().compose(
+      new THREE.Vector3(0, 0, 0),
+      body.quaternion,
+      new THREE.Vector3(body.scale.x, body.scale.y, body.scale.z)
+    );
+    const allCorners = [
+      [bbox.min.x, bbox.min.y, bbox.min.z], [bbox.max.x, bbox.min.y, bbox.min.z],
+      [bbox.min.x, bbox.max.y, bbox.min.z], [bbox.max.x, bbox.max.y, bbox.min.z],
+      [bbox.min.x, bbox.min.y, bbox.max.z], [bbox.max.x, bbox.min.y, bbox.max.z],
+      [bbox.min.x, bbox.max.y, bbox.max.z], [bbox.max.x, bbox.max.y, bbox.max.z],
+    ];
+    const transformed = allCorners.map(([x, y, z]) =>
+      new THREE.Vector3(x, y, z).applyMatrix4(m)
+    );
+    const rearZ = Math.max(...transformed.map((p) => p.z));
+    const rearPoints = transformed.filter((p) => p.z >= rearZ - 0.01);
+    const extentX = rearPoints.length >= 2
+      ? Math.max(...rearPoints.map((p) => p.x)) - Math.min(...rearPoints.map((p) => p.x))
+      : (bbox.max.x - bbox.min.x) * body.scale.x;
+    const extentY = rearPoints.length >= 2
+      ? Math.max(...rearPoints.map((p) => p.y)) - Math.min(...rearPoints.map((p) => p.y))
+      : (bbox.max.y - bbox.min.y) * body.scale.y;
+    const tailGeo = new THREE.BufferGeometry();
+    const tailLen = 0.12 * scale;
+    const tailW = 0.04 * scale;
+    const tailVerts = extentX <= extentY
+      ? new Float32Array([0, tailW, rearZ, 0, -tailW, rearZ, 0, 0, rearZ + tailLen])
+      : new Float32Array([tailW, 0, rearZ, -tailW, 0, rearZ, 0, 0, rearZ + tailLen]);
+    tailGeo.setAttribute('position', new THREE.BufferAttribute(tailVerts, 3));
+    tailGeo.setIndex([0, 1, 2]);
+    tailGeo.computeVertexNormals();
+    const tailMat = body.material?.clone ? body.material.clone() : fishMat();
+    const tail = new THREE.Mesh(tailGeo, tailMat);
+    group.add(tail);
+    const cx = -visualExtent + Math.random() * visualRange;
+    const cz = -visualExtent + Math.random() * visualRange;
+    const baseSpeed = 0.06 + Math.random() * 0.2;
+    const scaleMod = scale < 0.6 ? (0.9 + Math.random() * 0.5) : scale > 1.2 ? (0.5 + Math.random() * 0.3) : (0.6 + Math.random() * 0.6);
     group.userData = {
-      speed: (0.8 + Math.random() * 1.5) * (scale < 0.6 ? 1.3 : scale > 1.2 ? 0.7 : 1),
-      angle: Math.random() * Math.PI * 2,
+      speed: baseSpeed * scaleMod,
+      t: Math.random() * Math.PI * 2,
+      cx,
+      cz,
+      radius: 10 + Math.random() * 6,
     };
     return group;
   }
 
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 50; i++) {
     const fish = createFish();
-    fish.traverse((c) => { if (c.isMesh) c.castShadow = true; });
+    fish.traverse((c) => { if (c.isMesh) c.castShadow = false; });
+    const cx = fish.userData.cx;
+    const cz = fish.userData.cz;
+    const r = fish.userData.radius;
+    const t = fish.userData.t;
     fish.position.set(
-      (Math.random() - 0.5) * 180,
+      cx + r * Math.sin(t),
       0.5 + Math.random() * 3,
-      (Math.random() - 0.5) * 180
+      cz + r * Math.sin(2 * t)
     );
     scene.add(fish);
     FISH.push(fish);
   }
 
-  // Fish schools — single merged mesh per school (20+ thin triangles each)
+  // Fish schools — single merged mesh per school (20+ oval spheres each)
   function createSchool() {
     const geos = [];
     for (let i = 0; i < 24; i++) {
-      const size = 0.06 + Math.random() * 0.08;
-      const shape = new THREE.Shape();
-      shape.moveTo(0, size);
-      shape.lineTo(-size, -size);
-      shape.lineTo(size, -size);
-      shape.closePath();
-      const g = new THREE.ExtrudeGeometry(shape, {
-        depth: 0.02,
-        bevelEnabled: false,
-      });
-      g.rotateX(-Math.PI / 2);
+      const base = 0.06 + Math.random() * 0.08;
+      const g = new THREE.SphereGeometry(base, 6, 6);
+      g.scale(
+        1.8 + Math.random() * 0.8,
+        0.4 + Math.random() * 0.3,
+        0.5 + Math.random() * 0.4
+      );
       g.translate(
         (Math.random() - 0.5) * 1.2,
         (Math.random() - 0.5) * 0.6,
         (Math.random() - 0.5) * 0.8
       );
-      g.rotateY(Math.random() * Math.PI * 2);
       geos.push(g);
     }
-    const merged = mergeGeometries(geos);
+    let merged;
+    try {
+      merged = mergeGeometries(geos);
+    } catch {
+      return;
+    }
+    if (!merged) return;
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x3d5a4a + Math.floor(Math.random() * 3) * 0x001010,
+      color: 0x4d6a5a,
       roughness: 0.6,
       metalness: 0.05,
     });
+    merged.computeVertexNormals();
     const school = new THREE.Mesh(merged, mat);
-    school.castShadow = true;
+    school.castShadow = false;
     school.position.set(
-      (Math.random() - 0.5) * 160,
+      -visualExtent + Math.random() * visualRange,
       1 + Math.random() * 2.5,
-      (Math.random() - 0.5) * 160
+      -visualExtent + Math.random() * visualRange
     );
-    school.userData = { angle: Math.random() * Math.PI * 2, speed: 0.4 + Math.random() * 0.3 };
+    const cx = -visualExtent + Math.random() * visualRange;
+    const cz = -visualExtent + Math.random() * visualRange;
+    const t = Math.random() * Math.PI * 2;
+    const r = 12 + Math.random() * 8;
+    school.userData = { t, speed: 0.08 + Math.random() * 0.22, cx, cz, radius: r };
+    school.position.set(cx + r * Math.sin(t), 1 + Math.random() * 2.5, cz + r * Math.sin(2 * t));
     scene.add(school);
     FISH_SCHOOLS.push(school);
   }
   for (let i = 0; i < 4; i++) createSchool();
 
-  // Library boulder — very large interactible landmark
-  const libraryGeo = new THREE.IcosahedronGeometry(6, 2);
+  // Library boulder — one large oblong shape, high subdivision for smooth bumps
+  const libraryGeo = new THREE.IcosahedronGeometry(6, 4);
+  const libPos = libraryGeo.attributes.position;
+  for (let i = 0; i < libPos.count; i++) {
+    const x = libPos.getX(i);
+    const y = libPos.getY(i);
+    const z = libPos.getZ(i);
+    const n = new THREE.Vector3(x, y, z).normalize();
+    const bump = 0.22 * (Math.sin(x * 1.3) * Math.cos(y * 1.1) + Math.sin(z * 0.9) * Math.cos(x * 0.7) + Math.sin((x + z) * 0.5));
+    libPos.setXYZ(i, x + n.x * bump, y + n.y * bump, z + n.z * bump);
+  }
+  libraryGeo.computeVertexNormals();
   const libraryMat = new THREE.MeshStandardMaterial({
     color: 0x2a3a3a,
     roughness: 0.9,
@@ -296,7 +595,7 @@ async function init() {
   });
   libraryBoulder = new THREE.Mesh(libraryGeo, libraryMat);
   libraryBoulder.position.copy(LIBRARY_POSITION);
-  libraryBoulder.scale.set(1.8, 1.5, 1.4);
+  libraryBoulder.scale.set(1.9, 1.3, 1.6);
   libraryBoulder.rotation.set(0.1, 0.5, 0.05);
   libraryBoulder.castShadow = true;
   libraryBoulder.receiveShadow = true;
@@ -325,13 +624,13 @@ async function init() {
   await loadMessages();
 
   // Float particles (plankton)
-  const particleCount = 80;
+  const particleCount = 55;
   const particleGeo = new THREE.BufferGeometry();
   const positions = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 200;
+    positions[i] = -visualExtent + Math.random() * visualRange;
     positions[i + 1] = Math.random() * 15;
-    positions[i + 2] = (Math.random() - 0.5) * 200;
+    positions[i + 2] = -visualExtent + Math.random() * visualRange;
   }
   particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   const particleMat = new THREE.PointsMaterial({
@@ -343,6 +642,59 @@ async function init() {
   const particles = new THREE.Points(particleGeo, particleMat);
   scene.add(particles);
   particlePos = particleGeo.attributes.position;
+
+  // Dark dust particles — light up white when spotlight hits them
+  const dustCount = 350;
+  const dustGeo = new THREE.BufferGeometry();
+  const dustPositions = new Float32Array(dustCount * 3);
+  for (let i = 0; i < dustCount * 3; i += 3) {
+    dustPositions[i] = -visualExtent + Math.random() * visualRange;
+    dustPositions[i + 1] = Math.random() * 15;
+    dustPositions[i + 2] = -visualExtent + Math.random() * visualRange;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+  dustUniforms = {
+    uLightPos: { value: new THREE.Vector3(0, 0, 0) },
+    uLightIntensity: { value: 0 },
+    uLightRadius: { value: 35 },
+  };
+  const dustMat = new THREE.ShaderMaterial({
+    uniforms: dustUniforms,
+    vertexShader: `
+      varying vec3 vWorldPos;
+      void main() {
+        vec4 worldPos = modelMatrix * vec4(position, 1.0);
+        vWorldPos = worldPos.xyz;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        gl_PointSize = 80.0 * (1.0 / -mvPosition.z);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uLightPos;
+      uniform float uLightIntensity;
+      uniform float uLightRadius;
+      varying vec3 vWorldPos;
+      void main() {
+        float d = distance(vWorldPos, uLightPos);
+        float falloff = 1.0 - smoothstep(0.0, uLightRadius, d);
+        float lit = uLightIntensity > 0.0 ? falloff : 0.0;
+        vec3 dark = vec3(0.12, 0.18, 0.22);
+        vec3 bright = vec3(0.95, 0.98, 1.0);
+        vec3 col = mix(dark, bright, lit);
+        float alpha = 0.5 + lit * 0.5;
+        float dist = length(gl_PointCoord - 0.5) * 2.0;
+        alpha *= 1.0 - smoothstep(0.6, 1.0, dist);
+        gl_FragColor = vec4(col, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    fog: false,
+  });
+  const dustParticles = new THREE.Points(dustGeo, dustMat);
+  scene.add(dustParticles);
+  dustPos = dustGeo.attributes.position;
 
   // Controls
   controls = new PointerLockControls(camera, document.body);
@@ -366,10 +718,12 @@ async function init() {
   window.addEventListener('keyup', onKeyUp, true);
 
   // Light toggle button (fallback)
+  lightBtn.textContent = spotlightOn ? 'Light: ON' : 'Light: OFF';
+  lightBtn.classList.toggle('on', spotlightOn);
   lightBtn.addEventListener('click', () => {
     spotlightOn = !spotlightOn;
-    playerLight.intensity = spotlightOn ? 15 : 0;
-    renderer.toneMappingExposure = spotlightOn ? 0.7 : 0.4;
+    playerLight.intensity = spotlightOn ? 45 : 0;
+    renderer.toneMappingExposure = spotlightOn ? 0.95 : 0.6;
     lightBtn.textContent = spotlightOn ? 'Light: ON' : 'Light: OFF';
     lightBtn.classList.toggle('on', spotlightOn);
   });
@@ -378,6 +732,9 @@ async function init() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    composer.setPixelRatio(renderer.getPixelRatio());
+    crtPass.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
   });
 
   // Build compass ticks — 360° strip, tick every 10°, cardinals (0=S, 90=E, 180=N, 270=W)
@@ -526,8 +883,8 @@ function onKeyDown(e) {
     if (!e.repeat) {
       e.preventDefault();
       spotlightOn = !spotlightOn;
-      playerLight.intensity = spotlightOn ? 15 : 0;
-      renderer.toneMappingExposure = spotlightOn ? 0.7 : 0.4;
+      playerLight.intensity = spotlightOn ? 45 : 0;
+      renderer.toneMappingExposure = spotlightOn ? 0.95 : 0.6;
       lightBtn.textContent = spotlightOn ? 'Light: ON' : 'Light: OFF';
       lightBtn.classList.toggle('on', spotlightOn);
     }
@@ -601,6 +958,8 @@ function updateMovement(delta) {
   camera.position.y += velocity.y * delta;
 
   camera.position.y = Math.max(0.5, Math.min(15, camera.position.y));
+  camera.position.x = Math.max(BOUND_MIN, Math.min(BOUND_MAX, camera.position.x));
+  camera.position.z = Math.max(BOUND_MIN, Math.min(BOUND_MAX, camera.position.z));
 }
 
 function animate(time) {
@@ -613,10 +972,10 @@ function animate(time) {
   // Player light follows camera
   playerLight.position.copy(camera.position);
 
-  // Kelp rope deformation — ripples propagate from base up, vertex displacement
+  // Kelp — stalk and leaves sway in current
   KELP.forEach((kelp) => {
-    const mesh = kelp.children[0];
-    const pos = mesh.geometry.attributes.position;
+    const stalkMesh = kelp.children[0];
+    const pos = stalkMesh.geometry.attributes.position;
     const orig = kelp.userData.origPos;
     const h = kelp.userData.height;
     const freq = kelp.userData.freq;
@@ -633,27 +992,51 @@ function animate(time) {
       pos.setZ(i, orig[i * 3 + 2] + swayZ);
     }
     pos.needsUpdate = true;
-    mesh.geometry.computeVertexNormals();
+    stalkMesh.geometry.computeVertexNormals();
+
+    kelp.userData.leaves.forEach((leaf) => {
+      const lt = leaf.height / h;
+      const sway = leaf.amp * Math.sin(time * freq * 1.2 + lt * waveSpeed + leaf.phase);
+      leaf.mesh.rotation.y = leaf.baseRotY + sway;
+      leaf.mesh.rotation.z = leaf.baseRotZ + sway * 0.5;
+    });
   });
 
-  // Fish swim
-  FISH.forEach((fish, i) => {
-    fish.userData.angle += delta * fish.userData.speed * 0.5;
-    fish.position.x += Math.sin(fish.userData.angle) * delta * 2;
-    fish.position.z += Math.cos(fish.userData.angle) * delta * 2;
-    fish.rotation.y = -fish.userData.angle;
-    fish.position.x = ((fish.position.x + 100) % 200) - 100;
-    fish.position.z = ((fish.position.z + 100) % 200) - 100;
+  // Flat leaves and shrubs — gentle sway
+  VEGETATION.forEach((veg) => {
+    if (veg.userData.baseRotZ !== undefined) {
+      veg.rotation.z = veg.userData.baseRotZ + veg.userData.amp * Math.sin(time * 0.002 + veg.userData.phase);
+    } else {
+      veg.rotation.y = veg.userData.amp * Math.sin(time * 0.0018 + veg.userData.phase);
+    }
   });
 
-  // Fish schools swim (single mesh each)
+  const visualExtentAnim = BOUND_MAX + FLAT_EXTEND;
+  const visualRangeAnim = visualExtentAnim * 2;
+  // Fish swim — figure-8 path
+  FISH.forEach((fish) => {
+    const d = fish.userData;
+    d.t += delta * d.speed;
+    const x = d.cx + d.radius * Math.sin(d.t);
+    const z = d.cz + d.radius * Math.sin(2 * d.t);
+    fish.position.x = x;
+    fish.position.z = z;
+    const velX = d.radius * Math.cos(d.t);
+    const velZ = d.radius * 2 * Math.cos(2 * d.t);
+    fish.rotation.y = Math.atan2(velX, -velZ);
+  });
+
+  // Fish schools swim — figure-8 path, all oriented same direction
   FISH_SCHOOLS.forEach((school) => {
-    school.userData.angle += delta * school.userData.speed;
-    school.position.x += Math.sin(school.userData.angle) * delta * 1.5;
-    school.position.z += Math.cos(school.userData.angle) * delta * 1.5;
-    school.rotation.y = -school.userData.angle;
-    school.position.x = ((school.position.x + 100) % 200) - 100;
-    school.position.z = ((school.position.z + 100) % 200) - 100;
+    const d = school.userData;
+    d.t += delta * d.speed;
+    const x = d.cx + d.radius * Math.sin(d.t);
+    const z = d.cz + d.radius * Math.sin(2 * d.t);
+    school.position.x = x;
+    school.position.z = z;
+    const velX = d.radius * Math.cos(d.t);
+    const velZ = d.radius * 2 * Math.cos(2 * d.t);
+    school.rotation.y = Math.atan2(velX, -velZ);
   });
 
   // Particle drift
@@ -661,6 +1044,16 @@ function animate(time) {
     particlePos.setY(i, (particlePos.getY(i) + delta * 0.2) % 15);
   }
   particlePos.needsUpdate = true;
+
+  // Dust drift + spotlight uniforms
+  if (dustPos && dustUniforms) {
+    for (let i = 0; i < dustPos.count; i++) {
+      dustPos.setY(i, (dustPos.getY(i) + delta * 0.15) % 15);
+    }
+    dustPos.needsUpdate = true;
+    dustUniforms.uLightPos.value.copy(camera.position);
+    dustUniforms.uLightIntensity.value = spotlightOn ? 45 : 0;
+  }
 
   // Compass — rotate ticks, position library icon when in view
   camera.getWorldDirection(_forward);
@@ -721,7 +1114,7 @@ function animate(time) {
 
   crosshair.classList.toggle('interactable', drillPromptVisible || readPromptVisible);
 
-  renderer.render(scene, camera);
+  composer.render();
 }
 
 init().then(() => animate());

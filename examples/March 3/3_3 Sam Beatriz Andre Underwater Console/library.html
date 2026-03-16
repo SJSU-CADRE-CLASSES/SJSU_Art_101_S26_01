@@ -15,73 +15,14 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0a0e12;
+      background: #0a1628;
       min-height: 100vh;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding-left: clamp(2rem, 6vw, 4rem);
-    }
-    .landing {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
-    }
-    .landing-title {
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      font-weight: 300;
-      letter-spacing: 0.15em;
-      color: #e8e8e8;
-      text-transform: uppercase;
-    }
-    .landing-subtitle {
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      font-weight: 400;
-      color: #8a9ba8;
-      letter-spacing: 0.05em;
-    }
-    .landing-buttons {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .landing-buttons button {
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
-      text-transform: lowercase;
-      padding: 0.6rem 1.4rem;
-      background: transparent;
-      color: #8a9ba8;
-      border: 1px solid #2d6b8a;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-    .landing-buttons button:hover {
-      color: #e8e8e8;
-      border-color: #4a9bc4;
-      background: rgba(45, 107, 138, 0.15);
-    }
-    .landing.exiting {
-      animation: slide-out-left 0.6s ease-in-out forwards;
-    }
-    @keyframes slide-out-left {
-      to { transform: translateX(-120%); opacity: 0; }
     }
     #underwater-view {
-      display: none;
       position: fixed;
       inset: 0;
       z-index: 100;
-    }
-    #underwater-view.active {
-      display: block;
     }
     #underwater-view #canvas { display: block; width: 100vw; height: 100vh; }
     #underwater-view #ocean-filter {
@@ -182,16 +123,6 @@
   </style>
 </head>
 <body>
-  <main class="landing" id="landing">
-    <h1 class="landing-title">STONE LIBRARY</h1>
-    <p class="landing-subtitle">leave a message</p>
-    <div class="landing-buttons">
-      <button type="button" id="enter-btn">enter</button>
-      <button type="button">about</button>
-      <button type="button">creators</button>
-    </div>
-  </main>
-
   <div id="underwater-view">
     <div id="compass">
       <div id="compass-line"></div>
@@ -202,7 +133,7 @@
     <canvas id="canvas"></canvas>
     <div id="ocean-filter" aria-hidden="true"></div>
     <div id="prompt">Click to explore · WASD to move · Space/Shift to rise · F or L to toggle light · Mouse to look</div>
-    <button id="light-btn" type="button">Light: OFF</button>
+    <button id="light-btn" type="button">Light: ON</button>
     <div id="interact-prompt"></div>
     <div id="drill-ui">
       <input type="text" id="drill-input" maxlength="100" placeholder="Write your message..." autocomplete="off" />
@@ -215,16 +146,7 @@
   </div>
 
   <script type="module">
-    document.getElementById('enter-btn').addEventListener('click', () => {
-      document.getElementById('landing').classList.add('exiting');
-      setTimeout(async () => {
-        document.getElementById('landing').style.display = 'none';
-        document.getElementById('underwater-view').classList.add('active');
-        document.body.style.overflow = 'hidden';
-        document.body.style.background = '#0a1628';
-        await import('./underwater/main.js');
-      }, 600);
-    });
+    import('./underwater/main.js');
   </script>
 </body>
 </html>
