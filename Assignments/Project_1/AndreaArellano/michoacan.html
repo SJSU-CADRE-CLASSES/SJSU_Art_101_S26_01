@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Michoacán, Mexico · Bay Area Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fff8ff;
+        --card: #ffffff;
+        --accent: #ff9fbf;
+        --accent-2: #8bc9ff;
+        --accent-3: #ffc988;
+        --text-main: #3c2a4d;
+        --text-soft: #7a668e;
+        --border-soft: #f0dff7;
+        --shadow-soft: 0 14px 30px rgba(84, 54, 120, 0.15);
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --radius-pill: 999px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, #ffe8ff 0, #fff8ff 45%, #f9fdff 100%);
+        color: var(--text-main);
+        display: flex;
+        justify-content: center;
+        padding: 32px 16px 40px;
+      }
+
+      .page {
+        width: 100%;
+        max-width: 900px;
+        background: linear-gradient(135deg, #ffffff 0, #fff7ff 40%, #f6fbff 100%);
+        border-radius: 32px;
+        padding: 26px 22px 28px;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .page::before,
+      .page::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(0);
+        opacity: 0.55;
+        pointer-events: none;
+      }
+
+      .page::before {
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, #ffe1ec 0, transparent 70%);
+        top: -80px;
+        right: -60px;
+      }
+
+      .page::after {
+        width: 210px;
+        height: 210px;
+        background: radial-gradient(circle, #d7f1ff 0, transparent 68%);
+        bottom: -70px;
+        left: -50px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 22px;
+      }
+
+      .title-block h1 {
+        margin: 0 0 4px;
+        font-size: 2.05rem;
+        letter-spacing: 0.03em;
+      }
+
+      .title-pill {
+        border-radius: var(--radius-pill);
+        padding: 2px 12px;
+        background: rgba(255, 159, 191, 0.15);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+      }
+
+      .title-block p {
+        margin: 4px 0 0;
+        color: var(--text-soft);
+        font-size: 0.95rem;
+      }
+
+      .badge {
+        border-radius: var(--radius-pill);
+        padding: 7px 14px;
+        background: rgba(139, 201, 255, 0.18);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #2d6f9d;
+      }
+
+      .badge-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: #8bc9ff;
+        box-shadow: 0 0 0 6px rgba(139, 201, 255, 0.35);
+      }
+
+      main {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius-lg);
+        padding: 18px 18px 16px;
+        box-shadow: 0 10px 26px rgba(120, 82, 158, 0.12);
+        border: 1px solid var(--border-soft);
+      }
+
+      .card-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 10px;
+      }
+
+      .card-title span {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--text-soft);
+      }
+
+      .card-title h2 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .story p {
+        margin: 0 0 8px;
+        font-size: 0.93rem;
+        color: var(--text-soft);
+      }
+
+      .story p:last-child {
+        margin-bottom: 0;
+      }
+
+      .routes {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 4px;
+        font-size: 0.86rem;
+      }
+
+      .gallery-card {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+      }
+
+      .gallery-intro {
+        margin: 0 0 8px;
+        font-size: 0.9rem;
+        color: var(--text-soft);
+      }
+
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+      }
+
+      .photo-cell {
+        border-radius: var(--radius-md);
+        background: #fdf9ff;
+        border: 1px dashed #ead9f7;
+        padding: 8px;
+        font-size: 0.8rem;
+        color: var(--text-soft);
+        text-align: center;
+      }
+
+      .photo-cell img {
+        width: 100%;
+        max-height: 180px;
+        object-fit: cover;
+        border-radius: 12px;
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .photo-hint {
+        font-size: 0.76rem;
+        color: #aa95c6;
+      }
+
+      .log-card {
+        grid-column: 1 / -1;
+        margin-top: 12px;
+      }
+
+      .log-intro {
+        margin: 0 0 10px;
+        font-size: 0.9rem;
+        color: var(--text-soft);
+      }
+
+      .log-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .log-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      .log-table thead {
+        background: #f5efff;
+      }
+
+      .log-table th,
+      .log-table td {
+        padding: 6px 8px;
+        border-bottom: 1px solid #ecdff6;
+        text-align: left;
+      }
+
+      .log-table th {
+        font-weight: 700;
+        color: var(--text-main);
+        white-space: nowrap;
+      }
+
+      .log-table input {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #ecdff6;
+        padding: 4px 6px;
+        font: inherit;
+        font-size: 0.82rem;
+        background: #fdfbff;
+        color: var(--text-main);
+      }
+
+      .route-row {
+        padding: 7px 9px;
+        border-radius: 14px;
+        background: #fdf9ff;
+        border: 1px dashed #ead9f7;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .route-label {
+        font-weight: 700;
+      }
+
+      .route-time {
+        font-weight: 700;
+        color: #a3527b;
+        white-space: nowrap;
+      }
+
+      .back-link {
+        margin-top: 14px;
+        font-size: 0.86rem;
+      }
+
+      .back-link a {
+        text-decoration: none;
+        color: #a3527b;
+        font-weight: 700;
+        padding: 6px 13px;
+        border-radius: var(--radius-pill);
+        background: rgba(255, 159, 191, 0.16);
+        box-shadow: 0 6px 14px rgba(230, 123, 155, 0.3);
+      }
+
+      .back-link a:hover {
+        filter: brightness(1.05);
+      }
+
+      @media (max-width: 780px) {
+        main {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 20px 10px 28px;
+        }
+
+        .page {
+          padding: 18px 14px 20px;
+          border-radius: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="title-block">
+          <div class="title-pill">Michoacán, Mexico</div>
+          <h1>A far-away chapter</h1>
+          <p>
+            This page is for the long-distance part of your driving story — the trips
+            that go far beyond the Bay Area and down to Michoacán, Mexico.
+          </p>
+        </div>
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span>Connected to the Bay, but on another map</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="card story">
+          <div class="card-title">
+            <span>Chapter</span>
+            <h2>How Michoacán fits into the project</h2>
+          </div>
+          <p>
+            I am sometimes here. I want to go, I go, I get tired and want to go home, and then I miss it when I get back home. 
+          </p>
+          <p>
+            I probably spent at LEAST ten hours driving around here. in the back of a tiny truck, sweaty, humid, and legs cramping bad. I tried getting behind the steering wheel for a change and got stuck in the mud. They did not let me behind the steering wheel again.
+          </p>
+        </section>
+
+        <section class="card gallery-card">
+          <div class="card-title">
+            <span>Images</span>
+            <h2>Photos from Michoacán</h2>
+          </div>
+          <p class="gallery-intro">
+            Add photos or screenshots from Michoacán, Mexico here — landscapes, streets,
+            or anything that shows what these drives feel like.
+          </p>
+          <div class="photo-grid">
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo1.jpg" alt="Drive in Michoacán, Mexico — photo 1" />
+              <div class="photo-hint">Me</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo2.jpg" alt="Drive in Michoacán, Mexico — photo 2" />
+              <div class="photo-hint">One of the hardest days.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo3.jpg" alt="Drive in Michoacán, Mexico — photo 3" />
+              <div class="photo-hint">Shoes.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo4.jpg" alt="Drive in Michoacán, Mexico — photo 4" />
+              <div class="photo-hint">A living room.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo5.jpg" alt="Drive in Michoacán, Mexico — photo 5" />
+              <div class="photo-hint">Brother and I.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo6.jpg" alt="Drive in Michoacán, Mexico — photo 6" />
+              <div class="photo-hint">My father hasn't seen his own mother in 21 years.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo7.jpg" alt="Drive in Michoacán, Mexico — photo 7" />
+              <div class="photo-hint">A night stand.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo8.jpg" alt="Drive in Michoacán, Mexico — photo 8" />
+              <div class="photo-hint">Me after being attacked by children half my size.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo9.jpg" alt="Drive in Michoacán, Mexico — photo 9" />
+              <div class="photo-hint">Spongebob on a restaurant poster and a random cop.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo10.jpg" alt="Drive in Michoacán, Mexico — photo 10" />
+              <div class="photo-hint">Honestly idk.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo11.jpg" alt="Drive in Michoacán, Mexico — photo 11" />
+              <div class="photo-hint">A truck outside.</div>
+            </div>
+            <div class="photo-cell">
+              <img src="PhotosMexico/photo12.jpg" alt="Drive in Michoacán, Mexico — photo 12" />
+              <div class="photo-hint">Another fragment from the trip.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card log-card">
+          <div class="card-title">
+            <span>Log</span>
+            <h2>Dates & hours on the road</h2>
+          </div>
+          <p class="log-intro">
+            Use this chart to record specific drives to or around Michoacán — jot down
+            the date, how many hours you spent on the road, where you were going, and
+            any quick notes.
+          </p>
+          <div class="log-table-wrapper">
+            <table class="log-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Hours</th>
+                  <th>From / To</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="text" placeholder="07/26/2025" /></td>
+                  <td><input type="text" placeholder="4 Hours" /></td>
+                  <td><input type="text" placeholder=" Oaklnd → Morelia" /></td>
+                  <td><input type="text" placeholder="My ass hurt bad ngl" /></td>
+                </tr>
+                <tr>
+                  <td><input type="text" placeholder="07/26/2025" /></td>
+                  <td><input type="text" placeholder="3 Hours" /></td>
+                  <td><input type="text" placeholder="Airport MLM → Santa Ana" /></td>
+                  <td><input type="text" placeholder="My ass still hurt" /></td>
+                </tr>
+                <tr>
+                  <td><input type="text" placeholder="07/31/2025" /></td>
+                  <td><input type="text" placeholder="2 Hours" /></td>
+                  <td><input type="text" placeholder="Santa Ana → Caracuaro " /></td>
+                  <td><input type="text" placeholder="Hot, humid, tired" /></td>
+                </tr>
+                <tr>
+                  <td><input type="text" placeholder="MM/DD/YY" /></td>
+                  <td><input type="text" placeholder="hours" /></td>
+                  <td><input type="text" placeholder="route" /></td>
+                  <td><input type="text" placeholder="short note" /></td>
+                </tr>
+                <tr>
+                  <td><input type="text" placeholder="MM/DD/YY" /></td>
+                  <td><input type="text" placeholder="hours" /></td>
+                  <td><input type="text" placeholder="route" /></td>
+                  <td><input type="text" placeholder="short note" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="card">
+          <div class="card-title">
+            <span>Time between locations</span>
+            <h2>Typical hours for these drives</h2>
+          </div>
+          <div class="routes">
+            <div class="route-row">
+              <span class="route-label">San Jose → Michoacán, Mexico</span>
+              <span class="route-time">~27 hrs</span>
+            </div>
+            <div class="route-row">
+              <span class="route-label">San Francisco → Michoacán, Mexico</span>
+              <span class="route-time">~28 hrs</span>
+            </div>
+            <div class="route-row">
+              <span class="route-label">Santa Rosa → Michoacán, Mexico</span>
+              <span class="route-time">~29 hrs</span>
+            </div>
+          </div>
+          <div class="back-link">
+            <a href="index.html">← Back to the Bay Area map</a>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </body>
+</html>
+

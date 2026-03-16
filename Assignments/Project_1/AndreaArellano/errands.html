@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Errands & Everyday Drives</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top left, #e9fff4 0, #f7fff9 40%, #fff9ff 100%);
+        color: #234436;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 28px 16px;
+      }
+
+      .card {
+        max-width: 620px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 26px 24px 24px;
+        box-shadow: 0 18px 36px rgba(58, 118, 92, 0.18);
+        border: 1px solid #c8f0dd;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      h1 span {
+        font-size: 1.7rem;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        background: rgba(144, 231, 180, 0.26);
+        color: #246f45;
+      }
+
+      .pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #76d9a3;
+      }
+
+      p {
+        margin: 10px 0 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #47685a;
+      }
+
+      .list {
+        margin: 14px 0 0;
+        padding-left: 20px;
+        font-size: 0.9rem;
+        color: #47685a;
+      }
+
+      .list li {
+        margin-bottom: 6px;
+      }
+
+      a.back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 18px;
+        font-size: 0.9rem;
+        color: #2d8054;
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ebfff4;
+        border: 1px solid #c5f0dd;
+      }
+
+      a.back-link:hover {
+        background: #dcffec;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="pill">
+        <span class="pill-dot"></span>
+        errands & everyday
+      </div>
+      <h1><span>🧺</span> Little daily trips</h1>
+      <p>
+        This page is for the small but important drives: grocery runs, coffee
+        pickups, dropping something off, or just looping around the block.
+      </p>
+      <ul class="list">
+        <li>Notice how everyday drives shape your week.</li>
+        <li>Capture tiny moments you’d usually forget.</li>
+        <li>See how even short trips add up over time.</li>
+      </ul>
+      <a href="index.html" class="back-link">
+        ← Back to main driving journal
+      </a>
+    </main>
+  </body>
+</html>
+

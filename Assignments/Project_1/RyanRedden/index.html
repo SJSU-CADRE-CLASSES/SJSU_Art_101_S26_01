@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Cyclical Attractor Telemetry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+
+    <div class="left-panel-stack">
+        <div class="lfo-container">
+            <h1>LFO Modulator</h1>
+
+        <div class="control-group toggle-group">
+            <label for="toggle-lfo-enabled">LFO <span id="val-lfo-enabled" class="value-display">OFF</span></label>
+            <input type="checkbox" id="toggle-lfo-enabled">
+        </div>
+
+        <div class="control-group">
+            <label for="select-lfo-waveform">Waveform <span id="val-lfo-waveform" class="value-display">SINE</span></label>
+            <select id="select-lfo-waveform">
+                <option value="sine">Sine</option>
+                <option value="triangle">Triangle</option>
+                <option value="ramp">Ramp</option>
+                <option value="square">Square</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="slider-lfo-frequency">LFO Frequency <span id="val-lfo-frequency" class="value-display">0.20</span></label>
+            <input type="range" id="slider-lfo-frequency" min="0.00" max="5.00" step="0.01" value="0.20">
+        </div>
+
+        <div class="control-group">
+            <label for="select-lfo-param">Add LFO Target</label>
+            <div class="inline-row">
+                <select id="select-lfo-param"></select>
+                <button id="btn-lfo-add" type="button">Add</button>
+            </div>
+        </div>
+
+            <div class="telemetry lfo-active-block">
+                <div class="lfo-active-title">Active LFO Items</div>
+                <div id="lfo-active-list" class="lfo-active-list"></div>
+            </div>
+        </div>
+
+        <div class="env-container">
+            <h1>Envelope Modulator</h1>
+
+            <div class="control-group">
+                <label for="slider-env-attack">Attack <span id="val-env-attack" class="value-display">100 ms</span></label>
+                <input type="range" id="slider-env-attack" min="0" max="5000" step="1" value="100">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-env-decay">Decay <span id="val-env-decay" class="value-display">250 ms</span></label>
+                <input type="range" id="slider-env-decay" min="0" max="5000" step="1" value="250">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-env-sustain">Sustain <span id="val-env-sustain" class="value-display">60%</span></label>
+                <input type="range" id="slider-env-sustain" min="0" max="1" step="0.01" value="0.6">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-env-release">Release <span id="val-env-release" class="value-display">300 ms</span></label>
+                <input type="range" id="slider-env-release" min="0" max="5000" step="1" value="300">
+            </div>
+
+            <div class="control-group">
+                <label for="input-env-trigger">Trigger Key <span id="val-env-trigger" class="value-display">1</span></label>
+                <input type="text" id="input-env-trigger" value="1" maxlength="1">
+            </div>
+
+            <div class="control-group">
+                <label for="select-env-param">Envelope Target</label>
+                <div class="inline-row">
+                    <select id="select-env-param"></select>
+                    <button id="btn-env-add" type="button">Add</button>
+                </div>
+            </div>
+
+            <div class="telemetry lfo-active-block">
+                <div class="lfo-active-title">Active Envelope Items</div>
+                <div id="env-active-list" class="lfo-active-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-panel-stack">
+        <div class="container">
+            <h1>Thomas Attractor Engine</h1>
+
+            <div class="control-group">
+                <label for="slider-ui-size">UI Size <span id="val-ui-size" class="value-display">50%</span></label>
+                <input type="range" id="slider-ui-size" min="0.3" max="1.2" step="0.01" value="0.5">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-b">Chaos (b) <span id="val-b" class="value-display">0.19000</span></label>
+                <input type="range" id="slider-b" min="0.00001" max="0.33000" step="0.00001" value="0.19000">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-dt">Speed (dt) <span id="val-dt" class="value-display">0.10000</span></label>
+                <input type="range" id="slider-dt" min="0.00001" max="3.50000" step="0.00001" value="0.10000">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-fine-dt">Fine Speed <span id="val-fine-dt" class="value-display">0.10000</span></label>
+                <input type="range" id="slider-fine-dt" min="0.00001" max="0.03000" step="0.00001" value="0.03000">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-multiplier">Multiplier <span id="val-multiplier" class="value-display">1.00</span></label>
+                <input type="range" id="slider-multiplier" min="0" max="5" step="0.01" value="1">
+            </div>
+
+            <div class="control-group hidden-control">
+                <label for="slider-gain-x">X Gain <span id="val-gain-x" class="value-display">1.00</span></label>
+                <input type="range" id="slider-gain-x" min="0.1" max="4" step="0.01" value="1">
+            </div>
+
+            <div class="control-group hidden-control">
+                <label for="slider-gain-y">Y Gain <span id="val-gain-y" class="value-display">1.00</span></label>
+                <input type="range" id="slider-gain-y" min="0.1" max="4" step="0.01" value="1">
+            </div>
+
+            <div class="control-group hidden-control">
+                <label for="slider-gain-z">Z Gain <span id="val-gain-z" class="value-display">1.00</span></label>
+                <input type="range" id="slider-gain-z" min="0.1" max="4" step="0.01" value="1">
+            </div>
+
+            <button id="btn-reset">Reset Engine</button>
+
+            <div id="telemetry" class="telemetry">
+                X: 0.000 | Y: 0.000 | Z: 0.000
+            </div>
+        </div>
+
+        <div class="trail-container">
+            <h1>Trail Settings</h1>
+
+            <div class="control-group">
+                <label for="slider-cam-z">Camera Orbit Radius <span id="val-cam-z" class="value-display">20.0</span></label>
+                <input type="range" id="slider-cam-z" min="1.0" max="20.0" step="0.1" value="20.0">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-ramp-frequency">Ramp Frequency <span id="val-ramp-frequency" class="value-display">0.03</span></label>
+                <input type="range" id="slider-ramp-frequency" min="-1.00" max="1.00" step="0.01" value="0.03">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-trail-length">Trail Length <span id="val-trail-length" class="value-display">2000</span></label>
+                <input type="range" id="slider-trail-length" min="0" max="2000" step="1" value="2000">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-steps-per-frame">Steps / Frame <span id="val-steps-per-frame" class="value-display">20</span></label>
+                <input type="range" id="slider-steps-per-frame" min="1" max="1000" step="1" value="20">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-internal-substeps">Internal Substeps <span id="val-internal-substeps" class="value-display">1</span></label>
+                <input type="range" id="slider-internal-substeps" min="1" max="500" step="1" value="1">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-integrator-fidelity">Integrator Fidelity <span id="val-integrator-fidelity" class="value-display">0.00</span></label>
+                <input type="range" id="slider-integrator-fidelity" min="0" max="1" step="0.01" value="0">
+            </div>
+
+            <div class="control-group toggle-group">
+                <label for="toggle-arc-resample">Arc-Length Resample <span id="val-arc-resample" class="value-display">OFF</span></label>
+                <input type="checkbox" id="toggle-arc-resample">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-arc-resample-amount">Arc Resample Amount <span id="val-arc-resample-amount" class="value-display">100%</span></label>
+                <input type="range" id="slider-arc-resample-amount" min="0" max="1" step="0.01" value="1">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-point-jitter">Point Jitter <span id="val-point-jitter" class="value-display">0.000</span></label>
+                <input type="range" id="slider-point-jitter" min="0" max="0.25" step="0.001" value="0">
+            </div>
+        </div>
+    </div>
+
+    <div class="sound-engine-panel">
+        <h1>Sound Engine</h1>
+
+        <div class="sound-engine-controls">
+            <div class="control-group">
+                <label for="slider-carrier-freq">Carrier Freq (Hz) <span id="val-carrier-freq" class="value-display">220</span></label>
+                <input type="range" id="slider-carrier-freq" min="0" max="20000" step="1" value="220">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-mod-depth">Mod Depth <span id="val-mod-depth" class="value-display">1000</span></label>
+                <input type="range" id="slider-mod-depth" min="0" max="20000" step="1" value="1000">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-master-volume">Amplitude <span id="val-master-volume" class="value-display">0.50</span></label>
+                <input type="range" id="slider-master-volume" min="0" max="1" step="0.01" value="0.5">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-interp-time">Interp Time <span id="val-interp-time" class="value-display">80ms</span></label>
+                <input type="range" id="slider-interp-time" min="10" max="500" step="1" value="80">
+            </div>
+
+            <div class="sound-toggles">
+                <div class="control-group toggle-group">
+                    <label for="toggle-audio-x">FM X <span id="val-audio-x" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-audio-x">
+                </div>
+                <div class="control-group toggle-group">
+                    <label for="toggle-audio-y">FM Y <span id="val-audio-y" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-audio-y">
+                </div>
+                <div class="control-group toggle-group">
+                    <label for="toggle-audio-z">FM Z <span id="val-audio-z" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-audio-z">
+                </div>
+                <div class="control-group toggle-group">
+                    <label for="toggle-pm-x">PM X <span id="val-pm-x" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-pm-x">
+                </div>
+                <div class="control-group toggle-group">
+                    <label for="toggle-pm-y">PM Y <span id="val-pm-y" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-pm-y">
+                </div>
+                <div class="control-group toggle-group">
+                    <label for="toggle-pm-z">PM Z <span id="val-pm-z" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-pm-z">
+                </div>
+                <div class="control-group toggle-group ott-toggle">
+                    <label for="toggle-ott-bypass">OTT Bypass <span id="val-ott-bypass" class="value-display">BYPASS</span></label>
+                    <input type="checkbox" id="toggle-ott-bypass" checked>
+                </div>
+                <div class="control-group toggle-group ott-toggle">
+                    <label for="toggle-fm-interp">FM Mode <span id="val-fm-interp" class="value-display">INTERP</span></label>
+                    <input type="checkbox" id="toggle-fm-interp" checked>
+                </div>
+                <div class="control-group toggle-group ott-toggle">
+                    <label for="toggle-reverb-on">Reverb On <span id="val-reverb-on" class="value-display">OFF</span></label>
+                    <input type="checkbox" id="toggle-reverb-on">
+                </div>
+                <div class="control-group toggle-group ott-toggle">
+                    <label for="slider-reverb-mix">Dry/Wet <span id="val-reverb-mix" class="value-display">0.00</span></label>
+                    <input type="range" id="slider-reverb-mix" class="mini-mix-slider" min="0" max="1" step="0.01" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Ship Diagnostics - Personal Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <!-- Loading / scanning overlay -->
+    <div class="diagnostics-loading-overlay" id="diagnostics-loading">
+        <div class="diagnostics-loading-scan-line"></div>
+        <div class="diagnostics-loading-inner">
+            <div class="diagnostics-loading-title scan-flicker">SHIP HEALTH SCAN IN PROGRESS</div>
+            <div class="diagnostics-loading-ticker">
+                <div id="random-ticker-1" class="ticker-line">INIT...</div>
+                <div id="random-ticker-2" class="ticker-line">INIT...</div>
+                <div id="random-ticker-3" class="ticker-line">INIT...</div>
+                <div id="random-ticker-4" class="ticker-line">INIT...</div>
+                <div id="random-ticker-5" class="ticker-line">INIT...</div>
+            </div>
+            <div class="diagnostics-loading-status">
+                <span class="scan-line-text scanning">ASSESSING HULL INTEGRITY...</span><br>
+                <span class="scan-line-text scanning">ASSESSING PROPULSION SYSTEMS...</span><br>
+                <span class="scan-line-text scanning">ASSESSING LIFE SUPPORT...</span><br>
+                <span class="scan-line-text scanning">ASSESSING CORE SYSTEMS...</span>
+            </div>
+            <div class="diagnostics-loading-progress">
+                <div class="progress-bar" id="scan-progress-bar"></div>
+            </div>
+            <div class="diagnostics-loading-countdown" id="diagnostics-countdown">COMPLETE IN: <span id="countdown-num">5</span><span class="blink-cursor">_</span></div>
+        </div>
+    </div>
+
+    <div class="terminal-container termiini-layout diagnostics-content-hidden" id="diagnostics-main-content">
+        <!-- Top nav - centered button bar -->
+        <nav class="termiini-top-nav">
+            <a href="personal.html" class="footer-btn">PERSONAL</a>
+            <a href="warp-dilation.html" class="footer-btn">WARP DILATION</a>
+            <a href="ship-exterior.html" class="footer-btn active">SHIP EXTERIOR</a>
+            <a href="chat.html" class="footer-btn">CHAT-VOX</a>
+        </nav>
+        <!-- Header - split layout -->
+        <header class="termiini-header">
+            <div class="header-left">
+                <div class="header-title-main">RUN SHIP</div>
+                <div class="header-title-sub">DIAGNOSTICS</div>
+            </div>
+            <div class="header-center">
+                <div class="header-field">
+                    <span class="field-label">SCAN</span>
+                    <div class="field-line"></div>
+                </div>
+                <div class="header-field">
+                    <span class="field-label">STATUS</span>
+                    <div class="field-line"></div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-field">
+                    <span class="field-label">RESULT</span>
+                    <div class="field-line short"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content - 3 columns -->
+        <div class="termiini-main">
+            <!-- Left pane -->
+            <aside class="termiini-pane termiini-left">
+                <div class="termiini-box">
+                    <div class="box-text">SYSTEM STATUS</div>
+                    <div class="box-text dim">HULL: NOMINAL</div>
+                    <div class="box-text dim">REACTOR: STABLE</div>
+                    <div class="box-text dim">NAV: ONLINE</div>
+                </div>
+                <div class="termiini-box scroll-indicator">
+                    <div class="box-text">SCANNED MODULES</div>
+                    <div class="box-text dim">CORE SYSTEMS</div>
+                    <div class="box-text dim">LIFE SUPPORT</div>
+                    <div class="box-text dim">PROPULSION</div>
+                    <div class="box-scrollbar"></div>
+                </div>
+                <div class="termiini-box">
+                    <div class="box-text">SECTOR 7</div>
+                    <div class="box-text dim">VESSEL ID: 77-ACX</div>
+                </div>
+            </aside>
+
+            <!-- Center pane - main display -->
+            <main class="termiini-pane termiini-center">
+                <div class="termiini-main-display">
+                    <div class="main-display-frame">
+                        <div class="main-display-content">
+                            <div class="diagnostics-section-buttons">
+                                <a href="ship-exterior.html" class="diagnostics-section-btn">RETURN TO MAIN INTERFACE</a>
+                                <button type="button" class="diagnostics-section-btn" id="btn-ship-summary">SHIP SUMMARY</button>
+                                <button type="button" class="diagnostics-section-btn" id="btn-warp-health">WARP HEALTH</button>
+                            </div>
+                            <div class="diagnostics-display-area" id="diagnostics-display-area">
+                                <div class="diagnostics-ship-box" id="diagnostics-ship-box">
+                                    <img src="3d ship.png" alt="3D Ship schematic" class="diagnostics-ship-image">
+                                </div>
+                                <div class="diagnostics-section-content" id="diagnostics-section-content">
+                                <div class="ship-summary-box diagnostics-section-panel hidden" id="panel-ship-summary">
+                                <div class="ship-summary-title">SHIP SUMMARY</div>
+                                <div class="ship-summary-section">
+                                    <div class="ship-summary-subtitle">OVERALL VESSEL STATUS</div>
+                                    <table class="ship-summary-table">
+                                        <thead>
+                                            <tr>
+                                                <th>System Category</th>
+                                                <th>Condition</th>
+                                                <th>Operational Rating</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td>Structural Integrity</td><td>GOOD</td><td>91%</td><td>Minor microfractures along outer hull plating</td></tr>
+                                            <tr><td>Propulsion</td><td>GOOD</td><td>88%</td><td>Thruster output within tolerance</td></tr>
+                                            <tr><td>Power Systems</td><td>MODERATE</td><td>76%</td><td>Reactor efficiency slightly reduced</td></tr>
+                                            <tr><td>Navigation</td><td>EXCELLENT</td><td>96%</td><td>All sensors calibrated</td></tr>
+                                            <tr><td>Life Support</td><td>GOOD</td><td>90%</td><td>CO2 scrubbers nearing service cycle</td></tr>
+                                            <tr><td>Defensive Systems</td><td>MODERATE</td><td>71%</td><td>Shield emitters showing coil fatigue</td></tr>
+                                            <tr><td>Internal Systems</td><td>GOOD</td><td>89%</td><td>Routine maintenance recommended</td></tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="ship-summary-readiness">Overall Vessel Readiness: 87% - Operational</div>
+                                </div>
+                                <div class="ship-summary-section">
+                                    <div class="ship-summary-subtitle">STRUCTURAL ANALYSIS</div>
+                                    <table class="ship-summary-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Component</th>
+                                                <th>Integrity</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td>Primary Hull Frame</td><td>95%</td><td>Stable</td></tr>
+                                            <tr><td>Outer Hull Plating</td><td>88%</td><td>Minor micrometeorite scoring</td></tr>
+                                            <tr><td>Cargo Bay Doors</td><td>92%</td><td>Fully functional</td></tr>
+                                            <tr><td>Landing Struts</td><td>84%</td><td>Hydraulic seals showing wear</td></tr>
+                                            <tr><td>Airlocks</td><td>97%</td><td>Optimal condition</td></tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="ship-summary-note">
+                                        <strong>Engineering Note:</strong> Localized plating erosion detected along starboard mid-section (Sector B4). Repair not urgent but recommended within 120 operational hours.
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="warp-health-box diagnostics-section-panel hidden" id="panel-warp-health">
+                                <div class="ship-summary-title">WARP HEALTH</div>
+                                <div class="warp-health-section">
+                                    <div class="ship-summary-subtitle">WARP DRIVE DIAGNOSTIC</div>
+                                    <div class="warp-health-diagnostic">
+                                        <div class="warp-health-row">Hyper-Transit System: WRD-9 Series</div>
+                                        <div class="warp-health-row">System Status: OPERATIONAL (REVIEW ADVISED)</div>
+                                        <div class="warp-health-row">Overall Efficiency: 74%</div>
+                                        <div class="warp-health-row">Last Activation: 03.09.2187 - 21:14:03 UTC</div>
+                                        <div class="warp-health-row">Total Lifetime Jumps: 1,482</div>
+                                        <div class="warp-health-row">Avg Jump Distance: 12.7 Light Years</div>
+                                        <div class="warp-health-row">Current Safety Index: 68%</div>
+                                    </div>
+                                </div>
+                                <div class="warp-health-section">
+                                    <div class="ship-summary-subtitle">WARP DRIVE SUMMARY</div>
+                                    <div class="ship-summary-note warp-health-panel">
+                                        System Condition: <strong class="blink-highlight">FUNCTIONAL BUT IRREGULAR</strong><br>
+                                        Operational Risk: MODERATE<br>
+                                        Maintenance Priority: <strong class="blink-highlight">ENGINEERING REVIEW ADVISED</strong>
+                                    </div>
+                                    <div class="warp-health-subsection">AI Maintenance Recommendation</div>
+                                    <ul class="warp-health-list">
+                                        <li>Warp coil recalibration</li>
+                                        <li>Injector timing alignment</li>
+                                        <li>Warp log audit for irregular travel patterns</li>
+                                    </ul>
+                                    <div class="ship-summary-note warp-health-panel">
+                                        <strong>NOTE:</strong> <strong class="blink-highlight">Continued use without maintenance may reduce jump stability by an estimated 11-18%.</strong>
+                                    </div>
+                                </div>
+                                <div class="warp-health-section">
+                                    <div class="ship-summary-subtitle">RECENT WARP EVENTS (LAST 30 CYCLES)</div>
+                                    <div class="warp-health-events">
+                                        <div class="warp-event">Jump 1: 16.2 LY - Stable</div>
+                                        <div class="warp-event">Jump 2: 14.9 LY - Minor field fluctuation</div>
+                                        <div class="warp-event">Jump 3: 22.4 LY - Over-threshold power draw</div>
+                                        <div class="warp-event">Jump 4: 5.1 LY - Unusually short jump</div>
+                                        <div class="warp-event">Jump 5: 18.7 LY - Vector recalibration required</div>
+                                        <div class="warp-event">Jump 6: 3.8 LY - Rapid successive jump detected</div>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right pane -->
+            <aside class="termiini-pane termiini-right">
+                <div class="termiini-box">
+                    <div class="box-text dim">DATA STREAM</div>
+                    <div class="box-text dim">PACKET RX</div>
+                    <div class="box-text dim">FREQ 4.2k</div>
+                    <div class="box-text dim">LAT 0.04</div>
+                    <div class="box-scrollbar left"></div>
+                </div>
+                <div class="termiini-box version-box">
+                    <div class="box-text">DIAG</div>
+                    <div class="version-num">v3</div>
+                </div>
+                <div class="termiini-box">
+                    <div class="box-text">CONTROLS</div>
+                    <div class="box-grid">
+                        <span class="grid-key">Q</span><span class="grid-key">W</span><span class="grid-key">E</span>
+                        <span class="grid-key">A</span><span class="grid-key">S</span><span class="grid-key">D</span>
+                        <span class="grid-key">Z</span><span class="grid-key">X</span><span class="grid-key">C</span>
+                    </div>
+                </div>
+                <a href="ship-exterior.html" class="back-btn-square" title="Return to Ship Exterior Interface">&larr;</a>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="termiini-footer">
+            <a href="log-in.html" class="footer-btn footer-btn-icon-only">⌂</a>
+            <span class="footer-hint">q: return to dashboard</span>
+        </footer>
+    </div>
+    <script>
+        (function() {
+            var loading = document.getElementById('diagnostics-loading');
+            var mainContent = document.getElementById('diagnostics-main-content');
+            var countdownEl = document.getElementById('countdown-num');
+            var countdownLabel = document.getElementById('diagnostics-countdown');
+            var progressBar = document.getElementById('scan-progress-bar');
+            var secondsLeft = 5;
+            var totalSeconds = 5;
+
+            var randomData = {
+                temps: ['21.4°C', '19.8°C', '22.1°C', '20.5°C', '18.9°C', '23.2°C'],
+                pressure: ['101.3 kPa', '99.8 kPa', '102.1 kPa', '100.5 kPa', '98.2 kPa'],
+                sectors: ['SECTOR-7A', 'SECTOR-3B', 'SECTOR-9C', 'CORE-01', 'HULL-A2', 'ENG-B4'],
+                status: ['NOMINAL', 'STABLE', 'PASS', 'OK', 'ACTIVE', 'STANDBY'],
+                codes: ['0x7F', '0x3A', '0xB2', '0x4D', '0xE1', '0x8C', '0x55'],
+                percent: ['47%', '63%', '82%', '91%', '28%', '56%', '74%'],
+                systems: ['REACTOR', 'NAV', 'COM', 'SENSORS', 'THRUST', 'O2', 'SHIELDS'],
+                readings: ['PING 12ms', 'LAT 0.04', 'DRIFT 0.001', 'FREQ 4.2kHz']
+            };
+
+            function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+            function randomLine() {
+                var templates = [
+                    'TEMP: ' + pick(randomData.temps) + ' | PRESS: ' + pick(randomData.pressure),
+                    '[' + pick(randomData.sectors) + '] STATUS: ' + pick(randomData.status),
+                    'SYS ' + pick(randomData.systems) + ' CODE ' + pick(randomData.codes),
+                    'LOAD: ' + pick(randomData.percent) + ' | ' + pick(randomData.readings),
+                    'SCAN BAND ' + (Math.floor(Math.random() * 900) + 100) + 'MHz',
+                    'CHECKSUM: 0x' + Math.random().toString(16).slice(2, 6).toUpperCase(),
+                    'VECTOR ' + (Math.random() * 360).toFixed(1) + '°',
+                    'PACKET ' + Math.floor(Math.random() * 9999) + ' RECEIVED'
+                ];
+                return pick(templates);
+            }
+
+            var tickerIds = ['random-ticker-1', 'random-ticker-2', 'random-ticker-3', 'random-ticker-4', 'random-ticker-5'];
+            var tickerInterval = setInterval(function() {
+                tickerIds.forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.textContent = randomLine();
+                });
+            }, 400);
+
+            var countdownInterval = setInterval(function() {
+                secondsLeft--;
+                var pct = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
+                progressBar.style.width = pct + '%';
+                if (secondsLeft > 0) {
+                    countdownEl.textContent = secondsLeft;
+                } else {
+                    clearInterval(countdownInterval);
+                    clearInterval(tickerInterval);
+                    countdownLabel.innerHTML = 'SCAN COMPLETE<span class="blink-cursor">_</span>';
+                    progressBar.style.width = '100%';
+                    setTimeout(function() {
+                        loading.classList.add('diagnostics-loading-hidden');
+                        mainContent.classList.remove('diagnostics-content-hidden');
+                    }, 800);
+                }
+            }, 1000);
+        })();
+
+        (function() {
+            var btnShipSummary = document.getElementById('btn-ship-summary');
+            var btnWarpHealth = document.getElementById('btn-warp-health');
+            var panelShipSummary = document.getElementById('panel-ship-summary');
+            var panelWarpHealth = document.getElementById('panel-warp-health');
+
+            var displayArea = document.getElementById('diagnostics-display-area');
+            var shipBox = document.getElementById('diagnostics-ship-box');
+
+            function showPanel(panel) {
+                var wasContentActive = displayArea && displayArea.classList.contains('content-active');
+                panelShipSummary.classList.add('hidden');
+                panelWarpHealth.classList.remove('retro-reveal');
+                panelShipSummary.classList.remove('retro-reveal');
+                panelWarpHealth.classList.add('hidden');
+                btnShipSummary.classList.remove('active');
+                btnWarpHealth.classList.remove('active');
+                if (displayArea) displayArea.classList.remove('content-active');
+                if (shipBox) shipBox.classList.remove('ship-animate-in');
+                if (panel) {
+                    if (panel === panelShipSummary) btnShipSummary.classList.add('active');
+                    else if (panel === panelWarpHealth) btnWarpHealth.classList.add('active');
+                    if (displayArea) displayArea.classList.add('content-active');
+                    panel.classList.remove('hidden');
+                    void panel.offsetWidth;
+                    panel.classList.add('retro-reveal');
+                    if (shipBox && !wasContentActive) {
+                        void shipBox.offsetWidth;
+                        shipBox.classList.add('ship-animate-in');
+                    }
+                }
+            }
+
+            if (btnShipSummary) btnShipSummary.addEventListener('click', function() { showPanel(panelShipSummary); });
+            if (btnWarpHealth) btnWarpHealth.addEventListener('click', function() { showPanel(panelWarpHealth); });
+        })();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'q' || e.key === 'Q') {
+                e.preventDefault();
+                window.location.href = 'log-in.html';
+            }
+        });
+    </script>
+</body>
+</html>

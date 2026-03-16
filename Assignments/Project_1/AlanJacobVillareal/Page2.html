@@ -16,7 +16,7 @@
 
         body {
             min-height: 100vh;
-            background: #1a0a2e;
+            background: #b8e0b8;
             font-family: 'Press Start 2P', cursive;
             color: #00ff88;
             display: flex;
@@ -150,13 +150,229 @@
             75%  { transform: translate(calc(100vw - 100%), 0); }
             100% { transform: translate(0, 0); }
         }
+        .chibi-speech {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            max-width: 220px;
+            padding: 0.35rem 0.5rem;
+            background: #fff;
+            color: #1a0a2e;
+            border-radius: 10px;
+            border: 2px solid #00ff88;
+            font-size: 0.45rem;
+            line-height: 1.4;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            opacity: 0;
+            transform: translate(-50%, 4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            pointer-events: none;
+            z-index: 25;
+        }
+        .chibi-speech::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px 8px 0 8px;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
+        }
+        .chibi-corner:hover .chibi-speech {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
 
+        /* Screensaver image container */
+        .screensaver-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .screensaver-wrap img {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
+        /* Grid state: bar protruding into open space (hours) */
+        .grid-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 54px;
+            min-width: 240px;
+            max-width: 660px;
+            background: rgba(0, 0, 0, 0.18);
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .screensaver-wrap.grid-state .grid-bar {
+            opacity: 1;
+        }
+        .grid-bar-fill {
+            height: 100%;
+            border-radius: 18px 0 0 18px;
+            background: linear-gradient(90deg, #00cc66, #00ff88);
+            min-width: 12px;
+            transition: width 0.5s ease-out;
+        }
+        .grid-bar-label {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.65rem;
+            color: #0d0221;
+            white-space: nowrap;
+        }
+        /* Left-protruding bars (left column) */
+        .grid-bar.grid-bar-left {
+            flex-direction: row-reverse;
+        }
+        .grid-bar.grid-bar-left .grid-bar-fill {
+            border-radius: 0 18px 18px 0;
+        }
+        .grid-bar.grid-bar-left .grid-bar-label {
+            right: auto;
+            left: 18px;
+        }
+        .grid-total {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.65rem;
+            color: #0d0221;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .screensaver-wrap.grid-state .grid-total {
+            opacity: 1;
+        }
+
+        /* Center rainbow rotating text */
+        .disorganized-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(1.2rem, 4vw, 2.8rem);
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+            background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #88ff00, #00ff88, #00ffff, #0088ff, #8800ff, #ff0088, #ff0000);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            z-index: 5;
+            pointer-events: none;
+            animation: rainbow-rotate 6s linear infinite;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .disorganized-text.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        @keyframes rainbow-rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); background-position: 0% 50%; }
+            100% { transform: translate(-50%, -50%) rotate(360deg); background-position: 200% 50%; }
+        }
+
+        /* Wasted message (after grid, second Enter) */
+        .wasted-message-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .wasted-message-wrap.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .wasted-message {
+            max-width: 90%;
+            font-size: clamp(1rem, 3.5vw, 2.2rem);
+            color: #0d0221;
+            text-align: center;
+            line-height: 1.5;
+            padding: 1rem;
+        }
+        .wasted-message .typing-cursor {
+            display: inline-block;
+            width: 0.15em;
+            height: 1em;
+            background: #0d0221;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: cursor-blink 0.8s step-end infinite;
+        }
+        @keyframes cursor-blink {
+            50% { opacity: 0; }
+        }
+
+        /* Top-left "Press enter" hint – flickers until grid is gone */
+        .press-enter-hint {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            font-size: 1.8rem;
+            color: #0d0221;
+            z-index: 25;
+            animation: flicker 1.2s step-end infinite;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .press-enter-hint.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        @keyframes flicker {
+            0%, 60% { opacity: 1; }
+            30%, 90% { opacity: 0.25; }
+        }
     </style>
 </head>
 <body>
+    <div class="press-enter-hint" id="press-enter-hint">Press enter</div>
+    <div class="disorganized-text" id="disorganized-text">I'M SOOOO DISORGANIZED</div>
+    <div class="screensaver-wrap" id="screensaver-wrap">
+        <img src="arknightsicon.png" alt="Arknights" id="ss-0">
+        <img src="HSR_App.png" alt="Honkai Star Rail" id="ss-1">
+        <img src="uma_icon.png" alt="Uma Musume" id="ss-2">
+        <img src="robloxlogo.png" alt="Roblox" id="ss-3">
+        <img src="ina11title.jpg" alt="Ina" id="ss-4">
+        <img src="limbus.png" alt="Limbus" id="ss-5">
+        <img src="gungeon.png" alt="Enter the Gungeon" id="ss-6">
+        <img src="marvelrivals.png" alt="Marvel Rivals" id="ss-7">
+        <img src="fortnite.jpg" alt="Fortnite" id="ss-8">
+        <img src="balatro.png" alt="Balatro" id="ss-9">
+    </div>
+    <div class="wasted-message-wrap" id="wasted-message-wrap">
+        <p class="wasted-message"><span id="wasted-typed"></span><span class="typing-cursor" id="wasted-cursor"></span></p>
+    </div>
     <div class="chibi-corner" id="chibi-corner" title="Click to run around the corners">
         <img class="chibi-default" src="Twin_Turbo_Chibi1.png" alt="Twin Turbo Chibi">
         <img class="chibi-hover" src="Twin_Turbo_Chibi2.png" alt="Twin Turbo Chibi (hover)">
+        <div class="chibi-speech">Hi! I'm Twin Turbo!</div>
     </div>
     <script>
         (function() {
@@ -170,6 +386,184 @@
             el.addEventListener('animationend', function() {
                 el.classList.remove('chibi-tour');
             });
+        })();
+
+        (function() {
+            var wrap = document.getElementById('screensaver-wrap');
+            if (!wrap) return;
+            var imgs = wrap.querySelectorAll('img');
+            var W = 120;
+            var H = 120;
+            var gap = 24;
+            var cols = 2;
+            var rows = 5;
+            var speedMin = 1.5;
+            var speedMax = 3;
+            var items = [];
+            var gridMode = false;
+            var messageMode = false;
+            var transitionDuration = '1.4s';
+            var wastedText = "All this time wasted, and you'll keep wasting more";
+
+            function rand(min, max) {
+                return min + Math.random() * (max - min);
+            }
+            function randSpeed() {
+                var s = rand(speedMin, speedMax);
+                return Math.random() < 0.5 ? -s : s;
+            }
+            function init() {
+                if (gridMode) return;
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var maxX = Math.max(0, vw - W);
+                var maxY = Math.max(0, vh - H);
+                items = [];
+                for (var i = 0; i < imgs.length; i++) {
+                    var dx = randSpeed();
+                    var dy = randSpeed();
+                    if (dx === 0) dx = speedMin;
+                    if (dy === 0) dy = speedMin;
+                    items.push({
+                        el: imgs[i],
+                        x: rand(0, maxX),
+                        y: rand(0, maxY),
+                        dx: dx,
+                        dy: dy
+                    });
+                }
+            }
+            function tick() {
+                if (gridMode) return;
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var maxX = Math.max(0, vw - W);
+                var maxY = Math.max(0, vh - H);
+                for (var i = 0; i < items.length; i++) {
+                    var it = items[i];
+                    it.x += it.dx;
+                    it.y += it.dy;
+                    if (it.x <= 0) { it.x = 0; it.dx = -it.dx; }
+                    if (it.x >= maxX) { it.x = maxX; it.dx = -it.dx; }
+                    if (it.y <= 0) { it.y = 0; it.dy = -it.dy; }
+                    if (it.y >= maxY) { it.y = maxY; it.dy = -it.dy; }
+                    it.el.style.left = it.x + 'px';
+                    it.el.style.top = it.y + 'px';
+                }
+                requestAnimationFrame(tick);
+            }
+            var hoursValues = [550, 600, 600, 1000, 431.4, 194.7, 156.7, 264.9, 725.5, 300];
+            var hoursLabels = ['550+h', '600+h', '600+h', '1000+h', '431.4h', '194.7h', '156.7h', '264.9h', '725.5h', '300+h'];
+            var maxHours = 1000;
+            var barMaxWidth = 600;
+            var barGap = 10;
+
+            function arrangeInGrid() {
+                if (gridMode) return;
+                gridMode = true;
+                var disorganizedEl = document.getElementById('disorganized-text');
+                if (disorganizedEl) disorganizedEl.classList.add('hidden');
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var totalW = cols * W + (cols - 1) * gap;
+                var totalH = rows * H + (rows - 1) * gap;
+                var startX = (vw - totalW) / 2;
+                var startY = (vh - totalH) / 2;
+                for (var i = 0; i < items.length; i++) {
+                    var col = i % cols;
+                    var row = Math.floor(i / cols);
+                    var targetX = startX + col * (W + gap);
+                    var targetY = startY + row * (H + gap);
+                    var el = items[i].el;
+                    el.style.transition = 'left ' + transitionDuration + ' linear, top ' + transitionDuration + ' linear';
+                    el.style.left = targetX + 'px';
+                    el.style.top = targetY + 'px';
+                }
+                wrap.classList.add('grid-state');
+                setTimeout(function addBars() {
+                    var leftBarIndices = [0, 2, 4, 6, 8];
+                    for (var i = 0; i < items.length; i++) {
+                        var col = i % cols;
+                        var row = Math.floor(i / cols);
+                        var targetX = startX + col * (W + gap);
+                        var targetY = startY + row * (H + gap);
+                        var hours = hoursValues[i] != null ? hoursValues[i] : 24;
+                        var labelText = hoursLabels[i] != null ? hoursLabels[i] : hours + 'h';
+                        var fillPct = Math.min(100, (hours / maxHours) * 100);
+                        var isLeft = leftBarIndices.indexOf(i) !== -1;
+                        var barEl = document.createElement('div');
+                        barEl.className = 'grid-bar' + (isLeft ? ' grid-bar-left' : '');
+                        if (isLeft) {
+                            barEl.style.left = (targetX - barMaxWidth - barGap) + 'px';
+                        } else {
+                            barEl.style.left = (targetX + W + barGap) + 'px';
+                        }
+                        barEl.style.top = (targetY + (H - 54) / 2) + 'px';
+                        barEl.style.width = barMaxWidth + 'px';
+                        var fill = document.createElement('div');
+                        fill.className = 'grid-bar-fill';
+                        fill.style.width = fillPct + '%';
+                        var label = document.createElement('span');
+                        label.className = 'grid-bar-label';
+                        label.textContent = labelText;
+                        barEl.appendChild(fill);
+                        barEl.appendChild(label);
+                        wrap.appendChild(barEl);
+                    }
+                    var sum = 0;
+                    for (var j = 0; j < hoursValues.length; j++) {
+                        sum += hoursValues[j];
+                    }
+                    var totalEl = document.createElement('div');
+                    totalEl.className = 'grid-total';
+                    totalEl.style.top = (startY - 36) + 'px';
+                    totalEl.textContent = (Math.round(sum * 10) / 10) + ' hours being excessively lazy';
+                    wrap.appendChild(totalEl);
+                }, 100);
+            }
+            function showWastedMessage() {
+                if (messageMode) return;
+                messageMode = true;
+                var hintEl = document.getElementById('press-enter-hint');
+                if (hintEl) hintEl.classList.add('hidden');
+                wrap.classList.remove('grid-state');
+                var bars = wrap.querySelectorAll('.grid-bar');
+                for (var b = 0; b < bars.length; b++) bars[b].remove();
+                var totals = wrap.querySelectorAll('.grid-total');
+                for (var t = 0; t < totals.length; t++) totals[t].remove();
+                var imgsInWrap = wrap.querySelectorAll('img');
+                for (var i = 0; i < imgsInWrap.length; i++) imgsInWrap[i].style.display = 'none';
+                var wrapMsg = document.getElementById('wasted-message-wrap');
+                var textEl = document.getElementById('wasted-typed');
+                var cursorEl = document.getElementById('wasted-cursor');
+                if (!wrapMsg || !textEl) return;
+                wrapMsg.classList.add('visible');
+                if (cursorEl) cursorEl.style.display = '';
+                textEl.textContent = '';
+                var idx = 0;
+                function typeNext() {
+                    if (idx <= wastedText.length) {
+                        textEl.textContent = wastedText.slice(0, idx);
+                        idx++;
+                        setTimeout(typeNext, 80);
+                    } else {
+                        if (cursorEl) cursorEl.style.display = 'none';
+                    }
+                }
+                typeNext();
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key !== 'Enter') return;
+                if (messageMode) return;
+                if (gridMode) {
+                    showWastedMessage();
+                    return;
+                }
+                arrangeInGrid();
+            });
+            init();
+            window.addEventListener('resize', init);
+            requestAnimationFrame(tick);
         })();
     </script>
 </body>

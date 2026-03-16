@@ -219,6 +219,39 @@
             75%  { transform: translate(calc(100vw - 100%), 0); }
             100% { transform: translate(0, 0); }
         }
+        .chibi-speech {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            max-width: 220px;
+            padding: 0.35rem 0.5rem;
+            background: #fff;
+            color: #1a0a2e;
+            border-radius: 10px;
+            border: 2px solid #00ff88;
+            font-size: 0.45rem;
+            line-height: 1.4;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            opacity: 0;
+            transform: translate(-50%, 4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            pointer-events: none;
+            z-index: 25;
+        }
+        .chibi-speech::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px 8px 0 8px;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
+        }
+        .chibi-corner:hover .chibi-speech {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
 
         /* Game area with rotating pokeballs on each side */
         .game-area {
@@ -228,6 +261,8 @@
             gap: 1rem;
             width: 100%;
             max-width: 600px;
+            transform: scale(1.5);
+            transform-origin: center;
         }
         .pokeball-side {
             flex-shrink: 0;
@@ -315,6 +350,7 @@
     <div class="chibi-corner" id="chibi-corner" title="Click to run around the corners">
         <img class="chibi-default" src="Twin_Turbo_Chibi1.png" alt="Twin Turbo Chibi">
         <img class="chibi-hover" src="Twin_Turbo_Chibi2.png" alt="Twin Turbo Chibi (hover)">
+        <div class="chibi-speech">Hi! I'm Twin Turbo!</div>
     </div>
     <script>
         (function() {

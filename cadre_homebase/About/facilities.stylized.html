@@ -1,0 +1,138 @@
+    <!doctype html>
+    <html lang="en" data-theme="dark">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>CADRE Homebase · Facilities</title>
+      <link rel="stylesheet" href="style.css">
+      <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    </head>
+    <body>
+      <a class="skip-link" href="#main">Skip to content</a>
+
+      <div class="page">
+        <aside class="sidebar" aria-label="Sidebar">
+          <a href="cadre_homebase/index.html" class="home" aria-label="Home">⌂</a>
+          <button type="button" class="theme-toggle" aria-label="Switch to light mode">☾</button>
+          <div class="vertical" aria-hidden="true">homebase</div>
+        </aside>
+
+        <div class="content">
+          <!-- Mobile header -->
+          <header class="mobile-header">
+            <div class="logo-wrap">
+              <a href="cadre_homebase/index.html" class="logo" aria-label="CADRE Home">
+                <pre class="logo-ascii" aria-hidden="true">
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/ 
+                </pre>
+                <span class="logo-sub">Laboratory for New Media</span>
+              </a>
+              <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+            </div>
+            <nav class="nav-top" aria-label="Top navigation">
+              <button type="button" class="theme-toggle theme-toggle-mobile" aria-label="Switch to light mode">☾</button>
+              <a href="history.stylized.html">history</a>
+              <a href="facilities.stylized.html">facilities</a>
+              <a href="careers.stylized.html">careers</a>
+              <a href="Louie_FAQsection.html">faq</a>
+            </nav>
+          </header>
+
+          <!-- Desktop header -->
+          <header class="header">
+            <div class="logo-wrap">
+              <a href="cadre_homebase/index.html" class="logo" aria-label="CADRE Home">
+                <pre class="logo-ascii" aria-hidden="true">
+ ______     ______     _____     ______     ______    
+/\  ___\   /\  __ \   /\  __-.  /\  == \   /\  ___\   
+\ \ \____  \ \  __ \  \ \ \/\ \ \ \  __<   \ \  __\   
+ \ \_____\  \ \_\ \_\  \ \____-  \ \_\ \_\  \ \_____\ 
+  \/_____/   \/_/\/_/   \/____/   \/_/ /_/   \/_____/ 
+                </pre>
+                <span class="logo-sub">Laboratory for New Media</span>
+              </a>
+              <a href="https://cadre.sjsu.edu" target="_blank" rel="noopener" class="logo-upside-down" aria-label="CADRE at SJSU">Ǝᴚᗡ∀Ↄ</a>
+            </div>
+
+            <nav class="nav-top" aria-label="Top navigation">
+              <a href="history.stylized.html">history</a>
+              <a href="facilities.stylized.html">facilities</a>
+              <a href="careers.stylized.html">careers</a>
+              <a href="Louie_FAQsection.html">faq</a>
+          <span class="nav-sep" aria-hidden="true">|</span>
+          <a href="login.html">login</a>
+          <a href="register.html">register</a>
+            </nav>
+          </header>
+
+          <main id="main" class="main">
+<section class="subpage-hero" aria-label="Facilities">
+  <div class="subpage-hero__inner">
+    <p class="kicker">Studios + labs</p>
+    <h1>Facilities & Resources</h1>
+    <p class="lede">What you can build with: labs, studios, spaces, equipment, and how students typically use them.</p>
+    <div class="subpage-hero__actions">
+      <a class="btn btn-ghost" href="cadre_homebase/index.html">← home</a>
+      <a class="btn btn-primary" href="register.html">join homebase</a>
+      <a class="btn btn-ghost" href="login.html">sign in</a>
+    </div>
+<p>
+DMA operates two digital media art labs in the SJSU Art Building - the <b>CADRE Physical Computing Lab</b> and the <b>CADRE Data Visualization and Game Development Lab</b> -where students and faculty work together on coursework and ongoing project development. Our labs are equipped with state-of-the-art Mac and PC computers with a wide range of software in addition to high-definition digital video, digital photography, sound and video projection equipment available for student checkout.
+</p>
+<p>
+Our labs feature 3D printers, CNC machines, laser cutters, electronics and game development workstations open exclusively to DMA students 24/7 during the academic year. The Art and Art History Department provides additional fabrication facilities through our comprehensive wood and metal shops in addition to large-scale sculptural fabrication at the offsite SJSU Foundry.
+</p>
+  </div>
+</section>
+
+          </main>
+
+          <footer class="footer">
+            <div>
+              <code class="binary-name">01000011 01000001 01000100 01010010 01000101</code><br>
+              San José State University · Department of Art & Art History<br>
+              One Washington Square, San José, CA 95192
+            </div>
+            <div class="footer-links">
+              <a href="https://www.facebook.com/sjsucadre" target="_blank" rel="noopener">fb</a>
+              <a href="https://twitter.com/cadre_sjsu" target="_blank" rel="noopener">tw</a>
+              <a href="https://www.instagram.com/cadre_sjsu/" target="_blank" rel="noopener">ig</a>
+            </div>
+          </footer>
+        </div>
+      </div>
+
+      <script>
+        (function() {
+          var KEY = 'cadre-homebase-theme';
+          var html = document.documentElement;
+          var toggles = document.querySelectorAll('.theme-toggle');
+
+          function applyTheme(theme) {
+            theme = theme || 'dark';
+            html.setAttribute('data-theme', theme);
+            toggles.forEach(function(btn) {
+              btn.textContent = theme === 'light' ? '☀' : '☾';
+              btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+            });
+            try { localStorage.setItem(KEY, theme); } catch (e) {}
+          }
+
+          toggles.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+              applyTheme(next);
+            });
+          });
+
+          var saved = null;
+          try { saved = localStorage.getItem(KEY); } catch (e) {}
+          if (saved === 'light' || saved === 'dark') applyTheme(saved);
+        })();
+      </script>
+    </body>
+    </html>

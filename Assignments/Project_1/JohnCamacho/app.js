@@ -467,8 +467,9 @@ function render() {
 function getSidebarHtml() {
   const ids = state.view === 'you' ? ['you'] : PERSON_ORDER;
   const stats = computeStatsForPeople(ids, state.groupBy);
-  const maxTotal = Math.max(...ids.map((id) => stats[id].totalMinutes || 0), 1);
-  const modeLabel = state.groupBy === 'day' ? 'per Day' : 'per Week';
+  const useAvg = true;
+  const valueLabel = state.groupBy === 'day' ? 'Avg min/day' : 'Avg min/week';
+  const maxValue = Math.max(...ids.map((id) => (useAvg ? stats[id].avgMinutes : stats[id].totalMinutes) || 0), 1);
 
   return `
     <section class="sidebar-section">
@@ -496,17 +497,18 @@ function getSidebarHtml() {
       </div>
     </section>
     <section class="sidebar-section">
-      <h3>Quick Stats (${modeLabel})</h3>
+      <h3>Quick Stats (${valueLabel})</h3>
       <div class="stats-list">
         ${ids
           .map((id) => {
             const s = stats[id];
-            const pct = Math.round((s.totalMinutes / maxTotal) * 100);
+            const val = useAvg ? s.avgMinutes : s.totalMinutes;
+            const pct = Math.round(((val || 0) / maxValue) * 100);
             return `
             <div class="stat-item">
               <div class="stat-label-row">
                 <span class="stat-label">${personLabel(id)}</span>
-                <span class="stat-value">${Math.round(s.totalMinutes)} min</span>
+                <span class="stat-value">${Math.round(val || 0)} min</span>
               </div>
               <div class="stat-bar">
                 <div class="stat-bar-fill" style="width:${pct}%"></div>

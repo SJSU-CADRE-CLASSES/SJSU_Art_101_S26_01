@@ -45,12 +45,24 @@
             padding: 2rem;
             flex-wrap: wrap;
         }
+        .door-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .door-label {
+            color: #ccdaf0;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1rem;
+        }
         .doors img {
             max-width: 200px;
             height: auto;
         }
         .plant {
-            font-size: 16rem;
+            max-width: 180px;
+            height: auto;
             cursor: pointer;
         }
         .music-player {
@@ -77,26 +89,15 @@
     <h2>click a door to enter the room</h2>
     <div class="music-player" id="musicPlayer"></div>
     <div class="doors">
-        <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
-        <span class="plant" id="plant">🪴</span>
-        <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
+        <div class="door-column">
+            <span class="door-label">Bedroom</span>
+            <a href="sleep.html"><img src="door.png" alt="Door to Sleep"></a>
+        </div>
+        <a href="stats.html"><img src="plant.png" alt="Plant stats link" class="plant"></a>
+        <div class="door-column">
+            <span class="door-label">Casino</span>
+            <a href="casino.html"><img src="door.png" alt="Door to Casino"></a>
+        </div>
     </div>
-    <script>
-        const plant = document.getElementById('plant');
-        const musicPlayer = document.getElementById('musicPlayer');
-        if (plant && musicPlayer) {
-            plant.addEventListener('click', () => {
-                musicPlayer.innerHTML = `
-                    <iframe
-                        width="560"
-                        height="315"
-                        src="https://www.youtube.com/embed/bmP3UHXYi28?autoplay=1"
-                        title="YouTube video player"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    ></iframe>
-                `;
-            });
-        }
-    </script>
 </body>
 </html>

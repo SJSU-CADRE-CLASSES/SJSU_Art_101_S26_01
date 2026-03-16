@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journey – Strikes & Data</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(180deg, #0a0a0a 0%, #111 40%, #0d0d0d 100%);
+      color: #e8e8e8;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .site-header {
+      background: rgba(0,0,0,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0.75rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-title a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .site-title a:hover { color: #c45c41; }
+    .nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .nav-links a:hover, .nav-links a.active { color: #c45c41; }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+    }
+    .journey-hero {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .journey-hero h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(135deg, #d4a024, #c45c41);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .journey-hero p {
+      color: rgba(255,255,255,0.6);
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .journey-timeline {
+      position: relative;
+    }
+    .journey-timeline::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, #c45c41 10%, #d4a024 50%, #c45c41 90%, transparent);
+      opacity: 0.5;
+      border-radius: 2px;
+    }
+    .journey-step {
+      position: relative;
+      padding-left: 3rem;
+      padding-bottom: 2.5rem;
+    }
+    .journey-step:last-child { padding-bottom: 0; }
+    .journey-step::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0.35rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c45c41, #d4a024);
+      box-shadow: 0 0 0 4px rgba(196, 92, 65, 0.3);
+    }
+    .journey-step h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem;
+      color: #fff;
+    }
+    .journey-step .step-meta {
+      font-size: 0.8rem;
+      color: rgba(212, 160, 36, 0.9);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .journey-step p {
+      margin: 0;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.95rem;
+    }
+
+    .journey-cta {
+      margin-top: 3rem;
+      text-align: center;
+      padding: 2rem;
+      background: rgba(196, 92, 65, 0.08);
+      border: 1px solid rgba(196, 92, 65, 0.25);
+      border-radius: 12px;
+    }
+    .journey-cta a {
+      display: inline-block;
+      padding: 0.6rem 1.5rem;
+      background: linear-gradient(180deg, #c45c41, #a04a35);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .journey-cta a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(196, 92, 65, 0.4);
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <h1 class="site-title"><a href="index.html">Strikes & Data</a></h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="professionals.html">Professionals</a></li>
+          <li><a href="journey.html" class="active">Journey</a></li>
+          <li><a href="about.html">Concept</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="journey-hero">
+      <h1>The Journey</h1>
+      <p>From first roll to data-driven strikes</p>
+    </section>
+
+    <div class="journey-timeline">
+      <article class="journey-step">
+        <span class="step-meta">Step 1</span>
+        <h3>Learn the basics</h3>
+        <p>Every bowler starts somewhere. Understanding the lane, the approach, and the release sets the foundation for improvement. Data begins with observation.</p>
+      </article>
+      <article class="journey-step">
+        <span class="step-meta">Step 2</span>
+        <h3>Track your scores</h3>
+        <p>Numbers tell a story. Recording strikes, spares, and open frames reveals patterns—where you excel and where to focus practice.</p>
+      </article>
+      <article class="journey-step">
+        <span class="step-meta">Step 3</span>
+        <h3>Analyze the data</h3>
+        <p>Which pin leaves cost you the most? Do you perform better in the first or second game? Data visualization turns raw scores into actionable insights.</p>
+      </article>
+      <article class="journey-step">
+        <span class="step-meta">Step 4</span>
+        <h3>Refine and repeat</h3>
+        <p>Use what you learn to adjust your aim, ball speed, and approach. The journey never ends—each frame is a new data point.</p>
+      </article>
+    </div>
+
+    <div class="journey-cta">
+      <a href="index.html">Play the bowling game →</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Art 101 – Project 1 · Strikes & Data · Alexandra Hernandez</p>
+  </footer>
+</body>
+</html>

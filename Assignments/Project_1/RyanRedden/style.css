@@ -1,0 +1,331 @@
+body {
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+    margin: 0;
+    overflow: hidden;
+    /* Prevent scrollbars */
+    color: #00aaff;
+    background-color: #02060a;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* Behind UI */
+}
+
+.right-panel-stack {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    transform: scale(0.5);
+    transform-origin: top right;
+}
+
+.container,
+.trail-container {
+    background-color: rgba(7, 12, 22, 0.9);
+    /* Semi-transparent */
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 290px;
+    color: #00aaff;
+}
+
+h1 {
+    text-align: center;
+    color: #00aaff;
+    margin-bottom: 0.85rem;
+    font-size: 1.22rem;
+    margin-top: 0;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.left-panel-stack {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    transform: scale(0.5);
+    transform-origin: top left;
+}
+
+.lfo-container,
+.env-container {
+    background-color: rgba(7, 12, 22, 0.9);
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 290px;
+    color: #00aaff;
+}
+
+.control-group {
+    margin-bottom: 0.52rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    color: #00aaff;
+}
+
+input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+    accent-color: #00aaff;
+    height: 0.65rem;
+}
+
+.slider-stack {
+    position: relative;
+}
+
+.slider-stack input[type="range"] {
+    margin: 0;
+}
+
+.lfo-overlay-shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.lfo-overlay-slider {
+    display: block;
+    width: 100%;
+    opacity: 0.25;
+    margin: 0;
+}
+
+.base-slider {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+select {
+    width: 100%;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.35rem;
+    outline: none;
+}
+
+input[type="text"] {
+    width: 100%;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.35rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input[type="checkbox"] {
+    accent-color: #00aaff;
+    transform: scale(1.1);
+}
+
+.toggle-group label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.value-display {
+    float: right;
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #00aaff;
+}
+
+.inline-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.inline-row select {
+    flex: 1;
+}
+
+.inline-row button {
+    width: auto;
+    margin-top: 0;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.8rem;
+}
+
+button {
+    width: 100%;
+    padding: 0.55rem;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 0.86rem;
+    margin-top: 0.7rem;
+    transition: background-color 0.2s, color 0.2s;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+button:hover {
+    background-color: #00aaff;
+    color: #021324;
+}
+
+.telemetry {
+    margin-top: 1rem;
+    background-color: rgba(3, 8, 15, 0.85);
+    padding: 0.7rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 0.82rem;
+    text-align: center;
+    color: #00aaff;
+}
+
+#telemetry {
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.lfo-active-block {
+    margin-top: 0.7rem;
+}
+
+.hidden-control {
+    display: none;
+}
+
+.lfo-active-title {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.45rem;
+}
+
+.lfo-active-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 1.2rem;
+}
+
+.lfo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid #00aaff;
+    padding: 0.2rem 0.35rem;
+    font-size: 0.76rem;
+    background-color: rgba(2, 19, 36, 0.85);
+}
+
+.lfo-chip-amount {
+    width: 70px;
+    height: 0.45rem;
+}
+
+.lfo-chip-amount-value {
+    min-width: 2.3rem;
+    text-align: right;
+    font-size: 0.72rem;
+}
+
+.env-chip-amount {
+    width: 70px;
+    height: 0.45rem;
+}
+
+.lfo-chip button {
+    border: 1px solid #00aaff;
+    background-color: transparent;
+    color: #00aaff;
+    border-radius: 0;
+    width: auto;
+    margin-top: 0;
+    padding: 0.05rem 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lfo-empty {
+    opacity: 0.75;
+}
+
+.sound-engine-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    background-color: rgba(7, 12, 22, 0.9);
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 480px;
+    color: #00aaff;
+    transform: translateX(-50%) scale(0.5);
+    transform-origin: bottom center;
+}
+
+.sound-engine-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.sound-toggles {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 0.3rem;
+}
+
+.sound-toggles .control-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.mini-mix-slider {
+    width: 96px;
+}
+
+.ott-toggle label {
+    color: #66ccff;
+    letter-spacing: 0.04em;
+}
+
+.ott-toggle .value-display {
+    color: #66ccff;
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Terminal - Warp Dilation</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- CRT interlacing overlay - covers entire viewport -->
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container">
+        <header class="header">PERSONAL TERMINAL</header>
+
+        <div class="main-content">
+            <nav class="folders-panel">
+                <div class="folders-title">FOLDERS</div>
+                <div class="folder-buttons">
+                    <a href="personal.html" class="folder-btn">PERSONAL</a>
+                    <a href="warp-dilation.html" class="folder-btn active">WARP DILATION</a>
+                    <a href="ship-exterior.html" class="folder-btn">SHIP EXTERIOR INTERFACE</a>
+                    <a href="chat.html" class="folder-btn">CHAT-VOX</a>
+                </div>
+            </nav>
+
+            <div class="content-panel">
+                <div class="content-title" id="content-title">WARP DILATION</div>
+                <div class="content-area">
+                    <div class="tab-content active">
+                        <div class="content-block">This is a shared message</div>
+                        <div class="content-block">What is the shared folder for? Who knows! But it's in the screenshots and so we're using it.</div>
+                        <div class="content-block">This is just going to be a really long-winded string literal that allows me to test such things as text wrapping, and scrolling.</div>
+                        <div class="content-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">UP, DOWN: select folder | LEFT, RIGHT: scroll | q: return to dashboard</footer>
+    </div>
+
+    <script>
+        const contentArea = document.querySelector('.content-area');
+        const pages = ['personal.html', 'warp-dilation.html', 'ship-exterior.html', 'chat.html'];
+        const currentIndex = 1;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'q' || e.key === 'Q') {
+                window.location.href = 'log-in.html';
+                return;
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                contentArea.scrollBy({ top: -80, behavior: 'smooth' });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                contentArea.scrollBy({ top: 80, behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                window.location.href = pages[(currentIndex - 1 + pages.length) % pages.length];
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                window.location.href = pages[(currentIndex + 1) % pages.length];
+            }
+        });
+    </script>
+</body>
+</html>

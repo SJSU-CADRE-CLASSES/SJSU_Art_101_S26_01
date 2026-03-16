@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Booth – Bill & Ted Tribute</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="comets">
+      <div class="comet comet--1"></div>
+      <div class="comet comet--2"></div>
+      <div class="comet comet--3"></div>
+    </div>
+    <div class="stars"></div>
+    <div class="nebula"></div>
+
+    <main class="app">
+      <header class="app__header">
+        <h1 class="logo">EXCELLENT TIME BOOTH</h1>
+        <p class="tagline">
+          Step into the phone booth, dial a most triumphant year, and visit a
+          moment in time.
+        </p>
+      </header>
+
+      <section class="scene" id="scene-landing">
+        <div class="booth-wrapper">
+          <div class="booth">
+            <div class="booth__sign">PHONE BOOTH</div>
+            <div class="booth__door">
+              <div class="booth__window booth__window--top"></div>
+              <div class="booth__window booth__window--bottom"></div>
+              <button class="booth__enter-btn" id="enter-booth-btn">
+                ENTER
+              </button>
+            </div>
+            <div class="booth__floor-glow"></div>
+          </div>
+        </div>
+        <p class="hint">Click the booth to begin your excellent adventure.</p>
+      </section>
+
+      <section class="scene scene--hidden" id="scene-booth">
+        <div class="booth-panel">
+          <div class="booth-panel__header">
+            <span class="indicator indicator--online"></span>
+            <span class="indicator-label">Circuits of Time Online</span>
+          </div>
+
+          <div class="booth-panel__body">
+            <div class="display">
+              <div class="display__label">DESTINATION YEAR</div>
+              <div class="display__year" id="display-year">----</div>
+            </div>
+
+            <div class="preset-years">
+              <button class="chip" data-year="1969">1969</button>
+              <button class="chip" data-year="1989">1989</button>
+              <button class="chip" data-year="1992">1992</button>
+              <button class="chip" data-year="2001">2001</button>
+              <button class="chip" data-year="2015">2015</button>
+              <button class="chip" data-year="2024">2024</button>
+            </div>
+
+            <div class="dial">
+              <div class="dial__keys">
+                <button class="key" data-key="1">1</button>
+                <button class="key" data-key="2">2</button>
+                <button class="key" data-key="3">3</button>
+                <button class="key" data-key="4">4</button>
+                <button class="key" data-key="5">5</button>
+                <button class="key" data-key="6">6</button>
+                <button class="key" data-key="7">7</button>
+                <button class="key" data-key="8">8</button>
+                <button class="key" data-key="9">9</button>
+                <button class="key key--secondary" data-key="clear">
+                  CLR
+                </button>
+                <button class="key" data-key="0">0</button>
+                <button class="key key--primary" data-key="dial">
+                  DIAL
+                </button>
+              </div>
+
+              <div class="dial__side">
+                <div class="dial__handset">
+                  <div class="dial__speaker"></div>
+                  <div class="dial__mic"></div>
+                </div>
+                <p class="dial__note">
+                  Dial a four‑digit year or tap a preset, then hit
+                  <span class="pill">DIAL</span>.
+                </p>
+                <button class="ghost-btn" id="exit-booth-btn">
+                  Step out of booth
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene--hidden" id="scene-year">
+        <div class="year-card">
+          <div class="year-card__header">
+            <button class="ghost-btn ghost-btn--small" id="back-to-booth-btn">
+              ⬅ Back to booth
+            </button>
+            <div class="year-card__meta">
+              <span class="badge" id="year-era-label">Past</span>
+              <span class="year-card__year" id="year-title">1992</span>
+            </div>
+          </div>
+
+          <div class="year-card__content">
+            <div class="year-card__main">
+              <h2 class="year-card__headline" id="year-headline">
+                A most excellent year.
+              </h2>
+              <p class="year-card__lede" id="year-lede">
+                Pick a year to see what went down, dudes.
+              </p>
+
+              <div class="year-card__highlights" id="year-highlights">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <aside class="year-card__aside">
+              <h3 class="aside__title">Time Vibes</h3>
+              <ul class="aside__list" id="year-vibes">
+                <!-- Populated by JS -->
+              </ul>
+              <button class="primary-btn" id="return-home-btn">
+                Return to the Future
+              </button>
+            </aside>
+          </div>
+
+          <footer class="year-card__footer">
+            <p id="year-footer-note">
+              Remember: what happens in the Circuits of Time stays in the
+              Circuits of Time.
+            </p>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <template id="highlight-item-template">
+      <article class="highlight">
+        <div class="highlight__media">
+          <img
+            class="highlight__image"
+            src=""
+            alt=""
+            loading="lazy"
+          />
+        </div>
+        <div class="highlight__body">
+          <h4 class="highlight__title"></h4>
+          <p class="highlight__summary"></p>
+          <a
+            class="highlight__link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          ></a>
+        </div>
+      </article>
+    </template>
+
+    <template id="vibe-item-template">
+      <li class="aside__item">
+        <span class="aside__dot"></span>
+        <span class="aside__text"></span>
+      </li>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
