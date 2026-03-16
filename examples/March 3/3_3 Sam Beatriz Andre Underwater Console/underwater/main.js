@@ -338,6 +338,8 @@ async function init() {
       radarSweep: null,
       radarPing: null,
       radarStartTime: 0,
+      hudCanvas: null,
+      hudTexture: null,
     };
 
     // Slightly flatten the stones and widen them so the top surface reads more like a pad
@@ -433,6 +435,96 @@ async function init() {
       stone.add(buttonsGroup);
     }
 
+    // Add switches, dials, and buttons on another pebble
+    if (i === 3) {
+      const panelGroup = new THREE.Group();
+
+      const silverMat = new THREE.MeshStandardMaterial({
+        color: 0xd8dde5,
+        roughness: 0.25,
+        metalness: 0.85,
+      });
+      const redMat = new THREE.MeshStandardMaterial({
+        color: 0xc43737,
+        roughness: 0.35,
+        metalness: 0.6,
+        emissive: new THREE.Color(0x5a1010),
+        emissiveIntensity: 0.4,
+      });
+      const darkMat = new THREE.MeshStandardMaterial({
+        color: 0x2a3038,
+        roughness: 0.5,
+        metalness: 0.7,
+      });
+
+      // More toggle switches (lever style) — top row and one each side
+      const switchPositions = [
+        { x: -0.38, z: 0.35, tilt: -0.35 },
+        { x: 0, z: 0.35, tilt: 0.35 },
+        { x: 0.38, z: 0.35, tilt: -0.35 },
+        { x: -0.38, z: 0.08, tilt: 0.28 },
+        { x: 0.38, z: 0.08, tilt: -0.28 },
+      ];
+      switchPositions.forEach((pos) => {
+        const baseGeo = new THREE.CylinderGeometry(0.04, 0.045, 0.03, 16);
+        const base = new THREE.Mesh(baseGeo, darkMat.clone());
+        base.position.set(pos.x, 0.605, pos.z);
+        base.castShadow = true;
+        panelGroup.add(base);
+
+        const leverGeo = new THREE.BoxGeometry(0.06, 0.02, 0.16);
+        const lever = new THREE.Mesh(leverGeo, silverMat.clone());
+        lever.position.set(pos.x, 0.64, pos.z);
+        lever.rotation.z = pos.tilt;
+        lever.castShadow = true;
+        panelGroup.add(lever);
+      });
+
+      // Grid: mix of buttons and dials (fixed pattern so dials are in specific slots)
+      const rows = 4;
+      const cols = 5;
+      const spacingX = 0.18;
+      const spacingZ = 0.18;
+      const startX = -((cols - 1) * spacingX) / 2;
+      const startZ = -0.25;
+
+      // Dials at these [row, col] positions (replace buttons)
+      const dialSlots = [[0, 1], [0, 3], [1, 0], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3]];
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * spacingX;
+          const z = startZ + r * spacingZ;
+          const isDial = dialSlots.some(([dr, dc]) => dr === r && dc === c);
+
+          if (isDial) {
+            // Dial: small base + knob
+            const baseGeo = new THREE.CylinderGeometry(0.035, 0.04, 0.02, 16);
+            const dialBase = new THREE.Mesh(baseGeo, darkMat.clone());
+            dialBase.position.set(x, 0.595, z);
+            dialBase.castShadow = true;
+            panelGroup.add(dialBase);
+
+            const knobGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.035, 20);
+            const knob = new THREE.Mesh(knobGeo, silverMat.clone());
+            knob.position.set(x, 0.64, z);
+            knob.castShadow = true;
+            panelGroup.add(knob);
+          } else {
+            const btnGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.04, 16);
+            const isRed = Math.random() < 0.2;
+            const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
+            btn.position.set(x, 0.6, z);
+            btn.castShadow = true;
+            btn.receiveShadow = true;
+            panelGroup.add(btn);
+          }
+        }
+      }
+
+      stone.add(panelGroup);
+    }
+
     // Add a flush radar disc to the second stone
     if (i === 1) {
       const radarGroup = new THREE.Group();
@@ -509,6 +601,34 @@ async function init() {
       stone.userData.radarSweep = sweep;
       stone.userData.radarPing = ping;
       stone.userData.radarStartTime = performance.now() / 1000;
+    }
+
+    // HUD on the last pebble — environment stats (canvas texture updated each frame)
+    if (i === 4) {
+      const hudW = 256;
+      const hudH = 160;
+      const canvas = document.createElement('canvas');
+      canvas.width = hudW;
+      canvas.height = hudH;
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+
+      const hudMat = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        opacity: 0.95,
+        side: THREE.DoubleSide,
+      });
+      const hudGeo = new THREE.PlaneGeometry(0.85, 0.52);
+      const hudMesh = new THREE.Mesh(hudGeo, hudMat);
+      hudMesh.rotation.x = -Math.PI / 2;
+      hudMesh.position.set(0, 0.615, 0);
+
+      stone.add(hudMesh);
+      stone.userData.hudCanvas = canvas;
+      stone.userData.hudTexture = texture;
     }
 
     scene.add(stone);
@@ -1780,6 +1900,44 @@ function animate(time) {
         const pulse = 0.8 + 0.25 * Math.sin(tSec * 2.0);
         d.radarPing.scale.setScalar(pulse);
       }
+    }
+
+    // HUD — redraw environment stats on the last pebble
+    if (d.hudCanvas && d.hudTexture) {
+      const ctx = d.hudCanvas.getContext('2d');
+      const w = d.hudCanvas.width;
+      const h = d.hudCanvas.height;
+
+      ctx.fillStyle = 'rgba(0, 12, 24, 0.92)';
+      ctx.fillRect(0, 0, w, h);
+
+      const heading = (Math.atan2(fwd.x, fwd.z) * 180 / Math.PI + 360) % 360;
+      const depth = camera.position.y;
+      const distLib = camera.position.distanceTo(LIBRARY_POSITION);
+      const pressure = (depth * 0.08 + 1).toFixed(2);
+      const temp = (4.2 - depth * 0.02 + Math.sin(tSec * 0.3) * 0.1).toFixed(1);
+
+      ctx.font = '11px "Share Tech Mono", monospace';
+      ctx.fillStyle = 'rgba(74, 211, 181, 0.95)';
+      ctx.fillText('DEPTH', 12, 28);
+      ctx.fillText('HEAD', 12, 52);
+      ctx.fillText('LIB', 12, 76);
+      ctx.fillText('PRES', 12, 100);
+      ctx.fillText('TEMP', 12, 124);
+
+      ctx.fillStyle = 'rgba(170, 230, 255, 0.98)';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${depth.toFixed(1)} m`, w - 12, 28);
+      ctx.fillText(`${heading.toFixed(0)}°`, w - 12, 52);
+      ctx.fillText(`${distLib.toFixed(1)} m`, w - 12, 76);
+      ctx.fillText(`${pressure} bar`, w - 12, 100);
+      ctx.fillText(`${temp} °C`, w - 12, 124);
+      ctx.textAlign = 'left';
+
+      ctx.strokeStyle = 'rgba(74, 211, 181, 0.4)';
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      d.hudTexture.needsUpdate = true;
     }
   });
 
