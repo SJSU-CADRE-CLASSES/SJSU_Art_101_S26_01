@@ -58,6 +58,7 @@ const FISH = [];
 const FISH_SCHOOLS = [];
 const KELP = [];
 const VEGETATION = [];
+const FLOATING_STONES = [];
 let particlePos;
 let dustPos;
 let dustUniforms;
@@ -309,6 +310,82 @@ async function init() {
     rock.position.set(x, 0, z);
     rock.rotation.set(Math.random() * 0.4, Math.random() * Math.PI, Math.random() * 0.2);
     scene.add(rock);
+  }
+
+  // Medium stones that gently float in an orbit around the player toward the bottom of view
+  const floatingStoneMat = new THREE.MeshStandardMaterial({
+    color: 0x2b3537,
+    roughness: 0.96,
+    metalness: 0.08,
+  });
+  for (let i = 0; i < 5; i++) {
+    const geo = new THREE.IcosahedronGeometry(0.6, 1);
+    const stone = new THREE.Mesh(geo, floatingStoneMat.clone());
+    stone.castShadow = true;
+    stone.receiveShadow = true;
+    stone.userData = {
+      angleOffset: (i / 5) * Math.PI * 2,
+      radius: 3 + Math.random() * 1.5,
+      heightOffset: -2.0 - Math.random() * 0.6,
+      bobAmp: 0.22 + Math.random() * 0.12,
+      bobSpeed: 0.35 + Math.random() * 0.2,
+      spinSpeed: 0.18 + Math.random() * 0.25,
+      joystick: null,
+      joystickTiltX: 0,
+      joystickTiltZ: 0,
+    };
+
+    // Slightly flatten the stones and widen them so the top surface reads more like a pad
+    stone.scale.set(1.25, 0.6, 1.25);
+
+    // Add a joystick to the first stone to represent movement
+    if (i === 0) {
+      const baseGeo = new THREE.CylinderGeometry(0.25, 0.28, 0.12, 18);
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: 0x1b2428,
+        roughness: 0.9,
+        metalness: 0.2,
+      });
+      const base = new THREE.Mesh(baseGeo, baseMat);
+      base.position.set(0, 0.42, 0);
+      base.castShadow = true;
+      base.receiveShadow = true;
+
+      const stickGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.45, 14);
+      const stickMat = new THREE.MeshStandardMaterial({
+        color: 0x6f8a9a,
+        roughness: 0.4,
+        metalness: 0.5,
+      });
+      const stick = new THREE.Mesh(stickGeo, stickMat);
+      stick.position.set(0, 0.75, 0);
+      stick.castShadow = true;
+      stick.receiveShadow = true;
+
+      const knobGeo = new THREE.SphereGeometry(0.12, 18, 18);
+      const knobMat = new THREE.MeshStandardMaterial({
+        color: 0xaad4ff,
+        roughness: 0.2,
+        metalness: 0.7,
+        emissive: new THREE.Color(0x88b4ff),
+        emissiveIntensity: 0.3,
+      });
+      const knob = new THREE.Mesh(knobGeo, knobMat);
+      knob.position.set(0, 1.02, 0);
+      knob.castShadow = true;
+      knob.receiveShadow = true;
+
+      const joystick = new THREE.Group();
+      joystick.add(base);
+      joystick.add(stick);
+      joystick.add(knob);
+
+      stone.add(joystick);
+      stone.userData.joystick = joystick;
+    }
+
+    scene.add(stone);
+    FLOATING_STONES.push(stone);
   }
 
   function createOvalGeometry(width, height, segments = 14) {
@@ -1482,6 +1559,77 @@ function animate(time) {
 
   // Player light follows camera
   playerLight.position.copy(camera.position);
+
+  // Floating stones — when moving forward, organize into a horizontal line in front;
+  // otherwise gently orbit around the player near the bottom of view.
+  const tSec = (time ?? performance.now()) / 1000;
+  const forwardPressed = moveForward && !moveBackward;
+  const fwd = new THREE.Vector3();
+  camera.getWorldDirection(fwd);
+  fwd.y = 0;
+  if (fwd.lengthSq() < 1e-4) fwd.set(0, 0, -1);
+  fwd.normalize();
+  const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+
+  FLOATING_STONES.forEach((stone, index) => {
+    const d = stone.userData;
+    const baseY = Math.max(0.7, camera.position.y + d.heightOffset);
+    const bob = Math.sin(tSec * d.bobSpeed + d.angleOffset) * d.bobAmp;
+
+    // Compute target position for this frame
+    let target = new THREE.Vector3();
+    if (forwardPressed) {
+      // Horizontal line in front of player
+      const spacing = 1.2; // distance between stones
+      const offsetIndex = index - (FLOATING_STONES.length - 1) / 2;
+      const lateralOffset = offsetIndex * spacing;
+      const distanceInFront = 3.2; // how far in front of camera
+
+      const center = new THREE.Vector3().copy(camera.position)
+        .add(fwd.clone().multiplyScalar(distanceInFront))
+        .add(new THREE.Vector3(0, d.heightOffset, 0));
+
+      target.copy(center).add(right.clone().multiplyScalar(lateralOffset));
+    } else {
+      // Gentle orbit when not actively moving forward
+      const angle = d.angleOffset + tSec * 0.25;
+      target.set(
+        camera.position.x + Math.cos(angle) * d.radius,
+        camera.position.y + d.heightOffset,
+        camera.position.z + Math.sin(angle) * d.radius,
+      );
+    }
+
+    target.y = baseY + bob;
+
+    // Smoothly ease current position toward target
+    const lerpFactor = forwardPressed ? 0.08 : 0.06; // slightly faster when organizing
+    stone.position.lerp(target, lerpFactor);
+
+    stone.rotation.y += d.spinSpeed * delta;
+
+    // If this stone has the joystick, tilt it based on movement direction
+    if (d.joystick) {
+      // Desired tilt from WASD input (local X/Z of joystick on stone)
+      const desiredTiltX = (moveForward ? -1 : 0) + (moveBackward ? 1 : 0);
+      const desiredTiltZ = (moveRight ? 1 : 0) + (moveLeft ? -1 : 0);
+
+      // Normalize so diagonals aren't stronger
+      let len = Math.hypot(desiredTiltX, desiredTiltZ);
+      if (len > 1e-3) {
+        d.joystickTiltX = THREE.MathUtils.lerp(d.joystickTiltX, desiredTiltX / len, 0.18);
+        d.joystickTiltZ = THREE.MathUtils.lerp(d.joystickTiltZ, desiredTiltZ / len, 0.18);
+      } else {
+        // Ease back toward center when no input
+        d.joystickTiltX = THREE.MathUtils.lerp(d.joystickTiltX, 0, 0.12);
+        d.joystickTiltZ = THREE.MathUtils.lerp(d.joystickTiltZ, 0, 0.12);
+      }
+
+      const maxTilt = 0.32; // radians
+      d.joystick.rotation.x = d.joystickTiltX * maxTilt;
+      d.joystick.rotation.z = d.joystickTiltZ * maxTilt;
+    }
+  });
 
   // Kelp — stalk and leaves sway in current
   KELP.forEach((kelp) => {
