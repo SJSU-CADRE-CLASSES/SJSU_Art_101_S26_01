@@ -319,8 +319,8 @@ async function init() {
     metalness: 0.08,
   });
   for (let i = 0; i < 5; i++) {
-    // Rounded stone pebbles (back to icosahedrons)
-    const geo = new THREE.IcosahedronGeometry(0.6, 1);
+    // Rounded-square pebble pads
+    const geo = createRoundedPebbleGeometry(1.1, 0.32, 0.32);
     const stone = new THREE.Mesh(geo, floatingStoneMat.clone());
     stone.castShadow = true;
     stone.receiveShadow = true;
@@ -342,9 +342,6 @@ async function init() {
       hudTexture: null,
     };
 
-    // Slightly flatten the stones and widen them so the top surface reads more like a pad
-    stone.scale.set(1.25, 0.6, 1.25);
-
     // Add a joystick to the first stone to represent movement
     if (i === 0) {
       const baseGeo = new THREE.CylinderGeometry(0.25, 0.28, 0.12, 18);
@@ -354,7 +351,7 @@ async function init() {
         metalness: 0.85,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
-      base.position.set(0, 0.42, 0);
+      base.position.set(0, 0.32, 0);
       base.castShadow = true;
       base.receiveShadow = true;
 
@@ -365,7 +362,7 @@ async function init() {
         metalness: 0.9,
       });
       const stick = new THREE.Mesh(stickGeo, stickMat);
-      stick.position.set(0, 0.75, 0);
+      stick.position.set(0, 0.61, 0);
       stick.castShadow = true;
       stick.receiveShadow = true;
 
@@ -378,7 +375,7 @@ async function init() {
         emissiveIntensity: 0.25,
       });
       const knob = new THREE.Mesh(knobGeo, knobMat);
-      knob.position.set(0, 1.02, 0);
+      knob.position.set(0, 0.88, 0);
       knob.castShadow = true;
       knob.receiveShadow = true;
 
@@ -412,6 +409,7 @@ async function init() {
       const cols = 4;
       const spacingX = 0.22;
       const spacingZ = 0.22;
+      // Center grid on pebble in X/Z
       const startX = -((cols - 1) * spacingX) / 2;
       const startZ = -((rows - 1) * spacingZ) / 2;
 
@@ -423,8 +421,8 @@ async function init() {
           const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
           const x = startX + c * spacingX;
           const z = startZ + r * spacingZ;
-          // Sit the buttons directly on the pebble surface
-          btn.position.set(x, 0.6, z);
+          // Sink the buttons exaggeratedly low into the pebble surface
+          btn.position.set(x, 0.49, z);
           btn.castShadow = true;
           btn.receiveShadow = true;
 
@@ -432,6 +430,8 @@ async function init() {
         }
       }
 
+      // Center the whole cluster on the rock
+      buttonsGroup.position.z = 0;
       stone.add(buttonsGroup);
     }
 
@@ -457,24 +457,22 @@ async function init() {
         metalness: 0.7,
       });
 
-      // More toggle switches (lever style) — top row and one each side
+      // Three neatly aligned toggle switches (lever style) along the top edge
       const switchPositions = [
-        { x: -0.38, z: 0.35, tilt: -0.35 },
-        { x: 0, z: 0.35, tilt: 0.35 },
-        { x: 0.38, z: 0.35, tilt: -0.35 },
-        { x: -0.38, z: 0.08, tilt: 0.28 },
-        { x: 0.38, z: 0.08, tilt: -0.28 },
+        { x: -0.24, z: 0.32, tilt: -0.3 },
+        { x: 0, z: 0.32, tilt: 0.25 },
+        { x: 0.24, z: 0.32, tilt: -0.25 },
       ];
       switchPositions.forEach((pos) => {
         const baseGeo = new THREE.CylinderGeometry(0.04, 0.045, 0.03, 16);
         const base = new THREE.Mesh(baseGeo, darkMat.clone());
-        base.position.set(pos.x, 0.605, pos.z);
+        base.position.set(pos.x, 0.545, pos.z);
         base.castShadow = true;
         panelGroup.add(base);
 
         const leverGeo = new THREE.BoxGeometry(0.06, 0.02, 0.16);
         const lever = new THREE.Mesh(leverGeo, silverMat.clone());
-        lever.position.set(pos.x, 0.64, pos.z);
+        lever.position.set(pos.x, 0.575, pos.z);
         lever.rotation.z = pos.tilt;
         lever.castShadow = true;
         panelGroup.add(lever);
@@ -485,8 +483,9 @@ async function init() {
       const cols = 5;
       const spacingX = 0.18;
       const spacingZ = 0.18;
+      // Center grid on pebble in X/Z
       const startX = -((cols - 1) * spacingX) / 2;
-      const startZ = -0.25;
+      const startZ = -((rows - 1) * spacingZ) / 2;
 
       // Dials at these [row, col] positions (replace buttons)
       const dialSlots = [[0, 1], [0, 3], [1, 0], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3]];
@@ -501,20 +500,21 @@ async function init() {
             // Dial: small base + knob
             const baseGeo = new THREE.CylinderGeometry(0.035, 0.04, 0.02, 16);
             const dialBase = new THREE.Mesh(baseGeo, darkMat.clone());
-            dialBase.position.set(x, 0.595, z);
+            dialBase.position.set(x, 0.535, z);
             dialBase.castShadow = true;
             panelGroup.add(dialBase);
 
             const knobGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.035, 20);
             const knob = new THREE.Mesh(knobGeo, silverMat.clone());
-            knob.position.set(x, 0.64, z);
+            knob.position.set(x, 0.575, z);
             knob.castShadow = true;
             panelGroup.add(knob);
           } else {
             const btnGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.04, 16);
             const isRed = Math.random() < 0.2;
             const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
-            btn.position.set(x, 0.6, z);
+            // Sink grid buttons exaggeratedly low into the pebble surface
+            btn.position.set(x, 0.49, z);
             btn.castShadow = true;
             btn.receiveShadow = true;
             panelGroup.add(btn);
@@ -522,6 +522,8 @@ async function init() {
         }
       }
 
+      // Center the whole panel on the pebble
+      panelGroup.position.z = 0;
       stone.add(panelGroup);
     }
 
@@ -593,8 +595,8 @@ async function init() {
       radarGroup.add(northMarker);
 
       radarGroup.rotation.x = -Math.PI / 2;
-      // Sink the whole radar a bit into the flattened top of the stone
-      radarGroup.position.set(0, 0.6, 0);
+      // Sink the whole radar even more into the flattened top of the stone
+      radarGroup.position.set(0, 0.545, 0);
 
       stone.add(radarGroup);
       stone.userData.radar = radarGroup;
@@ -624,7 +626,7 @@ async function init() {
       const hudGeo = new THREE.PlaneGeometry(0.85, 0.52);
       const hudMesh = new THREE.Mesh(hudGeo, hudMat);
       hudMesh.rotation.x = -Math.PI / 2;
-      hudMesh.position.set(0, 0.615, 0);
+      hudMesh.position.set(0, 0.555, 0);
 
       stone.add(hudMesh);
       stone.userData.hudCanvas = canvas;
@@ -644,6 +646,51 @@ async function init() {
     shape.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) shape.lineTo(points[i].x, points[i].y);
     return new THREE.ShapeGeometry(shape);
+  }
+
+  function createRoundedPebbleGeometry(size = 1.0, cornerRadius = 0.35, height = 0.3) {
+    const half = size / 2;
+    const r = Math.min(cornerRadius, half * 0.9);
+    const shape = new THREE.Shape();
+
+    shape.moveTo(-half + r, -half);
+    shape.lineTo(half - r, -half);
+    shape.quadraticCurveTo(half, -half, half, -half + r);
+    shape.lineTo(half, half - r);
+    shape.quadraticCurveTo(half, half, half - r, half);
+    shape.lineTo(-half + r, half);
+    shape.quadraticCurveTo(-half, half, -half, half - r);
+    shape.lineTo(-half, -half + r);
+    shape.quadraticCurveTo(-half, -half, -half + r, -half);
+
+    const extrudeSettings = {
+      depth: height,
+      bevelEnabled: false,
+      steps: 1,
+    };
+    const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geo.translate(0, height / 2, 0);
+    geo.rotateX(-Math.PI / 2);
+
+    // Add stronger rocky irregularity to the whole shell (top included, but slightly reduced)
+    const pos = geo.attributes.position;
+    const v = new THREE.Vector3();
+    const noiseAmount = 0.18;
+    for (let i = 0; i < pos.count; i++) {
+      v.set(pos.getX(i), pos.getY(i), pos.getZ(i));
+      const n = (Math.sin(v.x * 9.1) + Math.cos(v.y * 6.7) + Math.sin(v.z * 5.3)) * 0.5
+        + (Math.sin((v.x + v.z) * 11.3) * 0.35);
+      // Slightly scale down deformation right at the top surface so controls still sit cleanly
+      const topFactor = THREE.MathUtils.clamp(1.0 - (v.z + height * 0.5) / (height * 1.2), 0.45, 1.0);
+      const offset = n * noiseAmount * topFactor;
+      v.x += (v.x >= 0 ? 1 : -1) * offset * 0.9;
+      v.y += (v.y >= 0 ? 1 : -1) * offset * 0.7;
+      v.z += offset;
+      pos.setXYZ(i, v.x, v.y, v.z);
+    }
+    pos.needsUpdate = true;
+    geo.computeVertexNormals();
+    return geo;
   }
 
   // Kelp plants — stalk with leaves surrounding it, both sway in current
@@ -1807,10 +1854,8 @@ function animate(time) {
   // Player light follows camera
   playerLight.position.copy(camera.position);
 
-  // Floating stones — when moving forward, organize into a horizontal line in front;
-  // otherwise gently orbit around the player near the bottom of view.
+  // Floating stones — hover in front of the player and sway gently
   const tSec = (time ?? performance.now()) / 1000;
-  const forwardPressed = moveForward && !moveBackward;
   const fwd = new THREE.Vector3();
   camera.getWorldDirection(fwd);
   fwd.y = 0;
@@ -1821,36 +1866,35 @@ function animate(time) {
   FLOATING_STONES.forEach((stone, index) => {
     const d = stone.userData;
     const baseY = Math.max(0.7, camera.position.y + d.heightOffset);
+
+    // Base cluster center in front of camera
+    const clusterDist = 3.3;
+    const center = new THREE.Vector3().copy(camera.position)
+      .add(fwd.clone().multiplyScalar(clusterDist))
+      .add(new THREE.Vector3(0, d.heightOffset, 0));
+
+    // Arrange stones in a neat arc in front (even spacing)
+    const spread = 1.1;
+    const offsetIndex = index - (FLOATING_STONES.length - 1) / 2;
+    const lateralOffset = offsetIndex * spread;
+
+    // Gentle sway based on time and index (limit so they don't collide)
+    const swaySide = Math.sin(tSec * 0.7 + d.angleOffset) * 0.08;
+    const swayDepth = Math.cos(tSec * 0.6 + d.angleOffset * 1.3) * 0.25;
     const bob = Math.sin(tSec * d.bobSpeed + d.angleOffset) * d.bobAmp;
 
-    // Compute target position for this frame
-    let target = new THREE.Vector3();
-    if (forwardPressed) {
-      // Horizontal line in front of player
-      const spacing = 1.2; // distance between stones
-      const offsetIndex = index - (FLOATING_STONES.length - 1) / 2;
-      const lateralOffset = offsetIndex * spacing;
-      const distanceInFront = 3.2; // how far in front of camera
-
-      const center = new THREE.Vector3().copy(camera.position)
-        .add(fwd.clone().multiplyScalar(distanceInFront))
-        .add(new THREE.Vector3(0, d.heightOffset, 0));
-
-      target.copy(center).add(right.clone().multiplyScalar(lateralOffset));
-    } else {
-      // Gentle orbit when not actively moving forward
-      const angle = d.angleOffset + tSec * 0.25;
-      target.set(
-        camera.position.x + Math.cos(angle) * d.radius,
-        camera.position.y + d.heightOffset,
-        camera.position.z + Math.sin(angle) * d.radius,
-      );
-    }
+    const target = new THREE.Vector3()
+      .copy(center)
+      .add(right.clone().multiplyScalar(lateralOffset + swaySide))
+      .add(fwd.clone().multiplyScalar(swayDepth));
 
     target.y = baseY + bob;
+    // Prevent stones from dipping into the seafloor
+    const MIN_STONE_Y = 0.55;
+    if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
 
     // Smoothly ease current position toward target
-    const lerpFactor = forwardPressed ? 0.08 : 0.06; // slightly faster when organizing
+    const lerpFactor = 0.08;
     stone.position.lerp(target, lerpFactor);
 
     stone.rotation.y += d.spinSpeed * delta;
