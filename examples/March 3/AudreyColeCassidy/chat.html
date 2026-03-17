@@ -12,7 +12,16 @@
         body.chat-page-bltmr .terminal-container { padding: 20px 26px; max-width: none; height: 100vh; overflow: hidden; }
         body.chat-page-bltmr .main-content { margin-top: 0; padding-top: 0; }
         body.chat-page-bltmr .header { display: none; }
-        body.chat-page-bltmr .footer { display: none; }
+        body.chat-page-bltmr .footer {
+            display: block;
+            margin-top: 8px;
+            padding: 10px 0 0;
+            text-align: right;
+            font-size: 1rem;
+            opacity: 0.9;
+            border-top: 1px solid rgba(51, 255, 51, 0.3);
+            padding-right: 6px;
+        }
         body.chat-page-bltmr .main-content { flex-direction: column; gap: 0; }
         body.chat-page-bltmr .folders-panel { display: none; }
         body.chat-page-bltmr .content-panel { flex: none; width: 100%; }
@@ -52,6 +61,7 @@
             margin-left: 2px;
             padding: 10.5px 14px;
             font-size: 1rem;
+            line-height: calc(1em + 0.1rem);
             color: #000;
             background: rgba(51, 255, 51, 0.35);
             text-decoration: none;
@@ -180,7 +190,8 @@
         }
         .bltmr-chat-messages .chat-message {
             font-weight: normal;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            line-height: calc(1em + 0.1rem);
         }
         .bltmr-chat-messages .msg-other { color: #fff; }
         .bltmr-chat-messages .msg-you { color: #28cc28; }
@@ -299,13 +310,16 @@
             align-items: stretch;
         }
         .bltmr-officer-photo {
-            width: 80px;
+            width: 75px;
+            height: 75px;
+            aspect-ratio: 1 / 1;
             flex-shrink: 0;
-            padding: 10px 0;
+            padding: 0;
             margin: 10px 0;
+            position: relative;
             box-sizing: border-box;
             border: 2px solid #33ff33;
-            background: #0a1a0a;
+            background: rgba(51, 255, 51, 0.18);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -315,20 +329,21 @@
             clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
         }
         .bltmr-officer-photo img {
+            display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             filter: sepia(1) hue-rotate(70deg) saturate(2) brightness(0.9) contrast(1.1);
         }
         .bltmr-officer-fields {
             flex: 1;
             font-size: 0.95rem;
-            line-height: 1.5;
+            line-height: calc(1em + 0.1rem);
             color: #33ff33;
         }
         .bltmr-bio {
             font-size: 0.9rem;
-            line-height: 1.5;
+            line-height: calc(1em + 0.1rem);
             color: #33ff33;
             border-top: 1.5px solid rgba(51, 255, 51, 0.45);
             padding-top: 10px;
@@ -445,10 +460,14 @@
                                 <div class="bltmr-chat-messages-scroll-wrap">
                                     <div class="bltmr-chat-messages-content" id="chat-scroll-content">
                                         <div class="bltmr-chat-messages-inner" id="chat-messages">
-                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WHAT THE FUCK DID I DO??</div>
-                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
-                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
-                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WHAT IS GOING ON?</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> IT'S A TOTAL SHITSHOW</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> THE SHIP IS COMPLETELY DESTROYED AND WE WERE AMBUSHED</div> 
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> WE NEED HELP ASAP</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> HOW MANY PEOPLE CAN YOU SEND?</div>
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WE HAVE OUR OWN PROBLEMS</div>
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> ASK SOMEONE ELSE</div>
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> MAYBE L. BELCHER?</div>
                                         </div>
                                     </div>
                                     <div class="custom-scrollbar">
@@ -497,9 +516,8 @@
                         </div>
                         <aside class="bltmr-info-col">
                             <div class="bltmr-officer-top">
-                                <div class="bltmr-officer-photo">
-                                    <!-- Replace src with officer image path if you have one -->
-                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect fill='%230a1a0a' width='80' height='80'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2333ff33' font-size='10' font-family='monospace'%3EID%3C/text%3E%3C/svg%3E" alt="Officer">
+                                <div class="bltmr-officer-photo" style="width:80px;height:80px">
+                                    <img src="markiplier.jpg" alt="Officer" style="width:100px;height:100px">
                                 </div>
                                 <div class="bltmr-officer-fields">
                                     <div>OFFICER: A-34-0.1</div>
@@ -509,10 +527,10 @@
                                 </div>
                             </div>
                             <div class="bltmr-bio">
-                                CAYAGO WAS BORN TO IRISH-AMERICAN PARENTS IN THE LAURAVILLE NEIGHBORHOOD OF BALTIMORE, MARYLAND. HIS FATHER WORKED AS A STEELWORKER AT BETHLEHEM STEEL UNTIL DEINDUSTRIALIZATION LED TO HIS FIRING IN 1973. CAYAGO ATTENDED LOYOLA UNIVERSITY MARYLAND FOR A YEAR.
+                                CAYAGO WAS BORN TO FILIPINO-AMERICAN PARENTS IN SAN FRANCISCO, CALIFORNIA. HE JOINED THE MARINES AFTER HIGH SCHOOL AND SERVED FOR SIX YEARS.
                             </div>
                             <div class="bltmr-bio">
-                                HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 2001. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2003, CAYAGO HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
+                                HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 19, 2013. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR FOUR YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2017, CAYAGO HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
                             </div>
                         </aside>
                     </div>
@@ -524,6 +542,8 @@
             <div class="bltmr-status">GOOD SIGNAL</div>
             <div class="bltmr-copyright">PROPERTY OF THE STATE</div>
         </div>
+
+        <footer class="footer">q: LOGOUT</footer>
     </div>
 
     <script>
