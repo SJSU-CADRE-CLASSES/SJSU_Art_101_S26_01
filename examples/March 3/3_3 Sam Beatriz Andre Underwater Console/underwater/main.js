@@ -1957,6 +1957,21 @@ function animate(time) {
       .add(fwd.clone().multiplyScalar(swayDepth));
 
     target.y = baseY + bob;
+
+    // Keep panels from intersecting the Library boulder in XZ
+    const dxLib = target.x - LIBRARY_POSITION.x;
+    const dzLib = target.z - LIBRARY_POSITION.z;
+    const distLibSq = dxLib * dxLib + dzLib * dzLib;
+    const MIN_LIB_GAP = 3.0;
+    if (distLibSq > 1e-6 && distLibSq < MIN_LIB_GAP * MIN_LIB_GAP) {
+      const distLib = Math.sqrt(distLibSq);
+      const pushLib = (MIN_LIB_GAP - distLib);
+      const nxLib = dxLib / distLib;
+      const nzLib = dzLib / distLib;
+      target.x += nxLib * pushLib;
+      target.z += nzLib * pushLib;
+    }
+
     d.targetPos = target.clone();
   });
 
@@ -1990,8 +2005,8 @@ function animate(time) {
   FLOATING_STONES.forEach((stone, index) => {
     const d = stone.userData;
     const target = d.targetPos;
-    // Prevent stones from dipping into the seafloor (keep a clear gap above sand)
-    const MIN_STONE_Y = 0.9;
+    // Prevent stones from dipping into the seafloor (keep a small but visible gap above sand)
+    const MIN_STONE_Y = 0.7;
     if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
 
     // Smoothly ease current position toward target
