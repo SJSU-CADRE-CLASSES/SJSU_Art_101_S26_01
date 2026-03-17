@@ -349,8 +349,11 @@ async function init() {
         roughness: 0.35,
         metalness: 0.85,
       });
+      const surfaceY = samplePebbleHeight(stone, 0, 0, 0.3);
+      const baseY = surfaceY + 0.02;
+
       const base = new THREE.Mesh(baseGeo, baseMat);
-      base.position.set(0, 0.32, 0);
+      base.position.set(0, baseY, 0);
       base.castShadow = true;
       base.receiveShadow = true;
 
@@ -361,7 +364,7 @@ async function init() {
         metalness: 0.9,
       });
       const stick = new THREE.Mesh(stickGeo, stickMat);
-      stick.position.set(0, 0.61, 0);
+      stick.position.set(0, baseY + 0.29, 0);
       stick.castShadow = true;
       stick.receiveShadow = true;
 
@@ -374,7 +377,7 @@ async function init() {
         emissiveIntensity: 0.25,
       });
       const knob = new THREE.Mesh(knobGeo, knobMat);
-      knob.position.set(0, 0.88, 0);
+      knob.position.set(0, baseY + 0.56, 0);
       knob.castShadow = true;
       knob.receiveShadow = true;
 
@@ -421,8 +424,9 @@ async function init() {
           const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
           const x = startX + c * spacingX;
           const z = startZ + r * spacingZ;
-          // Embed the buttons so only a thin lip sits above the rock
-          btn.position.set(x, 0.47, z);
+          // Embed the buttons so only a thin lip sits above the rock using the actual surface height
+          const surfaceY = samplePebbleHeight(stone, x, z, 0.4);
+          btn.position.set(x, surfaceY + 0.01, z);
           btn.castShadow = true;
           btn.receiveShadow = true;
 
@@ -466,13 +470,14 @@ async function init() {
       switchPositions.forEach((pos) => {
         const baseGeo = new THREE.CylinderGeometry(0.04, 0.045, 0.03, 16);
         const base = new THREE.Mesh(baseGeo, darkMat.clone());
-        base.position.set(pos.x, 0.545, pos.z);
+        const baseSurfaceY = samplePebbleHeight(stone, pos.x, pos.z, 0.45);
+        base.position.set(pos.x, baseSurfaceY + 0.01, pos.z);
         base.castShadow = true;
         panelGroup.add(base);
 
         const leverGeo = new THREE.BoxGeometry(0.06, 0.02, 0.16);
         const lever = new THREE.Mesh(leverGeo, silverMat.clone());
-        lever.position.set(pos.x, 0.575, pos.z);
+        lever.position.set(pos.x, baseSurfaceY + 0.04, pos.z);
         lever.rotation.z = pos.tilt;
         lever.castShadow = true;
         panelGroup.add(lever);
@@ -500,13 +505,14 @@ async function init() {
             // Dial: small base + knob
             const baseGeo = new THREE.CylinderGeometry(0.035, 0.04, 0.02, 16);
             const dialBase = new THREE.Mesh(baseGeo, darkMat.clone());
-            dialBase.position.set(x, 0.535, z);
+            const surfY = samplePebbleHeight(stone, x, z, 0.45);
+            dialBase.position.set(x, surfY + 0.01, z);
             dialBase.castShadow = true;
             panelGroup.add(dialBase);
 
             const knobGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.035, 20);
             const knob = new THREE.Mesh(knobGeo, silverMat.clone());
-            knob.position.set(x, 0.575, z);
+            knob.position.set(x, surfY + 0.05, z);
             knob.castShadow = true;
             panelGroup.add(knob);
           } else {
@@ -514,8 +520,9 @@ async function init() {
             const btnGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.022, 20);
             const isRed = Math.random() < 0.2;
             const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
-            // Embed so only a slim top surface is above rock
-            btn.position.set(x, 0.47, z);
+            // Embed so only a slim top surface is above rock using sampled surface height
+            const surfY = samplePebbleHeight(stone, x, z, 0.45);
+            btn.position.set(x, surfY + 0.01, z);
             btn.castShadow = true;
             btn.receiveShadow = true;
             panelGroup.add(btn);
@@ -594,6 +601,7 @@ async function init() {
     }
 
     // HUD on the last pebble — environment stats (canvas texture updated each frame)
+    // + three dials embedded into the rock face
     if (i === 4) {
       const hudW = 256;
       const hudH = 160;
@@ -611,10 +619,44 @@ async function init() {
         opacity: 0.95,
         side: THREE.DoubleSide,
       });
+      // Add three dials under the display, embedded into the rock
+      const dialBaseMat = new THREE.MeshStandardMaterial({
+        color: 0x2a3038,
+        roughness: 0.55,
+        metalness: 0.7,
+      });
+      const dialKnobMat = new THREE.MeshStandardMaterial({
+        color: 0xd8dde5,
+        roughness: 0.25,
+        metalness: 0.85,
+      });
+      const dialGroup = new THREE.Group();
+      const dialPositions = [
+        { x: -0.32, z: 0.1 },
+        { x: 0, z: 0.1 },
+        { x: 0.32, z: 0.1 },
+      ];
+      dialPositions.forEach((pos) => {
+        const baseGeo = new THREE.CylinderGeometry(0.055, 0.06, 0.022, 20);
+        const base = new THREE.Mesh(baseGeo, dialBaseMat.clone());
+        const surfY = samplePebbleHeight(stone, pos.x, pos.z, 0.45);
+        base.position.set(pos.x, surfY + 0.01, pos.z);
+        base.castShadow = true;
+        dialGroup.add(base);
+
+        const knobGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.03, 20);
+        const knob = new THREE.Mesh(knobGeo, dialKnobMat.clone());
+        knob.position.set(pos.x, surfY + 0.05, pos.z);
+        knob.castShadow = true;
+        dialGroup.add(knob);
+      });
+      stone.add(dialGroup);
+
       const hudGeo = new THREE.PlaneGeometry(0.85, 0.52);
       const hudMesh = new THREE.Mesh(hudGeo, hudMat);
-      hudMesh.rotation.x = -Math.PI / 2;
-      hudMesh.position.set(0, 0.555, 0);
+      // Stand the HUD panel upright near the front edge of the stone;
+      // its Y-rotation is controlled in the animate loop so it faces the player.
+      hudMesh.position.set(0, 0.62, 0.52);
 
       stone.add(hudMesh);
       stone.userData.hudCanvas = canvas;
@@ -679,6 +721,19 @@ async function init() {
     pos.needsUpdate = true;
     geo.computeVertexNormals();
     return geo;
+  }
+
+  // Helper for embedding controls onto a pebble: sample the rock's surface height
+  function samplePebbleHeight(stone, x, z, fallbackY) {
+    // Use a fresh raycaster/origin each time to avoid any temporal-dead-zone issues
+    const origin = new THREE.Vector3(x, 2, z);
+    const dir = new THREE.Vector3(0, -1, 0);
+    const raycaster = new THREE.Raycaster(origin, dir);
+    const hits = raycaster.intersectObject(stone, false);
+    if (hits.length > 0) {
+      return hits[0].point.y;
+    }
+    return fallbackY;
   }
 
   // Kelp plants — stalk with leaves surrounding it, both sway in current
@@ -1903,7 +1958,15 @@ function animate(time) {
     const lerpFactor = 0.08;
     stone.position.lerp(target, lerpFactor);
 
-    stone.rotation.y += d.spinSpeed * delta;
+    // Orientation: all stones spin gently except the HUD stone,
+    // which stays upright and faces the player's heading for readability.
+    if (index === 4) {
+      stone.rotation.x = 0;
+      stone.rotation.z = 0;
+      stone.rotation.y = Math.atan2(fwd.x, fwd.z);
+    } else {
+      stone.rotation.y += d.spinSpeed * delta;
+    }
 
     // If this stone has the joystick, tilt it based on movement direction
     if (d.joystick) {
