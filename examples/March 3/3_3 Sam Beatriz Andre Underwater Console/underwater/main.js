@@ -11,6 +11,21 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 const API_MESSAGES = '/api/messages';
+const STORAGE_KEY = 'stone-library-messages';
+
+function saveMessagesToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  } catch (_) {}
+}
+function loadMessagesFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 const MAX_MESSAGE_LENGTH = 100;
 const LIBRARY_INTERACT_DIST = 18;
 const HOLE_READ_DIST = 6;
@@ -40,7 +55,7 @@ const boostMeterFill = document.getElementById('boost-meter-fill');
 const PX_PER_DEG = 2;
 const COMPASS_CENTER = 140;
 
-let scene, camera, renderer, controls, playerLight, composer;
+let scene, camera, renderer, controls, playerLight, composer, seatMesh;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let moveUp = false, moveDown = false;
 let boost = false;
@@ -121,7 +136,12 @@ async function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
   camera.position.set(0, 2, 10);
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: 'high-performance',
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -190,6 +210,35 @@ async function init() {
   playerLight = new THREE.PointLight(0xaae5ff, spotlightOn ? 45 : 0, 30, 0.5);
   playerLight.castShadow = false;
   scene.add(playerLight);
+
+  // Seat — half-sphere with central divot (thick ridge at edge, deeper toward middle)
+  const seatRadius = 0.65;
+  const seatGeo = new THREE.SphereGeometry(seatRadius, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+  const seatPos = seatGeo.attributes.position;
+  const divotDepth = 0.45;
+  const lipRadius = 0.42;
+  for (let i = 0; i < seatPos.count; i++) {
+    const x = seatPos.getX(i);
+    const y = seatPos.getY(i);
+    const z = seatPos.getZ(i);
+    const distFromCenter = Math.sqrt(x * x + z * z) / seatRadius;
+    const t = distFromCenter < lipRadius ? 1 - distFromCenter / lipRadius : 0;
+    const dip = divotDepth * t * t;
+    seatPos.setY(i, y - dip);
+  }
+  seatGeo.computeVertexNormals();
+  const seatMat = new THREE.MeshStandardMaterial({
+    color: 0x3d4a55,
+    roughness: 0.85,
+    metalness: 0.15,
+    side: THREE.DoubleSide,
+  });
+  seatMesh = new THREE.Mesh(seatGeo, seatMat);
+  seatMesh.castShadow = false;
+  seatMesh.receiveShadow = false;
+  seatMesh.frustumCulled = false;
+  seatMesh.renderOrder = 1;
+  scene.add(seatMesh);
 
   // Deep ocean lighting — dim, blue-green
   const ambient = new THREE.AmbientLight(0x1a3a4a, 0.24);
@@ -319,12 +368,16 @@ async function init() {
     metalness: 0.08,
   });
   for (let i = 0; i < 5; i++) {
-    // Rounded-square pebble pads
-    const geo = createRoundedPebbleGeometry(1.1, 0.32, 0.32);
+    // Rounded-square pebble pads — slight variation per panel
+    const size = 1.05 + 0.1 * Math.sin(i * 1.3) + 0.05 * Math.cos(i * 2.1);
+    const cornerR = 0.28 + 0.08 * (0.5 + 0.5 * Math.sin(i * 1.7));
+    const h = 0.28 + 0.1 * (0.5 + 0.5 * Math.cos(i * 2.3));
+    const geo = createRoundedPebbleGeometry(size, cornerR, h);
     const stone = new THREE.Mesh(geo, floatingStoneMat.clone());
     stone.castShadow = true;
     stone.receiveShadow = true;
     stone.userData = {
+      panelSize: size,
       angleOffset: (i / 5) * Math.PI * 2,
       radius: 3 + Math.random() * 1.5,
       heightOffset: -2.0 - Math.random() * 0.6,
@@ -540,12 +593,13 @@ async function init() {
       const radarGroup = new THREE.Group();
       const radius = 0.45;
 
-      // Base disc
+      // Base disc — DoubleSide to avoid clipping when viewed from below
       const baseGeo = new THREE.CircleGeometry(radius, 48);
       const baseMat = new THREE.MeshStandardMaterial({
         color: 0x06171f,
         roughness: 0.9,
         metalness: 0.1,
+        side: THREE.DoubleSide,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
       // Slightly inset base so the radar feels embedded, not hovering
@@ -653,7 +707,7 @@ async function init() {
       });
       stone.add(dialGroup);
 
-      const hudGeo = new THREE.PlaneGeometry(0.85, 0.52);
+      const hudGeo = new THREE.PlaneGeometry(0.85, 0.52, 4, 4);
       const hudMesh = new THREE.Mesh(hudGeo, hudMat);
       // Stand the HUD panel upright near the front edge of the stone;
       // its Y-rotation is controlled in the animate loop so it faces the player.
@@ -696,30 +750,16 @@ async function init() {
 
     const extrudeSettings = {
       depth: height,
-      bevelEnabled: false,
+      bevelEnabled: true,
+      bevelThickness: 0.02,
+      bevelSize: 0.02,
+      bevelSegments: 2,
       steps: 1,
+      curveSegments: 24,
     };
     const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
     geo.translate(0, height / 2, 0);
     geo.rotateX(-Math.PI / 2);
-
-    // Add stronger rocky irregularity to the whole shell (top included, but slightly reduced)
-    const pos = geo.attributes.position;
-    const v = new THREE.Vector3();
-    const noiseAmount = 0.18;
-    for (let i = 0; i < pos.count; i++) {
-      v.set(pos.getX(i), pos.getY(i), pos.getZ(i));
-      const n = (Math.sin(v.x * 9.1) + Math.cos(v.y * 6.7) + Math.sin(v.z * 5.3)) * 0.5
-        + (Math.sin((v.x + v.z) * 11.3) * 0.35);
-      // Slightly scale down deformation right at the top surface so controls still sit cleanly
-      const topFactor = THREE.MathUtils.clamp(1.0 - (v.z + height * 0.5) / (height * 1.2), 0.45, 1.0);
-      const offset = n * noiseAmount * topFactor;
-      v.x += (v.x >= 0 ? 1 : -1) * offset * 0.9;
-      v.y += (v.y >= 0 ? 1 : -1) * offset * 0.7;
-      v.z += offset;
-      pos.setXYZ(i, v.x, v.y, v.z);
-    }
-    pos.needsUpdate = true;
     geo.computeVertexNormals();
     return geo;
   }
@@ -750,7 +790,7 @@ async function init() {
     side: THREE.DoubleSide,
   });
 
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 38; i++) {
     const r = Math.random();
     const height = r < 0.5 ? 1.5 + Math.random() * 3
       : r < 0.85 ? 5 + Math.random() * 12
@@ -758,7 +798,7 @@ async function init() {
     const thickness = 0.008 + height * 0.0025;
     const topRad = thickness * 0.4;
     const botRad = thickness * 2.2;
-    const stalkGeo = new THREE.CylinderGeometry(topRad, botRad, height, 5, Math.max(8, Math.min(20, Math.floor(height * 1.2))));
+    const stalkGeo = new THREE.CylinderGeometry(topRad, botRad, height, 5, Math.max(6, Math.min(14, Math.floor(height * 0.9))));
     const pos = stalkGeo.attributes.position;
     const origPos = new Float32Array(pos.array.length);
     origPos.set(pos.array);
@@ -814,7 +854,7 @@ async function init() {
     metalness: 0,
     side: THREE.DoubleSide,
   });
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 16; i++) {
     const w = 0.8 + Math.random() * 1.2;
     const h = 0.5 + Math.random() * 0.8;
     const geo = createOvalGeometry(w, h, 18);
@@ -1043,7 +1083,7 @@ async function init() {
   for (let i = 0; i < 4; i++) createSchool();
 
   // Library boulder — one large oblong shape, high subdivision for smooth bumps
-  const libraryGeo = new THREE.IcosahedronGeometry(6, 4);
+  const libraryGeo = new THREE.IcosahedronGeometry(6, 3);
   const libPos = libraryGeo.attributes.position;
   for (let i = 0; i < libPos.count; i++) {
     const x = libPos.getX(i);
@@ -1061,7 +1101,7 @@ async function init() {
   });
   libraryBoulder = new THREE.Mesh(libraryGeo, libraryMat);
   libraryBoulder.position.copy(LIBRARY_POSITION);
-  libraryBoulder.scale.set(1.9, 1.3, 1.6);
+  libraryBoulder.scale.set(1.9, 2.0, 1.6);
   libraryBoulder.rotation.set(0.1, 0.5, 0.05);
   libraryBoulder.castShadow = true;
   libraryBoulder.receiveShadow = true;
@@ -1075,10 +1115,14 @@ async function init() {
   async function loadMessages() {
     try {
       const res = await fetch(API_MESSAGES);
-      if (res.ok) messages = await res.json();
-      else messages = [];
+      if (res.ok) {
+        messages = await res.json();
+        saveMessagesToStorage();
+      } else {
+        messages = loadMessagesFromStorage();
+      }
     } catch {
-      messages = [];
+      messages = loadMessagesFromStorage();
     }
     messages.forEach((m) => {
       const pos = new THREE.Vector3(m.px, m.py, m.pz);
@@ -1110,7 +1154,7 @@ async function init() {
   particlePos = particleGeo.attributes.position;
 
   // Dark dust particles — light up white when spotlight hits them
-  const dustCount = 350;
+  const dustCount = 200;
   const dustGeo = new THREE.BufferGeometry();
   const dustPositions = new Float32Array(dustCount * 3);
   for (let i = 0; i < dustCount * 3; i += 3) {
@@ -1172,6 +1216,21 @@ async function init() {
     if (!controls.isLocked) {
       controls.lock();
       prompt.style.opacity = '0';
+      canvas.setAttribute('tabindex', '0');
+      canvas.focus();
+    } else if (!drilling && !reading && readPromptVisible && hoveredHole) {
+      const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
+      const messageText = msg ? msg.message : hoveredHole.userData.message;
+      if (messageText) {
+        interactPrompt.classList.remove('visible');
+        if (readOverlay.classList.contains('active') && (currentMessageText !== null || typewriterTargetText !== null)) {
+          startDeleteAnimation();
+        }
+        pendingReadMessage = messageText;
+        hoveredHole.getWorldPosition(_holeWorldPos);
+        startReadTubeAnimation(_holeWorldPos.clone());
+        reading = true;
+      }
     }
   });
 
@@ -1277,7 +1336,7 @@ function startDrillSprayAnimation(worldPoint, worldNormal) {
     seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), segDir);
     seg.scale.y = 0;
     seg.visible = false; // only show when segment is actually growing (avoids black dots)
-    seg.castShadow = true;
+    seg.castShadow = false; // transient tube, skip shadow for perf
     group.add(seg);
     segments.push(seg);
   }
@@ -1498,7 +1557,7 @@ function startReadTubeAnimation(holeWorldPosition) {
     seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), segDir);
     seg.scale.y = 0;
     seg.visible = false;
-    seg.castShadow = true;
+    seg.castShadow = false; // transient tube, skip shadow for perf
     group.add(seg);
     segments.push(seg);
   }
@@ -1661,21 +1720,24 @@ async function saveDrilledMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(m),
     });
-    if (res.ok) {
-      messages.push(m);
-      if (previewHole) {
-        scene.remove(previewHole);
-        previewHole = null;
-      }
-      createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
-      exitDrillMode();
+    if (!res.ok) {
+      // Server returned error (404, 500, etc) — will persist to localStorage below
     }
   } catch {
-    // Server unreachable — could fall back to localStorage if desired
+    // Network error — server unreachable, will persist to localStorage below
   }
+  // Always add to local state and persist to localStorage so message survives reload
+  messages.push(m);
+  saveMessagesToStorage();
+  if (previewHole) {
+    scene.remove(previewHole);
+    previewHole = null;
+  }
+  createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id, text);
+  exitDrillMode();
 }
 
-function createHoleMesh(pos, normal, id) {
+function createHoleMesh(pos, normal, id, messageText = null) {
   const group = new THREE.Group();
   group.position.copy(pos);
   group.position.add(normal.clone().multiplyScalar(0.02));
@@ -1715,9 +1777,8 @@ function createHoleMesh(pos, normal, id) {
 
   group.userData.messageId = id;
   group.name = 'message-hole';
+  group.userData.message = messageText ?? messages.find((m) => m.id === id)?.message ?? '';
   scene.add(group);
-  const msg = messages.find((m) => m.id === id);
-  if (msg) group.userData.message = msg.message;
   return group;
 }
 
@@ -1753,14 +1814,15 @@ function startDeleteAnimation() {
 
 function onKeyDown(e) {
   if (reading) return;
-  if (readOverlay.classList.contains('active') && (e.code === 'KeyE' || e.code === 'Escape')) {
+  if (readOverlay.classList.contains('active') && (e.code === 'KeyE' || e.code === 'Escape' || e.key === 'e' || e.key === 'E')) {
     e.preventDefault();
-    if (readPromptVisible && hoveredHole && e.code === 'KeyE') {
+    if (readPromptVisible && hoveredHole && (e.code === 'KeyE' || e.key === 'e' || e.key === 'E')) {
       const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
-      if (msg) {
+      const messageText = msg ? msg.message : hoveredHole.userData.message;
+      if (messageText) {
         interactPrompt.classList.remove('visible');
         startDeleteAnimation();
-        pendingReadMessage = msg.message;
+        pendingReadMessage = messageText;
         hoveredHole.getWorldPosition(_holeWorldPos);
         startReadTubeAnimation(_holeWorldPos.clone());
         reading = true;
@@ -1792,15 +1854,16 @@ function onKeyDown(e) {
     }
     return;
   }
-  if (e.code === 'KeyE' && readPromptVisible && hoveredHole) {
+  if ((e.code === 'KeyE' || e.key === 'e' || e.key === 'E') && readPromptVisible && hoveredHole) {
     e.preventDefault();
     const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
-    if (msg) {
+    const messageText = msg ? msg.message : hoveredHole.userData.message;
+    if (messageText) {
       interactPrompt.classList.remove('visible');
       if (readOverlay.classList.contains('active') && (currentMessageText !== null || typewriterTargetText !== null)) {
         startDeleteAnimation();
       }
-      pendingReadMessage = msg.message;
+      pendingReadMessage = messageText;
       hoveredHole.getWorldPosition(_holeWorldPos);
       startReadTubeAnimation(_holeWorldPos.clone());
       reading = true;
@@ -1907,6 +1970,11 @@ function animate(time) {
   fwd.normalize();
   const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
 
+  // Seat — directly under camera, rotates with view
+  seatMesh.position.copy(camera.position);
+  seatMesh.position.y -= 0.55;
+  seatMesh.rotation.y = Math.atan2(fwd.x, fwd.z);
+
   FLOATING_STONES.forEach((stone, index) => {
     const d = stone.userData;
     const baseY = Math.max(0.7, camera.position.y + d.heightOffset);
@@ -1917,8 +1985,8 @@ function animate(time) {
       .add(fwd.clone().multiplyScalar(clusterDist))
       .add(new THREE.Vector3(0, d.heightOffset, 0));
 
-    // Arrange stones in a neat arc in front (even spacing)
-    const spread = 1.1;
+    // Arrange stones in a neat arc in front (spacing allows collision-free gaps)
+    const spread = 1.35;
     const offsetIndex = index - (FLOATING_STONES.length - 1) / 2;
     const lateralOffset = offsetIndex * spread;
 
@@ -1934,25 +2002,56 @@ function animate(time) {
 
     target.y = baseY + bob;
 
-    // Simple separation so stones don't merge into each other (XZ plane)
-    const MIN_STONE_GAP = 0.9;
-    for (let j = 0; j < FLOATING_STONES.length; j++) {
-      if (j === index) continue;
-      const other = FLOATING_STONES[j];
-      const dx = target.x - other.position.x;
-      const dz = target.z - other.position.z;
-      const distSq = dx * dx + dz * dz;
-      if (distSq > 0 && distSq < MIN_STONE_GAP * MIN_STONE_GAP) {
-        const dist = Math.sqrt(distSq);
-        const push = (MIN_STONE_GAP - dist);
-        const nx = dx / dist;
-        const nz = dz / dist;
-        target.x += nx * push;
-        target.z += nz * push;
+    // Keep panels from intersecting the Library boulder in XZ
+    // Use a conservative radius that fully encloses the library mesh.
+    const dxLib = target.x - LIBRARY_POSITION.x;
+    const dzLib = target.z - LIBRARY_POSITION.z;
+    const distLibSq = dxLib * dxLib + dzLib * dzLib;
+    const MIN_LIB_GAP = 4.5;
+    if (distLibSq > 1e-6 && distLibSq < MIN_LIB_GAP * MIN_LIB_GAP) {
+      const distLib = Math.sqrt(distLibSq) || 0.0001;
+      const pushLib = (MIN_LIB_GAP - distLib);
+      const nxLib = dxLib / distLib;
+      const nzLib = dzLib / distLib;
+      target.x += nxLib * pushLib;
+      target.z += nzLib * pushLib;
+    }
+
+    d.targetPos = target.clone();
+  });
+
+  // Collision resolution: push overlapping panels apart (use targets for consistency)
+  const SEPARATION_PASSES = 3;
+  for (let pass = 0; pass < SEPARATION_PASSES; pass++) {
+    for (let i = 0; i < FLOATING_STONES.length; i++) {
+      const ti = FLOATING_STONES[i].userData.targetPos;
+      const sizeI = FLOATING_STONES[i].userData.panelSize ?? 1.1;
+      for (let j = i + 1; j < FLOATING_STONES.length; j++) {
+        const tj = FLOATING_STONES[j].userData.targetPos;
+        const sizeJ = FLOATING_STONES[j].userData.panelSize ?? 1.1;
+        const minGap = (sizeI + sizeJ) * 0.55;
+        const dx = ti.x - tj.x;
+        const dz = ti.z - tj.z;
+        const distSq = dx * dx + dz * dz;
+        if (distSq > 1e-6 && distSq < minGap * minGap) {
+          const dist = Math.sqrt(distSq);
+          const push = (minGap - dist) * 0.5;
+          const nx = dx / dist;
+          const nz = dz / dist;
+          ti.x += nx * push;
+          ti.z += nz * push;
+          tj.x -= nx * push;
+          tj.z -= nz * push;
+        }
       }
     }
-    // Prevent stones from dipping into the seafloor (keep a clear gap above sand)
-    const MIN_STONE_Y = 0.9;
+  }
+
+  FLOATING_STONES.forEach((stone, index) => {
+    const d = stone.userData;
+    const target = d.targetPos;
+    // Prevent stones from dipping into the seafloor (keep a small gap above sand)
+    const MIN_STONE_Y = 0.35;
     if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
 
     // Smoothly ease current position toward target
@@ -2184,7 +2283,7 @@ function animate(time) {
   const inView = Math.abs(relAngle) < 70;
   compassLibrary.classList.toggle('visible', inView);
   if (inView) {
-    compassLibrary.style.left = (COMPASS_CENTER + relAngle * PX_PER_DEG) + 'px';
+    compassLibrary.style.left = (COMPASS_CENTER - relAngle * PX_PER_DEG) + 'px';
   }
 
   // Library interaction — raycast from center of screen (allowed while read message is up so user can select another message)
@@ -2206,7 +2305,7 @@ function animate(time) {
         if (distToLibrary < LIBRARY_INTERACT_DIST) {
           hoveredHole = holeGroup;
           readPromptVisible = true;
-          interactPrompt.textContent = 'Press E to read message';
+          interactPrompt.textContent = 'Press E or click to read message';
           interactPrompt.classList.add('visible');
         }
       } else if (hit.object.name === 'library') {
