@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarStruck // Star Shop</title>
+    <style>
+      :root {
+        --bg: #02030a;
+        --bg-alt: #060716;
+        --panel: #080a1a;
+        --accent: #ff6ad5;
+        --accent-2: #5ad8ff;
+        --accent-warn: #ffcc00;
+        --text: #f7f7ff;
+        --muted: #a3a9d4;
+        --border-subtle: rgba(163, 169, 212, 0.25);
+        --shadow-strong: 0 28px 80px rgba(0, 0, 0, 0.95);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 10% 0, #2d1b55 0, transparent 50%),
+          radial-gradient(circle at 90% 100%, #003847 0, transparent 55%),
+          linear-gradient(160deg, #02030a 0, #02030a 40%, #000000 100%);
+        overflow-x: hidden;
+      }
+
+      .page {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 20px 20px 60px;
+      }
+
+      header {
+        position: sticky;
+        top: 14px;
+        z-index: 10;
+        margin-bottom: 26px;
+      }
+
+      .nav-shell {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-radius: 999px;
+        padding: 10px 18px;
+        background:
+          radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 55%),
+          rgba(3, 7, 27, 0.94);
+        border: 1px solid rgba(163, 169, 212, 0.6);
+        backdrop-filter: blur(22px);
+        box-shadow:
+          0 18px 60px rgba(0, 0, 0, 0.9),
+          0 0 26px rgba(90, 216, 255, 0.45);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        background:
+          radial-gradient(circle at 30% 10%, #ffffff 0, #ffccfb 28%, #ff6ad5 45%, #02030a 80%);
+        box-shadow:
+          0 0 18px rgba(255, 106, 213, 0.8),
+          0 0 26px rgba(90, 216, 255, 0.9);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .brand-mark::after {
+        content: "★";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #02030a;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+
+      .brand-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .brand-name {
+        font-size: 1.02rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+      }
+
+      nav {
+        display: flex;
+        gap: 8px;
+      }
+
+      nav a {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        padding: 6px 12px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: var(--muted);
+        border: 1px solid transparent;
+        transition:
+          background 0.16s ease,
+          color 0.16s ease,
+          border-color 0.16s ease,
+          transform 0.1s ease;
+      }
+
+      nav a:hover {
+        color: var(--text);
+        border-color: rgba(90, 216, 255, 0.8);
+        background: rgba(3, 9, 38, 0.92);
+        transform: translateY(-1px);
+      }
+
+      nav a.active {
+        color: #02030a;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        border-color: transparent;
+        box-shadow:
+          0 0 18px rgba(90, 216, 255, 0.9),
+          0 0 26px rgba(255, 106, 213, 0.85);
+      }
+
+      .credit-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 204, 0, 0.75);
+        background: radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.2), transparent 55%);
+        color: #ffe36f;
+      }
+
+      .credit-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ffe36f;
+        box-shadow: 0 0 12px rgba(255, 204, 0, 0.9);
+      }
+
+      main {
+        margin-top: 32px;
+      }
+
+      .section {
+        border-radius: 26px;
+        padding: 30px 24px 32px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 45%),
+          radial-gradient(circle at 100% 0, rgba(90, 216, 255, 0.16), transparent 55%),
+          radial-gradient(circle at 0 100%, rgba(255, 106, 213, 0.16), transparent 55%),
+          rgba(3, 5, 23, 0.95);
+        border: 1px solid rgba(163, 169, 212, 0.45);
+        box-shadow: var(--shadow-strong);
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        gap: 28px;
+        align-items: flex-start;
+      }
+
+      .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        letter-spacing: 0.04em;
+        font-size: 2.1rem;
+      }
+
+      h1 span {
+        background: linear-gradient(135deg, #ffffff, #ff9ff3);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .lede {
+        font-size: 1rem;
+        color: var(--muted);
+        max-width: 36rem;
+        line-height: 1.7;
+        margin-bottom: 18px;
+      }
+
+      .panel {
+        border-radius: 22px;
+        padding: 16px 16px 14px;
+        background:
+          radial-gradient(circle at 20% 0, rgba(255, 255, 255, 0.12), transparent 55%),
+          radial-gradient(circle at 100% 100%, rgba(90, 216, 255, 0.18), transparent 60%),
+          var(--panel);
+        border: 1px solid rgba(163, 169, 212, 0.5);
+        box-shadow:
+          0 18px 50px rgba(0, 0, 0, 0.9),
+          0 0 22px rgba(90, 216, 255, 0.6);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 0.78rem;
+      }
+
+      .panel-title {
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .panel-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(90, 216, 255, 0.8);
+        background: rgba(4, 18, 29, 0.95);
+        color: var(--accent-2);
+      }
+
+      .panel-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent-2);
+        box-shadow: 0 0 14px rgba(90, 216, 255, 1);
+      }
+
+      .economy-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .economy-card {
+        border-radius: 16px;
+        padding: 10px 10px 9px;
+        border: 1px dashed rgba(163, 169, 212, 0.55);
+        background: rgba(7, 9, 28, 0.9);
+        font-size: 0.78rem;
+      }
+
+      .product-media {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        border-radius: 12px;
+        border: 1px solid rgba(163, 169, 212, 0.35);
+        object-fit: cover;
+        display: block;
+        margin-bottom: 8px;
+        background: rgba(0, 0, 0, 0.35);
+      }
+
+      .economy-title {
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .economy-value {
+        font-size: 0.9rem;
+      }
+
+      .highlight {
+        color: #ffcc66;
+      }
+
+      .divider {
+        margin: 12px 0 10px;
+        border-top: 1px dashed rgba(163, 169, 212, 0.5);
+      }
+
+      .economy {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      #cartPanel {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(163, 169, 212, 0.45);
+      }
+
+      #cartItems {
+        list-style: none;
+        padding-left: 0;
+        margin: 6px 0 6px;
+      }
+
+      #cartItems li {
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+      }
+
+      .cart-meta {
+        font-size: 0.78rem;
+      }
+
+      .add-to-cart {
+        margin-top: 6px;
+        border-radius: 999px;
+        padding: 6px 10px;
+        border: 1px solid rgba(163, 169, 212, 0.7);
+        background: rgba(5, 7, 26, 0.9);
+        color: var(--text);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        cursor: pointer;
+        transition:
+          transform 0.1s ease,
+          background 0.16s ease,
+          border-color 0.16s ease;
+      }
+
+      .add-to-cart:hover {
+        transform: translateY(-1px);
+        border-color: rgba(90, 216, 255, 0.9);
+        background: rgba(10, 12, 40, 0.98);
+      }
+
+      footer {
+        margin-top: 28px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 2px 0;
+        border-top: 1px dashed rgba(163, 169, 212, 0.45);
+      }
+
+      footer span {
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 880px) {
+        .section {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      @media (max-width: 720px) {
+        header .nav-shell {
+          flex-direction: column;
+          align-items: flex-start;
+          border-radius: 20px;
+        }
+
+        nav {
+          flex-wrap: wrap;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .page {
+          padding: 16px 14px 40px;
+        }
+
+        .section {
+          padding: 22px 16px 24px;
+          border-radius: 20px;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="tourbot.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="nav-shell">
+          <div class="brand">
+            <div class="brand-mark"></div>
+            <div class="brand-text">
+              <span class="brand-label">Multi‑World Access Gate</span>
+              <span class="brand-name">StarStruck</span>
+            </div>
+          </div>
+
+          <nav>
+            <a href="index.html#intro">Origin</a>
+            <a href="index.html#worlds">Worlds</a>
+            <a href="index.html#economy">Currency</a>
+            <a href="shop.html" class="active">Shop</a>
+          </nav>
+
+          <div class="credit-chip">
+            <span class="credit-dot"></span>
+            <span>100.00 ★ balance</span>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="section">
+          <div>
+            <p class="eyebrow">StarStruck exchange</p>
+            <h1>
+              Spend your stars<br />
+              on <span>what survival costs.</span>
+            </h1>
+            <p class="lede">
+              This page shows what your ratings might have to buy: safety,
+              warmth, motion, and status. TourBot can walk you through what each
+              price really means.
+            </p>
+            <p class="lede">
+              Scroll through the items, add a few to your cart, and watch how
+              fast 100★ disappears.
+            </p>
+          </div>
+
+          <div class="panel" aria-label="StarStruck star shop">
+            <div class="panel-header">
+              <span class="panel-title">Shop · star‑priced necessities</span>
+              <span class="panel-status">
+                <span class="panel-status-dot"></span>
+                concept only
+              </span>
+            </div>
+
+            <div class="economy-grid">
+              <div class="economy-card">
+                <img
+                  class="product-media"
+                  src="assets/neon-drink.png"
+                  alt="A glowing neon drink with ice cubes"
+                  loading="lazy"
+                />
+                <div class="economy-title">Luminous Icewave</div>
+                <div class="economy-value highlight">4.0★</div>
+                <p>
+                  A mood‑stabilizing drink served in the upper tiers. It calms
+                  your nerves before rating someone whose stars control your
+                  rent.
+                </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Luminous Icewave"
+                  data-cost="4.0"
+                >
+                  Add to cart
+                </button>
+              </div>
+
+              <div class="economy-card">
+                <img
+                  class="product-media"
+                  src="assets/food-platter.png"
+                  alt="A colorful spread of different foods"
+                  loading="lazy"
+                />
+                <div class="economy-title">Warm meal signal</div>
+                <div class="economy-value highlight">1.8★</div>
+                <p>
+                  One night of hot food, paid for entirely by the kindness
+                  strangers chose not to withhold.
+                </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Warm meal signal"
+                  data-cost="1.8"
+                >
+                  Add to cart
+                </button>
+              </div>
+
+              <div class="economy-card">
+                <div class="economy-title">Reputation reset</div>
+                <div class="economy-value highlight">9.0★</div>
+                <p>
+                  Erases your lowest public rating. Almost no one can afford it,
+                  so most people simply learn to live with the damage.
+                </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Reputation reset"
+                  data-cost="9.0"
+                >
+                  Add to cart
+                </button>
+              </div>
+
+              <div class="economy-card">
+                <img
+                  class="product-media"
+                  src="assets/neon-pack.png"
+                  alt="A futuristic backpack with glowing blue accents"
+                  loading="lazy"
+                />
+                <div class="economy-title">Courier Pack (Neon‑Seal)</div>
+                <div class="economy-value highlight">12.0★</div>
+                <p>
+                  A sealed carrier for cross‑world deliveries. It keeps your
+                  reputation chip dry, your rations cold, and your secrets
+                  quieter than your breath.
+                </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Courier Pack (Neon‑Seal)"
+                  data-cost="12.0"
+                >
+                  Add to cart
+                </button>
+              </div>
+
+              <div class="economy-card">
+                <img
+                  class="product-media"
+                  src="assets/avtr-car.png"
+                  alt="A sleek futuristic car with glowing blue wheels"
+                  loading="lazy"
+                />
+                <div class="economy-title">AVTR Drift Capsule</div>
+                <div class="economy-value highlight">45.0★</div>
+                <p>
+                  A bio‑responsive vehicle that reads your pulse to choose a safe
+                  route. People call it freedom. The system calls it a luxury.
+                </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="AVTR Drift Capsule"
+                  data-cost="45.0"
+                >
+                  Add to cart
+                </button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="economy">
+              <p>
+                In the main StarStruck experience, TourBot tracks a fictional
+                balance as you rate encounters. Imagine transferring those stars
+                here — who would you help first, if you could choose who gets to
+                buy what?
+              </p>
+            </div>
+
+            <div class="economy" id="cartPanel">
+              <p><strong>Cart</strong></p>
+              <ul id="cartItems"></ul>
+              <p class="cart-meta">
+                Cart total:
+                <span id="cartTotal">0.0★</span>
+                <br />
+                Remaining balance:
+                <span id="cartBalance">100.00★</span>
+              </p>
+              <p class="cart-meta" id="cartMessage"></p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>StarStruck · star shop</span>
+        <span>Every price is a story.</span>
+      </footer>
+    </div>
+
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">World guide · rating translator</div>
+            </div>
+          </div>
+
+          <div class="tourbot-actions">
+            <button
+              class="tourbot-iconbtn"
+              type="button"
+              id="tourbotToggle"
+              aria-label="Collapse or expand chat"
+              title="Collapse / expand"
+            >
+              ▾
+            </button>
+            <button
+              class="tourbot-iconbtn"
+              type="button"
+              id="tourbotReset"
+              aria-label="Restart tour"
+              title="Restart tour"
+            >
+              ↺
+            </button>
+          </div>
+        </div>
+
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="tourbot.js" defer></script>
+    <script src="shop.js" defer></script>
+  </body>
+</html>
+

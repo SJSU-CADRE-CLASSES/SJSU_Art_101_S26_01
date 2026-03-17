@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖼</text></svg>" />
+  <title>3D Gallery — Walk & Interact</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0a0a; }
+    #canvas { display: block; width: 100vw; height: 100vh; }
+    #ui {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+      color: #eee;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #ui h1 { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; opacity: 0.9; }
+    #ui p { font-size: 0.8rem; margin-top: 0.25rem; opacity: 0.7; }
+    #crosshair {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #info-panel {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      color: #ddd;
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    #info-panel.visible { opacity: 1; }
+    #info-panel h2 { font-size: 1rem; margin-bottom: 0.35rem; color: #fff; }
+    #info-panel p { opacity: 0.9; line-height: 1.4; }
+    #click-prompt {
+      position: fixed;
+      bottom: 1.5rem; left: 50%;
+      transform: translateX(-50%);
+      padding: 0.5rem 1rem;
+      background: rgba(0,0,0,0.6);
+      color: #eee;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      pointer-events: auto;
+      z-index: 5;
+    }
+    #click-prompt:hover { background: rgba(0,0,0,0.8); color: #fff; }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <h1>3D GALLERY</h1>
+    <p>Click to lock pointer · WASD to move · Look at art and click to read</p>
+  </div>
+  <div id="crosshair"></div>
+  <div id="info-panel">
+    <h2 id="info-title"></h2>
+    <p id="info-desc"></p>
+  </div>
+  <div id="click-prompt">Click anywhere to enter the gallery</div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="js/gallery.js"></script>
+</body>
+</html>

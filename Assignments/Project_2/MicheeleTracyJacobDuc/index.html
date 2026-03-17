@@ -660,6 +660,7 @@
         }
       }
     </style>
+    <link rel="stylesheet" href="tourbot.css" />
   </head>
   <body class="scanlines noise">
     <div class="page">
@@ -677,11 +678,12 @@
             <a href="#intro" class="active">Origin</a>
             <a href="#worlds">Worlds</a>
             <a href="#economy">Currency</a>
+            <a href="shop.html">Shop</a>
           </nav>
 
           <div class="credit-chip">
             <span class="credit-dot"></span>
-            <span>0.00 ★ balance</span>
+            <span>100.00 ★ balance</span>
           </div>
         </div>
       </header>
@@ -695,10 +697,15 @@
               <span>kindness is currency.</span>
             </h1>
             <p class="lede">
-              In the StarStruck system, every interaction is logged as a star.
-              The more generously you move through each world, the brighter your
-              account glows. Coldness, cruelty, or apathy dim your balance—
-              closing doors you did not know you needed.
+              Welcome to StarStruck — a world where every interaction matters,
+              and every rating has value. Here, stars are more than feedback —
+              they are currency, status, and survival. As you journey through
+              different worlds, you’ll meet their inhabitants, experience their
+              realities, and decide their worth with a simple rating. Be
+              thoughtful. Be observant. Be kind — or don’t. Because in
+              StarStruck, your choices shape more than just your experience…
+              they shape theirs. Scroll to explore. Rate to influence. And
+              remember: not everyone can afford to lose a star.
             </p>
 
             <div class="warning-banner">
@@ -925,6 +932,7 @@
             </div>
           </div>
         </section>
+
       </main>
 
       <footer>
@@ -932,5 +940,56 @@
         <span>In this future, be kind on purpose.</span>
       </footer>
     </div>
+
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">World guide · rating translator</div>
+            </div>
+          </div>
+
+          <div class="tourbot-actions">
+            <button
+              class="tourbot-iconbtn"
+              type="button"
+              id="tourbotToggle"
+              aria-label="Collapse or expand chat"
+              title="Collapse / expand"
+            >
+              ▾
+            </button>
+            <button
+              class="tourbot-iconbtn"
+              type="button"
+              id="tourbotReset"
+              aria-label="Restart tour"
+              title="Restart tour"
+            >
+              ↺
+            </button>
+          </div>
+        </div>
+
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="tourbot.js" defer></script>
   </body>
 </html>
