@@ -230,6 +230,104 @@
             color: #66ffe6;
             margin-bottom: 6px;
         }
+        .choice-grid {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .choice-card {
+            flex: 1 1 180px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 10, 12, 0.9);
+            box-shadow:
+                0 0 14px rgba(0, 224, 200, 0.45),
+                inset 0 0 10px rgba(0, 224, 200, 0.25);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 160ms ease-out, box-shadow 160ms ease-out, border-color 160ms ease-out;
+            font-family: "HybridFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #ccfff8;
+        }
+        .choice-card span {
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 22pt;
+        }
+        .choice-card em {
+            display: block;
+            margin-top: 4px;
+            font-size: 20pt;
+            color: #9afdf0;
+            opacity: 0.85;
+        }
+        .choice-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 255, 230, 0.85);
+            box-shadow:
+                0 0 20px rgba(0, 255, 230, 0.7),
+                inset 0 0 14px rgba(0, 224, 200, 0.35);
+        }
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(0, 20, 24, 0.95), rgba(0, 0, 0, 0.98));
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+        .modal-backdrop--visible {
+            display: flex;
+        }
+        .modal-panel {
+            max-width: 640px;
+            width: 92%;
+            border-radius: 14px;
+            padding: 22px 24px 20px;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background:
+                radial-gradient(circle at top left, rgba(0, 224, 200, 0.16), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(0, 160, 255, 0.16), transparent 55%),
+                rgba(0, 6, 8, 0.98);
+            box-shadow:
+                0 0 40px rgba(0, 224, 200, 0.7),
+                0 0 80px rgba(0, 80, 120, 0.85);
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .modal-title {
+            font-size: 13pt;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin: 0 0 10px;
+            color: #66ffe6;
+        }
+        .modal-body {
+            font-size: 10pt;
+            line-height: 1.7;
+        }
+        .modal-close {
+            margin-top: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.8);
+            background: rgba(0, 20, 22, 0.95);
+            color: #ccfff8;
+            font-size: 9pt;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            background: rgba(0, 40, 44, 0.98);
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.7);
+        }
         .bubble-column {
             position: fixed;
             bottom: -40px;
@@ -397,8 +495,85 @@
                     Full-seal exosuits designed for deep-water maintenance and emergency extraction. Reinforced joints and
                     adaptive ballast systems allow operators to move safely between surface storm zones and abyssal work sites.
                 </div>
+
+                <div class="detail-panel" style="margin-top: 18px;">
+                    <div class="detail-label">Suit overview</div>
+                    The dry suit is split into two main pieces: the pressure adjusting suit and the oxygen converting tail.
+                    Click below to lear about each piece.
+                </div>
+
+                <div class="choice-grid">
+                    <button class="choice-card" data-modal-target="#modal-suit">
+                        <span>Pressure Suit</span>
+                    </button>
+                    <button class="choice-card" data-modal-target="#modal-tail">
+                        <span>Oxygenated Tail</span>
+                    </button>
+                </div>
             </div>
         </section>
     </main>
+
+    <div class="modal-backdrop" id="modal-suit">
+        <div class="modal-panel">
+            <h3 class="modal-title">Suit shell</h3>
+            <div class="modal-body">
+                <p>
+                    Add notes, diagrams, and close-up renders of the core suit shell here. You can describe panel
+                    materials, seam construction, and how the operator straps into the harness.
+                </p>
+            </div>
+            <button class="modal-close" data-modal-close>close window</button>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modal-tail">
+        <div class="modal-panel">
+            <h3 class="modal-title">Tail module</h3>
+            <div class="modal-body">
+                <p>
+                    Use this space for imagery and text about the tail section – thruster layout, ballast pods,
+                    cabling runs, and how the module docks to the main suit.
+                </p>
+            </div>
+            <button class="modal-close" data-modal-close>close window</button>
+        </div>
+    </div>
 </body>
+<script>
+    (function () {
+        const triggers = document.querySelectorAll('[data-modal-target]');
+        const closeButtons = document.querySelectorAll('[data-modal-close]');
+
+        function openModal(id) {
+            const modal = document.querySelector(id);
+            if (!modal) return;
+            modal.classList.add('modal-backdrop--visible');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('modal-backdrop--visible');
+        }
+
+        triggers.forEach(button => {
+            button.addEventListener('click', () => {
+                const target = button.getAttribute('data-modal-target');
+                if (target) openModal(target);
+            });
+        });
+
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modal = btn.closest('.modal-backdrop');
+                if (modal) closeModal(modal);
+            });
+        });
+
+        document.addEventListener('click', event => {
+            if (event.target.classList.contains('modal-backdrop')) {
+                closeModal(event.target);
+            }
+        });
+    })();
+</script>
 </html>
