@@ -36,6 +36,7 @@
             background: radial-gradient(circle at top, #00151a 0, #000000 55%, #000000 100%);
             color: #00e0c8;
             font-family: "HybridFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            transition: opacity 0.6s ease-out;
         }
         body {
             display: flex;
@@ -163,6 +164,27 @@
             animation: status-blink 1.2s ease-in-out infinite;
         }
 
+        .status-orbit {
+            position: relative;
+            display: inline-block;
+            width: 28px;
+            height: 12px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+
+        .status-orbit-dot {
+            position: absolute;
+            top: 50%;
+            width: 4px;
+            height: 4px;
+            border-radius: 999px;
+            background: #00ffa6;
+            box-shadow: 0 0 8px rgba(0, 255, 166, 0.9);
+            transform: translate(-50%, -50%);
+            animation: orbit-dots 2.2s linear infinite;
+        }
+
         .page-shell {
             position: relative;
             z-index: 1;
@@ -175,9 +197,9 @@
 
         .page-content {
             position: relative;
-            width: min(960px, 100%);
-            border-radius: 18px;
-            padding: 32px 40px 40px;
+            width: min(1180px, 100%);
+            border-radius: 22px;
+            padding: 40px 52px 44px;
             background:
                 radial-gradient(circle at top left, rgba(0, 224, 200, 0.12), transparent 65%),
                 radial-gradient(circle at bottom right, rgba(0, 160, 255, 0.12), transparent 60%),
@@ -211,16 +233,18 @@
             position: relative;
             z-index: 1;
             display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-            gap: 28px;
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 36px;
             align-items: center;
+            justify-items: center;
+            text-align: center;
         }
 
         h1 {
             font-family: "HybridFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 40pt;
-            margin: 0 0 8px;
-            text-align: left;
+            font-size: 48pt;
+            margin: 0 0 10px;
+            text-align: center;
             text-shadow:
                 0 0 10px rgba(0, 224, 200, 0.9),
                 0 0 24px rgba(0, 224, 200, 0.8);
@@ -228,23 +252,23 @@
 
         h2 {
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 16pt;
-            margin: 0 0 18px;
+            font-size: 20pt;
+            margin: 0 0 22px;
             text-transform: uppercase;
             letter-spacing: 0.18em;
         }
 
         .info-text {
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 11pt;
+            font-size: 13pt;
             line-height: 1.6;
-            max-width: 480px;
+            max-width: 600px;
         }
 
         .info-label {
             display: inline-block;
             margin-bottom: 6px;
-            font-size: 9pt;
+            font-size: 10pt;
             text-transform: uppercase;
             letter-spacing: 0.2em;
             color: #66ffe6;
@@ -255,6 +279,7 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            justify-content: center;
         }
 
         .btn {
@@ -264,7 +289,7 @@
             background: linear-gradient(90deg, rgba(0, 224, 200, 0.16), rgba(0, 0, 0, 0.9));
             color: #00e0c8;
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 11pt;
+            font-size: 12pt;
             text-transform: uppercase;
             letter-spacing: 0.16em;
             cursor: pointer;
@@ -278,10 +303,11 @@
 
         .status-line {
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 9pt;
+            font-size: 10pt;
             text-transform: uppercase;
             letter-spacing: 0.14em;
             opacity: 0.9;
+            margin-top: 10px;
         }
 
         .status-line--error {
@@ -294,8 +320,8 @@
 
         .camera-shell {
             position: relative;
-            justify-self: end;
-            width: min(320px, 100%);
+            justify-self: center;
+            width: min(520px, 100%);
             aspect-ratio: 4 / 3;
             border-radius: 14px;
             overflow: hidden;
@@ -326,16 +352,6 @@
             mix-blend-mode: screen;
         }
 
-#mesh-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    filter: drop-shadow(0 0 6px rgba(0, 224, 200, 0.85));
-}
-
         .camera-status-pill {
             position: absolute;
             left: 12px;
@@ -356,6 +372,34 @@
             top: 10px;
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 11pt;
+        }
+
+        .scan-bars {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            right: 10px;
+            height: 6px;
+            display: flex;
+            gap: 4px;
+            pointer-events: none;
+        }
+
+        .scan-bar {
+            flex: 1;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.0), rgba(0, 224, 200, 0.7), rgba(0, 224, 200, 0.0));
+            opacity: 0.18;
+            transform-origin: center;
+            animation: scan-bars 1.4s ease-in-out infinite;
+        }
+
+        .scan-bar:nth-child(2) {
+            animation-delay: -0.25s;
+        }
+
+        .scan-bar:nth-child(3) {
+            animation-delay: -0.5s;
         }
 
         @keyframes drift-caustics {
@@ -434,6 +478,60 @@
             }
         }
 
+
+        @keyframes face-line-scan {
+            0% {
+                top: 18%;
+                opacity: 0.6;
+            }
+            30% {
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                top: 82%;
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes orbit-dots {
+            0% {
+                left: -10%;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                left: 110%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes scan-bars {
+            0% {
+                opacity: 0.08;
+                transform: scaleY(0.5);
+            }
+            40% {
+                opacity: 0.5;
+                transform: scaleY(1.1);
+            }
+            80% {
+                opacity: 0.2;
+                transform: scaleY(0.8);
+            }
+            100% {
+                opacity: 0.08;
+                transform: scaleY(0.5);
+            }
+        }
+
         @keyframes bubbles-rise {
             0% {
                 transform: translate3d(0, 40px, 0) scaleY(0.7);
@@ -450,6 +548,36 @@
                 opacity: 0;
             }
         }
+
+        .page-fade-out {
+            opacity: 0;
+        }
+
+        .human-banner {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 55pt;
+            text-transform: uppercase;
+            letter-spacing: 0.35em;
+            color: #ffb347;
+            text-shadow:
+                0 0 14px rgba(255, 179, 71, 1),
+                0 0 40px rgba(255, 179, 71, 0.9);
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            z-index: 5;
+        }
+
+        .human-banner.show {
+            opacity: 1;
+            transform: scale(1);
+        }
     </style>
 </head>
 <body>
@@ -459,10 +587,17 @@
     <div class="bubble-column bubble-column--mid"></div>
     <div class="bubble-column bubble-column--right"></div>
 
+    <div id="human-banner" class="human-banner">
+        HUMAN DETECTED
+    </div>
+
     <header class="chrome-bar">
         <div class="chrome-id">TRITON ALLIANCE // ACCESS GATE</div>
         <div class="chrome-status">
             <span class="status-dot"></span>identity check
+            <span class="status-orbit">
+                <span class="status-orbit-dot"></span>
+            </span>
         </div>
     </header>
 
@@ -474,15 +609,8 @@
                     <h1>Human Verification</h1>
                     <h2>pre‑access protocol</h2>
 
-                    <div class="info-text">
-                        <div class="info-label">Directive</div>
-                        Present yourself to the Triton visual scanner. This step confirms a live user is requesting access
-                        before opening the alliance interface.
-                    </div>
-
                     <div class="controls">
                         <button id="start-btn" class="btn">start scan</button>
-                        <button id="enter-btn" class="btn" disabled>enter alliance</button>
                     </div>
 
                     <div id="gate-status" class="status-line">
@@ -490,11 +618,21 @@
                     </div>
                 </div>
 
-                <div class="camera-shell">
+                <div class="camera-shell" id="camera-shell">
                     <video id="camera" autoplay playsinline muted></video>
+                    <canvas id="scan-canvas" width="160" height="120" style="display:none;"></canvas>
                     <div class="camera-overlay"></div>
+                    <div class="face-grid">
+                        <div class="face-grid-crosshair"></div>
+                        <div class="face-scan-line"></div>
+                    </div>
                     <div class="camera-status-pill" id="camera-label">camera idle</div>
                     <div class="camera-countdown" id="countdown"></div>
+                    <div class="scan-bars">
+                        <div class="scan-bar"></div>
+                        <div class="scan-bar"></div>
+                        <div class="scan-bar"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -508,29 +646,16 @@
     <script>
         (function () {
             const startBtn = document.getElementById("start-btn");
-            const enterBtn = document.getElementById("enter-btn");
             const statusEl = document.getElementById("gate-status");
             const videoEl = document.getElementById("camera");
+            const canvasEl = document.getElementById("scan-canvas");
+            const ctx = canvasEl.getContext("2d");
             const labelEl = document.getElementById("camera-label");
             const countdownEl = document.getElementById("countdown");
-            const cameraShell = document.querySelector(".camera-shell");
 
-            // create a canvas overlay for the wireframe mesh
-            const meshCanvas = document.createElement("canvas");
-            meshCanvas.id = "mesh-canvas";
-            cameraShell.appendChild(meshCanvas);
-            const meshCtx = meshCanvas.getContext("2d");
-
-            let cameraFeed = null;
-            let faceMesh = null;
+            let stream = null;
             let verified = false;
             let countdownTimer = null;
-
-            function resizeCanvasToVideo() {
-                if (!videoEl.videoWidth || !videoEl.videoHeight) return;
-                meshCanvas.width = videoEl.videoWidth;
-                meshCanvas.height = videoEl.videoHeight;
-            }
 
             function setStatus(text, variant) {
                 statusEl.textContent = text;
@@ -557,7 +682,6 @@
 
                 try {
                     startBtn.disabled = true;
-                    enterBtn.disabled = true;
                     setStatus("requesting camera access…");
                     labelEl.textContent = "initializing";
 
@@ -619,7 +743,9 @@
 
                     await cameraFeed.start();
                     labelEl.textContent = "scanning";
-                    runCountdown();
+                    shellEl.classList.add("scanning");
+                    faceCentered = false;
+                    beginScanSequence();
                 } catch (err) {
                     console.error(err);
                     setStatus("camera access denied or unavailable.", "error");
@@ -628,49 +754,88 @@
                 }
             }
 
-            function runCountdown() {
-                let remaining = 5;
-                countdownEl.textContent = remaining + "s";
-                setStatus("hold still for visual check…");
-
-                if (countdownTimer) {
-                    clearInterval(countdownTimer);
-                }
-
-                countdownTimer = setInterval(() => {
-                    remaining -= 1;
-                    if (remaining > 0) {
-                        countdownEl.textContent = remaining + "s";
-                    } else {
-                        clearInterval(countdownTimer);
-                        countdownTimer = null;
-                        finishVerification();
-                    }
-                }, 1000);
-            }
-
-            function finishVerification() {
+            function beginScanSequence() {
+                setStatus("scanning facial planes…");
                 countdownEl.textContent = "";
-                labelEl.textContent = "verified";
-                verified = true;
-                setStatus("live user detected. access granted.", "ok");
-                enterBtn.disabled = false;
-                startBtn.disabled = false;
+
+                // sample mid-scan to estimate if face is centered
+                setTimeout(() => {
+                    tryAnalyzeFaceCenter();
+                }, 3500);
+
+                setTimeout(() => {
+                    finishAndEnter();
+                }, 7000);
             }
 
-            function enterAlliance() {
-                if (!verified) {
-                    setStatus("complete the scan before entering.", "error");
+            function tryAnalyzeFaceCenter() {
+                if (!videoEl.videoWidth || !videoEl.videoHeight) {
                     return;
                 }
-                if (cameraFeed && typeof cameraFeed.stop === "function") {
-                    cameraFeed.stop();
+                const w = canvasEl.width;
+                const h = canvasEl.height;
+                ctx.drawImage(videoEl, 0, 0, w, h);
+
+                const img = ctx.getImageData(0, 0, w, h).data;
+
+                function avgLuminance(x0, y0, x1, y1) {
+                    let sum = 0;
+                    let count = 0;
+                    for (let y = y0; y < y1; y++) {
+                        for (let x = x0; x < x1; x++) {
+                            const idx = (y * w + x) * 4;
+                            const r = img[idx];
+                            const g = img[idx + 1];
+                            const b = img[idx + 2];
+                            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+                            sum += lum;
+                            count++;
+                        }
+                    }
+                    return count ? sum / count : 0;
                 }
-                window.location.href = "index.html";
+
+                // use a generous center region so centering is forgiving
+                const cx0 = Math.floor(w * 0.25);
+                const cy0 = Math.floor(h * 0.20);
+                const cx1 = Math.floor(w * 0.75);
+                const cy1 = Math.floor(h * 0.80);
+
+                const centerLum = avgLuminance(cx0, cy0, cx1, cy1);
+
+                const borderLum =
+                    (avgLuminance(0, 0, w, Math.floor(h * 0.2)) +
+                        avgLuminance(0, Math.floor(h * 0.8), w, h) +
+                        avgLuminance(0, 0, Math.floor(w * 0.2), h) +
+                        avgLuminance(Math.floor(w * 0.8), 0, w, h)) / 4;
+
+                // very forgiving threshold: just needs to be a bit brighter than the border
+                if (centerLum > borderLum * 1.01) {
+                    faceCentered = true;
+                }
+            }
+
+            function finishAndEnter() {
+                shellEl.classList.remove("scanning");
+                if (!faceCentered) {
+                    labelEl.textContent = "reposition face";
+                    setStatus("face not centered. please center your face in the frame and try again.", "error");
+                    startBtn.disabled = false;
+                    return;
+                }
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                }
+
+                // start fading the page to black as HUMAN DETECTED appears
+                document.body.classList.add("page-fade-out");
+
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1500);
             }
 
             startBtn.addEventListener("click", startScan);
-            enterBtn.addEventListener("click", enterAlliance);
         })();
     </script>
 </body>
