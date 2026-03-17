@@ -326,6 +326,16 @@
             mix-blend-mode: screen;
         }
 
+#mesh-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 6px rgba(0, 224, 200, 0.85));
+}
+
         .camera-status-pill {
             position: absolute;
             left: 12px;
@@ -490,6 +500,11 @@
         </section>
     </main>
 
+    <!-- MediaPipe dependencies for face mesh wireframe -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
     <script>
         (function () {
             const startBtn = document.getElementById("start-btn");
@@ -498,10 +513,24 @@
             const videoEl = document.getElementById("camera");
             const labelEl = document.getElementById("camera-label");
             const countdownEl = document.getElementById("countdown");
+            const cameraShell = document.querySelector(".camera-shell");
 
-            let stream = null;
+            // create a canvas overlay for the wireframe mesh
+            const meshCanvas = document.createElement("canvas");
+            meshCanvas.id = "mesh-canvas";
+            cameraShell.appendChild(meshCanvas);
+            const meshCtx = meshCanvas.getContext("2d");
+
+            let cameraFeed = null;
+            let faceMesh = null;
             let verified = false;
             let countdownTimer = null;
+
+            function resizeCanvasToVideo() {
+                if (!videoEl.videoWidth || !videoEl.videoHeight) return;
+                meshCanvas.width = videoEl.videoWidth;
+                meshCanvas.height = videoEl.videoHeight;
+            }
 
             function setStatus(text, variant) {
                 statusEl.textContent = text;
@@ -521,18 +550,78 @@
                     return;
                 }
 
+                if (typeof FaceMesh === "undefined" || typeof Camera === "undefined") {
+                    setStatus("visual mesh system failed to load.", "error");
+                    return;
+                }
+
                 try {
                     startBtn.disabled = true;
                     enterBtn.disabled = true;
                     setStatus("requesting camera access…");
                     labelEl.textContent = "initializing";
 
-                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    videoEl.srcObject = stream;
+                    // initialize face mesh
+                    if (!faceMesh) {
+                        faceMesh = new FaceMesh({
+                            locateFile: (file) =>
+                                "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/" + file,
+                        });
+                        faceMesh.setOptions({
+                            maxNumFaces: 1,
+                            refineLandmarks: true,
+                            minDetectionConfidence: 0.5,
+                            minTrackingConfidence: 0.5,
+                        });
+                        faceMesh.onResults((results) => {
+                            meshCtx.save();
+                            meshCtx.clearRect(0, 0, meshCanvas.width, meshCanvas.height);
 
+                            // add subtle scan glow
+                            meshCtx.fillStyle = "rgba(0, 224, 200, 0.08)";
+                            meshCtx.fillRect(0, 0, meshCanvas.width, meshCanvas.height);
+
+                            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                                const landmarks = results.multiFaceLandmarks[0];
+
+                                // tessellated wireframe
+                                if (typeof drawConnectors === "function" && typeof FACEMESH_TESSELATION !== "undefined") {
+                                    drawConnectors(meshCtx, landmarks, FACEMESH_TESSELATION, {
+                                        color: "rgba(0, 255, 204, 0.45)",
+                                        lineWidth: 0.5,
+                                    });
+                                }
+
+                                // landmark points
+                                if (typeof drawLandmarks === "function") {
+                                    drawLandmarks(meshCtx, landmarks, {
+                                        radius: 1.0,
+                                        color: "rgba(0, 255, 204, 0.95)",
+                                    });
+                                }
+                            }
+
+                            meshCtx.restore();
+                        });
+                    }
+
+                    // tie Mediapipe camera helper to our video element
+                    if (!cameraFeed) {
+                        cameraFeed = new Camera(videoEl, {
+                            onFrame: async () => {
+                                resizeCanvasToVideo();
+                                await faceMesh.send({ image: videoEl });
+                            },
+                            width: 640,
+                            height: 480,
+                        });
+                    }
+
+                    await cameraFeed.start();
                     labelEl.textContent = "scanning";
                     runCountdown();
                 } catch (err) {
+                    console.error(err);
                     setStatus("camera access denied or unavailable.", "error");
                     labelEl.textContent = "camera error";
                     startBtn.disabled = false;
@@ -574,8 +663,8 @@
                     setStatus("complete the scan before entering.", "error");
                     return;
                 }
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
+                if (cameraFeed && typeof cameraFeed.stop === "function") {
+                    cameraFeed.stop();
                 }
                 window.location.href = "index.html";
             }
