@@ -58,6 +58,7 @@ const FISH = [];
 const FISH_SCHOOLS = [];
 const KELP = [];
 const VEGETATION = [];
+const FLOATING_STONES = [];
 let particlePos;
 let dustPos;
 let dustUniforms;
@@ -309,6 +310,329 @@ async function init() {
     rock.position.set(x, 0, z);
     rock.rotation.set(Math.random() * 0.4, Math.random() * Math.PI, Math.random() * 0.2);
     scene.add(rock);
+  }
+
+  // Medium stones that gently float in an orbit around the player toward the bottom of view
+  const floatingStoneMat = new THREE.MeshStandardMaterial({
+    color: 0x2b3537,
+    roughness: 0.96,
+    metalness: 0.08,
+  });
+  for (let i = 0; i < 5; i++) {
+    // Rounded stone pebbles (back to icosahedrons)
+    const geo = new THREE.IcosahedronGeometry(0.6, 1);
+    const stone = new THREE.Mesh(geo, floatingStoneMat.clone());
+    stone.castShadow = true;
+    stone.receiveShadow = true;
+    stone.userData = {
+      angleOffset: (i / 5) * Math.PI * 2,
+      radius: 3 + Math.random() * 1.5,
+      heightOffset: -2.0 - Math.random() * 0.6,
+      bobAmp: 0.22 + Math.random() * 0.12,
+      bobSpeed: 0.35 + Math.random() * 0.2,
+      spinSpeed: 0.18 + Math.random() * 0.25,
+      joystick: null,
+      joystickTiltX: 0,
+      joystickTiltZ: 0,
+      radar: null,
+      radarSweep: null,
+      radarPing: null,
+      radarStartTime: 0,
+      hudCanvas: null,
+      hudTexture: null,
+    };
+
+    // Slightly flatten the stones and widen them so the top surface reads more like a pad
+    stone.scale.set(1.25, 0.6, 1.25);
+
+    // Add a joystick to the first stone to represent movement
+    if (i === 0) {
+      const baseGeo = new THREE.CylinderGeometry(0.25, 0.28, 0.12, 18);
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: 0xbec7d1,
+        roughness: 0.35,
+        metalness: 0.85,
+      });
+      const base = new THREE.Mesh(baseGeo, baseMat);
+      base.position.set(0, 0.42, 0);
+      base.castShadow = true;
+      base.receiveShadow = true;
+
+      const stickGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.45, 14);
+      const stickMat = new THREE.MeshStandardMaterial({
+        color: 0xd5dde6,
+        roughness: 0.3,
+        metalness: 0.9,
+      });
+      const stick = new THREE.Mesh(stickGeo, stickMat);
+      stick.position.set(0, 0.75, 0);
+      stick.castShadow = true;
+      stick.receiveShadow = true;
+
+      const knobGeo = new THREE.SphereGeometry(0.12, 18, 18);
+      const knobMat = new THREE.MeshStandardMaterial({
+        color: 0xf5f7fb,
+        roughness: 0.15,
+        metalness: 0.95,
+        emissive: new THREE.Color(0xbcc7ff),
+        emissiveIntensity: 0.25,
+      });
+      const knob = new THREE.Mesh(knobGeo, knobMat);
+      knob.position.set(0, 1.02, 0);
+      knob.castShadow = true;
+      knob.receiveShadow = true;
+
+      const joystick = new THREE.Group();
+      joystick.add(base);
+      joystick.add(stick);
+      joystick.add(knob);
+
+      stone.add(joystick);
+      stone.userData.joystick = joystick;
+    }
+
+    // Add rows of small buttons on a different stone
+    if (i === 2) {
+      const buttonsGroup = new THREE.Group();
+
+      const silverMat = new THREE.MeshStandardMaterial({
+        color: 0xd8dde5,
+        roughness: 0.25,
+        metalness: 0.85,
+      });
+      const redMat = new THREE.MeshStandardMaterial({
+        color: 0xc43737,
+        roughness: 0.35,
+        metalness: 0.6,
+        emissive: new THREE.Color(0x5a1010),
+        emissiveIntensity: 0.4,
+      });
+
+      const rows = 3;
+      const cols = 4;
+      const spacingX = 0.22;
+      const spacingZ = 0.22;
+      const startX = -((cols - 1) * spacingX) / 2;
+      const startZ = -((rows - 1) * spacingZ) / 2;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const btnGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.05, 16);
+          // Randomly select a few buttons to be red, rest silver
+          const isRed = Math.random() < 0.22;
+          const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
+          const x = startX + c * spacingX;
+          const z = startZ + r * spacingZ;
+          // Sit the buttons directly on the pebble surface
+          btn.position.set(x, 0.6, z);
+          btn.castShadow = true;
+          btn.receiveShadow = true;
+
+          buttonsGroup.add(btn);
+        }
+      }
+
+      stone.add(buttonsGroup);
+    }
+
+    // Add switches, dials, and buttons on another pebble
+    if (i === 3) {
+      const panelGroup = new THREE.Group();
+
+      const silverMat = new THREE.MeshStandardMaterial({
+        color: 0xd8dde5,
+        roughness: 0.25,
+        metalness: 0.85,
+      });
+      const redMat = new THREE.MeshStandardMaterial({
+        color: 0xc43737,
+        roughness: 0.35,
+        metalness: 0.6,
+        emissive: new THREE.Color(0x5a1010),
+        emissiveIntensity: 0.4,
+      });
+      const darkMat = new THREE.MeshStandardMaterial({
+        color: 0x2a3038,
+        roughness: 0.5,
+        metalness: 0.7,
+      });
+
+      // More toggle switches (lever style) — top row and one each side
+      const switchPositions = [
+        { x: -0.38, z: 0.35, tilt: -0.35 },
+        { x: 0, z: 0.35, tilt: 0.35 },
+        { x: 0.38, z: 0.35, tilt: -0.35 },
+        { x: -0.38, z: 0.08, tilt: 0.28 },
+        { x: 0.38, z: 0.08, tilt: -0.28 },
+      ];
+      switchPositions.forEach((pos) => {
+        const baseGeo = new THREE.CylinderGeometry(0.04, 0.045, 0.03, 16);
+        const base = new THREE.Mesh(baseGeo, darkMat.clone());
+        base.position.set(pos.x, 0.605, pos.z);
+        base.castShadow = true;
+        panelGroup.add(base);
+
+        const leverGeo = new THREE.BoxGeometry(0.06, 0.02, 0.16);
+        const lever = new THREE.Mesh(leverGeo, silverMat.clone());
+        lever.position.set(pos.x, 0.64, pos.z);
+        lever.rotation.z = pos.tilt;
+        lever.castShadow = true;
+        panelGroup.add(lever);
+      });
+
+      // Grid: mix of buttons and dials (fixed pattern so dials are in specific slots)
+      const rows = 4;
+      const cols = 5;
+      const spacingX = 0.18;
+      const spacingZ = 0.18;
+      const startX = -((cols - 1) * spacingX) / 2;
+      const startZ = -0.25;
+
+      // Dials at these [row, col] positions (replace buttons)
+      const dialSlots = [[0, 1], [0, 3], [1, 0], [1, 4], [2, 2], [2, 4], [3, 1], [3, 3]];
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = startX + c * spacingX;
+          const z = startZ + r * spacingZ;
+          const isDial = dialSlots.some(([dr, dc]) => dr === r && dc === c);
+
+          if (isDial) {
+            // Dial: small base + knob
+            const baseGeo = new THREE.CylinderGeometry(0.035, 0.04, 0.02, 16);
+            const dialBase = new THREE.Mesh(baseGeo, darkMat.clone());
+            dialBase.position.set(x, 0.595, z);
+            dialBase.castShadow = true;
+            panelGroup.add(dialBase);
+
+            const knobGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.035, 20);
+            const knob = new THREE.Mesh(knobGeo, silverMat.clone());
+            knob.position.set(x, 0.64, z);
+            knob.castShadow = true;
+            panelGroup.add(knob);
+          } else {
+            const btnGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.04, 16);
+            const isRed = Math.random() < 0.2;
+            const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
+            btn.position.set(x, 0.6, z);
+            btn.castShadow = true;
+            btn.receiveShadow = true;
+            panelGroup.add(btn);
+          }
+        }
+      }
+
+      stone.add(panelGroup);
+    }
+
+    // Add a flush radar disc to the second stone
+    if (i === 1) {
+      const radarGroup = new THREE.Group();
+      const radius = 0.45;
+
+      // Base disc
+      const baseGeo = new THREE.CircleGeometry(radius, 48);
+      const baseMat = new THREE.MeshStandardMaterial({
+        color: 0x06171f,
+        roughness: 0.9,
+        metalness: 0.1,
+      });
+      const base = new THREE.Mesh(baseGeo, baseMat);
+      // Nudge the base slightly down so the radar feels embedded, not hovering
+      base.position.y = -0.012;
+      base.receiveShadow = false;
+      base.castShadow = false;
+      radarGroup.add(base);
+
+      // Concentric rings
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x4ad3b5,
+        transparent: true,
+        opacity: 0.55,
+        side: THREE.DoubleSide,
+      });
+      for (let r = 0.18; r < radius; r += 0.12) {
+        const ringGeo = new THREE.RingGeometry(r - 0.002, r + 0.002, 48);
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        radarGroup.add(ring);
+      }
+
+      // Sweep wedge
+      const sweepGeo = new THREE.RingGeometry(0, radius, 64, 1, 0, Math.PI / 4);
+      const sweepMat = new THREE.MeshBasicMaterial({
+        color: 0x6dffe2,
+        transparent: true,
+        opacity: 0.5,
+        side: THREE.DoubleSide,
+      });
+      const sweep = new THREE.Mesh(sweepGeo, sweepMat);
+      radarGroup.add(sweep);
+
+      // Ping marker representing the library direction
+      const pingGeo = new THREE.CircleGeometry(0.04, 16);
+      const pingMat = new THREE.MeshBasicMaterial({
+        color: 0x9dffde,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide,
+      });
+      const ping = new THREE.Mesh(pingGeo, pingMat);
+      ping.position.set(0, 0.002, radius * 0.75);
+      radarGroup.add(ping);
+
+      // Simple compass "N" marker at north (world +Z)
+      const northGeo = new THREE.CircleGeometry(0.028, 16);
+      const northMat = new THREE.MeshBasicMaterial({
+        color: 0x4ad3b5,
+        transparent: true,
+        opacity: 0.8,
+        side: THREE.DoubleSide,
+      });
+      const northMarker = new THREE.Mesh(northGeo, northMat);
+      northMarker.position.set(0, 0.002, radius - 0.06);
+      radarGroup.add(northMarker);
+
+      radarGroup.rotation.x = -Math.PI / 2;
+      // Sink the whole radar a bit into the flattened top of the stone
+      radarGroup.position.set(0, 0.6, 0);
+
+      stone.add(radarGroup);
+      stone.userData.radar = radarGroup;
+      stone.userData.radarSweep = sweep;
+      stone.userData.radarPing = ping;
+      stone.userData.radarStartTime = performance.now() / 1000;
+    }
+
+    // HUD on the last pebble — environment stats (canvas texture updated each frame)
+    if (i === 4) {
+      const hudW = 256;
+      const hudH = 160;
+      const canvas = document.createElement('canvas');
+      canvas.width = hudW;
+      canvas.height = hudH;
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+
+      const hudMat = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        opacity: 0.95,
+        side: THREE.DoubleSide,
+      });
+      const hudGeo = new THREE.PlaneGeometry(0.85, 0.52);
+      const hudMesh = new THREE.Mesh(hudGeo, hudMat);
+      hudMesh.rotation.x = -Math.PI / 2;
+      hudMesh.position.set(0, 0.615, 0);
+
+      stone.add(hudMesh);
+      stone.userData.hudCanvas = canvas;
+      stone.userData.hudTexture = texture;
+    }
+
+    scene.add(stone);
+    FLOATING_STONES.push(stone);
   }
 
   function createOvalGeometry(width, height, segments = 14) {
@@ -1482,6 +1806,140 @@ function animate(time) {
 
   // Player light follows camera
   playerLight.position.copy(camera.position);
+
+  // Floating stones — when moving forward, organize into a horizontal line in front;
+  // otherwise gently orbit around the player near the bottom of view.
+  const tSec = (time ?? performance.now()) / 1000;
+  const forwardPressed = moveForward && !moveBackward;
+  const fwd = new THREE.Vector3();
+  camera.getWorldDirection(fwd);
+  fwd.y = 0;
+  if (fwd.lengthSq() < 1e-4) fwd.set(0, 0, -1);
+  fwd.normalize();
+  const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+
+  FLOATING_STONES.forEach((stone, index) => {
+    const d = stone.userData;
+    const baseY = Math.max(0.7, camera.position.y + d.heightOffset);
+    const bob = Math.sin(tSec * d.bobSpeed + d.angleOffset) * d.bobAmp;
+
+    // Compute target position for this frame
+    let target = new THREE.Vector3();
+    if (forwardPressed) {
+      // Horizontal line in front of player
+      const spacing = 1.2; // distance between stones
+      const offsetIndex = index - (FLOATING_STONES.length - 1) / 2;
+      const lateralOffset = offsetIndex * spacing;
+      const distanceInFront = 3.2; // how far in front of camera
+
+      const center = new THREE.Vector3().copy(camera.position)
+        .add(fwd.clone().multiplyScalar(distanceInFront))
+        .add(new THREE.Vector3(0, d.heightOffset, 0));
+
+      target.copy(center).add(right.clone().multiplyScalar(lateralOffset));
+    } else {
+      // Gentle orbit when not actively moving forward
+      const angle = d.angleOffset + tSec * 0.25;
+      target.set(
+        camera.position.x + Math.cos(angle) * d.radius,
+        camera.position.y + d.heightOffset,
+        camera.position.z + Math.sin(angle) * d.radius,
+      );
+    }
+
+    target.y = baseY + bob;
+
+    // Smoothly ease current position toward target
+    const lerpFactor = forwardPressed ? 0.08 : 0.06; // slightly faster when organizing
+    stone.position.lerp(target, lerpFactor);
+
+    stone.rotation.y += d.spinSpeed * delta;
+
+    // If this stone has the joystick, tilt it based on movement direction
+    if (d.joystick) {
+      // Desired tilt from WASD input (local X/Z of joystick on stone)
+      const desiredTiltX = (moveForward ? -1 : 0) + (moveBackward ? 1 : 0);
+      const desiredTiltZ = (moveRight ? 1 : 0) + (moveLeft ? -1 : 0);
+
+      // Normalize so diagonals aren't stronger
+      let len = Math.hypot(desiredTiltX, desiredTiltZ);
+      if (len > 1e-3) {
+        d.joystickTiltX = THREE.MathUtils.lerp(d.joystickTiltX, desiredTiltX / len, 0.18);
+        d.joystickTiltZ = THREE.MathUtils.lerp(d.joystickTiltZ, desiredTiltZ / len, 0.18);
+      } else {
+        // Ease back toward center when no input
+        d.joystickTiltX = THREE.MathUtils.lerp(d.joystickTiltX, 0, 0.12);
+        d.joystickTiltZ = THREE.MathUtils.lerp(d.joystickTiltZ, 0, 0.12);
+      }
+
+      const maxTilt = 0.32; // radians
+      d.joystick.rotation.x = d.joystickTiltX * maxTilt;
+      d.joystick.rotation.z = d.joystickTiltZ * maxTilt;
+    }
+
+    // Radar sweep animation — full rotation every 3 seconds
+    if (d.radar && d.radarSweep) {
+      const elapsed = tSec - d.radarStartTime;
+      const period = 3.0;
+      const t = (elapsed % period) / period;
+      d.radarSweep.rotation.z = -t * Math.PI * 2;
+    }
+
+    // Radar library ping — show library bearing relative to world north (+Z)
+    if (d.radar && d.radarPing) {
+      const toLib = new THREE.Vector3().subVectors(LIBRARY_POSITION, camera.position);
+      toLib.y = 0;
+      if (toLib.lengthSq() > 1e-4) {
+        const ang = Math.atan2(toLib.x, toLib.z); // 0 = +Z, increasing toward +X
+        const r = 0.75 * 0.45; // 75% of radar radius
+        const x = Math.sin(ang) * r;
+        const z = Math.cos(ang) * r;
+        d.radarPing.position.set(x, 0.002, z);
+
+        // Gentle pulse so the ping feels alive
+        const pulse = 0.8 + 0.25 * Math.sin(tSec * 2.0);
+        d.radarPing.scale.setScalar(pulse);
+      }
+    }
+
+    // HUD — redraw environment stats on the last pebble
+    if (d.hudCanvas && d.hudTexture) {
+      const ctx = d.hudCanvas.getContext('2d');
+      const w = d.hudCanvas.width;
+      const h = d.hudCanvas.height;
+
+      ctx.fillStyle = 'rgba(0, 12, 24, 0.92)';
+      ctx.fillRect(0, 0, w, h);
+
+      const heading = (Math.atan2(fwd.x, fwd.z) * 180 / Math.PI + 360) % 360;
+      const depth = camera.position.y;
+      const distLib = camera.position.distanceTo(LIBRARY_POSITION);
+      const pressure = (depth * 0.08 + 1).toFixed(2);
+      const temp = (4.2 - depth * 0.02 + Math.sin(tSec * 0.3) * 0.1).toFixed(1);
+
+      ctx.font = '11px "Share Tech Mono", monospace';
+      ctx.fillStyle = 'rgba(74, 211, 181, 0.95)';
+      ctx.fillText('DEPTH', 12, 28);
+      ctx.fillText('HEAD', 12, 52);
+      ctx.fillText('LIB', 12, 76);
+      ctx.fillText('PRES', 12, 100);
+      ctx.fillText('TEMP', 12, 124);
+
+      ctx.fillStyle = 'rgba(170, 230, 255, 0.98)';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${depth.toFixed(1)} m`, w - 12, 28);
+      ctx.fillText(`${heading.toFixed(0)}°`, w - 12, 52);
+      ctx.fillText(`${distLib.toFixed(1)} m`, w - 12, 76);
+      ctx.fillText(`${pressure} bar`, w - 12, 100);
+      ctx.fillText(`${temp} °C`, w - 12, 124);
+      ctx.textAlign = 'left';
+
+      ctx.strokeStyle = 'rgba(74, 211, 181, 0.4)';
+      ctx.strokeRect(2, 2, w - 4, h - 4);
+
+      d.hudTexture.needsUpdate = true;
+    }
+  });
 
   // Kelp — stalk and leaves sway in current
   KELP.forEach((kelp) => {
