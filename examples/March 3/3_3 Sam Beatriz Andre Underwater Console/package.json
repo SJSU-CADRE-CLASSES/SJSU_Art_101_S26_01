@@ -1,0 +1,20 @@
+{
+  "name": "stone-library",
+  "version": "1.0.0",
+  "description": "Stone Library — underwater message board",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

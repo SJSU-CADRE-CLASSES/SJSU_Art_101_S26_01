@@ -8,8 +8,9 @@
     <link href="style.css" rel="stylesheet">
     <style>
         /* Chat page overrides - BLTMR PLC layout (mirror reference image) */
-        body.chat-page-bltmr { background: #000; color: #33ff33; overflow: hidden; }
+        body.chat-page-bltmr { background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.25) 0%, rgba(51, 255, 51, 0.12) 40%, rgba(51, 255, 51, 0.02) 80%, transparent 100%), #000; color: #33ff33; overflow: hidden; }
         body.chat-page-bltmr .terminal-container { padding: 20px 26px; max-width: none; height: 100vh; overflow: hidden; }
+        body.chat-page-bltmr .main-content { margin-top: 0; padding-top: 0; }
         body.chat-page-bltmr .header { display: none; }
         body.chat-page-bltmr .footer { display: none; }
         body.chat-page-bltmr .main-content { flex-direction: column; gap: 0; }
@@ -18,17 +19,21 @@
         body.chat-page-bltmr .content-title { display: none; }
         body.chat-page-bltmr .content-area { overflow: visible; padding: 0; }
 
-        /* BLTMR header row */
+        /* BLTMR header row - same grid as bltmr-main so panel title aligns with info col */
         .bltmr-header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr 280px;
             gap: 12px;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 0;
+        }
+        .bltmr-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
         }
         .bltmr-brand {
-            border: 2px solid #33ff33;
             padding: 6px 14px;
             font-size: 1rem;
             color: #33ff33;
@@ -37,7 +42,7 @@
         }
         .bltmr-tabs {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 0;
             flex-wrap: wrap;
             position: relative;
@@ -45,8 +50,8 @@
         .bltmr-tab {
             border: none;
             margin-left: 2px;
-            padding: 8px 14px;
-            font-size: 1.1rem;
+            padding: 10.5px 14px;
+            font-size: 1rem;
             color: #000;
             background: rgba(51, 255, 51, 0.35);
             text-decoration: none;
@@ -61,11 +66,10 @@
             color: #000;
         }
         .bltmr-panel-title {
-            border: 2px solid #33ff33;
             padding: 6px 16px;
             font-size: 1rem;
             color: #33ff33;
-            text-align: center;
+            text-align: left;
             clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.4);
         }
@@ -78,7 +82,10 @@
             flex: 1;
             min-height: 0;
         }
-        @media (max-width: 700px) { .bltmr-main { grid-template-columns: 1fr; } }
+        @media (max-width: 700px) {
+            .bltmr-main { grid-template-columns: 1fr; }
+            .bltmr-header { grid-template-columns: 1fr; }
+        }
 
         /* Left: Chat column */
         .bltmr-chat-col {
@@ -88,37 +95,132 @@
         }
         .bltmr-chat-messages {
             flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            background: rgba(51, 255, 51, 0.2);
             border: 2px solid #33ff33;
             padding: 12px 14px;
-            overflow-y: auto;
-            min-height: 180px;
+            padding-right: 5px; /* gap between scrollbar and green line */
+            border-right: 2px solid #33ff33; /* vibrant green line on far right */
+            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+        }
+        /* Scroll wrapper: flex container for content + custom scrollbar */
+        .bltmr-chat-messages-scroll-wrap {
+            flex: 1;
+            min-height: 0;
+            margin: 7.5px 0;
+            display: flex;
+            gap: 0;
+        }
+        .bltmr-chat-messages-scroll-wrap .custom-scrollbar {
+            margin-left: 5px;
+        }
+        /* Scrollable content area – native scrollbar hidden */
+        .bltmr-chat-messages-content {
+            flex: 1;
+            min-height: 0;
+            min-width: 0;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .bltmr-chat-messages-content::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        /* Custom scrollbar: track + thumb (thumb always visible) */
+        .custom-scrollbar {
+            width: 16px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .custom-scrollbar-track {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            background: #0d1f0d;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 1px,
+                rgba(0, 20, 0, 0.4) 1px,
+                rgba(0, 20, 0, 0.4) 2px
+            );
+            border: 1px solid rgba(51, 255, 51, 0.3);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .custom-scrollbar-thumb {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            min-height: 48px;
+            border-radius: 0;
+            background: rgba(51, 255, 51, 0.8);
+            border: 2px solid #0a150a;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 1.5), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+            cursor: grab;
+            pointer-events: auto;
+            transition: background 0.1s;
+        }
+        .custom-scrollbar-thumb:hover { background: #33ff33; }
+        .custom-scrollbar-thumb:active { background: #28cc28; cursor: grabbing; }
+        /* Chat messages scroll track: left padding to match right (5px) */
+        .bltmr-chat-messages-scroll-wrap .custom-scrollbar-track {
+            padding-left: 5px;
+            box-sizing: border-box;
+        }
+        .bltmr-chat-messages-inner {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
-            clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+            min-height: min-content;
+        }
+        .bltmr-chat-messages .chat-message {
+            font-weight: normal;
+            font-size: 1rem;
         }
         .bltmr-chat-messages .msg-other { color: #fff; }
         .bltmr-chat-messages .msg-you { color: #28cc28; }
         .bltmr-chat-messages .sender { margin-right: 6px; }
+        /* Side-by-side: chat input on left, keyboard + SEND on right (reference layout) */
         .bltmr-input-keyboard-row {
             display: flex;
             flex-direction: row;
-            gap: 12px;
-            align-items: flex-start;
+            gap: 0;
+            align-items: stretch;
             margin-top: 8px;
             width: 100%;
-        }
-        .bltmr-chat-input-wrap {
-            flex: 1;
-            min-width: 0;
+            background: rgba(51, 255, 51, 0.2);
             border: 2px solid #33ff33;
-            padding: 10px 12px;
+            padding: 12px;
             box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
             clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
         }
-        .bltmr-chat-input-wrap input {
+        /* Chat input: left side, flex to fill; sharp corners; custom scrollbar on right */
+        .bltmr-chat-input-wrap {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            gap: 0;
+            border: 2px solid #33ff33;
+            padding: 10px 12px;
+            margin-right: 12px;
+            box-shadow: 0 0 4px rgba(51, 255, 51, 0.25);
+        }
+        .bltmr-chat-input-inner {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+        }
+        .bltmr-chat-input-wrap .chat-input {
             width: 100%;
+            height: 100%;
+            min-height: 52px;
             background: transparent;
             border: none;
             color: #33ff33;
@@ -126,11 +228,63 @@
             font-size: 1.2rem;
             outline: none;
             caret-color: #33ff33;
+            resize: none;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .bltmr-chat-input-wrap input::placeholder { color: rgba(51, 255, 51, 0.55); }
+        .bltmr-chat-input-wrap .chat-input::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        .bltmr-chat-input-wrap .chat-input::placeholder { color: rgba(51, 255, 51, 0.55); }
+        /* Constant blinking cursor in chat input – position set by JS to match caret */
+        .bltmr-input-cursor {
+            position: absolute;
+            left: 2px;
+            top: 12px;
+            width: 1px;
+            height: 1.2rem;
+            background: #33ff33;
+            pointer-events: none;
+            animation: bltmr-cursor-blink 1s step-end infinite;
+            z-index: 1;
+        }
+        .bltmr-chat-input-wrap:focus-within .bltmr-input-cursor {
+            visibility: hidden;
+        }
+        /* Mirror for measuring caret position – matches textarea layout, hidden */
+        .bltmr-input-cursor-mirror {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            min-height: 100%;
+            padding: 0;
+            margin: 0;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow: hidden;
+            visibility: hidden;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+        @keyframes bltmr-cursor-blink {
+            50% { opacity: 0; }
+        }
+        /* Chat input scrollbar: 5px space on left and right of the scrollbar column */
+        .bltmr-chat-input-wrap .custom-scrollbar {
+            margin-left: 5px;
+            margin-right: -5px;
+        }
+        .bltmr-chat-input-wrap .custom-scrollbar-track {
+            padding: 0;
+        }
 
         /* Right: Policeman info column */
         .bltmr-info-col {
+            background: rgba(51, 255, 51, 0.2);
             border: 2px solid #33ff33;
             padding: 12px;
             display: flex;
@@ -142,12 +296,14 @@
         .bltmr-officer-top {
             display: flex;
             gap: 12px;
-            align-items: flex-start;
+            align-items: stretch;
         }
         .bltmr-officer-photo {
             width: 80px;
-            height: 80px;
             flex-shrink: 0;
+            padding: 10px 0;
+            margin: 10px 0;
+            box-sizing: border-box;
             border: 2px solid #33ff33;
             background: #0a1a0a;
             display: flex;
@@ -174,19 +330,23 @@
             font-size: 0.9rem;
             line-height: 1.5;
             color: #33ff33;
-            border-top: 1px solid rgba(51, 255, 51, 0.35);
+            border-top: 1.5px solid rgba(51, 255, 51, 0.45);
             padding-top: 10px;
         }
 
-        /* Character keyboard + SEND (one bordered box, grid then SEND below) */
+        /* Keyboard + SEND block */
         .bltmr-keyboard-row {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            border: none;
+            border: 2px solid #33ff33;
             padding: 10px;
-            box-shadow: none;
+            box-shadow: 0 0 4px rgba(51, 255, 51, 0.25);
             flex-shrink: 0;
+        }
+        .bltmr-keyboard-row-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         .bltmr-char-grid {
             display: grid;
@@ -235,7 +395,7 @@
             gap: 8px;
         }
         .bltmr-status {
-            border: 2px solid #33ff33;
+            /* border: 2px solid #33ff33; */
             padding: 6px 12px;
             font-size: 0.95rem;
             color: #33ff33;
@@ -243,7 +403,7 @@
             box-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
         }
         .bltmr-copyright {
-            border: 2px solid #33ff33;
+            /* border: 2px solid #33ff33; */
             padding: 6px 12px;
             font-size: 0.95rem;
             color: #33ff33;
@@ -264,13 +424,15 @@
         <header class="header">PERSONAL TERMINAL</header>
 
         <div class="bltmr-header">
-            <div class="bltmr-brand">BLTMR PLC 2.4.00</div>
-            <nav class="bltmr-tabs">
+            <div class="bltmr-header-left">
+                <div class="bltmr-brand">BLTMR PLC 2.4.00</div>
+                <nav class="bltmr-tabs">
                 <a href="personal.html" class="bltmr-tab">PERSONAL</a>
                 <a href="warp-dilation.html" class="bltmr-tab">WARP DILATION</a>
                 <a href="ship-exterior.html" class="bltmr-tab">SHIP EXTERIOR INTERFACE</a>
                 <span class="bltmr-tab active">CHAT-VOX</span>
-            </nav>
+                </nav>
+            </div>
             <div class="bltmr-panel-title">POLICEMAN INFO:</div>
         </div>
 
@@ -279,17 +441,37 @@
                 <div class="content-area" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
                     <div class="bltmr-main">
                         <div class="bltmr-chat-col">
-                            <div class="bltmr-chat-messages" id="chat-messages">
-                                <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WHAT THE FUCK DID I DO??</div>
-                                <div class="chat-message msg-you"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
-                                <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
-                                <div class="chat-message msg-you"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
+                            <div class="bltmr-chat-messages">
+                                <div class="bltmr-chat-messages-scroll-wrap">
+                                    <div class="bltmr-chat-messages-content" id="chat-scroll-content">
+                                        <div class="bltmr-chat-messages-inner" id="chat-messages">
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> WHAT THE FUCK DID I DO??</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> A LIFE, JIMMY, YOU KNOW WHAT THAT IS? IT'S THE SHIT THAT HAPPENS WHILE YOU'RE WAITING FOR MOMENTS THAT NEVER COME.</div>
+                                            <div class="chat-message msg-other"><span class="sender">R. CAYAGO:</span> THATS SOME SPIDERMAN SHIT RIGHT THERE!!!</div>
+                                            <div class="chat-message msg-you"><span class="sender">YOU:</span> FUNNY THING IS THEY WERE ALL DEAD SERIOUS.</div>
+                                        </div>
+                                    </div>
+                                    <div class="custom-scrollbar">
+                                        <div class="custom-scrollbar-track" id="chat-scroll-track">
+                                            <div class="custom-scrollbar-thumb" id="chat-scroll-thumb"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="bltmr-input-keyboard-row">
                                 <div class="bltmr-chat-input-wrap">
-                                    <input type="text" class="chat-input" id="chat-input" placeholder="DON'T THINK TOO MUCH ABOUT IT" autocomplete="off">
+                                    <div class="bltmr-chat-input-inner">
+                                        <span class="bltmr-input-cursor" aria-hidden="true"></span>
+                                        <textarea class="chat-input" id="chat-input" autocomplete="off" rows="2"></textarea>
+                                    </div>
+                                    <div class="custom-scrollbar">
+                                        <div class="custom-scrollbar-track" id="chat-input-scroll-track">
+                                            <div class="custom-scrollbar-thumb" id="chat-input-scroll-thumb"></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="bltmr-keyboard-row">
+                                    <div class="bltmr-keyboard-row-inner">
                                     <div class="bltmr-char-grid" id="char-keyboard">
                                         <button type="button" class="bltmr-char-key char-key" data-char="à">à</button>
                                         <button type="button" class="bltmr-char-key char-key" data-char="ç">ç</button>
@@ -309,6 +491,7 @@
                                         <button type="button" class="bltmr-char-key char-key" data-char="š">š</button>
                                     </div>
                                     <button type="button" class="bltmr-send" id="chat-send">SEND</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -320,16 +503,16 @@
                                 </div>
                                 <div class="bltmr-officer-fields">
                                     <div>OFFICER: A-34-0.1</div>
-                                    <div>LEGAL NAME: JIM O'NEIL</div>
+                                    <div>LEGAL NAME: RYAN CAYAGO</div>
                                     <div>SECURITY CODE: 48532695-CF</div>
                                     <div>PERSONAL WEAPON: COLT M1911A1</div>
                                 </div>
                             </div>
                             <div class="bltmr-bio">
-                                O'NEIL WAS BORN TO IRISH-AMERICAN PARENTS IN THE LAURAVILLE NEIGHBORHOOD OF BALTIMORE, MARYLAND. HIS FATHER WORKED AS A STEELWORKER AT BETHLEHEM STEEL UNTIL DEINDUSTRIALIZATION LED TO HIS FIRING IN 1973. O'NEIL ATTENDED LOYOLA UNIVERSITY MARYLAND FOR A YEAR.
+                                CAYAGO WAS BORN TO IRISH-AMERICAN PARENTS IN THE LAURAVILLE NEIGHBORHOOD OF BALTIMORE, MARYLAND. HIS FATHER WORKED AS A STEELWORKER AT BETHLEHEM STEEL UNTIL DEINDUSTRIALIZATION LED TO HIS FIRING IN 1973. CAYAGO ATTENDED LOYOLA UNIVERSITY MARYLAND FOR A YEAR.
                             </div>
                             <div class="bltmr-bio">
-                                HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 1994. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2000, O'NEIL HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
+                                HE JOINED THE BALTIMORE POLICE DEPARTMENT ON APRIL 5, 2001. HE WAS A PATROL OFFICER IN THE WESTERN DISTRICT UNDER THE COMMAND OF MAJOR HOWARD COLVIN FOR FOUR YEARS. HE SERVED FOR TWO YEARS IN THE ESCAPE AND APPREHENSION UNIT. IN 2003, CAYAGO HELPED DETECTIVE RAY COLE SOLVE A HOMICIDE CASE. HE WAS REASSIGNED TO THE HOMICIDE UNIT.
                             </div>
                         </aside>
                     </div>
@@ -371,6 +554,51 @@
         const chatInput = document.getElementById('chat-input');
         const chatMessages = document.getElementById('chat-messages');
         const chatSend = document.getElementById('chat-send');
+        const chatInputInner = document.querySelector('.bltmr-chat-input-inner');
+        const chatInputCursor = document.querySelector('.bltmr-input-cursor');
+
+        /* Mirror div to measure caret position so cursor aligns with text */
+        const cursorMirror = document.createElement('div');
+        cursorMirror.className = 'bltmr-input-cursor-mirror';
+        cursorMirror.setAttribute('aria-hidden', 'true');
+        if (chatInputInner) chatInputInner.insertBefore(cursorMirror, chatInput);
+
+        function escapeHtml(s) {
+            const div = document.createElement('div');
+            div.textContent = s;
+            return div.innerHTML;
+        }
+        function updateInputCursorPosition() {
+            if (!chatInput || !chatInputCursor || !cursorMirror || !chatInputInner) return;
+            const cs = getComputedStyle(chatInput);
+            cursorMirror.style.fontFamily = cs.fontFamily;
+            cursorMirror.style.fontSize = cs.fontSize;
+            cursorMirror.style.lineHeight = cs.lineHeight;
+            cursorMirror.style.letterSpacing = cs.letterSpacing;
+            const val = chatInput.value;
+            const pos = chatInput.selectionStart;
+            cursorMirror.style.width = chatInput.clientWidth + 'px';
+            cursorMirror.innerHTML = escapeHtml(val.substring(0, pos)).replace(/\n/g, '<br>') + '<span data-caret></span>';
+            const span = cursorMirror.querySelector('[data-caret]');
+            if (span) {
+                const innerRect = chatInputInner.getBoundingClientRect();
+                const spanRect = span.getBoundingClientRect();
+                chatInputCursor.style.left = (spanRect.left - innerRect.left) + 'px';
+                chatInputCursor.style.top = (spanRect.top - innerRect.top) + 'px';
+                chatInputCursor.style.height = cs.lineHeight;
+            }
+        }
+        if (chatInput) {
+            chatInput.addEventListener('input', updateInputCursorPosition);
+            chatInput.addEventListener('keyup', updateInputCursorPosition);
+            chatInput.addEventListener('click', updateInputCursorPosition);
+            chatInput.addEventListener('focus', updateInputCursorPosition);
+        }
+        if (chatInputInner) {
+            const ro = new ResizeObserver(updateInputCursorPosition);
+            ro.observe(chatInput);
+        }
+        updateInputCursorPosition();
 
         document.querySelectorAll('.char-key').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -381,9 +609,11 @@
                 chatInput.value = val.slice(0, start) + char + val.slice(end);
                 chatInput.selectionStart = chatInput.selectionEnd = start + 1;
                 chatInput.focus();
+                setTimeout(updateInputCursorPosition, 0);
             });
         });
 
+        const chatScrollContent = document.getElementById('chat-scroll-content');
         function sendMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
@@ -392,7 +622,7 @@
             msg.innerHTML = '<span class="sender">YOU:</span> ' + text.toUpperCase();
             chatMessages.appendChild(msg);
             chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            if (chatScrollContent) chatScrollContent.scrollTop = chatScrollContent.scrollHeight;
         }
 
         chatSend.addEventListener('click', sendMessage);
@@ -403,6 +633,150 @@
             }
         });
 
+        /* Custom scrollbar: thumb always visible, synced with content */
+        (function() {
+            const content = document.getElementById('chat-scroll-content');
+            const track = document.getElementById('chat-scroll-track');
+            const thumb = document.getElementById('chat-scroll-thumb');
+            if (!content || !track || !thumb) return;
+
+            const MIN_THUMB = 48;
+
+            function updateThumb() {
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                const trackH = track.clientHeight;
+                if (sh <= ch) {
+                    thumb.style.height = trackH + 'px';
+                    thumb.style.top = '0';
+                    return;
+                }
+                const ratio = ch / sh;
+                let thumbH = Math.max(MIN_THUMB, Math.floor(trackH * ratio));
+                if (thumbH > trackH) thumbH = trackH;
+                const maxTop = trackH - thumbH;
+                const scrollRatio = content.scrollTop / (sh - ch);
+                const top = Math.round(scrollRatio * maxTop);
+                thumb.style.height = thumbH + 'px';
+                thumb.style.top = top + 'px';
+            }
+
+            content.addEventListener('scroll', updateThumb);
+            const ro = new ResizeObserver(updateThumb);
+            ro.observe(track);
+            ro.observe(content);
+            updateThumb();
+            setTimeout(updateThumb, 0);
+
+            track.addEventListener('click', (e) => {
+                if (e.target === thumb) return;
+                const rect = track.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const trackH = track.clientHeight;
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                if (sh <= ch) return;
+                const ratio = y / trackH;
+                content.scrollTop = ratio * (sh - ch);
+            });
+
+            let dragging = false;
+            let startY = 0, startScrollTop = 0;
+            thumb.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                dragging = true;
+                startY = e.clientY;
+                startScrollTop = content.scrollTop;
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                const trackH = track.clientHeight;
+                if (sh <= ch) return;
+                const thumbH = thumb.offsetHeight;
+                const maxTop = trackH - thumbH;
+                const deltaY = e.clientY - startY;
+                const scrollDelta = maxTop > 0 ? (deltaY / maxTop) * (sh - ch) : 0;
+                content.scrollTop = Math.max(0, Math.min(sh - ch, startScrollTop + scrollDelta));
+                startY = e.clientY;
+                startScrollTop = content.scrollTop;
+            });
+            document.addEventListener('mouseup', () => { dragging = false; });
+        })();
+
+        /* Custom scrollbar for chat input (same as chat messages) */
+        (function() {
+            const content = document.getElementById('chat-input');
+            const track = document.getElementById('chat-input-scroll-track');
+            const thumb = document.getElementById('chat-input-scroll-thumb');
+            if (!content || !track || !thumb) return;
+
+            const MIN_THUMB = 48;
+
+            function updateThumb() {
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                const trackH = track.clientHeight;
+                if (sh <= ch) {
+                    thumb.style.height = trackH + 'px';
+                    thumb.style.top = '0';
+                    return;
+                }
+                const ratio = ch / sh;
+                let thumbH = Math.max(MIN_THUMB, Math.floor(trackH * ratio));
+                if (thumbH > trackH) thumbH = trackH;
+                const maxTop = trackH - thumbH;
+                const scrollRatio = content.scrollTop / (sh - ch);
+                const top = Math.round(scrollRatio * maxTop);
+                thumb.style.height = thumbH + 'px';
+                thumb.style.top = top + 'px';
+            }
+
+            content.addEventListener('scroll', updateThumb);
+            content.addEventListener('input', updateThumb);
+            const ro = new ResizeObserver(updateThumb);
+            ro.observe(track);
+            ro.observe(content);
+            updateThumb();
+            setTimeout(updateThumb, 0);
+
+            track.addEventListener('click', (e) => {
+                if (e.target === thumb) return;
+                const rect = track.getBoundingClientRect();
+                const y = e.clientY - rect.top;
+                const trackH = track.clientHeight;
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                if (sh <= ch) return;
+                const ratio = y / trackH;
+                content.scrollTop = ratio * (sh - ch);
+            });
+
+            let dragging = false;
+            let startY = 0, startScrollTop = 0;
+            thumb.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                dragging = true;
+                startY = e.clientY;
+                startScrollTop = content.scrollTop;
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const sh = content.scrollHeight;
+                const ch = content.clientHeight;
+                const trackH = track.clientHeight;
+                if (sh <= ch) return;
+                const thumbH = thumb.offsetHeight;
+                const maxTop = trackH - thumbH;
+                const deltaY = e.clientY - startY;
+                const scrollDelta = maxTop > 0 ? (deltaY / maxTop) * (sh - ch) : 0;
+                content.scrollTop = Math.max(0, Math.min(sh - ch, startScrollTop + scrollDelta));
+                startY = e.clientY;
+                startScrollTop = content.scrollTop;
+            });
+            document.addEventListener('mouseup', () => { dragging = false; });
+        })();
     </script>
 </body>
 </html>

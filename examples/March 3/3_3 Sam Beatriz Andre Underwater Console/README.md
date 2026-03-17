@@ -22,4 +22,4 @@ For hominids who evolved in the deep sea without sight. The console is concerned
 
 ## Run
 
-Open `index.html` in a browser. Click anywhere first if needed for audio.
+Open `library.html` in a browser. Click anywhere first if needed for audio.

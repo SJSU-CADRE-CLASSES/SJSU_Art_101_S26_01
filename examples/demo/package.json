@@ -1,0 +1,13 @@
+{
+  "name": "three-gallery",
+  "version": "1.0.0",
+  "description": "3D walkable interactable gallery with Three.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

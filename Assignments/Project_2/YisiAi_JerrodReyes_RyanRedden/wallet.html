@@ -2,35 +2,61 @@
 <html>
 
 <head>
+
 <title>Wallet</title>
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
+<!-- GRID BACKGROUND -->
+
+<div class="grid"></div>
+
+
 <div class="screen">
+
+<!-- HEADER -->
 
 <div class="header">
 
 <div>ANONYMOUS WALLET</div>
 
-<div>
+<div class="header-right">
+
+<div class="balance-box">
+ID: <span id="trader-id">NODE-0000</span>
+</div>
+
+<div class="balance-box">
+SECURITY: <span style="color:#00ff88">ENCRYPTED</span>
+</div>
+
 <a href="index.html" class="retro-btn">Home</a>
 <a href="marketplace.html" class="retro-btn">Marketplace</a>
-</div>
 
 </div>
 
+</div>
+
+
+<!-- WALLET INFO -->
+
+<div class="panel">
 
 <h3>Wallet ID</h3>
 
 <p id="wallet-id"></p>
 
-
 <h2>Balance</h2>
 
 <h1 id="balance">0 CR</h1>
 
+</div>
+
+
+<!-- TRANSFER -->
 
 <div class="panel">
 
@@ -51,6 +77,8 @@
 </div>
 
 
+<!-- TEST DEPOSIT -->
+
 <div class="panel">
 
 <h3>Test Deposit</h3>
@@ -62,9 +90,29 @@
 </div>
 
 
+<!-- TRANSACTIONS -->
+
+<div class="panel">
+
 <h3>Recent Transactions</h3>
 
 <div id="transactions"></div>
+
+</div>
+
+
+<!-- SYSTEM INFO -->
+
+<div class="panel">
+
+<h3>Wallet Network Status</h3>
+
+<p>> node connected</p>
+<p>> encryption active</p>
+<p>> transaction relay: stable</p>
+
+</div>
+
 
 </div>
 
