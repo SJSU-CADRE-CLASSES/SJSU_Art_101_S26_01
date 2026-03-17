@@ -319,12 +319,16 @@ async function init() {
     metalness: 0.08,
   });
   for (let i = 0; i < 5; i++) {
-    // Rounded-square pebble pads
-    const geo = createRoundedPebbleGeometry(1.1, 0.32, 0.32);
+    // Rounded-square pebble pads — slight variation per panel
+    const size = 1.05 + 0.1 * Math.sin(i * 1.3) + 0.05 * Math.cos(i * 2.1);
+    const cornerR = 0.28 + 0.08 * (0.5 + 0.5 * Math.sin(i * 1.7));
+    const h = 0.28 + 0.1 * (0.5 + 0.5 * Math.cos(i * 2.3));
+    const geo = createRoundedPebbleGeometry(size, cornerR, h);
     const stone = new THREE.Mesh(geo, floatingStoneMat.clone());
     stone.castShadow = true;
     stone.receiveShadow = true;
     stone.userData = {
+      panelSize: size,
       angleOffset: (i / 5) * Math.PI * 2,
       radius: 3 + Math.random() * 1.5,
       heightOffset: -2.0 - Math.random() * 0.6,
@@ -540,12 +544,13 @@ async function init() {
       const radarGroup = new THREE.Group();
       const radius = 0.45;
 
-      // Base disc
+      // Base disc — DoubleSide to avoid clipping when viewed from below
       const baseGeo = new THREE.CircleGeometry(radius, 48);
       const baseMat = new THREE.MeshStandardMaterial({
         color: 0x06171f,
         roughness: 0.9,
         metalness: 0.1,
+        side: THREE.DoubleSide,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
       // Nudge the base slightly down so the radar feels embedded, not hovering
@@ -652,7 +657,7 @@ async function init() {
       });
       stone.add(dialGroup);
 
-      const hudGeo = new THREE.PlaneGeometry(0.85, 0.52);
+      const hudGeo = new THREE.PlaneGeometry(0.85, 0.52, 4, 4);
       const hudMesh = new THREE.Mesh(hudGeo, hudMat);
       // Stand the HUD panel upright near the front edge of the stone;
       // its Y-rotation is controlled in the animate loop so it faces the player.
@@ -695,30 +700,16 @@ async function init() {
 
     const extrudeSettings = {
       depth: height,
-      bevelEnabled: false,
+      bevelEnabled: true,
+      bevelThickness: 0.02,
+      bevelSize: 0.02,
+      bevelSegments: 2,
       steps: 1,
+      curveSegments: 24,
     };
     const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
     geo.translate(0, height / 2, 0);
     geo.rotateX(-Math.PI / 2);
-
-    // Add stronger rocky irregularity to the whole shell (top included, but slightly reduced)
-    const pos = geo.attributes.position;
-    const v = new THREE.Vector3();
-    const noiseAmount = 0.18;
-    for (let i = 0; i < pos.count; i++) {
-      v.set(pos.getX(i), pos.getY(i), pos.getZ(i));
-      const n = (Math.sin(v.x * 9.1) + Math.cos(v.y * 6.7) + Math.sin(v.z * 5.3)) * 0.5
-        + (Math.sin((v.x + v.z) * 11.3) * 0.35);
-      // Slightly scale down deformation right at the top surface so controls still sit cleanly
-      const topFactor = THREE.MathUtils.clamp(1.0 - (v.z + height * 0.5) / (height * 1.2), 0.45, 1.0);
-      const offset = n * noiseAmount * topFactor;
-      v.x += (v.x >= 0 ? 1 : -1) * offset * 0.9;
-      v.y += (v.y >= 0 ? 1 : -1) * offset * 0.7;
-      v.z += offset;
-      pos.setXYZ(i, v.x, v.y, v.z);
-    }
-    pos.needsUpdate = true;
     geo.computeVertexNormals();
     return geo;
   }
@@ -1916,8 +1907,8 @@ function animate(time) {
       .add(fwd.clone().multiplyScalar(clusterDist))
       .add(new THREE.Vector3(0, d.heightOffset, 0));
 
-    // Arrange stones in a neat arc in front (even spacing)
-    const spread = 1.1;
+    // Arrange stones in a neat arc in front (spacing allows collision-free gaps)
+    const spread = 1.35;
     const offsetIndex = index - (FLOATING_STONES.length - 1) / 2;
     const lateralOffset = offsetIndex * spread;
 
@@ -1932,24 +1923,39 @@ function animate(time) {
       .add(fwd.clone().multiplyScalar(swayDepth));
 
     target.y = baseY + bob;
+    d.targetPos = target.clone();
+  });
 
-    // Simple separation so stones don't merge into each other (XZ plane)
-    const MIN_STONE_GAP = 0.9;
-    for (let j = 0; j < FLOATING_STONES.length; j++) {
-      if (j === index) continue;
-      const other = FLOATING_STONES[j];
-      const dx = target.x - other.position.x;
-      const dz = target.z - other.position.z;
-      const distSq = dx * dx + dz * dz;
-      if (distSq > 0 && distSq < MIN_STONE_GAP * MIN_STONE_GAP) {
-        const dist = Math.sqrt(distSq);
-        const push = (MIN_STONE_GAP - dist);
-        const nx = dx / dist;
-        const nz = dz / dist;
-        target.x += nx * push;
-        target.z += nz * push;
+  // Collision resolution: push overlapping panels apart (use targets for consistency)
+  const SEPARATION_PASSES = 3;
+  for (let pass = 0; pass < SEPARATION_PASSES; pass++) {
+    for (let i = 0; i < FLOATING_STONES.length; i++) {
+      const ti = FLOATING_STONES[i].userData.targetPos;
+      const sizeI = FLOATING_STONES[i].userData.panelSize ?? 1.1;
+      for (let j = i + 1; j < FLOATING_STONES.length; j++) {
+        const tj = FLOATING_STONES[j].userData.targetPos;
+        const sizeJ = FLOATING_STONES[j].userData.panelSize ?? 1.1;
+        const minGap = (sizeI + sizeJ) * 0.55;
+        const dx = ti.x - tj.x;
+        const dz = ti.z - tj.z;
+        const distSq = dx * dx + dz * dz;
+        if (distSq > 1e-6 && distSq < minGap * minGap) {
+          const dist = Math.sqrt(distSq);
+          const push = (minGap - dist) * 0.5;
+          const nx = dx / dist;
+          const nz = dz / dist;
+          ti.x += nx * push;
+          ti.z += nz * push;
+          tj.x -= nx * push;
+          tj.z -= nz * push;
+        }
       }
     }
+  }
+
+  FLOATING_STONES.forEach((stone, index) => {
+    const d = stone.userData;
+    const target = d.targetPos;
     // Prevent stones from dipping into the seafloor (keep a clear gap above sand)
     const MIN_STONE_Y = 0.9;
     if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
