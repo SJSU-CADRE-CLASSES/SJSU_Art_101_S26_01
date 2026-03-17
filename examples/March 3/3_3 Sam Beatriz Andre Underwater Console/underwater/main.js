@@ -1959,12 +1959,13 @@ function animate(time) {
     target.y = baseY + bob;
 
     // Keep panels from intersecting the Library boulder in XZ
+    // Use a conservative radius that fully encloses the library mesh.
     const dxLib = target.x - LIBRARY_POSITION.x;
     const dzLib = target.z - LIBRARY_POSITION.z;
     const distLibSq = dxLib * dxLib + dzLib * dzLib;
-    const MIN_LIB_GAP = 3.0;
+    const MIN_LIB_GAP = 4.5;
     if (distLibSq > 1e-6 && distLibSq < MIN_LIB_GAP * MIN_LIB_GAP) {
-      const distLib = Math.sqrt(distLibSq);
+      const distLib = Math.sqrt(distLibSq) || 0.0001;
       const pushLib = (MIN_LIB_GAP - distLib);
       const nxLib = dxLib / distLib;
       const nzLib = dzLib / distLib;
