@@ -9,11 +9,13 @@
 
   const creditChipValue = document.querySelector(".credit-chip span:last-child");
   const BALANCE_KEY = "starstruck_balance";
+  const DEFAULT_START_BALANCE = 100;
 
   const readBalance = () => {
     const raw = localStorage.getItem(BALANCE_KEY);
-    const parsed = raw ? Number(raw) : 0;
-    return Number.isFinite(parsed) ? parsed : 0;
+    if (raw === null) return DEFAULT_START_BALANCE;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : DEFAULT_START_BALANCE;
   };
 
   const writeBalance = (value) => {

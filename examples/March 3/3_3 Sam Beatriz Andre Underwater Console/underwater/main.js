@@ -553,8 +553,8 @@ async function init() {
         side: THREE.DoubleSide,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
-      // Nudge the base slightly down so the radar feels embedded, not hovering
-      base.position.y = -0.012;
+      // Slightly inset base so the radar feels embedded, not hovering
+      base.position.y = -0.02;
       base.receiveShadow = false;
       base.castShadow = false;
       radarGroup.add(base);
@@ -596,8 +596,9 @@ async function init() {
       radarGroup.add(northMarker);
 
       radarGroup.rotation.x = -Math.PI / 2;
-      // Sink the whole radar even more into the flattened top of the stone
-      radarGroup.position.set(0, 0.545, 0);
+      // Place the whole radar group flush on the pebble using the actual surface height
+      const radarSurfaceY = samplePebbleHeight(stone, 0, 0, 0.5);
+      radarGroup.position.set(0, radarSurfaceY + 0.01, 0);
 
       stone.add(radarGroup);
       stone.userData.radar = radarGroup;
@@ -1977,8 +1978,9 @@ function animate(time) {
     // If this stone has the joystick, tilt it based on movement direction
     if (d.joystick) {
       // Desired tilt from WASD input (local X/Z of joystick on stone)
-      const desiredTiltX = (moveForward ? -1 : 0) + (moveBackward ? 1 : 0);
-      const desiredTiltZ = (moveRight ? 1 : 0) + (moveLeft ? -1 : 0);
+      // Invert signs so joystick leans in the same direction as motion
+      const desiredTiltX = (moveForward ? 1 : 0) + (moveBackward ? -1 : 0);
+      const desiredTiltZ = (moveRight ? -1 : 0) + (moveLeft ? 1 : 0);
 
       // Normalize so diagonals aren't stronger
       let len = Math.hypot(desiredTiltX, desiredTiltZ);
