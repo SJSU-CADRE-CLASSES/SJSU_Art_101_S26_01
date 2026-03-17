@@ -1971,8 +1971,9 @@ function animate(time) {
     // If this stone has the joystick, tilt it based on movement direction
     if (d.joystick) {
       // Desired tilt from WASD input (local X/Z of joystick on stone)
-      const desiredTiltX = (moveForward ? -1 : 0) + (moveBackward ? 1 : 0);
-      const desiredTiltZ = (moveRight ? 1 : 0) + (moveLeft ? -1 : 0);
+      // Invert signs so joystick leans in the same direction as motion
+      const desiredTiltX = (moveForward ? 1 : 0) + (moveBackward ? -1 : 0);
+      const desiredTiltZ = (moveRight ? -1 : 0) + (moveLeft ? 1 : 0);
 
       // Normalize so diagonals aren't stronger
       let len = Math.hypot(desiredTiltX, desiredTiltZ);
