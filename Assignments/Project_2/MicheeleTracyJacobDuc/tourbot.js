@@ -8,18 +8,10 @@
   if (!shell || !log || !choices || !toggleBtn || !resetBtn) return;
 
   const creditChipValue = document.querySelector(".credit-chip span:last-child");
-  const BALANCE_KEY = "starstruck_balance";
   const DEFAULT_START_BALANCE = 100;
 
   const readBalance = () => {
-    const raw = localStorage.getItem(BALANCE_KEY);
-    if (raw === null) return DEFAULT_START_BALANCE;
-    const parsed = Number(raw);
-    return Number.isFinite(parsed) ? parsed : DEFAULT_START_BALANCE;
-  };
-
-  const writeBalance = (value) => {
-    localStorage.setItem(BALANCE_KEY, String(value));
+    return DEFAULT_START_BALANCE;
   };
 
   let balance = readBalance();
@@ -40,7 +32,6 @@
 
   const setBalance = (next) => {
     balance = Math.max(0, Math.round(next * 100) / 100);
-    writeBalance(balance);
     if (creditChipValue) {
       creditChipValue.textContent = `${balance.toFixed(2)} ★ balance`;
     }
@@ -77,12 +68,12 @@
       btn.textContent = `${i}★`;
       btn.addEventListener("click", () => {
         addMsg(`${i}★`, "user");
-        const earned = i * 0.35;
+        const earned = i * 1;
         setBalance(balance + earned);
         addMsg(
-          `Logged. That rating transfers ${earned.toFixed(
-            2
-          )}★ into the local economy. Kindness compounds.`
+          `Logged. That rating earned ${earned.toFixed(
+            0
+          )}★ of currency for this world.`
         );
         addMsg("Where do you want to go next?");
         offerMenu();
@@ -146,7 +137,7 @@
       addChoice("What should I buy?", () => {
         addMsg("What should I buy?", "user");
         addMsg(
-          "If your goal is survival: start with food (Warm meal signal). If your goal is safety: buy the Safe walk home. If your goal is status: the Reputation reset."
+          "If your goal is survival: start with food (Warm meal signal). If your goal is comfort: Luminous Icewave. If your goal is status: the Reputation reset or AVTR Drift Capsule."
         );
         addMsg("But the most powerful purchase is still kindness, upstream, before anyone reaches this counter.");
         offerMenu();
@@ -168,6 +159,12 @@
 
     if (location.pathname.toLowerCase().endsWith("shop.html")) {
       addMsg("You’re in the Shop. These prices are built from ratings people live and die by.");
+      addMsg(
+        "Here, stars have already turned into rent, food, and a chance to feel safe for one more night."
+      );
+      addMsg(
+        "As you add items to your cart, watch how quickly 100★ vanishes — and imagine who had to earn those stars."
+      );
     } else {
       addMsg("You’re in the corridor. Scroll through worlds and watch the rules shift.");
     }
