@@ -1838,30 +1838,67 @@ button.arrow-success-btn {
 }
 .login-slots {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
     justify-content: center;
 }
 .login-slot {
-    min-width: 1ch;
+    min-width: 5ch; 
+    min-width: 15px;
+    line-height: 75px;
     font-family: 'VT323', monospace;
-    font-size: 2.1rem;
+    font-size: 4.1rem;
     font-weight: bold;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     transition: color 0.2s ease;
+    opacity: 0;
 }
 .login-slot.slot-hit {
     color: #33ff33;
     -webkit-text-stroke: none;
     text-shadow: 0 0 10px rgba(51, 255, 51, 0.8);
+    opacity: 1;
 }
 /* Outline only: default slot shows expected character as faint outline; no box */
 .login-slot:not(.slot-hit) {
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(140, 170, 100, 1);
+    color: rgba(51, 255, 51, 0.4);
+    -webkit-text-stroke: 0px transparent;
+    text-shadow: none;
+    opacity: 0.3;
 }
+.login-slot[data-char="0"] {
+    position: relative;
+}
+
+.login-slot[data-char="0"]::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* During the "typed-in" phase, slots are emptied (textContent = ''), so hide them. */
+.login-slot:empty {
+    opacity: 0;
+    -webkit-text-stroke: 0px transparent;
+}
+
+/* During the phase-in animation, force hidden to prevent flashes. */
+.login-slot.typing {
+    opacity: 0 !important;
+    visibility: hidden;
+    -webkit-text-stroke: 0px transparent;
+}
+
 .login-hint-text {
     font-size: 0.95rem;
     color: rgba(51, 255, 51, 0.7);

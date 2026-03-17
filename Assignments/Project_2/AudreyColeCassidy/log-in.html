@@ -80,10 +80,26 @@
             var loginComplete = false;
             var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             var digits = '0123456789';
+            var passwordGenerationId = 0;
+
+            var loginCodeTextEl = document.querySelector('.login-code-text');
+
+            function phaseInText(el, text, delay) {
+                if (!el) return;
+                var d = delay || 25;
+                el.textContent = '';
+                for (var i = 0; i < text.length; i++) {
+                    (function(idx) {
+                        setTimeout(function() {
+                            el.textContent = text.substring(0, idx + 1);
+                        }, d * idx);
+                    })(i);
+                }
+            }
 
             function renderSlotText(c) {
-                // Show 0 as the empty-set symbol to match your viewfinder reference.
-                return c === '0' ? '∅' : c;
+                // Render 0 normally; CSS will draw a center dot to distinguish it.
+                return c;
             }
 
             function randomChar() {
@@ -94,6 +110,8 @@
             }
 
             function generateNewPassword() {
+                passwordGenerationId++;
+                var myId = passwordGenerationId;
                 var len = slotNodes.length;
                 var indices = [];
                 for (var i = 0; i < len; i++) indices.push(i);
@@ -107,15 +125,62 @@
                 for (var k = 0; k < len; k++) {
                     var c = digitPositions.indexOf(k) !== -1 ? randomDigit() : randomChar();
                     newCode.push(c);
-                    slotNodes[k].setAttribute('data-char', c);
-                    slotNodes[k].textContent = renderSlotText(c);
-                    slotNodes[k].classList.remove('slot-hit');
                 }
                 expectedSequence = newCode;
                 inputIndex = 0;
+
+                // Phase-in password characters like typing.
+                var revealDelay = 60; // ms between slots (match header typing rate)
+
+                for (var s = 0; s < len; s++) {
+                    slotNodes[s].classList.add('typing');
+                    slotNodes[s].setAttribute('data-char', '');
+                    slotNodes[s].textContent = '';
+                    slotNodes[s].classList.remove('slot-hit');
+                    // Inline hard-hide to prevent any flash before CSS applies.
+                    slotNodes[s].style.opacity = '0';
+                    slotNodes[s].style.visibility = 'hidden';
+                }
+
+                for (var r = 0; r < len; r++) {
+                    (function(idx) {
+                        setTimeout(function() {
+                            if (myId !== passwordGenerationId) return; // cancel stale reveals
+                            var c2 = newCode[idx];
+                            slotNodes[idx].setAttribute('data-char', c2);
+                            slotNodes[idx].textContent = renderSlotText(c2);
+                            slotNodes[idx].classList.remove('typing');
+                            slotNodes[idx].style.opacity = '';
+                            slotNodes[idx].style.visibility = '';
+                        }, revealDelay * (idx + 1));
+                    })(r);
+                }
             }
 
-            generateNewPassword();
+            // Immediately hide placeholder slot contents on arrival.
+            // Prevents any visible flash when you reach this page via `q`.
+            for (var i0 = 0; i0 < slotNodes.length; i0++) {
+                slotNodes[i0].classList.add('typing');
+                slotNodes[i0].setAttribute('data-char', '');
+                slotNodes[i0].textContent = '';
+                slotNodes[i0].classList.remove('slot-hit');
+                slotNodes[i0].style.opacity = '0';
+                slotNodes[i0].style.visibility = 'hidden';
+            }
+
+            // Typing effect for the header text.
+            // Start password phasing after the header finishes.
+            var loginTitle = 'INPUT IDENTIFICATION CODE';
+            var phaseDelay = 25;
+            var phaseStartDelay = 80;
+            setTimeout(function() {
+                phaseInText(loginCodeTextEl, loginTitle, phaseDelay);
+            }, phaseStartDelay);
+
+            setTimeout(function() {
+                // Start password phase-in after header finishes.
+                generateNewPassword();
+            }, phaseStartDelay + phaseDelay * loginTitle.length + 50);
 
             function handleLoginInput(e) {
                 if (loginComplete) return;
@@ -137,7 +202,7 @@
                         loginChallengeEl.classList.add('challenge-fade');
                         setTimeout(function() {
                             window.location.href = 'personal.html';
-                        }, 260);
+                        }, 280);
                     }
                     return;
                 }
