@@ -326,6 +326,50 @@
         line-height: 1.6;
       }
 
+      #cartPanel {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(163, 169, 212, 0.45);
+      }
+
+      #cartItems {
+        list-style: none;
+        padding-left: 0;
+        margin: 6px 0 6px;
+      }
+
+      #cartItems li {
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+      }
+
+      .cart-meta {
+        font-size: 0.78rem;
+      }
+
+      .add-to-cart {
+        margin-top: 6px;
+        border-radius: 999px;
+        padding: 6px 10px;
+        border: 1px solid rgba(163, 169, 212, 0.7);
+        background: rgba(5, 7, 26, 0.9);
+        color: var(--text);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        cursor: pointer;
+        transition:
+          transform 0.1s ease,
+          background 0.16s ease,
+          border-color 0.16s ease;
+      }
+
+      .add-to-cart:hover {
+        transform: translateY(-1px);
+        border-color: rgba(90, 216, 255, 0.9);
+        background: rgba(10, 12, 40, 0.98);
+      }
+
       footer {
         margin-top: 28px;
         font-size: 0.72rem;
@@ -410,15 +454,13 @@
               on <span>what survival costs.</span>
             </h1>
             <p class="lede">
-              This shop page imagines what it means when ratings turn into rent,
-              food, and safety. Every price tag below is paid for with stars
-              someone earned—or lost—through the smallest moments of kindness
-              and cruelty.
+              This page shows what your ratings might have to buy: safety,
+              warmth, motion, and status. TourBot can walk you through what each
+              price really means.
             </p>
             <p class="lede">
-              As you look through, think about how freely you give stars when
-              you rate people in your own feeds and apps. What would you charge
-              for a soft night, a safe street, a chance to start over?
+              Scroll through the items, add a few to your cart, and watch how
+              fast 100★ disappears.
             </p>
           </div>
 
@@ -433,21 +475,50 @@
 
             <div class="economy-grid">
               <div class="economy-card">
-                <div class="economy-title">Safe walk home</div>
-                <div class="economy-value highlight">3.5★</div>
+                <img
+                  class="product-media"
+                  src="assets/neon-drink.png"
+                  alt="A glowing neon drink with ice cubes"
+                  loading="lazy"
+                />
+                <div class="economy-title">Luminous Icewave</div>
+                <div class="economy-value highlight">4.0★</div>
                 <p>
-                  A guaranteed, well‑lit route through three worlds. People with
-                  fewer stars walk the long way and hope.
+                  A mood‑stabilizing drink served in the upper tiers. It calms
+                  your nerves before rating someone whose stars control your
+                  rent.
                 </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Luminous Icewave"
+                  data-cost="4.0"
+                >
+                  Add to cart
+                </button>
               </div>
 
               <div class="economy-card">
+                <img
+                  class="product-media"
+                  src="assets/food-platter.png"
+                  alt="A colorful spread of different foods"
+                  loading="lazy"
+                />
                 <div class="economy-title">Warm meal signal</div>
                 <div class="economy-value highlight">1.8★</div>
                 <p>
                   One night of hot food, paid for entirely by the kindness
                   strangers chose not to withhold.
                 </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Warm meal signal"
+                  data-cost="1.8"
+                >
+                  Add to cart
+                </button>
               </div>
 
               <div class="economy-card">
@@ -457,6 +528,14 @@
                   Erases your lowest public rating. Almost no one can afford it,
                   so most people simply learn to live with the damage.
                 </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Reputation reset"
+                  data-cost="9.0"
+                >
+                  Add to cart
+                </button>
               </div>
 
               <div class="economy-card">
@@ -473,6 +552,14 @@
                   reputation chip dry, your rations cold, and your secrets
                   quieter than your breath.
                 </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="Courier Pack (Neon‑Seal)"
+                  data-cost="12.0"
+                >
+                  Add to cart
+                </button>
               </div>
 
               <div class="economy-card">
@@ -488,6 +575,14 @@
                   A bio‑responsive vehicle that reads your pulse to choose a safe
                   route. People call it freedom. The system calls it a luxury.
                 </p>
+                <button
+                  class="add-to-cart"
+                  type="button"
+                  data-name="AVTR Drift Capsule"
+                  data-cost="45.0"
+                >
+                  Add to cart
+                </button>
               </div>
             </div>
 
@@ -500,6 +595,19 @@
                 here — who would you help first, if you could choose who gets to
                 buy what?
               </p>
+            </div>
+
+            <div class="economy" id="cartPanel">
+              <p><strong>Cart</strong></p>
+              <ul id="cartItems"></ul>
+              <p class="cart-meta">
+                Cart total:
+                <span id="cartTotal">0.0★</span>
+                <br />
+                Remaining balance:
+                <span id="cartBalance">100.00★</span>
+              </p>
+              <p class="cart-meta" id="cartMessage"></p>
             </div>
           </div>
         </section>
@@ -561,6 +669,7 @@
     </aside>
 
     <script src="tourbot.js" defer></script>
+    <script src="shop.js" defer></script>
   </body>
 </html>
 
