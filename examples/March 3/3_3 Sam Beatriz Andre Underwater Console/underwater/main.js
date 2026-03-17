@@ -336,7 +336,6 @@ async function init() {
       joystickTiltZ: 0,
       radar: null,
       radarSweep: null,
-      radarPing: null,
       radarStartTime: 0,
       hudCanvas: null,
       hudTexture: null,
@@ -415,14 +414,15 @@ async function init() {
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const btnGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.05, 16);
+          // Flatter cylinders that read as embedded caps
+          const btnGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.022, 20);
           // Randomly select a few buttons to be red, rest silver
           const isRed = Math.random() < 0.22;
           const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
           const x = startX + c * spacingX;
           const z = startZ + r * spacingZ;
-          // Sink the buttons exaggeratedly low into the pebble surface
-          btn.position.set(x, 0.49, z);
+          // Embed the buttons so only a thin lip sits above the rock
+          btn.position.set(x, 0.47, z);
           btn.castShadow = true;
           btn.receiveShadow = true;
 
@@ -510,11 +510,12 @@ async function init() {
             knob.castShadow = true;
             panelGroup.add(knob);
           } else {
-            const btnGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.04, 16);
+            // Flatter embedded caps for non-dial buttons
+            const btnGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.022, 20);
             const isRed = Math.random() < 0.2;
             const btn = new THREE.Mesh(btnGeo, isRed ? redMat.clone() : silverMat.clone());
-            // Sink grid buttons exaggeratedly low into the pebble surface
-            btn.position.set(x, 0.49, z);
+            // Embed so only a slim top surface is above rock
+            btn.position.set(x, 0.47, z);
             btn.castShadow = true;
             btn.receiveShadow = true;
             panelGroup.add(btn);
@@ -570,18 +571,6 @@ async function init() {
       const sweep = new THREE.Mesh(sweepGeo, sweepMat);
       radarGroup.add(sweep);
 
-      // Ping marker representing the library direction
-      const pingGeo = new THREE.CircleGeometry(0.04, 16);
-      const pingMat = new THREE.MeshBasicMaterial({
-        color: 0x9dffde,
-        transparent: true,
-        opacity: 0.9,
-        side: THREE.DoubleSide,
-      });
-      const ping = new THREE.Mesh(pingGeo, pingMat);
-      ping.position.set(0, 0.002, radius * 0.75);
-      radarGroup.add(ping);
-
       // Simple compass "N" marker at north (world +Z)
       const northGeo = new THREE.CircleGeometry(0.028, 16);
       const northMat = new THREE.MeshBasicMaterial({
@@ -601,7 +590,6 @@ async function init() {
       stone.add(radarGroup);
       stone.userData.radar = radarGroup;
       stone.userData.radarSweep = sweep;
-      stone.userData.radarPing = ping;
       stone.userData.radarStartTime = performance.now() / 1000;
     }
 
@@ -1889,8 +1877,26 @@ function animate(time) {
       .add(fwd.clone().multiplyScalar(swayDepth));
 
     target.y = baseY + bob;
-    // Prevent stones from dipping into the seafloor
-    const MIN_STONE_Y = 0.55;
+
+    // Simple separation so stones don't merge into each other (XZ plane)
+    const MIN_STONE_GAP = 0.9;
+    for (let j = 0; j < FLOATING_STONES.length; j++) {
+      if (j === index) continue;
+      const other = FLOATING_STONES[j];
+      const dx = target.x - other.position.x;
+      const dz = target.z - other.position.z;
+      const distSq = dx * dx + dz * dz;
+      if (distSq > 0 && distSq < MIN_STONE_GAP * MIN_STONE_GAP) {
+        const dist = Math.sqrt(distSq);
+        const push = (MIN_STONE_GAP - dist);
+        const nx = dx / dist;
+        const nz = dz / dist;
+        target.x += nx * push;
+        target.z += nz * push;
+      }
+    }
+    // Prevent stones from dipping into the seafloor (keep a clear gap above sand)
+    const MIN_STONE_Y = 0.9;
     if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
 
     // Smoothly ease current position toward target
@@ -1927,23 +1933,6 @@ function animate(time) {
       const period = 3.0;
       const t = (elapsed % period) / period;
       d.radarSweep.rotation.z = -t * Math.PI * 2;
-    }
-
-    // Radar library ping — show library bearing relative to world north (+Z)
-    if (d.radar && d.radarPing) {
-      const toLib = new THREE.Vector3().subVectors(LIBRARY_POSITION, camera.position);
-      toLib.y = 0;
-      if (toLib.lengthSq() > 1e-4) {
-        const ang = Math.atan2(toLib.x, toLib.z); // 0 = +Z, increasing toward +X
-        const r = 0.75 * 0.45; // 75% of radar radius
-        const x = Math.sin(ang) * r;
-        const z = Math.cos(ang) * r;
-        d.radarPing.position.set(x, 0.002, z);
-
-        // Gentle pulse so the ping feels alive
-        const pulse = 0.8 + 0.25 * Math.sin(tSec * 2.0);
-        d.radarPing.scale.setScalar(pulse);
-      }
     }
 
     // HUD — redraw environment stats on the last pebble
