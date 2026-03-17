@@ -40,7 +40,7 @@ const boostMeterFill = document.getElementById('boost-meter-fill');
 const PX_PER_DEG = 2;
 const COMPASS_CENTER = 140;
 
-let scene, camera, renderer, controls, playerLight, composer;
+let scene, camera, renderer, controls, playerLight, composer, seatMesh;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let moveUp = false, moveDown = false;
 let boost = false;
@@ -190,6 +190,34 @@ async function init() {
   playerLight = new THREE.PointLight(0xaae5ff, spotlightOn ? 45 : 0, 30, 0.5);
   playerLight.castShadow = false;
   scene.add(playerLight);
+
+  // Seat — half-sphere with central divot (thick ridge at edge, deeper toward middle)
+  const seatRadius = 0.65;
+  const seatGeo = new THREE.SphereGeometry(seatRadius, 24, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+  const seatPos = seatGeo.attributes.position;
+  const divotDepth = 0.26;
+  for (let i = 0; i < seatPos.count; i++) {
+    const x = seatPos.getX(i);
+    const y = seatPos.getY(i);
+    const z = seatPos.getZ(i);
+    const distFromCenter = Math.sqrt(x * x + z * z) / seatRadius;
+    const t = Math.max(0, 1 - distFromCenter);
+    const dip = divotDepth * t * t;
+    seatPos.setY(i, y - dip);
+  }
+  seatGeo.computeVertexNormals();
+  const seatMat = new THREE.MeshBasicMaterial({
+    color: 0x3d4a55,
+    side: THREE.DoubleSide,
+    depthWrite: true,
+    depthTest: true,
+  });
+  seatMesh = new THREE.Mesh(seatGeo, seatMat);
+  seatMesh.castShadow = false;
+  seatMesh.receiveShadow = false;
+  seatMesh.frustumCulled = false;
+  seatMesh.renderOrder = 1;
+  scene.add(seatMesh);
 
   // Deep ocean lighting — dim, blue-green
   const ambient = new THREE.AmbientLight(0x1a3a4a, 0.24);
@@ -1898,6 +1926,11 @@ function animate(time) {
   fwd.normalize();
   const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
 
+  // Seat — directly under camera, rotates with view
+  seatMesh.position.copy(camera.position);
+  seatMesh.position.y -= 0.55;
+  seatMesh.rotation.y = Math.atan2(fwd.x, fwd.z);
+
   FLOATING_STONES.forEach((stone, index) => {
     const d = stone.userData;
     const baseY = Math.max(0.7, camera.position.y + d.heightOffset);
@@ -2190,7 +2223,7 @@ function animate(time) {
   const inView = Math.abs(relAngle) < 70;
   compassLibrary.classList.toggle('visible', inView);
   if (inView) {
-    compassLibrary.style.left = (COMPASS_CENTER + relAngle * PX_PER_DEG) + 'px';
+    compassLibrary.style.left = (COMPASS_CENTER - relAngle * PX_PER_DEG) + 'px';
   }
 
   // Library interaction — raycast from center of screen (allowed while read message is up so user can select another message)
