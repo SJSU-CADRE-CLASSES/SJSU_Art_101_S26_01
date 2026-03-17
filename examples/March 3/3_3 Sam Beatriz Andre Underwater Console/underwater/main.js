@@ -1218,6 +1218,19 @@ async function init() {
       prompt.style.opacity = '0';
       canvas.setAttribute('tabindex', '0');
       canvas.focus();
+    } else if (!drilling && !reading && readPromptVisible && hoveredHole) {
+      const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
+      const messageText = msg ? msg.message : hoveredHole.userData.message;
+      if (messageText) {
+        interactPrompt.classList.remove('visible');
+        if (readOverlay.classList.contains('active') && (currentMessageText !== null || typewriterTargetText !== null)) {
+          startDeleteAnimation();
+        }
+        pendingReadMessage = messageText;
+        hoveredHole.getWorldPosition(_holeWorldPos);
+        startReadTubeAnimation(_holeWorldPos.clone());
+        reading = true;
+      }
     }
   });
 
@@ -1707,30 +1720,24 @@ async function saveDrilledMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(m),
     });
-    if (res.ok) {
-      messages.push(m);
-      saveMessagesToStorage();
-      if (previewHole) {
-        scene.remove(previewHole);
-        previewHole = null;
-      }
-      createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
+    if (!res.ok) {
+      // Server returned error (404, 500, etc) — will persist to localStorage below
     }
   } catch {
-    // Server unreachable — fall back to local storage so message persists
-    messages.push(m);
-    saveMessagesToStorage();
-    if (previewHole) {
-      scene.remove(previewHole);
-      previewHole = null;
-    }
-    createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
-  } finally {
-    exitDrillMode();
+    // Network error — server unreachable, will persist to localStorage below
   }
+  // Always add to local state and persist to localStorage so message survives reload
+  messages.push(m);
+  saveMessagesToStorage();
+  if (previewHole) {
+    scene.remove(previewHole);
+    previewHole = null;
+  }
+  createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id, text);
+  exitDrillMode();
 }
 
-function createHoleMesh(pos, normal, id) {
+function createHoleMesh(pos, normal, id, messageText = null) {
   const group = new THREE.Group();
   group.position.copy(pos);
   group.position.add(normal.clone().multiplyScalar(0.02));
@@ -1770,9 +1777,8 @@ function createHoleMesh(pos, normal, id) {
 
   group.userData.messageId = id;
   group.name = 'message-hole';
+  group.userData.message = messageText ?? messages.find((m) => m.id === id)?.message ?? '';
   scene.add(group);
-  const msg = messages.find((m) => m.id === id);
-  if (msg) group.userData.message = msg.message;
   return group;
 }
 
@@ -2044,13 +2050,8 @@ function animate(time) {
   FLOATING_STONES.forEach((stone, index) => {
     const d = stone.userData;
     const target = d.targetPos;
-<<<<<<< Updated upstream
-    // Prevent stones from dipping into the seafloor (keep a small but visible gap above sand)
-    const MIN_STONE_Y = 0.7;
-=======
     // Prevent stones from dipping into the seafloor (keep a small gap above sand)
     const MIN_STONE_Y = 0.35;
->>>>>>> Stashed changes
     if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
 
     // Smoothly ease current position toward target
@@ -2304,7 +2305,7 @@ function animate(time) {
         if (distToLibrary < LIBRARY_INTERACT_DIST) {
           hoveredHole = holeGroup;
           readPromptVisible = true;
-          interactPrompt.textContent = 'Press E to read message';
+          interactPrompt.textContent = 'Press E or click to read message';
           interactPrompt.classList.add('visible');
         }
       } else if (hit.object.name === 'library') {
