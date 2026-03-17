@@ -724,15 +724,12 @@ async function init() {
   }
 
   // Helper for embedding controls onto a pebble: sample the rock's surface height
-  const _pebbleRayOrigin = new THREE.Vector3();
-  const _pebbleRayDir = new THREE.Vector3(0, -1, 0);
-  const _pebbleRaycaster = new THREE.Raycaster();
-
   function samplePebbleHeight(stone, x, z, fallbackY) {
-    _pebbleRayOrigin.set(x, 2, z);
-    _pebbleRayDir.set(0, -1, 0);
-    _pebbleRaycaster.set(_pebbleRayOrigin, _pebbleRayDir);
-    const hits = _pebbleRaycaster.intersectObject(stone, false);
+    // Use a fresh raycaster/origin each time to avoid any temporal-dead-zone issues
+    const origin = new THREE.Vector3(x, 2, z);
+    const dir = new THREE.Vector3(0, -1, 0);
+    const raycaster = new THREE.Raycaster(origin, dir);
+    const hits = raycaster.intersectObject(stone, false);
     if (hits.length > 0) {
       return hits[0].point.y;
     }
