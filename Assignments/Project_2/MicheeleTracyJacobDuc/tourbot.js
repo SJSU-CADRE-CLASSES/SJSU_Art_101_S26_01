@@ -8,18 +8,10 @@
   if (!shell || !log || !choices || !toggleBtn || !resetBtn) return;
 
   const creditChipValue = document.querySelector(".credit-chip span:last-child");
-  const BALANCE_KEY = "starstruck_balance";
   const DEFAULT_START_BALANCE = 100;
 
   const readBalance = () => {
-    const raw = localStorage.getItem(BALANCE_KEY);
-    if (raw === null) return DEFAULT_START_BALANCE;
-    const parsed = Number(raw);
-    return Number.isFinite(parsed) ? parsed : DEFAULT_START_BALANCE;
-  };
-
-  const writeBalance = (value) => {
-    localStorage.setItem(BALANCE_KEY, String(value));
+    return DEFAULT_START_BALANCE;
   };
 
   let balance = readBalance();
@@ -40,7 +32,6 @@
 
   const setBalance = (next) => {
     balance = Math.max(0, Math.round(next * 100) / 100);
-    writeBalance(balance);
     if (creditChipValue) {
       creditChipValue.textContent = `${balance.toFixed(2)} ★ balance`;
     }
@@ -77,12 +68,12 @@
       btn.textContent = `${i}★`;
       btn.addEventListener("click", () => {
         addMsg(`${i}★`, "user");
-        const earned = i * 0.35;
+        const earned = i * 1;
         setBalance(balance + earned);
         addMsg(
-          `Logged. That rating transfers ${earned.toFixed(
-            2
-          )}★ into the local economy. Kindness compounds.`
+          `Logged. That rating earned ${earned.toFixed(
+            0
+          )}★ of currency for this world.`
         );
         addMsg("Where do you want to go next?");
         offerMenu();

@@ -1,5 +1,4 @@
 (() => {
-  const BALANCE_KEY = "starstruck_balance";
   const DEFAULT_START_BALANCE = 100;
 
   const creditChipValue = document.querySelector(".credit-chip span:last-child");
@@ -13,18 +12,7 @@
     return;
   }
 
-  const readBalance = () => {
-    const raw = localStorage.getItem(BALANCE_KEY);
-    if (raw === null) return DEFAULT_START_BALANCE;
-    const parsed = Number(raw);
-    return Number.isFinite(parsed) ? parsed : DEFAULT_START_BALANCE;
-  };
-
-  const writeBalance = (value) => {
-    localStorage.setItem(BALANCE_KEY, String(value));
-  };
-
-  let balance = readBalance();
+  let balance = DEFAULT_START_BALANCE;
   let cartTotal = 0;
 
   const updateDisplays = () => {
@@ -48,7 +36,6 @@
 
     balance = Math.max(0, Math.round((balance - cost) * 100) / 100);
     cartTotal = Math.round((cartTotal + cost) * 10) / 10;
-    writeBalance(balance);
 
     const li = document.createElement("li");
     li.textContent = `${name} — ${cost.toFixed(1)}★`;
