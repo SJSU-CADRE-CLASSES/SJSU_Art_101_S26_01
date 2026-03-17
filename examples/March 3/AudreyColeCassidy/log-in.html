@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Terminal - BIOSCAN</title>
+    <title>LOG IN</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link href="style.css?v=2" rel="stylesheet">
+    <style>
+        /* Login challenge: full viewfinder width, centered horizontally, at top */
+        .login-challenge {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            padding-top: 120px !important;
+            gap: 32px !important;
+            z-index: 50 !important;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(20, 35, 18, 0.4) 2px,
+                rgba(20, 35, 18, 0.4) 3px
+            ) !important;
+        }
+        .login-code-text,
+        .login-slots,
+        .login-hint-text {
+            text-align: center !important;
+        }
+    </style>
 </head>
 <body>
     <!-- CRT interlacing overlay - covers entire viewport -->
@@ -17,92 +46,106 @@
     </div>
 
     <div class="terminal-container">
-        <header class="header">PERSONAL TERMINAL</header>
-
         <div class="main-content">
-            <nav class="folders-panel">
-                <div class="folders-title">FOLDERS</div>
-                <div class="folder-buttons">
-                    <a href="personal.html" class="folder-btn active">PERSONAL</a>
-                    <a href="warp-dilation.html" class="folder-btn">WARP DILATION</a>
-                    <a href="ship-exterior.html" class="folder-btn">SHIP EXTERIOR INTERFACE</a>
-                    <a href="chat.html" class="folder-btn">CHAT-VOX</a>
-                </div>
-            </nav>
-
             <div class="content-panel">
-                <div class="content-title" id="content-title">LOG IN</div>
                 <div class="content-area">
                     <div class="tab-content active">
-                        <div class="bioscan-container">
-                            <div class="bioscan-header-bar">SUBJECT INFO:</div>
-                            <div class="bioscan-upper">
-                                <div class="bioscan-photo">
-                                    <div class="scan-line"></div>
-                                    <span class="scan-text">[ ID PHOTO ]</span>
-                                    <span class="scan-text">FILE N/A</span>
-                                </div>
-                                <div class="bioscan-stats">
-                                    <div class="bioscan-stat">
-                                        <span class="stat-key">SUBJECT:</span>
-                                        <span class="stat-val">A. BLANTON</span>
-                                    </div>
-                                    <div class="bioscan-stat">
-                                        <span class="stat-key">ID CODE:</span>
-                                        <span class="stat-val">77-ACX-04</span>
-                                    </div>
-                                    <div class="bioscan-stat">
-                                        <span class="stat-key">CLEARANCE:</span>
-                                        <span class="stat-val">LEVEL 3</span>
-                                    </div>
-                                    <div class="bioscan-stat">
-                                        <span class="stat-key">STATUS:</span>
-                                        <span class="stat-val">ACTIVE</span>
-                                    </div>
-                                    <div class="bioscan-stat">
-                                        <span class="stat-key">UNIT:</span>
-                                        <span class="stat-val">SECTOR 7</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bioscan-bio">
-                                CASSIDY WAS RECRUITED INTO THE PROGRAM IN THE SPRING OF 2021 AFTER COMPLETING A SERIES OF APTITUDE EVALUATIONS. DEMONSTRATED EXCEPTIONAL PERFORMANCE IN SYSTEMS ANALYSIS AND PATTERN RECOGNITION DURING THE FIRST PHASE OF TRAINING.<br><br>
-                                ASSIGNED TO THE PERSONAL TERMINAL PROJECT IN 2024. CLEARED FOR LEVEL 3 ACCESS FOLLOWING A STANDARD BACKGROUND REVIEW. ALL PRIOR RECORDS CONSISTENT WITH DEPARTMENTAL REQUIREMENTS.<br><br>
-                                NEXT EVALUATION SCHEDULED FOR REVIEW CYCLE 9. NO OUTSTANDING FLAGS ON FILE. CONTINUED DEPLOYMENT APPROVED PENDING ROUTINE QUARTERLY CHECK-IN WITH OVERSIGHT DIVISION.
+                        <div id="login-challenge" class="login-challenge">
+                            <p class="login-code-text">INPUT IDENTIFICATION CODE</p>
+                            <div id="login-slots" class="login-slots">
+                                <span class="login-slot" data-char="7">7</span>
+                                <span class="login-slot" data-char="A">A</span>
+                                <span class="login-slot" data-char="4">4</span>
+                                <span class="login-slot" data-char="C">C</span>
+                                <span class="login-slot" data-char="W">W</span>
+                                <span class="login-slot" data-char="0">0</span>
+                                <span class="login-slot" data-char="3">3</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <footer class="footer">UP, DOWN: select folder | LEFT, RIGHT: scroll | q: return to dashboard</footer>
+        <footer class="footer footer-hidden-until-login">Q: LOG OUT</footer>
     </div>
 
     <script>
-        const contentArea = document.querySelector('.content-area');
-        const pages = ['personal.html', 'warp-dilation.html', 'ship-exterior.html', 'chat.html'];
-        const currentIndex = 0;
+        (function() {
+            var loginSlotsEl = document.getElementById('login-slots');
+            var loginChallengeEl = document.getElementById('login-challenge');
+            var loginContentEl = document.getElementById('login-content');
+            var slotNodes = loginSlotsEl ? loginSlotsEl.querySelectorAll('.login-slot') : [];
+            var expectedSequence = Array.from(slotNodes).map(function(s) { return s.getAttribute('data-char') || ''; });
+            var inputIndex = 0;
+            var loginComplete = false;
+            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var digits = '0123456789';
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'q' || e.key === 'Q') {
-                window.location.href = 'log-in.html';
-                return;
+            function renderSlotText(c) {
+                // Show 0 as the empty-set symbol to match your viewfinder reference.
+                return c === '0' ? '∅' : c;
             }
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                contentArea.scrollBy({ top: -80, behavior: 'smooth' });
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                contentArea.scrollBy({ top: 80, behavior: 'smooth' });
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                window.location.href = pages[(currentIndex - 1 + pages.length) % pages.length];
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                window.location.href = pages[(currentIndex + 1) % pages.length];
+
+            function randomChar() {
+                return chars[Math.floor(Math.random() * chars.length)];
             }
-        });
+            function randomDigit() {
+                return digits[Math.floor(Math.random() * digits.length)];
+            }
+
+            function generateNewPassword() {
+                var len = slotNodes.length;
+                var indices = [];
+                for (var i = 0; i < len; i++) indices.push(i);
+                var digitPositions = [];
+                for (var j = 0; j < 3 && indices.length > 0; j++) {
+                    var idx = Math.floor(Math.random() * indices.length);
+                    digitPositions.push(indices[idx]);
+                    indices.splice(idx, 1);
+                }
+                var newCode = [];
+                for (var k = 0; k < len; k++) {
+                    var c = digitPositions.indexOf(k) !== -1 ? randomDigit() : randomChar();
+                    newCode.push(c);
+                    slotNodes[k].setAttribute('data-char', c);
+                    slotNodes[k].textContent = renderSlotText(c);
+                    slotNodes[k].classList.remove('slot-hit');
+                }
+                expectedSequence = newCode;
+                inputIndex = 0;
+            }
+
+            generateNewPassword();
+
+            function handleLoginInput(e) {
+                if (loginComplete) return;
+                var key = e.key;
+                if (!key || key.length !== 1) return;
+                var upper = key.toUpperCase();
+                var isLetter = (upper >= 'A' && upper <= 'Z');
+                var isDigit = (key >= '0' && key <= '9');
+                if (!isLetter && !isDigit) return;
+                e.preventDefault();
+                var expected = expectedSequence[inputIndex];
+                var inputChar = isLetter ? upper : key;
+                if (inputChar === expected) {
+                    slotNodes[inputIndex].textContent = renderSlotText(inputChar);
+                    slotNodes[inputIndex].classList.add('slot-hit');
+                    inputIndex++;
+                    if (inputIndex === expectedSequence.length) {
+                        loginComplete = true;
+                        loginChallengeEl.classList.add('challenge-fade');
+                        setTimeout(function() {
+                            window.location.href = 'personal.html';
+                        }, 260);
+                    }
+                    return;
+                }
+                generateNewPassword();
+            }
+
+            window.addEventListener('keydown', handleLoginInput);
+        })();
     </script>
 </body>
 </html>

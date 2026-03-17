@@ -11,6 +11,21 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
 const API_MESSAGES = '/api/messages';
+const STORAGE_KEY = 'stone-library-messages';
+
+function saveMessagesToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  } catch (_) {}
+}
+function loadMessagesFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 const MAX_MESSAGE_LENGTH = 100;
 const LIBRARY_INTERACT_DIST = 18;
 const HOLE_READ_DIST = 6;
@@ -121,7 +136,12 @@ async function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
   camera.position.set(0, 2, 10);
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: 'high-performance',
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -193,24 +213,25 @@ async function init() {
 
   // Seat — half-sphere with central divot (thick ridge at edge, deeper toward middle)
   const seatRadius = 0.65;
-  const seatGeo = new THREE.SphereGeometry(seatRadius, 24, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+  const seatGeo = new THREE.SphereGeometry(seatRadius, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
   const seatPos = seatGeo.attributes.position;
-  const divotDepth = 0.26;
+  const divotDepth = 0.45;
+  const lipRadius = 0.42;
   for (let i = 0; i < seatPos.count; i++) {
     const x = seatPos.getX(i);
     const y = seatPos.getY(i);
     const z = seatPos.getZ(i);
     const distFromCenter = Math.sqrt(x * x + z * z) / seatRadius;
-    const t = Math.max(0, 1 - distFromCenter);
+    const t = distFromCenter < lipRadius ? 1 - distFromCenter / lipRadius : 0;
     const dip = divotDepth * t * t;
     seatPos.setY(i, y - dip);
   }
   seatGeo.computeVertexNormals();
-  const seatMat = new THREE.MeshBasicMaterial({
+  const seatMat = new THREE.MeshStandardMaterial({
     color: 0x3d4a55,
+    roughness: 0.85,
+    metalness: 0.15,
     side: THREE.DoubleSide,
-    depthWrite: true,
-    depthTest: true,
   });
   seatMesh = new THREE.Mesh(seatGeo, seatMat);
   seatMesh.castShadow = false;
@@ -769,7 +790,7 @@ async function init() {
     side: THREE.DoubleSide,
   });
 
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 38; i++) {
     const r = Math.random();
     const height = r < 0.5 ? 1.5 + Math.random() * 3
       : r < 0.85 ? 5 + Math.random() * 12
@@ -777,7 +798,7 @@ async function init() {
     const thickness = 0.008 + height * 0.0025;
     const topRad = thickness * 0.4;
     const botRad = thickness * 2.2;
-    const stalkGeo = new THREE.CylinderGeometry(topRad, botRad, height, 5, Math.max(8, Math.min(20, Math.floor(height * 1.2))));
+    const stalkGeo = new THREE.CylinderGeometry(topRad, botRad, height, 5, Math.max(6, Math.min(14, Math.floor(height * 0.9))));
     const pos = stalkGeo.attributes.position;
     const origPos = new Float32Array(pos.array.length);
     origPos.set(pos.array);
@@ -833,7 +854,7 @@ async function init() {
     metalness: 0,
     side: THREE.DoubleSide,
   });
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 16; i++) {
     const w = 0.8 + Math.random() * 1.2;
     const h = 0.5 + Math.random() * 0.8;
     const geo = createOvalGeometry(w, h, 18);
@@ -1062,7 +1083,7 @@ async function init() {
   for (let i = 0; i < 4; i++) createSchool();
 
   // Library boulder — one large oblong shape, high subdivision for smooth bumps
-  const libraryGeo = new THREE.IcosahedronGeometry(6, 4);
+  const libraryGeo = new THREE.IcosahedronGeometry(6, 3);
   const libPos = libraryGeo.attributes.position;
   for (let i = 0; i < libPos.count; i++) {
     const x = libPos.getX(i);
@@ -1080,7 +1101,7 @@ async function init() {
   });
   libraryBoulder = new THREE.Mesh(libraryGeo, libraryMat);
   libraryBoulder.position.copy(LIBRARY_POSITION);
-  libraryBoulder.scale.set(1.9, 1.3, 1.6);
+  libraryBoulder.scale.set(1.9, 2.0, 1.6);
   libraryBoulder.rotation.set(0.1, 0.5, 0.05);
   libraryBoulder.castShadow = true;
   libraryBoulder.receiveShadow = true;
@@ -1094,10 +1115,14 @@ async function init() {
   async function loadMessages() {
     try {
       const res = await fetch(API_MESSAGES);
-      if (res.ok) messages = await res.json();
-      else messages = [];
+      if (res.ok) {
+        messages = await res.json();
+        saveMessagesToStorage();
+      } else {
+        messages = loadMessagesFromStorage();
+      }
     } catch {
-      messages = [];
+      messages = loadMessagesFromStorage();
     }
     messages.forEach((m) => {
       const pos = new THREE.Vector3(m.px, m.py, m.pz);
@@ -1129,7 +1154,7 @@ async function init() {
   particlePos = particleGeo.attributes.position;
 
   // Dark dust particles — light up white when spotlight hits them
-  const dustCount = 350;
+  const dustCount = 200;
   const dustGeo = new THREE.BufferGeometry();
   const dustPositions = new Float32Array(dustCount * 3);
   for (let i = 0; i < dustCount * 3; i += 3) {
@@ -1191,6 +1216,21 @@ async function init() {
     if (!controls.isLocked) {
       controls.lock();
       prompt.style.opacity = '0';
+      canvas.setAttribute('tabindex', '0');
+      canvas.focus();
+    } else if (!drilling && !reading && readPromptVisible && hoveredHole) {
+      const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
+      const messageText = msg ? msg.message : hoveredHole.userData.message;
+      if (messageText) {
+        interactPrompt.classList.remove('visible');
+        if (readOverlay.classList.contains('active') && (currentMessageText !== null || typewriterTargetText !== null)) {
+          startDeleteAnimation();
+        }
+        pendingReadMessage = messageText;
+        hoveredHole.getWorldPosition(_holeWorldPos);
+        startReadTubeAnimation(_holeWorldPos.clone());
+        reading = true;
+      }
     }
   });
 
@@ -1296,7 +1336,7 @@ function startDrillSprayAnimation(worldPoint, worldNormal) {
     seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), segDir);
     seg.scale.y = 0;
     seg.visible = false; // only show when segment is actually growing (avoids black dots)
-    seg.castShadow = true;
+    seg.castShadow = false; // transient tube, skip shadow for perf
     group.add(seg);
     segments.push(seg);
   }
@@ -1517,7 +1557,7 @@ function startReadTubeAnimation(holeWorldPosition) {
     seg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), segDir);
     seg.scale.y = 0;
     seg.visible = false;
-    seg.castShadow = true;
+    seg.castShadow = false; // transient tube, skip shadow for perf
     group.add(seg);
     segments.push(seg);
   }
@@ -1680,21 +1720,24 @@ async function saveDrilledMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(m),
     });
-    if (res.ok) {
-      messages.push(m);
-      if (previewHole) {
-        scene.remove(previewHole);
-        previewHole = null;
-      }
-      createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id);
-      exitDrillMode();
+    if (!res.ok) {
+      // Server returned error (404, 500, etc) — will persist to localStorage below
     }
   } catch {
-    // Server unreachable — could fall back to localStorage if desired
+    // Network error — server unreachable, will persist to localStorage below
   }
+  // Always add to local state and persist to localStorage so message survives reload
+  messages.push(m);
+  saveMessagesToStorage();
+  if (previewHole) {
+    scene.remove(previewHole);
+    previewHole = null;
+  }
+  createHoleMesh(pendingHoleData.point.clone(), pendingHoleData.normal.clone(), id, text);
+  exitDrillMode();
 }
 
-function createHoleMesh(pos, normal, id) {
+function createHoleMesh(pos, normal, id, messageText = null) {
   const group = new THREE.Group();
   group.position.copy(pos);
   group.position.add(normal.clone().multiplyScalar(0.02));
@@ -1734,9 +1777,8 @@ function createHoleMesh(pos, normal, id) {
 
   group.userData.messageId = id;
   group.name = 'message-hole';
+  group.userData.message = messageText ?? messages.find((m) => m.id === id)?.message ?? '';
   scene.add(group);
-  const msg = messages.find((m) => m.id === id);
-  if (msg) group.userData.message = msg.message;
   return group;
 }
 
@@ -1772,14 +1814,15 @@ function startDeleteAnimation() {
 
 function onKeyDown(e) {
   if (reading) return;
-  if (readOverlay.classList.contains('active') && (e.code === 'KeyE' || e.code === 'Escape')) {
+  if (readOverlay.classList.contains('active') && (e.code === 'KeyE' || e.code === 'Escape' || e.key === 'e' || e.key === 'E')) {
     e.preventDefault();
-    if (readPromptVisible && hoveredHole && e.code === 'KeyE') {
+    if (readPromptVisible && hoveredHole && (e.code === 'KeyE' || e.key === 'e' || e.key === 'E')) {
       const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
-      if (msg) {
+      const messageText = msg ? msg.message : hoveredHole.userData.message;
+      if (messageText) {
         interactPrompt.classList.remove('visible');
         startDeleteAnimation();
-        pendingReadMessage = msg.message;
+        pendingReadMessage = messageText;
         hoveredHole.getWorldPosition(_holeWorldPos);
         startReadTubeAnimation(_holeWorldPos.clone());
         reading = true;
@@ -1811,15 +1854,16 @@ function onKeyDown(e) {
     }
     return;
   }
-  if (e.code === 'KeyE' && readPromptVisible && hoveredHole) {
+  if ((e.code === 'KeyE' || e.key === 'e' || e.key === 'E') && readPromptVisible && hoveredHole) {
     e.preventDefault();
     const msg = messages.find((m) => m.id === hoveredHole.userData.messageId);
-    if (msg) {
+    const messageText = msg ? msg.message : hoveredHole.userData.message;
+    if (messageText) {
       interactPrompt.classList.remove('visible');
       if (readOverlay.classList.contains('active') && (currentMessageText !== null || typewriterTargetText !== null)) {
         startDeleteAnimation();
       }
-      pendingReadMessage = msg.message;
+      pendingReadMessage = messageText;
       hoveredHole.getWorldPosition(_holeWorldPos);
       startReadTubeAnimation(_holeWorldPos.clone());
       reading = true;
@@ -1957,6 +2001,22 @@ function animate(time) {
       .add(fwd.clone().multiplyScalar(swayDepth));
 
     target.y = baseY + bob;
+
+    // Keep panels from intersecting the Library boulder in XZ
+    // Use a conservative radius that fully encloses the library mesh.
+    const dxLib = target.x - LIBRARY_POSITION.x;
+    const dzLib = target.z - LIBRARY_POSITION.z;
+    const distLibSq = dxLib * dxLib + dzLib * dzLib;
+    const MIN_LIB_GAP = 4.5;
+    if (distLibSq > 1e-6 && distLibSq < MIN_LIB_GAP * MIN_LIB_GAP) {
+      const distLib = Math.sqrt(distLibSq) || 0.0001;
+      const pushLib = (MIN_LIB_GAP - distLib);
+      const nxLib = dxLib / distLib;
+      const nzLib = dzLib / distLib;
+      target.x += nxLib * pushLib;
+      target.z += nzLib * pushLib;
+    }
+
     d.targetPos = target.clone();
   });
 
@@ -1990,8 +2050,8 @@ function animate(time) {
   FLOATING_STONES.forEach((stone, index) => {
     const d = stone.userData;
     const target = d.targetPos;
-    // Prevent stones from dipping into the seafloor (keep a clear gap above sand)
-    const MIN_STONE_Y = 0.9;
+    // Prevent stones from dipping into the seafloor (keep a small gap above sand)
+    const MIN_STONE_Y = 0.35;
     if (target.y < MIN_STONE_Y) target.y = MIN_STONE_Y;
 
     // Smoothly ease current position toward target
@@ -2245,7 +2305,7 @@ function animate(time) {
         if (distToLibrary < LIBRARY_INTERACT_DIST) {
           hoveredHole = holeGroup;
           readPromptVisible = true;
-          interactPrompt.textContent = 'Press E to read message';
+          interactPrompt.textContent = 'Press E or click to read message';
           interactPrompt.classList.add('visible');
         }
       } else if (hit.object.name === 'library') {

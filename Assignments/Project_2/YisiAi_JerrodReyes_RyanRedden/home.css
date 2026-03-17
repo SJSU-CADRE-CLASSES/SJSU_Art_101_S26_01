@@ -103,8 +103,7 @@ body::after {
 }
 
 body.intro-mode .hud,
-body.intro-mode .reticle,
-body.intro-mode .fallback-note {
+body.intro-mode .reticle {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -117,7 +116,6 @@ body.hud-hidden .hud {
 }
 
 .panel-label,
-.fallback-note,
 .screen-meta {
   margin: 0;
   color: var(--muted);
@@ -228,17 +226,7 @@ h1 {
   font-size: 0.68rem;
 }
 
-.fallback-note {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  max-width: 340px;
-  padding: 12px 14px;
-  border: 1px solid rgba(255, 203, 105, 0.25);
-  background: rgba(15, 14, 8, 0.68);
-  color: rgba(255, 230, 173, 0.88);
-  z-index: 6;
-}
+
 
 .screen-node {
   width: 980px;
@@ -301,8 +289,7 @@ h1 {
   }
 
   .brand-panel,
-  .nav-panel,
-  .fallback-note {
+  .nav-panel {
     width: auto;
     max-width: none;
   }
@@ -322,11 +309,5 @@ h1 {
 
   .nav-grid {
     grid-template-columns: 1fr;
-  }
-
-  .fallback-note {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
   }
 }
