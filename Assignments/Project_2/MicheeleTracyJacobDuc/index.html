@@ -969,10 +969,15 @@
               <span>kindness is currency.</span>
             </h1>
             <p class="lede">
-              In the StarStruck system, every interaction is logged as a star.
-              The more generously you move through each world, the brighter your
-              account glows. Coldness, cruelty, or apathy dim your balance—
-              closing doors you did not know you needed.
+              Welcome to StarStruck — a world where every interaction matters,
+              and every rating has value. Here, stars are more than feedback —
+              they are currency, status, and survival. As you journey through
+              different worlds, you’ll meet their inhabitants, experience their
+              realities, and decide their worth with a simple rating. Be
+              thoughtful. Be observant. Be kind — or don’t. Because in
+              StarStruck, your choices shape more than just your experience…
+              they shape theirs. Scroll to explore. Rate to influence. And
+              remember: not everyone can afford to lose a star.
             </p>
 
             <div class="warning-banner">
@@ -1401,7 +1406,18 @@
           clearChoices();
           setBalance(0);
           addMsg("Boot sequence complete.");
-          addMsg("I’m TourBot. I can guide you through worlds and translate ratings into currency.");
+          addMsg(
+            "Welcome to StarStruck — a world where every interaction matters, and every rating has value."
+          );
+          addMsg(
+            "Here, stars are more than feedback — they are currency, status, and survival."
+          );
+          addMsg(
+            "Scroll to explore. Rate to influence. Remember: not everyone can afford to lose a star."
+          );
+          addMsg(
+            "I’m TourBot. I can guide you through worlds and translate ratings into currency."
+          );
           addMsg("What do you want to do?");
           offerMenu();
         };
