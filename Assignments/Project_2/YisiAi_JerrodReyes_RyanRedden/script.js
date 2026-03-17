@@ -158,6 +158,8 @@ KEYBOARD SHORTCUTS
 
 document.addEventListener("keydown",(e)=>{
 
+if(window.self!==window.top) return
+
 if(e.key==="Escape") location.href="index.html"
 if(e.key==="m") location.href="marketplace.html"
 if(e.key==="w") location.href="wallet.html"

@@ -146,7 +146,7 @@
       addChoice("What should I buy?", () => {
         addMsg("What should I buy?", "user");
         addMsg(
-          "If your goal is survival: start with food (Warm meal signal). If your goal is safety: buy the Safe walk home. If your goal is status: the Reputation reset."
+          "If your goal is survival: start with food (Warm meal signal). If your goal is comfort: Luminous Icewave. If your goal is status: the Reputation reset or AVTR Drift Capsule."
         );
         addMsg("But the most powerful purchase is still kindness, upstream, before anyone reaches this counter.");
         offerMenu();
@@ -168,6 +168,12 @@
 
     if (location.pathname.toLowerCase().endsWith("shop.html")) {
       addMsg("You’re in the Shop. These prices are built from ratings people live and die by.");
+      addMsg(
+        "Here, stars have already turned into rent, food, and a chance to feel safe for one more night."
+      );
+      addMsg(
+        "As you add items to your cart, watch how quickly 100★ vanishes — and imagine who had to earn those stars."
+      );
     } else {
       addMsg("You’re in the corridor. Scroll through worlds and watch the rules shift.");
     }
