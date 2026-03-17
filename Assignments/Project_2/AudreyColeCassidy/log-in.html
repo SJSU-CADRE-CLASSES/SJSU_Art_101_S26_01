@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOG IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css?v=2" rel="stylesheet">
+    <style>
+        /* Login challenge: full viewfinder width, centered horizontally, at top */
+        .login-challenge {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            padding-top: 120px !important;
+            gap: 32px !important;
+            z-index: 50 !important;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 2px,
+                rgba(20, 35, 18, 0.4) 2px,
+                rgba(20, 35, 18, 0.4) 3px
+            ) !important;
+        }
+        .login-code-text,
+        .login-slots,
+        .login-hint-text {
+            text-align: center !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- CRT interlacing overlay - covers entire viewport -->
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container">
+        <div class="main-content">
+            <div class="content-panel">
+                <div class="content-area">
+                    <div class="tab-content active">
+                        <div id="login-challenge" class="login-challenge">
+                            <p class="login-code-text">INPUT IDENTIFICATION CODE</p>
+                            <div id="login-slots" class="login-slots">
+                                <span class="login-slot" data-char="7">7</span>
+                                <span class="login-slot" data-char="A">A</span>
+                                <span class="login-slot" data-char="4">4</span>
+                                <span class="login-slot" data-char="C">C</span>
+                                <span class="login-slot" data-char="W">W</span>
+                                <span class="login-slot" data-char="0">0</span>
+                                <span class="login-slot" data-char="3">3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer footer-hidden-until-login">Q: LOG OUT</footer>
+    </div>
+
+    <script>
+        (function() {
+            var loginSlotsEl = document.getElementById('login-slots');
+            var loginChallengeEl = document.getElementById('login-challenge');
+            var loginContentEl = document.getElementById('login-content');
+            var slotNodes = loginSlotsEl ? loginSlotsEl.querySelectorAll('.login-slot') : [];
+            var expectedSequence = Array.from(slotNodes).map(function(s) { return s.getAttribute('data-char') || ''; });
+            var inputIndex = 0;
+            var loginComplete = false;
+            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var digits = '0123456789';
+
+            function renderSlotText(c) {
+                // Show 0 as the empty-set symbol to match your viewfinder reference.
+                return c === '0' ? '∅' : c;
+            }
+
+            function randomChar() {
+                return chars[Math.floor(Math.random() * chars.length)];
+            }
+            function randomDigit() {
+                return digits[Math.floor(Math.random() * digits.length)];
+            }
+
+            function generateNewPassword() {
+                var len = slotNodes.length;
+                var indices = [];
+                for (var i = 0; i < len; i++) indices.push(i);
+                var digitPositions = [];
+                for (var j = 0; j < 3 && indices.length > 0; j++) {
+                    var idx = Math.floor(Math.random() * indices.length);
+                    digitPositions.push(indices[idx]);
+                    indices.splice(idx, 1);
+                }
+                var newCode = [];
+                for (var k = 0; k < len; k++) {
+                    var c = digitPositions.indexOf(k) !== -1 ? randomDigit() : randomChar();
+                    newCode.push(c);
+                    slotNodes[k].setAttribute('data-char', c);
+                    slotNodes[k].textContent = renderSlotText(c);
+                    slotNodes[k].classList.remove('slot-hit');
+                }
+                expectedSequence = newCode;
+                inputIndex = 0;
+            }
+
+            generateNewPassword();
+
+            function handleLoginInput(e) {
+                if (loginComplete) return;
+                var key = e.key;
+                if (!key || key.length !== 1) return;
+                var upper = key.toUpperCase();
+                var isLetter = (upper >= 'A' && upper <= 'Z');
+                var isDigit = (key >= '0' && key <= '9');
+                if (!isLetter && !isDigit) return;
+                e.preventDefault();
+                var expected = expectedSequence[inputIndex];
+                var inputChar = isLetter ? upper : key;
+                if (inputChar === expected) {
+                    slotNodes[inputIndex].textContent = renderSlotText(inputChar);
+                    slotNodes[inputIndex].classList.add('slot-hit');
+                    inputIndex++;
+                    if (inputIndex === expectedSequence.length) {
+                        loginComplete = true;
+                        loginChallengeEl.classList.add('challenge-fade');
+                        setTimeout(function() {
+                            window.location.href = 'personal.html';
+                        }, 260);
+                    }
+                    return;
+                }
+                generateNewPassword();
+            }
+
+            window.addEventListener('keydown', handleLoginInput);
+        })();
+    </script>
+</body>
+</html>
