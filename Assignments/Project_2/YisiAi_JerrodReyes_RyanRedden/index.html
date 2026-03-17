@@ -1,49 +1,42 @@
 <!DOCTYPE html>
-///
-<html>
+<html lang="en">
 <head>
-<title>Shadow Market</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Market Portal</title>
+<link rel="stylesheet" href="home.css">
 </head>
-
 <body>
+<div id="app">
+<div id="scene-root" aria-hidden="true"></div>
 
-<div class="grid"></div>
+<div class="hud">
+<section class="hud-panel brand-panel">
+<h1>Shadow Market Portal</h1>
+</section>
 
-<div class="ui-dot" style="top:120px;left:80px;"></div>
-<div class="ui-dot" style="bottom:100px;right:120px;"></div>
-
-<div class="screen">
-
-<div class="header">
-
-<div>SHADOW MARKET</div>
-
-<div>
-
-<a href="marketplace.html" class="retro-btn">Marketplace</a>
-<a href="login.html" class="retro-btn">Login</a>
-<a href="wallet.html" class="retro-btn">Wallet</a>
-
+<section class="hud-panel nav-panel">
+<p class="panel-label">Jump To Node</p>
+<div class="nav-grid">
+<button class="nav-btn active" data-view="marketplace">Marketplace</button>
+<button class="nav-btn" data-view="wallet">Wallet</button>
+<button class="nav-btn" data-view="login">Login</button>
+<button class="nav-btn" data-view="neural">Neural Link</button>
+<button class="nav-btn" data-view="listing">Featured Listing</button>
+</div>
+</section>
 </div>
 
+<div class="reticle" aria-hidden="true"></div>
+<div id="entry-prompt" class="entry-prompt" hidden>
+<p>Enter Shadow Market</p>
+<span>Click the core module to jack in.</span>
+</div>
+<p class="fallback-note">
+If embedded screens do not appear in your browser, run the folder through a local web server.
+</p>
 </div>
 
-<div id="terminal"></div>
-
-<div id="feed">> scanning network...</div>
-
-<div class="terminal-box">
-
-> type command:
-
-<input>
-
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
+<script type="module" src="home.js"></script>
 </body>
 </html>

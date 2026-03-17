@@ -548,8 +548,8 @@ async function init() {
         metalness: 0.1,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
-      // Nudge the base slightly down so the radar feels embedded, not hovering
-      base.position.y = -0.012;
+      // Slightly inset base so the radar feels embedded, not hovering
+      base.position.y = -0.02;
       base.receiveShadow = false;
       base.castShadow = false;
       radarGroup.add(base);
@@ -591,8 +591,9 @@ async function init() {
       radarGroup.add(northMarker);
 
       radarGroup.rotation.x = -Math.PI / 2;
-      // Sink the whole radar even more into the flattened top of the stone
-      radarGroup.position.set(0, 0.545, 0);
+      // Place the whole radar group flush on the pebble using the actual surface height
+      const radarSurfaceY = samplePebbleHeight(stone, 0, 0, 0.5);
+      radarGroup.position.set(0, radarSurfaceY + 0.01, 0);
 
       stone.add(radarGroup);
       stone.userData.radar = radarGroup;
