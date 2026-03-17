@@ -548,8 +548,8 @@ async function init() {
         metalness: 0.1,
       });
       const base = new THREE.Mesh(baseGeo, baseMat);
-      // Nudge the base slightly down so the radar feels embedded, not hovering
-      base.position.y = -0.012;
+      // Slightly inset base so the radar feels embedded, not hovering
+      base.position.y = -0.02;
       base.receiveShadow = false;
       base.castShadow = false;
       radarGroup.add(base);
@@ -591,8 +591,9 @@ async function init() {
       radarGroup.add(northMarker);
 
       radarGroup.rotation.x = -Math.PI / 2;
-      // Sink the whole radar even more into the flattened top of the stone
-      radarGroup.position.set(0, 0.545, 0);
+      // Place the whole radar group flush on the pebble using the actual surface height
+      const radarSurfaceY = samplePebbleHeight(stone, 0, 0, 0.5);
+      radarGroup.position.set(0, radarSurfaceY + 0.01, 0);
 
       stone.add(radarGroup);
       stone.userData.radar = radarGroup;
@@ -724,15 +725,12 @@ async function init() {
   }
 
   // Helper for embedding controls onto a pebble: sample the rock's surface height
-  const _pebbleRayOrigin = new THREE.Vector3();
-  const _pebbleRayDir = new THREE.Vector3(0, -1, 0);
-  const _pebbleRaycaster = new THREE.Raycaster();
-
   function samplePebbleHeight(stone, x, z, fallbackY) {
-    _pebbleRayOrigin.set(x, 2, z);
-    _pebbleRayDir.set(0, -1, 0);
-    _pebbleRaycaster.set(_pebbleRayOrigin, _pebbleRayDir);
-    const hits = _pebbleRaycaster.intersectObject(stone, false);
+    // Use a fresh raycaster/origin each time to avoid any temporal-dead-zone issues
+    const origin = new THREE.Vector3(x, 2, z);
+    const dir = new THREE.Vector3(0, -1, 0);
+    const raycaster = new THREE.Raycaster(origin, dir);
+    const hits = raycaster.intersectObject(stone, false);
     if (hits.length > 0) {
       return hits[0].point.y;
     }
@@ -1974,8 +1972,9 @@ function animate(time) {
     // If this stone has the joystick, tilt it based on movement direction
     if (d.joystick) {
       // Desired tilt from WASD input (local X/Z of joystick on stone)
-      const desiredTiltX = (moveForward ? -1 : 0) + (moveBackward ? 1 : 0);
-      const desiredTiltZ = (moveRight ? 1 : 0) + (moveLeft ? -1 : 0);
+      // Invert signs so joystick leans in the same direction as motion
+      const desiredTiltX = (moveForward ? 1 : 0) + (moveBackward ? -1 : 0);
+      const desiredTiltZ = (moveRight ? -1 : 0) + (moveLeft ? 1 : 0);
 
       // Normalize so diagonals aren't stronger
       let len = Math.hypot(desiredTiltX, desiredTiltZ);
