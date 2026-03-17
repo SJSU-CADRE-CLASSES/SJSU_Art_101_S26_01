@@ -771,6 +771,7 @@ body {
 
 .content-title {
     min-height: 1.5em;
+    text-align: center;
 }
 
 .folder-buttons {
@@ -1369,6 +1370,9 @@ body {
 }
 
 /* Footer */
+.footer-hidden-until-login {
+    display: none !important;
+}
 .footer {
     margin-top: auto;
     padding: 15px 0 10px;
@@ -1377,6 +1381,92 @@ body {
     opacity: 0.9;
     border-top: 1px solid rgba(51, 255, 51, 0.3);
     margin-top: 20px;
+}
+
+/* Login code challenge (helldiver-style, numbers + letters) */
+.login-challenge {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 120px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 32px;
+    transition: opacity 0.26s ease;
+    z-index: 50;
+    border: none;
+    box-shadow: none;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(20, 35, 18, 0.4) 2px,
+        rgba(20, 35, 18, 0.4) 3px
+    );
+}
+.login-challenge.challenge-fade {
+    opacity: 0;
+    pointer-events: none;
+}
+.login-code-text {
+    font-size: 1.5rem;
+    color: #33ff33;
+    text-align: center;
+    letter-spacing: 0.06em;
+    margin: 0;
+    font-family: 'VT323', monospace;
+    text-shadow: 0 0 12px rgba(51, 255, 51, 0.8), 0 0 24px rgba(51, 255, 51, 0.4);
+    line-height: 1.3;
+}
+.login-slots {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.login-slot {
+    min-width: 1ch;
+    font-family: 'VT323', monospace;
+    font-size: 2.1rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+.login-slot.slot-hit {
+    color: #33ff33;
+    -webkit-text-stroke: none;
+    text-shadow: 0 0 10px rgba(51, 255, 51, 0.8);
+}
+/* Outline only: default slot shows expected character as faint outline; no box */
+.login-slot:not(.slot-hit) {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(140, 170, 100, 1);
+}
+.login-hint-text {
+    font-size: 0.95rem;
+    color: rgba(51, 255, 51, 0.7);
+    text-align: center;
+    margin: 0;
+    font-family: 'VT323', monospace;
+    letter-spacing: 0.04em;
+}
+.login-content-hidden {
+    display: none !important;
+}
+.login-content-hidden.login-content-visible {
+    display: flex !important;
+    flex-direction: column;
+    animation: loginContentFadeIn 0.3s ease;
+}
+@keyframes loginContentFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* BioScan tab */
