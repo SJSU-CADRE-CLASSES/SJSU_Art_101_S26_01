@@ -666,7 +666,237 @@
         transition: all 0.5s ease 0.8s;
       }
 
-      /* State: Portal opened - smooth transition */
+      /* ========================================
+         DRAMATIC PORTAL TRANSITION SYSTEM
+         ======================================== */
+
+      /* Screen overlay for darkening and glitch effect */
+      .portal-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.95) 100%);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 50;
+        transition: opacity 0.5s ease;
+      }
+
+      .portal-overlay.active {
+        opacity: 1;
+      }
+
+      /* Glitch lines overlay */
+      .glitch-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 51;
+        opacity: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 2px,
+          rgba(255, 157, 77, 0.03) 2px,
+          rgba(255, 157, 77, 0.03) 4px
+        );
+      }
+
+      .glitch-overlay.active {
+        animation: glitch-flicker 0.15s steps(2) 4;
+      }
+
+      @keyframes glitch-flicker {
+        0% { opacity: 0; transform: translateX(0); }
+        25% { opacity: 1; transform: translateX(-5px); }
+        50% { opacity: 0.5; transform: translateX(5px); }
+        75% { opacity: 1; transform: translateX(-3px); }
+        100% { opacity: 0; transform: translateX(0); }
+      }
+
+      /* Vortex effect inside portal */
+      .vortex-effect {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0;
+        z-index: 15;
+      }
+
+      .vortex-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid rgba(255, 200, 150, 0.6);
+        opacity: 0;
+      }
+
+      .vortex-ring:nth-child(1) { width: 20%; height: 20%; }
+      .vortex-ring:nth-child(2) { width: 35%; height: 35%; }
+      .vortex-ring:nth-child(3) { width: 50%; height: 50%; }
+      .vortex-ring:nth-child(4) { width: 65%; height: 65%; }
+      .vortex-ring:nth-child(5) { width: 80%; height: 80%; }
+
+      .main-portal.activating .vortex-effect {
+        opacity: 1;
+      }
+
+      .main-portal.activating .vortex-ring {
+        animation: vortex-pulse 0.8s ease-out forwards;
+      }
+
+      .main-portal.activating .vortex-ring:nth-child(1) { animation-delay: 0s; }
+      .main-portal.activating .vortex-ring:nth-child(2) { animation-delay: 0.1s; }
+      .main-portal.activating .vortex-ring:nth-child(3) { animation-delay: 0.2s; }
+      .main-portal.activating .vortex-ring:nth-child(4) { animation-delay: 0.3s; }
+      .main-portal.activating .vortex-ring:nth-child(5) { animation-delay: 0.4s; }
+
+      @keyframes vortex-pulse {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(2) rotate(0deg);
+          border-color: rgba(255, 255, 255, 0.8);
+        }
+        50% {
+          opacity: 1;
+          border-color: rgba(255, 200, 150, 0.8);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.5) rotate(180deg);
+          border-color: rgba(100, 200, 255, 0.3);
+        }
+      }
+
+      /* Portal pulse animation on activation */
+      .main-portal.activating {
+        animation: portal-activate 0.8s ease-out;
+      }
+
+      @keyframes portal-activate {
+        0% { transform: scale(1); }
+        30% { transform: scale(1.15); }
+        50% { transform: scale(1.1); }
+        70% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+
+      .main-portal.activating .main-core {
+        animation: core-brighten 0.8s ease-out;
+      }
+
+      @keyframes core-brighten {
+        0% { 
+          filter: brightness(1);
+          box-shadow: 0 0 100px rgba(100, 200, 255, 0.8), 0 0 200px rgba(255, 160, 100, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
+        }
+        50% { 
+          filter: brightness(2);
+          box-shadow: 0 0 150px rgba(255, 255, 255, 1), 0 0 300px rgba(255, 200, 150, 0.8), inset 0 0 150px rgba(255, 255, 255, 0.8);
+        }
+        100% { 
+          filter: brightness(1);
+          box-shadow: 0 0 100px rgba(100, 200, 255, 0.8), 0 0 200px rgba(255, 160, 100, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      /* Speed up ring rotation during activation */
+      .main-portal.activating .main-ring--1 {
+        animation: spin-fast-1 2s linear infinite;
+      }
+
+      .main-portal.activating .main-ring--2 {
+        animation: spin-fast-reverse 1.5s linear infinite;
+      }
+
+      .main-portal.activating .main-ring--3 {
+        animation: spin-fast-1 1s linear infinite;
+      }
+
+      @keyframes spin-fast-1 {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      @keyframes spin-fast-reverse {
+        from { transform: translate(-50%, -50%) rotate(360deg); }
+        to { transform: translate(-50%, -50%) rotate(0deg); }
+      }
+
+      /* Page warp effect - being pulled into portal */
+      .hub-content.warping {
+        animation: page-warp 1s ease-in-out;
+      }
+
+      @keyframes page-warp {
+        0% { 
+          transform: scale(1) translateY(0);
+          filter: blur(0px);
+        }
+        40% {
+          transform: scale(0.98) translateY(10px);
+          filter: blur(1px);
+        }
+        60% {
+          transform: scale(1.02) translateY(-20px);
+          filter: blur(2px);
+        }
+        80% {
+          transform: scale(0.95) translateY(30px);
+          filter: blur(3px);
+        }
+        100% { 
+          transform: scale(1) translateY(0);
+          filter: blur(0px);
+        }
+      }
+
+      /* Shockwave effect from portal center */
+      .shockwave {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 200, 150, 0.8);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      .main-portal.activating .shockwave {
+        animation: shockwave-expand 1s ease-out forwards;
+      }
+
+      .main-portal.activating .shockwave:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      @keyframes shockwave-expand {
+        0% {
+          width: 50px;
+          height: 50px;
+          opacity: 1;
+          border-width: 4px;
+          border-color: rgba(255, 255, 255, 1);
+        }
+        100% {
+          width: 800px;
+          height: 800px;
+          opacity: 0;
+          border-width: 1px;
+          border-color: rgba(100, 200, 255, 0);
+        }
+      }
+
+      /* State: Portal opened - dramatic reveal */
       .main-portal.opened .main-core,
       .main-portal.opened .main-ring,
       .main-portal.opened .portal-enter-text,
@@ -674,24 +904,163 @@
       .main-portal.opened .tech-segment,
       .main-portal.opened .light-rays,
       .main-portal.opened .electric-arcs,
-      .main-portal.opened .debris {
+      .main-portal.opened .debris,
+      .main-portal.opened .vortex-effect,
+      .main-portal.opened .shockwave {
         opacity: 0;
-        transform: scale(1.2);
         pointer-events: none;
-        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .main-portal.opened .main-core {
-        transform: translate(-50%, -50%) scale(2);
-        filter: blur(10px);
+        transform: translate(-50%, -50%) scale(3);
+        filter: blur(20px) brightness(2);
       }
 
       .main-portal.opened .portal-frame-outer {
+        transform: translate(-50%, -50%) scale(1.5);
+        filter: blur(5px);
+      }
+
+      .main-portal.opened .main-ring {
         transform: translate(-50%, -50%) scale(1.3);
+        filter: blur(3px);
       }
 
       .main-portal.opened {
         cursor: default;
+      }
+
+      /* World portals dramatic entrance */
+      .world-portals {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transform: scale(0.1);
+        pointer-events: none;
+        transition: none;
+      }
+
+      .world-portals.visible {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+        animation: portals-emerge 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      @keyframes portals-emerge {
+        0% {
+          opacity: 0;
+          transform: scale(0.1) rotate(-180deg);
+          filter: blur(20px) brightness(3);
+        }
+        50% {
+          opacity: 1;
+          filter: blur(5px) brightness(1.5);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+          filter: blur(0px) brightness(1);
+        }
+      }
+
+      /* Individual world portal dramatic entrance */
+      .world-portal {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(100px) scale(0.3);
+        transition: transform 0.4s ease, box-shadow 0.3s ease;
+      }
+
+      .world-portals.visible .world-portal {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        animation: world-materialize 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .world-portals.visible .world-portal:nth-child(1) { animation-delay: 0.3s; }
+      .world-portals.visible .world-portal:nth-child(2) { animation-delay: 0.5s; }
+      .world-portals.visible .world-portal:nth-child(3) { animation-delay: 0.7s; }
+
+      @keyframes world-materialize {
+        0% {
+          opacity: 0;
+          transform: translateY(80px) scale(0.3) rotateX(45deg);
+          filter: blur(10px);
+        }
+        60% {
+          opacity: 1;
+          transform: translateY(-10px) scale(1.1) rotateX(-5deg);
+          filter: blur(2px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1) rotateX(0deg);
+          filter: blur(0px);
+        }
+      }
+
+      .world-portal:hover {
+        transform: scale(1.15) translateY(-10px);
+        z-index: 10;
+      }
+
+      .world-portal:hover .world-frame-outer {
+        box-shadow: 0 0 50px var(--portal-glow), 0 0 100px var(--portal-glow);
+      }
+
+      /* Closing animation - reverse dramatic */
+      .world-portals.closing {
+        animation: portals-collapse 0.6s ease-in forwards;
+      }
+
+      @keyframes portals-collapse {
+        0% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+          filter: blur(0px);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.1) rotate(180deg);
+          filter: blur(20px) brightness(2);
+        }
+      }
+
+      .main-portal.closing .main-core,
+      .main-portal.closing .main-ring,
+      .main-portal.closing .portal-enter-text,
+      .main-portal.closing .portal-frame-outer,
+      .main-portal.closing .tech-segment,
+      .main-portal.closing .light-rays,
+      .main-portal.closing .electric-arcs,
+      .main-portal.closing .debris {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+      }
+
+      .main-portal.closing .main-core {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .main-portal.closing .portal-frame-outer {
+        transform: translate(-50%, -50%) scale(1);
       }
 
       /* Animations */
@@ -799,6 +1168,10 @@
     </style>
   </head>
   <body>
+    <!-- Portal transition overlays -->
+    <div class="portal-overlay" id="portalOverlay"></div>
+    <div class="glitch-overlay" id="glitchOverlay"></div>
+
     <!-- Floating particles -->
     <div class="particles" id="particles"></div>
 
@@ -893,6 +1266,19 @@
               <div class="debris-piece"></div>
             </div>
             
+            <!-- Vortex effect -->
+            <div class="vortex-effect">
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+            </div>
+
+            <!-- Shockwave effects -->
+            <div class="shockwave"></div>
+            <div class="shockwave"></div>
+
             <div class="portal-enter-text">
               <h2>Enter Portal</h2>
               <p>Click to reveal worlds</p>
@@ -1017,24 +1403,149 @@
     <script src="world-common.js"></script>
     <script src="tourbot.js" defer></script>
     <script>
-      // Main portal interaction
+      // Dramatic Portal Transition System
       const mainPortal = document.getElementById('mainPortal');
       const worldPortals = document.getElementById('worldPortals');
       const closeBtn = document.getElementById('closePortals');
+      const portalOverlay = document.getElementById('portalOverlay');
+      const glitchOverlay = document.getElementById('glitchOverlay');
+      const hubContent = document.querySelector('.hub-content');
+      
+      let isAnimating = false;
 
+      // Play dramatic sound effect (optional - creates audio context)
+      function playPortalSound() {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Create oscillator for whoosh effect
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+          oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+          oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.8);
+          
+          gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+          
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.8);
+        } catch (e) {
+          // Audio not supported, continue silently
+        }
+      }
+
+      // Screen shake effect
+      function screenShake() {
+        document.body.style.animation = 'none';
+        document.body.offsetHeight; // Trigger reflow
+        document.body.style.animation = 'screen-shake 0.4s ease-out';
+      }
+
+      // Add screen shake keyframes dynamically
+      const shakeStyle = document.createElement('style');
+      shakeStyle.textContent = `
+        @keyframes screen-shake {
+          0%, 100% { transform: translate(0, 0); }
+          10% { transform: translate(-3px, -2px); }
+          20% { transform: translate(3px, 2px); }
+          30% { transform: translate(-2px, 3px); }
+          40% { transform: translate(2px, -3px); }
+          50% { transform: translate(-3px, 2px); }
+          60% { transform: translate(3px, -2px); }
+          70% { transform: translate(-2px, -3px); }
+          80% { transform: translate(2px, 3px); }
+          90% { transform: translate(-3px, -2px); }
+        }
+      `;
+      document.head.appendChild(shakeStyle);
+
+      // Main portal click - dramatic entrance
       mainPortal.addEventListener('click', function(e) {
         if (e.target.closest('.world-portal')) return;
         if (mainPortal.classList.contains('opened')) return;
+        if (isAnimating) return;
         
-        mainPortal.classList.add('opened');
-        worldPortals.classList.add('visible');
-        closeBtn.classList.add('visible');
+        isAnimating = true;
+        
+        // Phase 1: Portal activation (0ms - 800ms)
+        mainPortal.classList.add('activating');
+        playPortalSound();
+        
+        // Phase 2: Screen effects (200ms)
+        setTimeout(() => {
+          portalOverlay.classList.add('active');
+          glitchOverlay.classList.add('active');
+          hubContent.classList.add('warping');
+          screenShake();
+        }, 200);
+        
+        // Phase 3: Remove glitch effect (600ms)
+        setTimeout(() => {
+          glitchOverlay.classList.remove('active');
+        }, 600);
+        
+        // Phase 4: Open portal and reveal worlds (800ms)
+        setTimeout(() => {
+          mainPortal.classList.remove('activating');
+          mainPortal.classList.add('opened');
+          worldPortals.classList.add('visible');
+          hubContent.classList.remove('warping');
+        }, 800);
+        
+        // Phase 5: Show close button (1600ms)
+        setTimeout(() => {
+          closeBtn.classList.add('visible');
+          portalOverlay.classList.remove('active');
+          isAnimating = false;
+        }, 1600);
       });
 
+      // Close button - dramatic exit
       closeBtn.addEventListener('click', function() {
-        mainPortal.classList.remove('opened');
-        worldPortals.classList.remove('visible');
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Phase 1: Start closing animation
+        worldPortals.classList.add('closing');
         closeBtn.classList.remove('visible');
+        portalOverlay.classList.add('active');
+        glitchOverlay.classList.add('active');
+        
+        // Phase 2: Remove glitch
+        setTimeout(() => {
+          glitchOverlay.classList.remove('active');
+        }, 300);
+        
+        // Phase 3: Collapse portals
+        setTimeout(() => {
+          worldPortals.classList.remove('visible');
+          worldPortals.classList.remove('closing');
+          mainPortal.classList.remove('opened');
+          mainPortal.classList.add('closing');
+        }, 600);
+        
+        // Phase 4: Portal reappears
+        setTimeout(() => {
+          mainPortal.classList.remove('closing');
+          portalOverlay.classList.remove('active');
+          isAnimating = false;
+        }, 1400);
+      });
+
+      // Hover effect enhancement for world portals
+      worldPortals.querySelectorAll('.world-portal').forEach(portal => {
+        portal.addEventListener('mouseenter', () => {
+          portal.style.filter = 'brightness(1.2)';
+        });
+        portal.addEventListener('mouseleave', () => {
+          portal.style.filter = '';
+        });
       });
     </script>
   </body>
