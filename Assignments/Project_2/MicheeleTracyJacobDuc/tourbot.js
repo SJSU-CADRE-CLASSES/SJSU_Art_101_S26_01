@@ -16,15 +16,6 @@
 
   let balance = readBalance();
 
-  const scrollToId = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      return true;
-    }
-    return false;
-  };
-
   const goTo = (href) => {
     location.href = href;
   };
@@ -75,7 +66,7 @@
         addMsg(
           `Logged. That rating earned ${earned.toFixed(0)}★ of currency. This shapes their reality.`
         );
-        addMsg("Where do you want to go next?");
+        addMsg("What do you want to do next?");
         offerMenu();
       });
       wrap.appendChild(btn);
@@ -83,54 +74,82 @@
     choices.appendChild(wrap);
   };
 
-  const isShopPage = () => location.pathname.toLowerCase().endsWith("shop.html");
-  const isHubPage = () => !isShopPage();
+  // Page detection
+  const path = location.pathname.toLowerCase();
+  const isShopPage = () => path.endsWith("shop.html");
+  const isHubPage = () => path.endsWith("index.html") || path.endsWith("/");
+  const isGlassCity = () => path.endsWith("glass-city.html");
+  const isNeonUnderpass = () => path.endsWith("neon-underpass.html");
+  const isSignalMarket = () => path.endsWith("signal-market.html");
+  const isWorldPage = () => isGlassCity() || isNeonUnderpass() || isSignalMarket();
+
+  const getCurrentWorld = () => {
+    if (isGlassCity()) return { name: "Glass City", id: 1 };
+    if (isNeonUnderpass()) return { name: "Neon Underpass", id: 2 };
+    if (isSignalMarket()) return { name: "Signal Market", id: 3 };
+    return null;
+  };
 
   const offerMenu = () => {
     clearChoices();
 
-    if (isHubPage()) {
-      addChoice("Enter a portal", () => {
-        addMsg("Enter a portal", "user");
+    // Portal navigation - available everywhere except shop
+    if (!isShopPage()) {
+      addChoice("Travel to a world", () => {
+        addMsg("Travel to a world", "user");
         addMsg("Choose your destination. Each world has different rules.");
         clearChoices();
 
-        addChoice("Glass City", () => {
-          addMsg("Glass City", "user");
-          addMsg("Entering World 001. Remember: in Glass City, anything less than 4 stars is an insult.");
-          scrollToId("glass-city");
-          offerMenu();
-        });
+        if (!isGlassCity()) {
+          addChoice("Glass City", () => {
+            addMsg("Glass City", "user");
+            addMsg("Entering World 001. Remember: in Glass City, anything less than 4 stars is an insult.");
+            goTo("glass-city.html");
+          });
+        }
 
-        addChoice("Neon Underpass", () => {
-          addMsg("Neon Underpass", "user");
-          addMsg("Entering World 002. Trust is currency here. Jokes are receipts.");
-          scrollToId("neon-underpass");
-          offerMenu();
-        });
+        if (!isNeonUnderpass()) {
+          addChoice("Neon Underpass", () => {
+            addMsg("Neon Underpass", "user");
+            addMsg("Entering World 002. Trust is currency here. High ratings draw unwanted attention.");
+            goTo("neon-underpass.html");
+          });
+        }
 
-        addChoice("Signal Market", () => {
-          addMsg("Signal Market", "user");
-          addMsg("Entering World 003. The fringe. People here borrow ratings just to survive another day.");
-          scrollToId("signal-market");
-          offerMenu();
-        });
+        if (!isSignalMarket()) {
+          addChoice("Signal Market", () => {
+            addMsg("Signal Market", "user");
+            addMsg("Entering World 003. The fringe. People here borrow ratings just to survive another day.");
+            goTo("signal-market.html");
+          });
+        }
 
-        addChoice("Return to Hub", () => {
-          addMsg("Return to Hub", "user");
-          scrollToId("hub");
+        if (!isHubPage()) {
+          addChoice("Return to Hub", () => {
+            addMsg("Return to Hub", "user");
+            addMsg("Returning to the Portal Hub...");
+            goTo("index.html");
+          });
+        }
+
+        addChoice("Back", () => {
+          clearChoices();
           offerMenu();
         });
       });
     }
 
-    addChoice("Rate an encounter", () => {
-      addMsg("Rate an encounter", "user");
-      addMsg("How many stars did they earn? Remember: your rating determines their rent, rations, and routes home.");
-      clearChoices();
-      showStarRater();
-    });
+    // Rate encounter - only on world pages
+    if (isWorldPage()) {
+      addChoice("Rate an encounter", () => {
+        addMsg("Rate an encounter", "user");
+        addMsg("How many stars did they earn? Remember: your rating determines their rent, rations, and routes home.");
+        clearChoices();
+        showStarRater();
+      });
+    }
 
+    // How stars work - available everywhere
     addChoice("How stars work", () => {
       addMsg("How stars work", "user");
       addMsg("Stars are legal tender across all connected worlds.");
@@ -140,6 +159,7 @@
       offerMenu();
     });
 
+    // Shop-specific options
     if (isShopPage()) {
       addChoice("What should I buy?", () => {
         addMsg("What should I buy?", "user");
@@ -170,14 +190,27 @@
     setBalance(balance);
 
     addMsg("Portal link established.");
-    addMsg("Welcome to StarStruck — the space between worlds.");
 
     if (isShopPage()) {
-      addMsg("You're in the Star Shop. Every price tag is paid for with someone's kindness — or cruelty.");
+      addMsg("Welcome to the Star Shop.");
+      addMsg("Every price tag is paid for with someone's kindness — or cruelty.");
       addMsg("Watch how fast 100★ disappears when survival has a cost.");
+    } else if (isGlassCity()) {
+      addMsg("You've entered Glass City — World 001.");
+      addMsg("A realm of perfect surfaces and polished manners. Everyone smiles, but the silence between words hides their true judgement.");
+      addMsg("Below 4 stars, you become invisible. Rate wisely.");
+    } else if (isNeonUnderpass()) {
+      addMsg("You've descended into the Neon Underpass — World 002.");
+      addMsg("Flickering lights and whispered deals. Here, stars are traded like secrets.");
+      addMsg("High ratings draw attention. Sometimes being overlooked is survival.");
+    } else if (isSignalMarket()) {
+      addMsg("You've reached the Signal Market — World 003.");
+      addMsg("At the edge of all worlds, data, memories, and futures are commodified.");
+      addMsg("Ratings here can be bought, sold, and stolen. Trust no one's score.");
     } else {
+      addMsg("Welcome to StarStruck — the space between worlds.");
       addMsg("You stand in the Portal Hub — a strange digital corridor where realities overlap.");
-      addMsg("From here, you can observe distant dimensions, enter them, and rate the people inside.");
+      addMsg("From here, you can travel to distant dimensions and rate the people inside.");
       addMsg("Your ratings are currency. Your kindness is survival.");
     }
 
