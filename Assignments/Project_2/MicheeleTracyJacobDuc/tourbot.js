@@ -7,34 +7,38 @@
 
   if (!shell || !log || !choices || !toggleBtn || !resetBtn) return;
 
-  const creditChipValue = document.querySelector(".credit-chip span:last-child");
   const DEFAULT_START_BALANCE = 100;
+  let balance = DEFAULT_START_BALANCE;
 
-  const readBalance = () => {
-    return DEFAULT_START_BALANCE;
-  };
+  const creditChipValue =
+    document.getElementById("balanceValue") ||
+    document.querySelector(".credit-chip span:last-child") ||
+    document.querySelector(".balance-chip span:last-child");
 
-  let balance = readBalance();
+  const path = location.pathname.toLowerCase();
+  const isHub = path.endsWith("index.html") || path.endsWith("/");
+  const isShop = path.endsWith("shop.html");
+  const isGlass = path.includes("world-glass");
+  const isNeon = path.includes("world-neon");
+  const isSignal = path.includes("world-signal");
+  const isWorld = isGlass || isNeon || isSignal;
 
-  const isIndex = () => location.pathname.toLowerCase().endsWith("index.html") || location.pathname.endsWith("/");
-  const scrollToId = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      return true;
-    }
-    return false;
-  };
-
-  const goTo = (href) => {
-    location.href = href;
+  const getWorldName = () => {
+    if (isGlass) return "Glass City";
+    if (isNeon) return "Neon Underpass";
+    if (isSignal) return "Signal Market";
+    return "this world";
   };
 
   const setBalance = (next) => {
     balance = Math.max(0, Math.round(next * 100) / 100);
     if (creditChipValue) {
-      creditChipValue.textContent = `${balance.toFixed(2)} ★ balance`;
+      creditChipValue.textContent = `${balance.toFixed(2)} ★`;
     }
+  };
+
+  const goTo = (href) => {
+    location.href = href;
   };
 
   const addMsg = (text, who = "bot") => {
@@ -70,11 +74,7 @@
         addMsg(`${i}★`, "user");
         const earned = i * 1;
         setBalance(balance + earned);
-        addMsg(
-          `Logged. That rating earned ${earned.toFixed(
-            0
-          )}★ of currency for this world.`
-        );
+        addMsg(`+${earned}★ earned. Your rating echoes through the dimension.`);
         addMsg("Where do you want to go next?");
         offerMenu();
       });
@@ -86,61 +86,108 @@
   const offerMenu = () => {
     clearChoices();
 
-    addChoice("Take the tour", () => {
-      addMsg("Take the tour", "user");
-      addMsg("Step 1: scroll to switch realities.");
-      addMsg("Step 2: every interaction becomes a rating.");
-      addMsg("Step 3: ratings are money. Be kind to keep doors open.");
-      addMsg("Choose a destination.");
-      clearChoices();
+    if (isHub) {
+      addChoice("About StarStruck", () => {
+        addMsg("About StarStruck", "user");
+        addMsg("StarStruck is the in-between dimension — a void where travelers prepare to enter other worlds.");
+        addMsg("Each portal leads to a different reality with its own rules. Enter, observe the inhabitants, and rate them.");
+        addMsg("Your rating becomes their currency. Their survival. Their hope.");
+        offerMenu();
+      });
 
-      addChoice("Origin", () => {
-        addMsg("Origin", "user");
-        if (!scrollToId("intro")) goTo("index.html#intro");
-      });
-      addChoice("Worlds", () => {
-        addMsg("Worlds", "user");
-        if (!scrollToId("worlds")) goTo("index.html#worlds");
-      });
-      addChoice("Currency", () => {
-        addMsg("Currency", "user");
-        if (!scrollToId("economy")) goTo("index.html#economy");
-      });
-      addChoice("Shop", () => {
-        addMsg("Shop", "user");
-        if (location.pathname.toLowerCase().endsWith("shop.html")) {
-          addMsg("You’re already in the shop. Look at the prices. Imagine the people behind them.");
+      addChoice("Enter a world", () => {
+        addMsg("Enter a world", "user");
+        addMsg("Choose your destination:");
+        clearChoices();
+        addChoice("Glass City", () => {
+          addMsg("Glass City", "user");
+          addMsg("Opening rift to Glass City... Politeness is armor there. Rate generously.");
+          setTimeout(() => goTo("world-glass.html"), 800);
+        });
+        addChoice("Neon Underpass", () => {
+          addMsg("Neon Underpass", "user");
+          addMsg("Opening rift to Neon Underpass... Jokes are currency there. Listen carefully.");
+          setTimeout(() => goTo("world-neon.html"), 800);
+        });
+        addChoice("Signal Market", () => {
+          addMsg("Signal Market", "user");
+          addMsg("Opening rift to Signal Market... Trust is rented there. Speak gently.");
+          setTimeout(() => goTo("world-signal.html"), 800);
+        });
+        addChoice("Back", () => {
           offerMenu();
-        } else {
-          goTo("shop.html");
-        }
+        });
       });
-    });
 
-    addChoice("Rate an encounter", () => {
-      addMsg("Rate an encounter", "user");
-      addMsg("How many stars did they earn?");
-      clearChoices();
-      showStarRater();
-    });
+      addChoice("Visit Shop", () => {
+        addMsg("Visit Shop", "user");
+        addMsg("The Star Shop is where ratings turn into survival. Opening...");
+        setTimeout(() => goTo("shop.html"), 600);
+      });
+    }
 
-    addChoice("How stars work", () => {
-      addMsg("How stars work", "user");
-      addMsg(
-        "Stars equal currency. Your rating affects rent, routes, and rations for the person you met."
-      );
-      addMsg("Recommendation: default to kindness. It's the only exchange rate that doesn't crash.");
-      offerMenu();
-    });
+    if (isWorld) {
+      addChoice("World info", () => {
+        addMsg("World info", "user");
+        if (isGlass) {
+          addMsg("Glass City — Upper Tiers. Here, everyone smiles. Everyone rates. A three-star rating is considered an insult.");
+          addMsg("The people here have learned to perform kindness. Your job is to see through it — or reward it.");
+        } else if (isNeon) {
+          addMsg("Neon Underpass — Street Level. Humor is survival. Favors are tracked. Secrets are worth half a star.");
+          addMsg("The people here trade in stories and laughs. A good joke might be all they have.");
+        } else if (isSignal) {
+          addMsg("Signal Market — Fringe Zone. People here rent borrowed ratings just to exist for another day.");
+          addMsg("Your kindness here goes further than anywhere else. A single star could change someone's week.");
+        }
+        offerMenu();
+      });
 
-    if (location.pathname.toLowerCase().endsWith("shop.html")) {
+      addChoice("How to rate", () => {
+        addMsg("How to rate", "user");
+        addMsg("Look at each inhabitant. Read their behavior. Then click a star rating (1-5).");
+        addMsg("1★ = 1 currency added to your balance. 5★ = 5 currency.");
+        addMsg("Your rating also affects them — imagine it changing their rent, their meals, their safety.");
+        offerMenu();
+      });
+
+      addChoice("Return to hub", () => {
+        addMsg("Return to hub", "user");
+        addMsg("Returning to the portal dimension...");
+        setTimeout(() => goTo("index.html"), 600);
+      });
+
+      addChoice("Visit Shop", () => {
+        addMsg("Visit Shop", "user");
+        goTo("shop.html");
+      });
+    }
+
+    if (isShop) {
+      addChoice("What is this shop?", () => {
+        addMsg("What is this shop?", "user");
+        addMsg("This is where stars become survival. Every item here is priced in the currency people earn through ratings.");
+        addMsg("A warm meal costs 1.8★. A safe walk home costs 4★. Imagine what it takes to earn that.");
+        offerMenu();
+      });
+
       addChoice("What should I buy?", () => {
         addMsg("What should I buy?", "user");
-        addMsg(
-          "If your goal is survival: start with food (Warm meal signal). If your goal is comfort: Luminous Icewave. If your goal is status: the Reputation reset or AVTR Drift Capsule."
-        );
-        addMsg("But the most powerful purchase is still kindness, upstream, before anyone reaches this counter.");
+        addMsg("If survival: Warm meal signal. If comfort: Luminous Icewave. If status: Reputation reset or AVTR Drift Capsule.");
+        addMsg("But the most powerful purchase is still kindness — given upstream, before anyone reaches this counter.");
         offerMenu();
+      });
+
+      addChoice("Return to hub", () => {
+        addMsg("Return to hub", "user");
+        addMsg("Returning to the portal dimension...");
+        setTimeout(() => goTo("index.html"), 600);
+      });
+
+      addChoice("Rate an encounter", () => {
+        addMsg("Rate an encounter", "user");
+        addMsg("How many stars?");
+        clearChoices();
+        showStarRater();
       });
     }
   };
@@ -148,28 +195,27 @@
   const reset = () => {
     log.innerHTML = "";
     clearChoices();
-    balance = readBalance();
+    balance = DEFAULT_START_BALANCE;
     setBalance(balance);
 
-    addMsg("Boot sequence complete.");
-    addMsg(
-      "Welcome to StarStruck — a world where every interaction matters, and every rating has value."
-    );
-    addMsg("Scroll to explore. Rate to influence. Remember: not everyone can afford to lose a star.");
+    addMsg("TourBot online.");
 
-    if (location.pathname.toLowerCase().endsWith("shop.html")) {
-      addMsg("You’re in the Shop. These prices are built from ratings people live and die by.");
-      addMsg(
-        "Here, stars have already turned into rent, food, and a chance to feel safe for one more night."
-      );
-      addMsg(
-        "As you add items to your cart, watch how quickly 100★ vanishes — and imagine who had to earn those stars."
-      );
-    } else {
-      addMsg("You’re in the corridor. Scroll through worlds and watch the rules shift.");
+    if (isHub) {
+      addMsg("Welcome to StarStruck — the in-between dimension.");
+      addMsg("You stand in the void between worlds. Glowing rifts shimmer before you, each leading to a different reality.");
+      addMsg("Choose a portal. Enter. Observe the inhabitants. Rate them. Your rating becomes their currency.");
+      addMsg("Then return here to prepare for the next crossing.");
+    } else if (isWorld) {
+      addMsg(`You've entered ${getWorldName()}.`);
+      addMsg("Look around. Observe the inhabitants. Read their stories. Then decide their worth with a rating.");
+      addMsg("Remember: your stars become their survival.");
+    } else if (isShop) {
+      addMsg("You're in the Star Shop.");
+      addMsg("Here, stars have already turned into rent, food, and a chance to feel safe for one more night.");
+      addMsg("As you add items to your cart, watch how quickly 100★ vanishes.");
     }
 
-    addMsg("What do you want to do?");
+    addMsg("What would you like to do?");
     offerMenu();
   };
 
@@ -179,12 +225,17 @@
   });
 
   resetBtn.addEventListener("click", () => {
-    // keep the stored balance, just restart the conversation
     reset();
   });
 
-  // Initialize visible balance and start dialog
+  window.addEventListener("starstruck:rated", (e) => {
+    if (e.detail && typeof e.detail.newBalance === "number") {
+      balance = e.detail.newBalance;
+      setBalance(balance);
+      addMsg(`Rating registered. Your balance is now ${balance.toFixed(2)}★.`);
+    }
+  });
+
   setBalance(balance);
   reset();
 })();
-
