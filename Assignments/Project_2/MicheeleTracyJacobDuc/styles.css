@@ -294,6 +294,9 @@ body::after {
 /* Portal rings */
 .portal-ring {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 2px solid;
   opacity: 0.4;
@@ -325,10 +328,10 @@ body::after {
 
 @keyframes rotate-ring {
   from {
-    transform: rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 
