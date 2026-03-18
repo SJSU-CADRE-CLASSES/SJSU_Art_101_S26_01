@@ -377,25 +377,28 @@
 
       /* Hidden world portals - revealed when main portal opens */
       .world-portals {
-        display: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
         position: absolute;
         width: 100%;
         height: 100%;
         top: 0;
         left: 0;
         opacity: 0;
-        transition: opacity 0.8s ease;
+        transform: scale(0.3);
+        pointer-events: none;
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
       .world-portals.visible {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
         opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
       }
 
-      /* Individual world portal */
+      /* Dystopian World Portal Style */
       .world-portal {
         position: relative;
         display: flex;
@@ -405,39 +408,38 @@
         color: inherit;
         cursor: pointer;
         transition: transform 0.4s ease;
-        animation: fade-in-up 0.6s ease forwards;
         opacity: 0;
+        transform: translateY(40px) scale(0.5);
       }
 
-      .world-portal:nth-child(1) { animation-delay: 0.2s; }
-      .world-portal:nth-child(2) { animation-delay: 0.4s; }
-      .world-portal:nth-child(3) { animation-delay: 0.6s; }
+      .world-portals.visible .world-portal {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
 
-      @keyframes fade-in-up {
-        from {
-          opacity: 0;
-          transform: translateY(30px) scale(0.8);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
+      .world-portals.visible .world-portal:nth-child(1) { transition-delay: 0.2s; }
+      .world-portals.visible .world-portal:nth-child(2) { transition-delay: 0.4s; }
+      .world-portals.visible .world-portal:nth-child(3) { transition-delay: 0.6s; }
+
+      .world-portal {
+        transition: transform 0.4s ease, opacity 0.6s ease;
       }
 
       .world-portal:hover {
-        transform: scale(1.1);
+        transform: scale(1.15) translateY(-5px);
       }
 
       .world-portal-frame {
         position: relative;
-        width: 140px;
-        height: 140px;
+        width: 150px;
+        height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      .world-ring-outer {
+      /* Mechanical outer frame for world portals */
+      .world-frame-outer {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -445,8 +447,29 @@
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        border: 3px solid;
-        animation: world-spin 15s linear infinite;
+        border: 12px solid transparent;
+        background: 
+          linear-gradient(var(--bg), var(--bg)) padding-box,
+          linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e) border-box;
+        box-shadow:
+          0 0 30px var(--portal-glow),
+          inset 0 0 30px rgba(0, 0, 0, 0.8);
+      }
+
+      /* Glowing ring */
+      .world-ring-outer {
+        position: absolute;
+        width: 88%;
+        height: 88%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 4px solid var(--portal-ring);
+        animation: world-spin 30s linear infinite;
+        box-shadow: 
+          0 0 20px var(--portal-glow),
+          inset 0 0 15px var(--portal-glow-inner);
       }
 
       .world-ring-inner {
@@ -457,30 +480,74 @@
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        border: 2px dashed;
-        animation: world-spin-reverse 10s linear infinite;
-        opacity: 0.7;
+        border: 2px solid var(--portal-ring-inner);
+        animation: world-spin-reverse 20s linear infinite;
+        opacity: 0.6;
       }
 
+      /* Glowing core */
       .world-core {
         position: absolute;
-        width: 60%;
-        height: 60%;
+        width: 65%;
+        height: 65%;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
         overflow: hidden;
+        background: radial-gradient(
+          circle at center,
+          var(--core-center) 0%,
+          var(--core-mid) 30%,
+          var(--core-outer) 60%,
+          transparent 85%
+        );
+        box-shadow: 
+          0 0 40px var(--portal-glow),
+          inset 0 0 30px var(--core-glow);
       }
+
+      .world-core::before {
+        content: "";
+        position: absolute;
+        inset: -50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          var(--swirl-color) 60deg,
+          transparent 120deg,
+          var(--swirl-color-2) 180deg,
+          transparent 240deg,
+          var(--swirl-color) 300deg,
+          transparent 360deg
+        );
+        animation: swirl 6s linear infinite;
+      }
+
+      /* Mini tech segments on world portals */
+      .world-tech {
+        position: absolute;
+        width: 8px;
+        height: 16px;
+        background: linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 100%);
+        border: 1px solid var(--portal-ring);
+        border-radius: 2px;
+        box-shadow: 0 0 8px var(--portal-glow);
+      }
+
+      .world-tech:nth-child(5) { top: -8px; left: 50%; transform: translateX(-50%); }
+      .world-tech:nth-child(6) { bottom: -8px; left: 50%; transform: translateX(-50%); }
+      .world-tech:nth-child(7) { top: 50%; left: -8px; transform: translateY(-50%) rotate(90deg); }
+      .world-tech:nth-child(8) { top: 50%; right: -8px; transform: translateY(-50%) rotate(90deg); }
 
       .world-icon {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 1.8rem;
+        font-size: 2rem;
         z-index: 5;
-        filter: drop-shadow(0 0 10px var(--glow));
+        filter: drop-shadow(0 0 15px var(--portal-glow));
         animation: world-float-icon 2s ease-in-out infinite;
       }
 
@@ -499,60 +566,50 @@
         to { transform: translate(-50%, -50%) rotate(0deg); }
       }
 
-      .world-core::before {
-        content: "";
-        position: absolute;
-        inset: -50%;
-        animation: swirl 3s linear infinite;
-      }
-
-      /* Glass City */
+      /* Glass City - Cyan/Blue theme */
       .world-portal--glass {
-        --glow: rgba(90, 216, 255, 0.8);
-        --color-1: rgba(90, 216, 255, 0.8);
-        --color-2: rgba(200, 240, 255, 0.6);
-      }
-      .world-portal--glass .world-ring-outer { border-color: #5ad8ff; box-shadow: 0 0 20px rgba(90, 216, 255, 0.5); }
-      .world-portal--glass .world-ring-inner { border-color: rgba(90, 216, 255, 0.5); }
-      .world-portal--glass .world-core { 
-        box-shadow: 0 0 30px rgba(90, 216, 255, 0.6), inset 0 0 20px rgba(90, 216, 255, 0.3); 
-      }
-      .world-portal--glass .world-core::before {
-        background: conic-gradient(from 0deg, transparent, var(--color-1), transparent, var(--color-2), transparent);
+        --portal-glow: rgba(90, 216, 255, 0.5);
+        --portal-glow-inner: rgba(90, 216, 255, 0.3);
+        --portal-ring: #5ad8ff;
+        --portal-ring-inner: rgba(90, 216, 255, 0.4);
+        --core-center: rgba(255, 255, 255, 0.95);
+        --core-mid: rgba(150, 220, 255, 0.7);
+        --core-outer: rgba(90, 180, 255, 0.4);
+        --core-glow: rgba(90, 216, 255, 0.5);
+        --swirl-color: rgba(90, 216, 255, 0.4);
+        --swirl-color-2: rgba(200, 240, 255, 0.3);
       }
 
-      /* Lego World */
+      /* Lego World - Pink/Purple theme */
       .world-portal--lego {
-        --glow: rgba(255, 106, 213, 0.8);
-        --color-1: rgba(255, 106, 213, 0.8);
-        --color-2: rgba(168, 85, 247, 0.6);
-      }
-      .world-portal--lego .world-ring-outer { border-color: #ff6ad5; box-shadow: 0 0 20px rgba(255, 106, 213, 0.5); }
-      .world-portal--lego .world-ring-inner { border-color: rgba(255, 106, 213, 0.5); }
-      .world-portal--lego .world-core { 
-        box-shadow: 0 0 30px rgba(255, 106, 213, 0.6), inset 0 0 20px rgba(168, 85, 247, 0.3); 
-      }
-      .world-portal--lego .world-core::before {
-        background: conic-gradient(from 0deg, transparent, var(--color-1), transparent, var(--color-2), transparent);
+        --portal-glow: rgba(255, 106, 213, 0.5);
+        --portal-glow-inner: rgba(255, 106, 213, 0.3);
+        --portal-ring: #ff6ad5;
+        --portal-ring-inner: rgba(255, 106, 213, 0.4);
+        --core-center: rgba(255, 255, 255, 0.95);
+        --core-mid: rgba(255, 180, 230, 0.7);
+        --core-outer: rgba(200, 100, 180, 0.4);
+        --core-glow: rgba(255, 106, 213, 0.5);
+        --swirl-color: rgba(255, 106, 213, 0.4);
+        --swirl-color-2: rgba(168, 85, 247, 0.3);
       }
 
-      /* Underground City */
+      /* Underground City - Orange/Gold theme */
       .world-portal--underground {
-        --glow: rgba(255, 204, 0, 0.8);
-        --color-1: rgba(255, 204, 0, 0.8);
-        --color-2: rgba(255, 140, 50, 0.6);
-      }
-      .world-portal--underground .world-ring-outer { border-color: #ffcc00; box-shadow: 0 0 20px rgba(255, 204, 0, 0.5); }
-      .world-portal--underground .world-ring-inner { border-color: rgba(255, 204, 0, 0.5); }
-      .world-portal--underground .world-core { 
-        box-shadow: 0 0 30px rgba(255, 204, 0, 0.6), inset 0 0 20px rgba(255, 180, 50, 0.3); 
-      }
-      .world-portal--underground .world-core::before {
-        background: conic-gradient(from 0deg, transparent, var(--color-1), transparent, var(--color-2), transparent);
+        --portal-glow: rgba(255, 180, 80, 0.5);
+        --portal-glow-inner: rgba(255, 157, 77, 0.3);
+        --portal-ring: #ff9d4d;
+        --portal-ring-inner: rgba(255, 180, 80, 0.4);
+        --core-center: rgba(255, 255, 255, 0.95);
+        --core-mid: rgba(255, 220, 150, 0.7);
+        --core-outer: rgba(255, 160, 80, 0.4);
+        --core-glow: rgba(255, 180, 80, 0.5);
+        --swirl-color: rgba(255, 180, 80, 0.4);
+        --swirl-color-2: rgba(255, 120, 50, 0.3);
       }
 
       .world-info {
-        margin-top: 16px;
+        margin-top: 18px;
         text-align: center;
       }
 
@@ -565,43 +622,51 @@
       }
 
       .world-name {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 600;
+        text-shadow: 0 0 20px var(--portal-glow);
       }
 
       .world-portal--glass .world-name { color: #5ad8ff; }
       .world-portal--lego .world-name { color: #ff6ad5; }
-      .world-portal--underground .world-name { color: #ffcc00; }
+      .world-portal--underground .world-name { color: #ff9d4d; }
 
       /* Close button when portals are open */
       .close-portals {
         display: none;
         position: absolute;
-        bottom: -60px;
+        bottom: -70px;
         left: 50%;
         transform: translateX(-50%);
-        padding: 10px 24px;
-        border: 1px solid var(--border);
+        padding: 12px 28px;
+        border: 2px solid rgba(255, 157, 77, 0.6);
         border-radius: 999px;
-        background: rgba(4, 12, 24, 0.9);
-        color: var(--muted);
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(10, 10, 30, 0.95));
+        color: #ff9d4d;
         font-size: 0.8rem;
         letter-spacing: 0.15em;
         text-transform: uppercase;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 20px rgba(255, 157, 77, 0.3);
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
       }
 
       .close-portals:hover {
-        color: var(--text);
-        border-color: var(--accent-2);
+        background: linear-gradient(135deg, rgba(40, 40, 70, 0.95), rgba(20, 20, 50, 0.95));
+        border-color: #ff9d4d;
+        box-shadow: 0 0 30px rgba(255, 157, 77, 0.5);
       }
 
       .close-portals.visible {
         display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        transition: all 0.5s ease 0.8s;
       }
 
-      /* State: Portal opened */
+      /* State: Portal opened - smooth transition */
       .main-portal.opened .main-core,
       .main-portal.opened .main-ring,
       .main-portal.opened .portal-enter-text,
@@ -611,8 +676,18 @@
       .main-portal.opened .electric-arcs,
       .main-portal.opened .debris {
         opacity: 0;
+        transform: scale(1.2);
         pointer-events: none;
-        transition: opacity 0.5s ease;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .main-portal.opened .main-core {
+        transform: translate(-50%, -50%) scale(2);
+        filter: blur(10px);
+      }
+
+      .main-portal.opened .portal-frame-outer {
+        transform: translate(-50%, -50%) scale(1.3);
       }
 
       .main-portal.opened {
@@ -690,14 +765,35 @@
           transform: scale(0.7);
         }
 
-        .world-portals.visible {
-          flex-direction: column;
+        .world-portals {
           gap: 20px;
         }
 
+        .world-portals.visible {
+          flex-direction: column;
+          gap: 25px;
+        }
+
         .world-portal-frame {
-          width: 100px;
-          height: 100px;
+          width: 120px;
+          height: 120px;
+        }
+
+        .world-frame-outer {
+          border-width: 8px;
+        }
+
+        .world-ring-outer {
+          border-width: 3px;
+        }
+
+        .world-icon {
+          font-size: 1.6rem;
+        }
+
+        .world-tech {
+          width: 6px;
+          height: 12px;
         }
       }
     </style>
@@ -807,9 +903,14 @@
               <!-- Glass City -->
               <a href="glass-city.html" class="world-portal world-portal--glass">
                 <div class="world-portal-frame">
+                  <div class="world-frame-outer"></div>
                   <div class="world-ring-outer"></div>
                   <div class="world-ring-inner"></div>
                   <div class="world-core"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
                   <div class="world-icon">🏙️</div>
                 </div>
                 <div class="world-info">
@@ -821,9 +922,14 @@
               <!-- Lego World -->
               <a href="lego-world.html" class="world-portal world-portal--lego">
                 <div class="world-portal-frame">
+                  <div class="world-frame-outer"></div>
                   <div class="world-ring-outer"></div>
                   <div class="world-ring-inner"></div>
                   <div class="world-core"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
                   <div class="world-icon">🧱</div>
                 </div>
                 <div class="world-info">
@@ -835,9 +941,14 @@
               <!-- Underground City -->
               <a href="underground-city.html" class="world-portal world-portal--underground">
                 <div class="world-portal-frame">
+                  <div class="world-frame-outer"></div>
                   <div class="world-ring-outer"></div>
                   <div class="world-ring-inner"></div>
                   <div class="world-core"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
                   <div class="world-icon">🏚️</div>
                 </div>
                 <div class="world-info">
