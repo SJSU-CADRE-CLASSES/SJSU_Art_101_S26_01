@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Underpass // StarStruck World 002</title>
+    <link rel="stylesheet" href="world.css" />
+    <link rel="stylesheet" href="tourbot.css" />
+  </head>
+  <body class="world-neon">
+    <div class="world-bg"></div>
+    <div class="world-overlay"></div>
+
+    <div class="world-container">
+      <header class="world-header">
+        <a href="index.html" class="back-link">← Return to Portal Hub</a>
+        <div class="world-title-block">
+          <h1 class="world-name">Neon Underpass</h1>
+          <p class="world-tier">World 002 // Street Level</p>
+        </div>
+        <div class="balance-chip">
+          <span class="balance-dot"></span>
+          <span id="balanceValue">100.00 ★</span>
+        </div>
+      </header>
+
+      <section class="world-intro">
+        <p>
+          The rift deposits you into a maze of flickering neon and wet concrete.
+          Laughter echoes off graffiti-covered walls. Down here, reputation is
+          built through humor, favors, and the secrets you keep for others.
+        </p>
+        <p class="world-rule">
+          ⟡ Local Law: Jokes are receipts. Share a story, earn a star. Leak a
+          secret, lose everything.
+        </p>
+      </section>
+
+      <section class="inhabitants-section">
+        <h2 class="section-label">Inhabitants Nearby</h2>
+        <p class="section-hint">
+          Observe each person. Decide their worth. Your rating becomes their
+          reality.
+        </p>
+
+        <div class="inhabitants-grid">
+          <div class="inhabitant-card" data-id="neon-1">
+            <div class="inhabitant-avatar pink"></div>
+            <div class="inhabitant-info">
+              <div class="inhabitant-name">Runner 44-Flick</div>
+              <div class="inhabitant-role">Message Courier</div>
+              <p class="inhabitant-behavior">
+                "Got a joke for you: why did the rating cross the road? Because
+                someone needed to eat tonight." They laugh nervously, waiting
+                for your response.
+              </p>
+              <div class="inhabitant-current">
+                Current Balance: <span class="highlight">2.7★</span>
+              </div>
+            </div>
+            <div class="rating-panel">
+              <span class="rating-label">Rate this encounter:</span>
+              <div class="star-buttons">
+                <button class="star-btn" data-stars="1">1★</button>
+                <button class="star-btn" data-stars="2">2★</button>
+                <button class="star-btn" data-stars="3">3★</button>
+                <button class="star-btn" data-stars="4">4★</button>
+                <button class="star-btn" data-stars="5">5★</button>
+              </div>
+              <p class="rating-result"></p>
+            </div>
+          </div>
+
+          <div class="inhabitant-card" data-id="neon-2">
+            <div class="inhabitant-avatar cyan"></div>
+            <div class="inhabitant-info">
+              <div class="inhabitant-name">Fixer 18-Shade</div>
+              <div class="inhabitant-role">Favor Broker</div>
+              <p class="inhabitant-behavior">
+                "I remember faces. I remember who helped and who walked past. If
+                you rate me fair, I'll owe you one. That's how it works down
+                here."
+              </p>
+              <div class="inhabitant-current">
+                Current Balance: <span class="highlight">3.1★</span>
+              </div>
+            </div>
+            <div class="rating-panel">
+              <span class="rating-label">Rate this encounter:</span>
+              <div class="star-buttons">
+                <button class="star-btn" data-stars="1">1★</button>
+                <button class="star-btn" data-stars="2">2★</button>
+                <button class="star-btn" data-stars="3">3★</button>
+                <button class="star-btn" data-stars="4">4★</button>
+                <button class="star-btn" data-stars="5">5★</button>
+              </div>
+              <p class="rating-result"></p>
+            </div>
+          </div>
+
+          <div class="inhabitant-card" data-id="neon-3">
+            <div class="inhabitant-avatar gold"></div>
+            <div class="inhabitant-info">
+              <div class="inhabitant-name">Echo 7-Drift</div>
+              <div class="inhabitant-role">Street Storyteller</div>
+              <p class="inhabitant-behavior">
+                "I trade stories for stars. Here's one: I once saw someone give
+                a stranger five stars just because they smiled. Changed their
+                whole month." They pause. "Be that person."
+              </p>
+              <div class="inhabitant-current">
+                Current Balance: <span class="highlight">2.4★</span>
+              </div>
+            </div>
+            <div class="rating-panel">
+              <span class="rating-label">Rate this encounter:</span>
+              <div class="star-buttons">
+                <button class="star-btn" data-stars="1">1★</button>
+                <button class="star-btn" data-stars="2">2★</button>
+                <button class="star-btn" data-stars="3">3★</button>
+                <button class="star-btn" data-stars="4">4★</button>
+                <button class="star-btn" data-stars="5">5★</button>
+              </div>
+              <p class="rating-result"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="world-footer">
+        <a href="index.html" class="return-btn">← Exit Through Rift</a>
+        <a href="shop.html" class="shop-btn">★ Star Shop</a>
+      </div>
+    </div>
+
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">Neon Underpass guide</div>
+            </div>
+          </div>
+          <div class="tourbot-actions">
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset">↺</button>
+          </div>
+        </div>
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="tourbot.js" defer></script>
+    <script src="world.js" defer></script>
+  </body>
+</html>

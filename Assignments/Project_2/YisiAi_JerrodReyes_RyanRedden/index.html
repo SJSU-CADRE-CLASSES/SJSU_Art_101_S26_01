@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Market Portal</title>
+<link rel="stylesheet" href="home.css">
+</head>
+<body class="intro-mode">
+<div id="app">
+<div id="scene-root" aria-hidden="true"></div>
+
+<div class="hud">
+<section class="hud-panel brand-panel">
+<h1>Shadow Market Portal</h1>
+</section>
+
+<section class="hud-panel nav-panel">
+<p class="panel-label">Jump To Node</p>
+<div class="nav-grid">
+<button class="nav-btn active" data-view="marketplace">Marketplace</button>
+<button class="nav-btn" data-view="wallet">Wallet</button>
+<button class="nav-btn" data-view="login">Login</button>
+<button class="nav-btn" data-view="neural">Neural Link</button>
+<button class="nav-btn" data-view="listing">Featured Listing</button>
+</div>
+</section>
+</div>
+
+<div class="reticle" aria-hidden="true"></div>
+<div id="entry-prompt" class="entry-prompt" hidden>
+<p>Enter Shadow Market</p>
+<span>Click the core module to jack in.</span>
+</div>
+
+<script type="module" src="home.js"></script>
+</body>
+</html>

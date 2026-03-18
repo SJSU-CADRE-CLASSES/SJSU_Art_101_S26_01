@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarStruck // Portal Hub</title>
+    <style>
+      :root {
+        --void: #020408;
+        --glow-cyan: #5ad8ff;
+        --glow-pink: #ff6ad5;
+        --glow-gold: #ffcc66;
+        --text: #e8ecff;
+        --muted: #7a82a6;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: "Courier New", Courier, monospace;
+        color: var(--text);
+        background: var(--void);
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.015) 0px,
+          rgba(255, 255, 255, 0.015) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .void-bg {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at 20% 30%, rgba(90, 216, 255, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 70%, rgba(255, 106, 213, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(255, 204, 102, 0.04) 0%, transparent 60%),
+          linear-gradient(180deg, #020408 0%, #050812 50%, #02050a 100%);
+        z-index: -2;
+      }
+
+      .grid-floor {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 45vh;
+        background:
+          linear-gradient(rgba(90, 216, 255, 0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(90, 216, 255, 0.12) 1px, transparent 1px);
+        background-size: 60px 60px;
+        transform: perspective(400px) rotateX(60deg);
+        transform-origin: bottom center;
+        opacity: 0.5;
+        z-index: -1;
+        animation: grid-pulse 4s ease-in-out infinite;
+      }
+
+      @keyframes grid-pulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.6; }
+      }
+
+      .hub {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 20px 60px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hub-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .hub-title {
+        font-size: 2.8rem;
+        font-weight: 400;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, var(--glow-cyan), var(--glow-pink));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 60px rgba(90, 216, 255, 0.5);
+        animation: title-glow 3s ease-in-out infinite;
+      }
+
+      @keyframes title-glow {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.2); }
+      }
+
+      .hub-subtitle {
+        font-size: 0.85rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      .balance-display {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 14px;
+        padding: 8px 16px;
+        border: 1px solid rgba(255, 204, 102, 0.6);
+        border-radius: 999px;
+        background: rgba(255, 204, 102, 0.08);
+        color: var(--glow-gold);
+        font-size: 0.9rem;
+        letter-spacing: 0.15em;
+        box-shadow: 0 0 20px rgba(255, 204, 102, 0.2);
+      }
+
+      .balance-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--glow-gold);
+        box-shadow: 0 0 10px var(--glow-gold);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.7; }
+      }
+
+      .intro-text {
+        max-width: 700px;
+        text-align: center;
+        margin: 20px auto 30px;
+        font-size: 0.92rem;
+        line-height: 1.8;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+      }
+
+      .portals-section {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .portals-label {
+        text-align: center;
+        font-size: 0.75rem;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .portals-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+      }
+
+      .portal-card {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        border-radius: 24px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .portal-card:hover {
+        transform: translateY(-8px) scale(1.02);
+      }
+
+      .portal-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        padding: 2px;
+        background: linear-gradient(
+          135deg,
+          var(--portal-color, var(--glow-cyan)),
+          transparent 50%,
+          var(--portal-color, var(--glow-cyan))
+        );
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+      }
+
+      .portal-card:hover::before {
+        opacity: 1;
+      }
+
+      .portal-inner {
+        position: absolute;
+        inset: 2px;
+        border-radius: 22px;
+        background: rgba(5, 8, 20, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .portal-rift {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        position: relative;
+        margin-bottom: 20px;
+        animation: rift-float 4s ease-in-out infinite;
+      }
+
+      @keyframes rift-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      .portal-rift::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(
+          ellipse at center,
+          var(--portal-color, var(--glow-cyan)) 0%,
+          transparent 70%
+        );
+        opacity: 0.4;
+        animation: rift-pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes rift-pulse {
+        0%, 100% { transform: scale(1); opacity: 0.4; }
+        50% { transform: scale(1.15); opacity: 0.6; }
+      }
+
+      .portal-rift::after {
+        content: "";
+        position: absolute;
+        inset: 20%;
+        border-radius: 50%;
+        border: 2px solid var(--portal-color, var(--glow-cyan));
+        box-shadow:
+          0 0 30px var(--portal-color, var(--glow-cyan)),
+          inset 0 0 30px rgba(255, 255, 255, 0.1);
+        animation: rift-spin 8s linear infinite;
+      }
+
+      @keyframes rift-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .portal-ring {
+        position: absolute;
+        inset: 10%;
+        border-radius: 50%;
+        border: 1px dashed var(--portal-color, var(--glow-cyan));
+        opacity: 0.5;
+        animation: rift-spin 12s linear infinite reverse;
+      }
+
+      .portal-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        text-shadow: 0 0 20px var(--portal-color, var(--glow-cyan));
+      }
+
+      .portal-tier {
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      .portal-cost {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border: 1px solid rgba(255, 204, 102, 0.5);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        color: var(--glow-gold);
+        letter-spacing: 0.12em;
+        background: rgba(255, 204, 102, 0.08);
+      }
+
+      .portal-desc {
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.5;
+        margin-top: 12px;
+        letter-spacing: 0.04em;
+      }
+
+      .portal-enter {
+        margin-top: 16px;
+        padding: 10px 20px;
+        border: 1px solid var(--portal-color, var(--glow-cyan));
+        border-radius: 999px;
+        background: transparent;
+        color: var(--portal-color, var(--glow-cyan));
+        font-family: inherit;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 15px rgba(90, 216, 255, 0.2);
+      }
+
+      .portal-enter:hover {
+        background: var(--portal-color, var(--glow-cyan));
+        color: var(--void);
+        box-shadow: 0 0 30px var(--portal-color, var(--glow-cyan));
+      }
+
+      .portal-card.glass { --portal-color: #5ad8ff; }
+      .portal-card.neon { --portal-color: #ff6ad5; }
+      .portal-card.signal { --portal-color: #ffcc66; }
+
+      .portal-card.glass:hover { box-shadow: 0 20px 60px rgba(90, 216, 255, 0.3); }
+      .portal-card.neon:hover { box-shadow: 0 20px 60px rgba(255, 106, 213, 0.3); }
+      .portal-card.signal:hover { box-shadow: 0 20px 60px rgba(255, 204, 102, 0.3); }
+
+      .nav-links {
+        display: flex;
+        gap: 16px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-link {
+        padding: 10px 20px;
+        border: 1px solid rgba(122, 130, 166, 0.5);
+        border-radius: 999px;
+        background: rgba(5, 8, 20, 0.8);
+        color: var(--muted);
+        font-family: inherit;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .nav-link:hover {
+        border-color: var(--glow-cyan);
+        color: var(--glow-cyan);
+        box-shadow: 0 0 20px rgba(90, 216, 255, 0.2);
+      }
+
+      @media (max-width: 900px) {
+        .portals-grid {
+          grid-template-columns: 1fr;
+          max-width: 380px;
+          margin: 0 auto;
+        }
+
+        .portal-card {
+          aspect-ratio: 4 / 3;
+        }
+
+        .hub-title {
+          font-size: 2rem;
+          letter-spacing: 0.25em;
+        }
+      }
+
+      @media (max-width: 500px) {
+        .hub-title {
+          font-size: 1.5rem;
+        }
+
+        .intro-text {
+          font-size: 0.82rem;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="tourbot.css" />
+  </head>
+  <body>
+    <div class="void-bg"></div>
+    <div class="grid-floor"></div>
+
+    <div class="hub">
+      <header class="hub-header">
+        <h1 class="hub-title">StarStruck</h1>
+        <p class="hub-subtitle">The In‑Between Dimension</p>
+        <div class="balance-display">
+          <span class="balance-dot"></span>
+          <span id="balanceValue">100.00 ★ balance</span>
+        </div>
+      </header>
+
+      <p class="intro-text">
+        You stand in the void between worlds. Glowing rifts shimmer before you,
+        each leading to a different reality with its own rules, its own people,
+        its own desperate need for stars. Choose a portal. Enter. Observe the
+        inhabitants. Rate them. Your rating becomes their currency — their rent,
+        their meals, their survival. Then return here to prepare for the next
+        crossing.
+      </p>
+
+      <section class="portals-section">
+        <p class="portals-label">⟡ Active Portals ⟡</p>
+
+        <div class="portals-grid">
+          <a href="world-glass.html" class="portal-card glass">
+            <div class="portal-inner">
+              <div class="portal-rift">
+                <div class="portal-ring"></div>
+              </div>
+              <div class="portal-name">Glass City</div>
+              <div class="portal-tier">Upper Tiers // World 001</div>
+              <div class="portal-cost">Entry: 0★ (free observation)</div>
+              <p class="portal-desc">
+                A world of polished smiles and rehearsed compliments. Politeness
+                is armor. Everyone rates everyone, constantly.
+              </p>
+              <button class="portal-enter">Enter Rift</button>
+            </div>
+          </a>
+
+          <a href="world-neon.html" class="portal-card neon">
+            <div class="portal-inner">
+              <div class="portal-rift">
+                <div class="portal-ring"></div>
+              </div>
+              <div class="portal-name">Neon Underpass</div>
+              <div class="portal-tier">Street Level // World 002</div>
+              <div class="portal-cost">Entry: 0★ (free observation)</div>
+              <p class="portal-desc">
+                Jokes are currency, favors are receipts. Every shared secret is
+                worth half a star — until someone leaks it.
+              </p>
+              <button class="portal-enter">Enter Rift</button>
+            </div>
+          </a>
+
+          <a href="world-signal.html" class="portal-card signal">
+            <div class="portal-inner">
+              <div class="portal-rift">
+                <div class="portal-ring"></div>
+              </div>
+              <div class="portal-name">Signal Market</div>
+              <div class="portal-tier">Fringe Zone // World 003</div>
+              <div class="portal-cost">Entry: 0★ (free observation)</div>
+              <p class="portal-desc">
+                People here rent borrowed ratings just to cross the street. If
+                you speak gently, you might be the highest balance they see all
+                week.
+              </p>
+              <button class="portal-enter">Enter Rift</button>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <div class="nav-links">
+        <a href="shop.html" class="nav-link">★ Star Shop</a>
+        <a href="#" class="nav-link" id="howItWorks">? How It Works</a>
+      </div>
+    </div>
+
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">Dimensional guide</div>
+            </div>
+          </div>
+
+          <div class="tourbot-actions">
+            <button
+              class="tourbot-iconbtn"
+              type="button"
+              id="tourbotToggle"
+              aria-label="Collapse or expand chat"
+              title="Collapse / expand"
+            >
+              ▾
+            </button>
+            <button
+              class="tourbot-iconbtn"
+              type="button"
+              id="tourbotReset"
+              aria-label="Restart tour"
+              title="Restart tour"
+            >
+              ↺
+            </button>
+          </div>
+        </div>
+
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="tourbot.js" defer></script>
+  </body>
+</html>
