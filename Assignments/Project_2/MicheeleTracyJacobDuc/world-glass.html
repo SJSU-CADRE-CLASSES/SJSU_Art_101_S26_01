@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glass City // StarStruck World 001</title>
+    <link rel="stylesheet" href="world.css" />
+    <link rel="stylesheet" href="tourbot.css" />
+  </head>
+  <body class="world-glass">
+    <div class="world-bg"></div>
+    <div class="world-overlay"></div>
+
+    <div class="world-container">
+      <header class="world-header">
+        <a href="index.html" class="back-link">← Return to Portal Hub</a>
+        <div class="world-title-block">
+          <h1 class="world-name">Glass City</h1>
+          <p class="world-tier">World 001 // Upper Tiers</p>
+        </div>
+        <div class="balance-chip">
+          <span class="balance-dot"></span>
+          <span id="balanceValue">100.00 ★</span>
+        </div>
+      </header>
+
+      <section class="world-intro">
+        <p>
+          You step through the rift into a world of gleaming surfaces and
+          calculated smiles. Everyone here moves with practiced grace. Eye
+          contact is currency. Compliments are compulsory. Failing to rate
+          someone at least four stars is read as a public attack.
+        </p>
+        <p class="world-rule">
+          ⟡ Local Law: Politeness is armor. Rate generously or face social exile.
+        </p>
+      </section>
+
+      <section class="inhabitants-section">
+        <h2 class="section-label">Inhabitants Nearby</h2>
+        <p class="section-hint">
+          Observe each person. Decide their worth. Your rating becomes their
+          reality.
+        </p>
+
+        <div class="inhabitants-grid">
+          <div class="inhabitant-card" data-id="glass-1">
+            <div class="inhabitant-avatar cyan"></div>
+            <div class="inhabitant-info">
+              <div class="inhabitant-name">Citizen 7A-Lux</div>
+              <div class="inhabitant-role">Protocol Greeter</div>
+              <p class="inhabitant-behavior">
+                "Welcome to Glass City. Your presence elevates us all." They bow
+                exactly 15 degrees — the mandated angle for visitors.
+              </p>
+              <div class="inhabitant-current">
+                Current Balance: <span class="highlight">4.2★</span>
+              </div>
+            </div>
+            <div class="rating-panel">
+              <span class="rating-label">Rate this encounter:</span>
+              <div class="star-buttons">
+                <button class="star-btn" data-stars="1">1★</button>
+                <button class="star-btn" data-stars="2">2★</button>
+                <button class="star-btn" data-stars="3">3★</button>
+                <button class="star-btn" data-stars="4">4★</button>
+                <button class="star-btn" data-stars="5">5★</button>
+              </div>
+              <p class="rating-result"></p>
+            </div>
+          </div>
+
+          <div class="inhabitant-card" data-id="glass-2">
+            <div class="inhabitant-avatar pink"></div>
+            <div class="inhabitant-info">
+              <div class="inhabitant-name">Citizen 3B-Veil</div>
+              <div class="inhabitant-role">Sentiment Analyst</div>
+              <p class="inhabitant-behavior">
+                They scan your face, cataloging micro-expressions. "Your
+                kindness index reads... adequate." A forced smile flickers.
+              </p>
+              <div class="inhabitant-current">
+                Current Balance: <span class="highlight">3.8★</span>
+              </div>
+            </div>
+            <div class="rating-panel">
+              <span class="rating-label">Rate this encounter:</span>
+              <div class="star-buttons">
+                <button class="star-btn" data-stars="1">1★</button>
+                <button class="star-btn" data-stars="2">2★</button>
+                <button class="star-btn" data-stars="3">3★</button>
+                <button class="star-btn" data-stars="4">4★</button>
+                <button class="star-btn" data-stars="5">5★</button>
+              </div>
+              <p class="rating-result"></p>
+            </div>
+          </div>
+
+          <div class="inhabitant-card" data-id="glass-3">
+            <div class="inhabitant-avatar gold"></div>
+            <div class="inhabitant-info">
+              <div class="inhabitant-name">Citizen 9C-Mirror</div>
+              <div class="inhabitant-role">Reputation Auditor</div>
+              <p class="inhabitant-behavior">
+                "I see you're new here. Let me warn you: in Glass City, a
+                three-star rating can close doors for months. Choose kindness."
+              </p>
+              <div class="inhabitant-current">
+                Current Balance: <span class="highlight">4.9★</span>
+              </div>
+            </div>
+            <div class="rating-panel">
+              <span class="rating-label">Rate this encounter:</span>
+              <div class="star-buttons">
+                <button class="star-btn" data-stars="1">1★</button>
+                <button class="star-btn" data-stars="2">2★</button>
+                <button class="star-btn" data-stars="3">3★</button>
+                <button class="star-btn" data-stars="4">4★</button>
+                <button class="star-btn" data-stars="5">5★</button>
+              </div>
+              <p class="rating-result"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="world-footer">
+        <a href="index.html" class="return-btn">← Exit Through Rift</a>
+        <a href="shop.html" class="shop-btn">★ Star Shop</a>
+      </div>
+    </div>
+
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">Glass City guide</div>
+            </div>
+          </div>
+          <div class="tourbot-actions">
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset">↺</button>
+          </div>
+        </div>
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="tourbot.js" defer></script>
+    <script src="world.js" defer></script>
+  </body>
+</html>
