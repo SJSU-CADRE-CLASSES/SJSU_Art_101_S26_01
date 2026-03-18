@@ -79,16 +79,9 @@
   const isShopPage = () => path.endsWith("shop.html");
   const isHubPage = () => path.endsWith("index.html") || path.endsWith("/");
   const isGlassCity = () => path.endsWith("glass-city.html");
-  const isNeonUnderpass = () => path.endsWith("neon-underpass.html");
-  const isSignalMarket = () => path.endsWith("signal-market.html");
-  const isWorldPage = () => isGlassCity() || isNeonUnderpass() || isSignalMarket();
-
-  const getCurrentWorld = () => {
-    if (isGlassCity()) return { name: "Glass City", id: 1 };
-    if (isNeonUnderpass()) return { name: "Neon Underpass", id: 2 };
-    if (isSignalMarket()) return { name: "Signal Market", id: 3 };
-    return null;
-  };
+  const isLegoWorld = () => path.endsWith("lego-world.html");
+  const isUndergroundCity = () => path.endsWith("underground-city.html");
+  const isWorldPage = () => isGlassCity() || isLegoWorld() || isUndergroundCity();
 
   const offerMenu = () => {
     clearChoices();
@@ -108,19 +101,19 @@
           });
         }
 
-        if (!isNeonUnderpass()) {
-          addChoice("Neon Underpass", () => {
-            addMsg("Neon Underpass", "user");
-            addMsg("Entering World 002. Trust is currency here. High ratings draw unwanted attention.");
-            goTo("neon-underpass.html");
+        if (!isLegoWorld()) {
+          addChoice("Lego World", () => {
+            addMsg("Lego World", "user");
+            addMsg("Entering World 002. A realm of bricks and imagination where ratings determine your building rights.");
+            goTo("lego-world.html");
           });
         }
 
-        if (!isSignalMarket()) {
-          addChoice("Signal Market", () => {
-            addMsg("Signal Market", "user");
-            addMsg("Entering World 003. The fringe. People here borrow ratings just to survive another day.");
-            goTo("signal-market.html");
+        if (!isUndergroundCity()) {
+          addChoice("Underground City", () => {
+            addMsg("Underground City", "user");
+            addMsg("Entering World 003. Deep below, where stars are the only light that matters.");
+            goTo("underground-city.html");
           });
         }
 
@@ -199,19 +192,19 @@
       addMsg("You've entered Glass City — World 001.");
       addMsg("A realm of perfect surfaces and polished manners. Everyone smiles, but the silence between words hides their true judgement.");
       addMsg("Below 4 stars, you become invisible. Rate wisely.");
-    } else if (isNeonUnderpass()) {
-      addMsg("You've descended into the Neon Underpass — World 002.");
-      addMsg("Flickering lights and whispered deals. Here, stars are traded like secrets.");
-      addMsg("High ratings draw attention. Sometimes being overlooked is survival.");
-    } else if (isSignalMarket()) {
-      addMsg("You've reached the Signal Market — World 003.");
-      addMsg("At the edge of all worlds, data, memories, and futures are commodified.");
-      addMsg("Ratings here can be bought, sold, and stolen. Trust no one's score.");
+    } else if (isLegoWorld()) {
+      addMsg("You've entered Lego World — World 002.");
+      addMsg("A realm built brick by brick, where creativity meets commerce. The minifigures here judge each other by their constructions.");
+      addMsg("Low ratings mean your creations get dismantled. Build your reputation.");
+    } else if (isUndergroundCity()) {
+      addMsg("You've descended into Underground City — World 003.");
+      addMsg("Miles beneath the surface, resources are scarce and darkness is eternal. Only those with stars get access to light.");
+      addMsg("In the depths, your reputation is your only beacon.");
     } else {
       addMsg("Welcome to StarStruck — the space between worlds.");
-      addMsg("You stand in the Portal Hub — a strange digital corridor where realities overlap.");
-      addMsg("From here, you can travel to distant dimensions and rate the people inside.");
-      addMsg("Your ratings are currency. Your kindness is survival.");
+      addMsg("You stand in the Portal Hub — click the main portal to reveal three different worlds.");
+      addMsg("Each world has its own rules, its own inhabitants, and its own consequences for ratings.");
+      addMsg("Your stars are currency. Your kindness is survival.");
     }
 
     addMsg("What do you want to do?");
