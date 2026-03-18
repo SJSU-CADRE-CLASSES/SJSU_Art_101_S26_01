@@ -1,7 +1,7 @@
 (() => {
   const DEFAULT_START_BALANCE = 100;
 
-  const creditChipValue = document.getElementById("balanceValue") || document.querySelector(".credit-chip span:last-child");
+  const creditChipValue = document.querySelector(".credit-chip span:last-child");
   const cartItemsEl = document.getElementById("cartItems");
   const cartTotalEl = document.getElementById("cartTotal");
   const cartBalanceEl = document.getElementById("cartBalance");
