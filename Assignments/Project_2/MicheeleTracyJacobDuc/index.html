@@ -22,7 +22,8 @@
       .hub-content {
         position: relative;
         z-index: 10;
-        max-width: 1100px;
+        max-width: 1200px;
+        width: 100%;
       }
 
       .glitch {
@@ -60,45 +61,227 @@
         font-size: 1.1rem;
         color: var(--muted);
         letter-spacing: 0.15em;
-        margin-bottom: 32px;
-        max-width: 600px;
-      }
-
-      .hub-intro {
-        font-size: 0.95rem;
-        color: var(--text);
-        line-height: 1.8;
-        max-width: 700px;
-        margin: 0 auto 40px;
-        padding: 24px;
-        border: 1px dashed var(--border);
-        border-radius: 16px;
-        background: rgba(4, 12, 20, 0.6);
-        backdrop-filter: blur(8px);
-      }
-
-      .portals-section {
-        width: 100%;
-        margin-top: 20px;
-      }
-
-      .portals-title {
-        font-size: 0.85rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--muted);
         margin-bottom: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
-      .portal-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 40px;
-        margin-bottom: 48px;
+      /* Main Portal Container */
+      .main-portal-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
-      /* Fantasy Portal Styles */
-      .portal-gateway {
+      /* Big Main Portal */
+      .main-portal {
+        position: relative;
+        width: 500px;
+        height: 500px;
+        cursor: pointer;
+        transition: transform 0.5s ease;
+      }
+
+      .main-portal:hover {
+        transform: scale(1.02);
+      }
+
+      /* Main portal rings */
+      .main-ring {
+        position: absolute;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .main-ring--1 {
+        width: 100%;
+        height: 100%;
+        border: 4px solid;
+        border-color: var(--accent-2);
+        animation: spin-slow 30s linear infinite;
+        box-shadow: 
+          0 0 30px rgba(90, 216, 255, 0.4),
+          inset 0 0 30px rgba(90, 216, 255, 0.2);
+      }
+
+      .main-ring--1::before,
+      .main-ring--1::after {
+        content: "★";
+        position: absolute;
+        font-size: 1.5rem;
+        color: #5ad8ff;
+        text-shadow: 0 0 20px #5ad8ff;
+      }
+
+      .main-ring--1::before {
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .main-ring--1::after {
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .main-ring--2 {
+        width: 90%;
+        height: 90%;
+        border: 3px dashed rgba(255, 106, 213, 0.6);
+        animation: spin-reverse 25s linear infinite;
+      }
+
+      .main-ring--3 {
+        width: 80%;
+        height: 80%;
+        border: 2px solid rgba(168, 85, 247, 0.5);
+        animation: spin-slow 20s linear infinite;
+      }
+
+      .main-ring--4 {
+        width: 70%;
+        height: 70%;
+        border: 2px dashed rgba(255, 204, 0, 0.4);
+        animation: spin-reverse 15s linear infinite;
+      }
+
+      /* Main portal core */
+      .main-core {
+        position: absolute;
+        width: 65%;
+        height: 65%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 
+          0 0 60px rgba(90, 216, 255, 0.5),
+          0 0 120px rgba(255, 106, 213, 0.3),
+          inset 0 0 80px rgba(168, 85, 247, 0.4);
+        cursor: pointer;
+      }
+
+      .main-core::before {
+        content: "";
+        position: absolute;
+        inset: -100%;
+        background: conic-gradient(
+          from 0deg,
+          rgba(90, 216, 255, 0.8),
+          transparent,
+          rgba(255, 106, 213, 0.8),
+          transparent,
+          rgba(255, 204, 0, 0.8),
+          transparent,
+          rgba(90, 216, 255, 0.8)
+        );
+        animation: swirl 8s linear infinite;
+      }
+
+      .main-core::after {
+        content: "";
+        position: absolute;
+        inset: 20%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(200, 220, 255, 0.6) 30%,
+          transparent 70%
+        );
+        animation: pulse-core 3s ease-in-out infinite;
+      }
+
+      /* Portal entrance text */
+      .portal-enter-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        text-align: center;
+        pointer-events: none;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      .portal-enter-text h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 0 30px rgba(90, 216, 255, 0.9), 0 0 60px rgba(255, 106, 213, 0.7);
+        margin-bottom: 8px;
+        animation: float-text 3s ease-in-out infinite;
+      }
+
+      .portal-enter-text p {
+        font-size: 0.85rem;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+      }
+
+      @keyframes float-text {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      /* Floating runes around main portal */
+      .portal-runes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .rune {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0.6;
+        animation: float-rune 4s ease-in-out infinite;
+      }
+
+      .rune:nth-child(1) { top: 5%; left: 50%; animation-delay: 0s; }
+      .rune:nth-child(2) { top: 25%; right: 5%; animation-delay: 0.5s; }
+      .rune:nth-child(3) { bottom: 25%; right: 5%; animation-delay: 1s; }
+      .rune:nth-child(4) { bottom: 5%; left: 50%; animation-delay: 1.5s; }
+      .rune:nth-child(5) { bottom: 25%; left: 5%; animation-delay: 2s; }
+      .rune:nth-child(6) { top: 25%; left: 5%; animation-delay: 2.5s; }
+
+      @keyframes float-rune {
+        0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+        50% { transform: translateY(-15px) scale(1.1); opacity: 1; }
+      }
+
+      /* Hidden world portals - revealed when main portal opens */
+      .world-portals {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+      }
+
+      .world-portals.visible {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        opacity: 1;
+      }
+
+      /* Individual world portal */
+      .world-portal {
         position: relative;
         display: flex;
         flex-direction: column;
@@ -107,292 +290,198 @@
         color: inherit;
         cursor: pointer;
         transition: transform 0.4s ease;
+        animation: fade-in-up 0.6s ease forwards;
+        opacity: 0;
       }
 
-      .portal-gateway:hover {
-        transform: scale(1.05);
+      .world-portal:nth-child(1) { animation-delay: 0.2s; }
+      .world-portal:nth-child(2) { animation-delay: 0.4s; }
+      .world-portal:nth-child(3) { animation-delay: 0.6s; }
+
+      @keyframes fade-in-up {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
 
-      .portal-frame {
+      .world-portal:hover {
+        transform: scale(1.1);
+      }
+
+      .world-portal-frame {
         position: relative;
-        width: 220px;
-        height: 220px;
+        width: 140px;
+        height: 140px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      /* Outer rotating ring */
-      .portal-ring-outer {
+      .world-ring-outer {
         position: absolute;
         width: 100%;
         height: 100%;
         border-radius: 50%;
         border: 3px solid;
-        animation: spin-slow 20s linear infinite;
+        animation: spin-slow 15s linear infinite;
       }
 
-      .portal-ring-outer::before,
-      .portal-ring-outer::after {
-        content: "";
+      .world-ring-inner {
         position: absolute;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        top: -6px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .portal-ring-outer::after {
-        top: auto;
-        bottom: -6px;
-      }
-
-      /* Middle ring - counter rotate */
-      .portal-ring-middle {
-        position: absolute;
-        width: 85%;
-        height: 85%;
+        width: 75%;
+        height: 75%;
         border-radius: 50%;
         border: 2px dashed;
-        animation: spin-reverse 15s linear infinite;
+        animation: spin-reverse 10s linear infinite;
         opacity: 0.7;
       }
 
-      /* Inner ring */
-      .portal-ring-inner {
-        position: absolute;
-        width: 70%;
-        height: 70%;
-        border-radius: 50%;
-        border: 2px solid;
-        animation: spin-slow 10s linear infinite;
-        opacity: 0.5;
-      }
-
-      /* Portal core - the swirling center */
-      .portal-core {
+      .world-core {
         position: relative;
         width: 60%;
         height: 60%;
         border-radius: 50%;
         overflow: hidden;
-        box-shadow: 
-          0 0 30px var(--portal-glow),
-          0 0 60px var(--portal-glow),
-          inset 0 0 40px var(--portal-inner);
       }
 
-      .portal-core::before {
+      .world-core::before {
         content: "";
         position: absolute;
         inset: -50%;
-        background: conic-gradient(
-          from 0deg,
-          transparent,
-          var(--portal-color-1),
-          transparent,
-          var(--portal-color-2),
-          transparent
-        );
-        animation: swirl 4s linear infinite;
+        animation: swirl 3s linear infinite;
       }
 
-      .portal-core::after {
-        content: "";
+      .world-icon {
         position: absolute;
-        inset: 15%;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          var(--portal-center) 0%,
-          transparent 70%
-        );
-        animation: pulse-core 2s ease-in-out infinite;
-      }
-
-      /* Portal icon in center */
-      .portal-icon {
-        position: absolute;
-        font-size: 2rem;
+        font-size: 1.8rem;
         z-index: 5;
-        filter: drop-shadow(0 0 10px var(--portal-glow));
-        animation: float-icon 3s ease-in-out infinite;
+        filter: drop-shadow(0 0 10px var(--glow));
+        animation: float-icon 2s ease-in-out infinite;
       }
 
-      /* Floating particles around portal */
-      .portal-particles {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
+      /* Glass City */
+      .world-portal--glass {
+        --glow: rgba(90, 216, 255, 0.8);
+        --color-1: rgba(90, 216, 255, 0.8);
+        --color-2: rgba(200, 240, 255, 0.6);
+      }
+      .world-portal--glass .world-ring-outer { border-color: #5ad8ff; box-shadow: 0 0 20px rgba(90, 216, 255, 0.5); }
+      .world-portal--glass .world-ring-inner { border-color: rgba(90, 216, 255, 0.5); }
+      .world-portal--glass .world-core { 
+        box-shadow: 0 0 30px rgba(90, 216, 255, 0.6), inset 0 0 20px rgba(90, 216, 255, 0.3); 
+      }
+      .world-portal--glass .world-core::before {
+        background: conic-gradient(from 0deg, transparent, var(--color-1), transparent, var(--color-2), transparent);
       }
 
-      .portal-particle {
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        animation: orbit 6s linear infinite;
+      /* Lego World */
+      .world-portal--lego {
+        --glow: rgba(255, 106, 213, 0.8);
+        --color-1: rgba(255, 106, 213, 0.8);
+        --color-2: rgba(168, 85, 247, 0.6);
+      }
+      .world-portal--lego .world-ring-outer { border-color: #ff6ad5; box-shadow: 0 0 20px rgba(255, 106, 213, 0.5); }
+      .world-portal--lego .world-ring-inner { border-color: rgba(255, 106, 213, 0.5); }
+      .world-portal--lego .world-core { 
+        box-shadow: 0 0 30px rgba(255, 106, 213, 0.6), inset 0 0 20px rgba(168, 85, 247, 0.3); 
+      }
+      .world-portal--lego .world-core::before {
+        background: conic-gradient(from 0deg, transparent, var(--color-1), transparent, var(--color-2), transparent);
       }
 
-      .portal-particle:nth-child(1) { animation-delay: 0s; }
-      .portal-particle:nth-child(2) { animation-delay: -1.5s; }
-      .portal-particle:nth-child(3) { animation-delay: -3s; }
-      .portal-particle:nth-child(4) { animation-delay: -4.5s; }
-
-      /* Glass City Portal - Cyan/White */
-      .portal-gateway--glass {
-        --portal-color-1: rgba(90, 216, 255, 0.8);
-        --portal-color-2: rgba(255, 255, 255, 0.6);
-        --portal-glow: rgba(90, 216, 255, 0.6);
-        --portal-inner: rgba(90, 216, 255, 0.3);
-        --portal-center: rgba(200, 240, 255, 0.9);
+      /* Underground City */
+      .world-portal--underground {
+        --glow: rgba(255, 204, 0, 0.8);
+        --color-1: rgba(255, 204, 0, 0.8);
+        --color-2: rgba(255, 140, 50, 0.6);
+      }
+      .world-portal--underground .world-ring-outer { border-color: #ffcc00; box-shadow: 0 0 20px rgba(255, 204, 0, 0.5); }
+      .world-portal--underground .world-ring-inner { border-color: rgba(255, 204, 0, 0.5); }
+      .world-portal--underground .world-core { 
+        box-shadow: 0 0 30px rgba(255, 204, 0, 0.6), inset 0 0 20px rgba(255, 180, 50, 0.3); 
+      }
+      .world-portal--underground .world-core::before {
+        background: conic-gradient(from 0deg, transparent, var(--color-1), transparent, var(--color-2), transparent);
       }
 
-      .portal-gateway--glass .portal-ring-outer {
-        border-color: #5ad8ff;
-      }
-      .portal-gateway--glass .portal-ring-outer::before,
-      .portal-gateway--glass .portal-ring-outer::after {
-        background: #5ad8ff;
-        box-shadow: 0 0 15px #5ad8ff;
-      }
-      .portal-gateway--glass .portal-ring-middle {
-        border-color: rgba(90, 216, 255, 0.6);
-      }
-      .portal-gateway--glass .portal-ring-inner {
-        border-color: rgba(200, 240, 255, 0.5);
-      }
-      .portal-gateway--glass .portal-particle {
-        background: #5ad8ff;
-        box-shadow: 0 0 8px #5ad8ff;
-      }
-
-      /* Neon Underpass Portal - Pink/Purple */
-      .portal-gateway--neon {
-        --portal-color-1: rgba(255, 106, 213, 0.8);
-        --portal-color-2: rgba(168, 85, 247, 0.6);
-        --portal-glow: rgba(255, 106, 213, 0.6);
-        --portal-inner: rgba(168, 85, 247, 0.3);
-        --portal-center: rgba(255, 180, 230, 0.9);
-      }
-
-      .portal-gateway--neon .portal-ring-outer {
-        border-color: #ff6ad5;
-      }
-      .portal-gateway--neon .portal-ring-outer::before,
-      .portal-gateway--neon .portal-ring-outer::after {
-        background: #ff6ad5;
-        box-shadow: 0 0 15px #ff6ad5;
-      }
-      .portal-gateway--neon .portal-ring-middle {
-        border-color: rgba(255, 106, 213, 0.6);
-      }
-      .portal-gateway--neon .portal-ring-inner {
-        border-color: rgba(168, 85, 247, 0.5);
-      }
-      .portal-gateway--neon .portal-particle {
-        background: #ff6ad5;
-        box-shadow: 0 0 8px #a855f7;
-      }
-
-      /* Signal Market Portal - Gold/Orange */
-      .portal-gateway--signal {
-        --portal-color-1: rgba(255, 204, 0, 0.8);
-        --portal-color-2: rgba(255, 140, 50, 0.6);
-        --portal-glow: rgba(255, 204, 0, 0.6);
-        --portal-inner: rgba(255, 180, 50, 0.3);
-        --portal-center: rgba(255, 240, 180, 0.9);
-      }
-
-      .portal-gateway--signal .portal-ring-outer {
-        border-color: #ffcc00;
-      }
-      .portal-gateway--signal .portal-ring-outer::before,
-      .portal-gateway--signal .portal-ring-outer::after {
-        background: #ffcc00;
-        box-shadow: 0 0 15px #ffcc00;
-      }
-      .portal-gateway--signal .portal-ring-middle {
-        border-color: rgba(255, 204, 0, 0.6);
-      }
-      .portal-gateway--signal .portal-ring-inner {
-        border-color: rgba(255, 180, 80, 0.5);
-      }
-      .portal-gateway--signal .portal-particle {
-        background: #ffcc00;
-        box-shadow: 0 0 8px #ff8c32;
-      }
-
-      /* Portal info below */
-      .portal-info {
-        margin-top: 24px;
+      .world-info {
+        margin-top: 16px;
         text-align: center;
       }
 
-      .portal-label {
-        font-size: 0.7rem;
+      .world-label {
+        font-size: 0.65rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--muted);
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
 
-      .portal-name {
-        font-size: 1.4rem;
+      .world-name {
+        font-size: 1rem;
         font-weight: 600;
-        margin-bottom: 8px;
-        transition: text-shadow 0.3s ease;
       }
 
-      .portal-gateway:hover .portal-name {
-        text-shadow: 0 0 20px var(--portal-glow);
-      }
+      .world-portal--glass .world-name { color: #5ad8ff; }
+      .world-portal--lego .world-name { color: #ff6ad5; }
+      .world-portal--underground .world-name { color: #ffcc00; }
 
-      .portal-desc {
-        font-size: 0.85rem;
+      /* Close button when portals are open */
+      .close-portals {
+        display: none;
+        position: absolute;
+        bottom: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 24px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(4, 12, 24, 0.9);
         color: var(--muted);
-        line-height: 1.5;
-        max-width: 260px;
-      }
-
-      .portal-status {
-        margin-top: 12px;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
-      .portal-gateway--glass .portal-status { color: #5ad8ff; }
-      .portal-gateway--neon .portal-status { color: #ff6ad5; }
-      .portal-gateway--signal .portal-status { color: #ffcc00; }
-
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        animation: blink 1.5s infinite;
+      .close-portals:hover {
+        color: var(--text);
+        border-color: var(--accent-2);
       }
 
-      .portal-gateway--glass .status-dot { background: #5ad8ff; box-shadow: 0 0 10px #5ad8ff; }
-      .portal-gateway--neon .status-dot { background: #ff6ad5; box-shadow: 0 0 10px #ff6ad5; }
-      .portal-gateway--signal .status-dot { background: #ffcc00; box-shadow: 0 0 10px #ffcc00; }
+      .close-portals.visible {
+        display: block;
+      }
+
+      /* State: Portal opened */
+      .main-portal.opened .main-core,
+      .main-portal.opened .main-ring,
+      .main-portal.opened .portal-enter-text,
+      .main-portal.opened .portal-runes {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
+
+      .main-portal.opened {
+        cursor: default;
+      }
 
       /* Animations */
       @keyframes spin-slow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
       }
 
       @keyframes spin-reverse {
-        from { transform: rotate(360deg); }
-        to { transform: rotate(0deg); }
+        from { transform: translate(-50%, -50%) rotate(360deg); }
+        to { transform: translate(-50%, -50%) rotate(0deg); }
       }
 
       @keyframes swirl {
@@ -402,60 +491,46 @@
 
       @keyframes pulse-core {
         0%, 100% { opacity: 0.8; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.1); }
+        50% { opacity: 1; transform: scale(1.15); }
       }
 
       @keyframes float-icon {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
+        50% { transform: translateY(-6px); }
       }
 
-      @keyframes orbit {
-        from {
-          transform: rotate(0deg) translateX(110px) rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg) translateX(110px) rotate(-360deg);
-        }
-      }
-
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-      }
-
-      /* Hover effect - speed up animations */
-      .portal-gateway:hover .portal-ring-outer {
-        animation-duration: 8s;
-      }
-      .portal-gateway:hover .portal-ring-middle {
-        animation-duration: 6s;
-      }
-      .portal-gateway:hover .portal-core::before {
-        animation-duration: 2s;
-      }
-      .portal-gateway:hover .portal-particle {
-        animation-duration: 3s;
+      /* Hub intro below portal */
+      .hub-intro {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.8;
+        max-width: 650px;
+        margin: 60px auto 30px;
+        padding: 20px;
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+        background: rgba(4, 12, 20, 0.5);
+        backdrop-filter: blur(8px);
       }
 
       .hub-cta {
-        margin-top: 16px;
-      }
-
-      .scroll-hint {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
+        margin-top: 20px;
       }
 
       @media (max-width: 768px) {
-        .portal-grid {
-          gap: 50px;
+        .main-portal {
+          width: 320px;
+          height: 320px;
         }
-        .portal-frame {
-          width: 180px;
-          height: 180px;
+
+        .world-portals.visible {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .world-portal-frame {
+          width: 100px;
+          height: 100px;
         }
       }
     </style>
@@ -477,8 +552,8 @@
       <nav class="hud-nav">
         <a href="index.html" class="active">Hub</a>
         <a href="glass-city.html">Glass City</a>
-        <a href="neon-underpass.html">Neon Underpass</a>
-        <a href="signal-market.html">Signal Market</a>
+        <a href="lego-world.html">Lego World</a>
+        <a href="underground-city.html">Underground City</a>
         <a href="shop.html">Shop</a>
       </nav>
 
@@ -497,114 +572,88 @@
         <h1 class="glitch" data-text="STARSTRUCK">STARSTRUCK</h1>
         <p class="hub-tagline">The In-Between Dimension · Portal Transit Hub</p>
 
+        <div class="main-portal-container">
+          <!-- Big Main Portal -->
+          <div class="main-portal" id="mainPortal">
+            <div class="main-ring main-ring--1"></div>
+            <div class="main-ring main-ring--2"></div>
+            <div class="main-ring main-ring--3"></div>
+            <div class="main-ring main-ring--4"></div>
+            <div class="main-core"></div>
+            
+            <div class="portal-enter-text">
+              <h2>Enter Portal</h2>
+              <p>Click to reveal worlds</p>
+            </div>
+
+            <div class="portal-runes">
+              <span class="rune">✦</span>
+              <span class="rune">◇</span>
+              <span class="rune">✧</span>
+              <span class="rune">◈</span>
+              <span class="rune">✦</span>
+              <span class="rune">◇</span>
+            </div>
+
+            <!-- Hidden World Portals (revealed on click) -->
+            <div class="world-portals" id="worldPortals">
+              <!-- Glass City -->
+              <a href="glass-city.html" class="world-portal world-portal--glass">
+                <div class="world-portal-frame">
+                  <div class="world-ring-outer"></div>
+                  <div class="world-ring-inner"></div>
+                  <div class="world-core"></div>
+                  <div class="world-icon">🏙️</div>
+                </div>
+                <div class="world-info">
+                  <div class="world-label">World 001</div>
+                  <div class="world-name">Glass City</div>
+                </div>
+              </a>
+
+              <!-- Lego World -->
+              <a href="lego-world.html" class="world-portal world-portal--lego">
+                <div class="world-portal-frame">
+                  <div class="world-ring-outer"></div>
+                  <div class="world-ring-inner"></div>
+                  <div class="world-core"></div>
+                  <div class="world-icon">🧱</div>
+                </div>
+                <div class="world-info">
+                  <div class="world-label">World 002</div>
+                  <div class="world-name">Lego World</div>
+                </div>
+              </a>
+
+              <!-- Underground City -->
+              <a href="underground-city.html" class="world-portal world-portal--underground">
+                <div class="world-portal-frame">
+                  <div class="world-ring-outer"></div>
+                  <div class="world-ring-inner"></div>
+                  <div class="world-core"></div>
+                  <div class="world-icon">🏚️</div>
+                </div>
+                <div class="world-info">
+                  <div class="world-label">World 003</div>
+                  <div class="world-name">Underground City</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <button class="close-portals" id="closePortals">Close Portal</button>
+        </div>
+
         <div class="hub-intro">
           Welcome to StarStruck — a world where every interaction matters, and every
           rating has value. Here, stars are more than feedback — they are currency,
-          status, and survival. As you journey through different worlds, you'll meet
-          their inhabitants, experience their realities, and decide their worth with
-          a simple rating. Be thoughtful. Be observant. Be kind — or don't. Because
-          in StarStruck, your choices shape more than just your experience… they
-          shape theirs.
+          status, and survival. Click the portal above to reveal three different worlds,
+          each with their own rules and inhabitants waiting to be rated.
         </div>
 
-        <div class="portals-section">
-          <div class="portals-title">Choose Your Destination</div>
-          
-          <div class="portal-grid">
-            <!-- Glass City Portal -->
-            <a href="glass-city.html" class="portal-gateway portal-gateway--glass">
-              <div class="portal-frame">
-                <div class="portal-ring-outer"></div>
-                <div class="portal-ring-middle"></div>
-                <div class="portal-ring-inner"></div>
-                <div class="portal-core"></div>
-                <div class="portal-icon">🏙️</div>
-                <div class="portal-particles">
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                </div>
-              </div>
-              <div class="portal-info">
-                <div class="portal-label">World 001 · Upper Tiers</div>
-                <div class="portal-name">Glass City</div>
-                <div class="portal-desc">
-                  Perfect surfaces, polished manners. Anything below 4 stars makes you invisible.
-                </div>
-                <div class="portal-status">
-                  <span class="status-dot"></span>
-                  Portal Online
-                </div>
-              </div>
-            </a>
-
-            <!-- Neon Underpass Portal -->
-            <a href="neon-underpass.html" class="portal-gateway portal-gateway--neon">
-              <div class="portal-frame">
-                <div class="portal-ring-outer"></div>
-                <div class="portal-ring-middle"></div>
-                <div class="portal-ring-inner"></div>
-                <div class="portal-core"></div>
-                <div class="portal-icon">🌃</div>
-                <div class="portal-particles">
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                </div>
-              </div>
-              <div class="portal-info">
-                <div class="portal-label">World 002 · Lower Depths</div>
-                <div class="portal-name">Neon Underpass</div>
-                <div class="portal-desc">
-                  Flickering neon and whispered deals. High ratings draw dangerous attention.
-                </div>
-                <div class="portal-status">
-                  <span class="status-dot"></span>
-                  Portal Online
-                </div>
-              </div>
-            </a>
-
-            <!-- Signal Market Portal -->
-            <a href="signal-market.html" class="portal-gateway portal-gateway--signal">
-              <div class="portal-frame">
-                <div class="portal-ring-outer"></div>
-                <div class="portal-ring-middle"></div>
-                <div class="portal-ring-inner"></div>
-                <div class="portal-core"></div>
-                <div class="portal-icon">📡</div>
-                <div class="portal-particles">
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                  <div class="portal-particle"></div>
-                </div>
-              </div>
-              <div class="portal-info">
-                <div class="portal-label">World 003 · Fringe Zone</div>
-                <div class="portal-name">Signal Market</div>
-                <div class="portal-desc">
-                  Data and futures commodified. Ratings can be bought, sold, and stolen.
-                </div>
-                <div class="portal-status">
-                  <span class="status-dot"></span>
-                  Portal Online
-                </div>
-              </div>
-            </a>
-          </div>
-
-          <div class="hub-cta">
-            <a href="shop.html" class="cta-ghost">Visit the StarStruck Shop ⇢</a>
-          </div>
+        <div class="hub-cta">
+          <a href="shop.html" class="cta-ghost">Visit the StarStruck Shop ⇢</a>
         </div>
-      </div>
-
-      <div class="scroll-hint">
-        <div class="scroll-hint-icon"></div>
-        <span>Select a portal</span>
       </div>
     </main>
 
@@ -649,5 +698,26 @@
 
     <script src="world-common.js"></script>
     <script src="tourbot.js" defer></script>
+    <script>
+      // Main portal interaction
+      const mainPortal = document.getElementById('mainPortal');
+      const worldPortals = document.getElementById('worldPortals');
+      const closeBtn = document.getElementById('closePortals');
+
+      mainPortal.addEventListener('click', function(e) {
+        if (e.target.closest('.world-portal')) return;
+        if (mainPortal.classList.contains('opened')) return;
+        
+        mainPortal.classList.add('opened');
+        worldPortals.classList.add('visible');
+        closeBtn.classList.add('visible');
+      });
+
+      closeBtn.addEventListener('click', function() {
+        mainPortal.classList.remove('opened');
+        worldPortals.classList.remove('visible');
+        closeBtn.classList.remove('visible');
+      });
+    </script>
   </body>
 </html>
