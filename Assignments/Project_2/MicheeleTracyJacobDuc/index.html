@@ -22,7 +22,7 @@
       .hub-content {
         position: relative;
         z-index: 10;
-        max-width: 1000px;
+        max-width: 1100px;
       }
 
       .glitch {
@@ -87,77 +87,249 @@
         letter-spacing: 0.3em;
         text-transform: uppercase;
         color: var(--muted);
-        margin-bottom: 24px;
+        margin-bottom: 40px;
       }
 
       .portal-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-bottom: 32px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-bottom: 48px;
       }
 
-      .portal-card {
+      /* Fantasy Portal Styles */
+      .portal-gateway {
         position: relative;
-        padding: 28px 24px;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        background: var(--panel);
-        backdrop-filter: blur(12px);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        overflow: hidden;
-        text-align: left;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-decoration: none;
         color: inherit;
+        cursor: pointer;
+        transition: transform 0.4s ease;
       }
 
-      .portal-card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(90, 216, 255, 0.08) 0%, transparent 50%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+      .portal-gateway:hover {
+        transform: scale(1.05);
       }
 
-      .portal-card:hover {
-        transform: translateY(-6px);
-        border-color: var(--accent-2);
-        box-shadow:
-          0 20px 50px rgba(0, 0, 0, 0.6),
-          0 0 30px rgba(90, 216, 255, 0.2);
-      }
-
-      .portal-card:hover::before {
-        opacity: 1;
-      }
-
-      .portal-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
+      .portal-frame {
+        position: relative;
+        width: 220px;
+        height: 220px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.6rem;
-        margin-bottom: 16px;
-        border: 1px solid var(--border);
       }
 
-      .portal-card--glass .portal-icon {
-        background: linear-gradient(135deg, rgba(90, 216, 255, 0.2), transparent);
-        box-shadow: 0 0 20px rgba(90, 216, 255, 0.3);
+      /* Outer rotating ring */
+      .portal-ring-outer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid;
+        animation: spin-slow 20s linear infinite;
       }
 
-      .portal-card--neon .portal-icon {
-        background: linear-gradient(135deg, rgba(255, 106, 213, 0.2), transparent);
-        box-shadow: 0 0 20px rgba(255, 106, 213, 0.3);
+      .portal-ring-outer::before,
+      .portal-ring-outer::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
       }
 
-      .portal-card--signal .portal-icon {
-        background: linear-gradient(135deg, rgba(255, 204, 0, 0.2), transparent);
-        box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+      .portal-ring-outer::after {
+        top: auto;
+        bottom: -6px;
+      }
+
+      /* Middle ring - counter rotate */
+      .portal-ring-middle {
+        position: absolute;
+        width: 85%;
+        height: 85%;
+        border-radius: 50%;
+        border: 2px dashed;
+        animation: spin-reverse 15s linear infinite;
+        opacity: 0.7;
+      }
+
+      /* Inner ring */
+      .portal-ring-inner {
+        position: absolute;
+        width: 70%;
+        height: 70%;
+        border-radius: 50%;
+        border: 2px solid;
+        animation: spin-slow 10s linear infinite;
+        opacity: 0.5;
+      }
+
+      /* Portal core - the swirling center */
+      .portal-core {
+        position: relative;
+        width: 60%;
+        height: 60%;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 
+          0 0 30px var(--portal-glow),
+          0 0 60px var(--portal-glow),
+          inset 0 0 40px var(--portal-inner);
+      }
+
+      .portal-core::before {
+        content: "";
+        position: absolute;
+        inset: -50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent,
+          var(--portal-color-1),
+          transparent,
+          var(--portal-color-2),
+          transparent
+        );
+        animation: swirl 4s linear infinite;
+      }
+
+      .portal-core::after {
+        content: "";
+        position: absolute;
+        inset: 15%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          var(--portal-center) 0%,
+          transparent 70%
+        );
+        animation: pulse-core 2s ease-in-out infinite;
+      }
+
+      /* Portal icon in center */
+      .portal-icon {
+        position: absolute;
+        font-size: 2rem;
+        z-index: 5;
+        filter: drop-shadow(0 0 10px var(--portal-glow));
+        animation: float-icon 3s ease-in-out infinite;
+      }
+
+      /* Floating particles around portal */
+      .portal-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .portal-particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        animation: orbit 6s linear infinite;
+      }
+
+      .portal-particle:nth-child(1) { animation-delay: 0s; }
+      .portal-particle:nth-child(2) { animation-delay: -1.5s; }
+      .portal-particle:nth-child(3) { animation-delay: -3s; }
+      .portal-particle:nth-child(4) { animation-delay: -4.5s; }
+
+      /* Glass City Portal - Cyan/White */
+      .portal-gateway--glass {
+        --portal-color-1: rgba(90, 216, 255, 0.8);
+        --portal-color-2: rgba(255, 255, 255, 0.6);
+        --portal-glow: rgba(90, 216, 255, 0.6);
+        --portal-inner: rgba(90, 216, 255, 0.3);
+        --portal-center: rgba(200, 240, 255, 0.9);
+      }
+
+      .portal-gateway--glass .portal-ring-outer {
+        border-color: #5ad8ff;
+      }
+      .portal-gateway--glass .portal-ring-outer::before,
+      .portal-gateway--glass .portal-ring-outer::after {
+        background: #5ad8ff;
+        box-shadow: 0 0 15px #5ad8ff;
+      }
+      .portal-gateway--glass .portal-ring-middle {
+        border-color: rgba(90, 216, 255, 0.6);
+      }
+      .portal-gateway--glass .portal-ring-inner {
+        border-color: rgba(200, 240, 255, 0.5);
+      }
+      .portal-gateway--glass .portal-particle {
+        background: #5ad8ff;
+        box-shadow: 0 0 8px #5ad8ff;
+      }
+
+      /* Neon Underpass Portal - Pink/Purple */
+      .portal-gateway--neon {
+        --portal-color-1: rgba(255, 106, 213, 0.8);
+        --portal-color-2: rgba(168, 85, 247, 0.6);
+        --portal-glow: rgba(255, 106, 213, 0.6);
+        --portal-inner: rgba(168, 85, 247, 0.3);
+        --portal-center: rgba(255, 180, 230, 0.9);
+      }
+
+      .portal-gateway--neon .portal-ring-outer {
+        border-color: #ff6ad5;
+      }
+      .portal-gateway--neon .portal-ring-outer::before,
+      .portal-gateway--neon .portal-ring-outer::after {
+        background: #ff6ad5;
+        box-shadow: 0 0 15px #ff6ad5;
+      }
+      .portal-gateway--neon .portal-ring-middle {
+        border-color: rgba(255, 106, 213, 0.6);
+      }
+      .portal-gateway--neon .portal-ring-inner {
+        border-color: rgba(168, 85, 247, 0.5);
+      }
+      .portal-gateway--neon .portal-particle {
+        background: #ff6ad5;
+        box-shadow: 0 0 8px #a855f7;
+      }
+
+      /* Signal Market Portal - Gold/Orange */
+      .portal-gateway--signal {
+        --portal-color-1: rgba(255, 204, 0, 0.8);
+        --portal-color-2: rgba(255, 140, 50, 0.6);
+        --portal-glow: rgba(255, 204, 0, 0.6);
+        --portal-inner: rgba(255, 180, 50, 0.3);
+        --portal-center: rgba(255, 240, 180, 0.9);
+      }
+
+      .portal-gateway--signal .portal-ring-outer {
+        border-color: #ffcc00;
+      }
+      .portal-gateway--signal .portal-ring-outer::before,
+      .portal-gateway--signal .portal-ring-outer::after {
+        background: #ffcc00;
+        box-shadow: 0 0 15px #ffcc00;
+      }
+      .portal-gateway--signal .portal-ring-middle {
+        border-color: rgba(255, 204, 0, 0.6);
+      }
+      .portal-gateway--signal .portal-ring-inner {
+        border-color: rgba(255, 180, 80, 0.5);
+      }
+      .portal-gateway--signal .portal-particle {
+        background: #ffcc00;
+        box-shadow: 0 0 8px #ff8c32;
+      }
+
+      /* Portal info below */
+      .portal-info {
+        margin-top: 24px;
+        text-align: center;
       }
 
       .portal-label {
@@ -169,25 +341,101 @@
       }
 
       .portal-name {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
         font-weight: 600;
         margin-bottom: 8px;
+        transition: text-shadow 0.3s ease;
+      }
+
+      .portal-gateway:hover .portal-name {
+        text-shadow: 0 0 20px var(--portal-glow);
       }
 
       .portal-desc {
         font-size: 0.85rem;
         color: var(--muted);
         line-height: 1.5;
+        max-width: 260px;
       }
 
       .portal-status {
-        margin-top: 14px;
-        padding-top: 14px;
-        border-top: 1px dashed var(--border);
+        margin-top: 12px;
         font-size: 0.75rem;
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        color: #5ad8ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .portal-gateway--glass .portal-status { color: #5ad8ff; }
+      .portal-gateway--neon .portal-status { color: #ff6ad5; }
+      .portal-gateway--signal .portal-status { color: #ffcc00; }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: blink 1.5s infinite;
+      }
+
+      .portal-gateway--glass .status-dot { background: #5ad8ff; box-shadow: 0 0 10px #5ad8ff; }
+      .portal-gateway--neon .status-dot { background: #ff6ad5; box-shadow: 0 0 10px #ff6ad5; }
+      .portal-gateway--signal .status-dot { background: #ffcc00; box-shadow: 0 0 10px #ffcc00; }
+
+      /* Animations */
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes spin-reverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+
+      @keyframes swirl {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes pulse-core {
+        0%, 100% { opacity: 0.8; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.1); }
+      }
+
+      @keyframes float-icon {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      @keyframes orbit {
+        from {
+          transform: rotate(0deg) translateX(110px) rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg) translateX(110px) rotate(-360deg);
+        }
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      /* Hover effect - speed up animations */
+      .portal-gateway:hover .portal-ring-outer {
+        animation-duration: 8s;
+      }
+      .portal-gateway:hover .portal-ring-middle {
+        animation-duration: 6s;
+      }
+      .portal-gateway:hover .portal-core::before {
+        animation-duration: 2s;
+      }
+      .portal-gateway:hover .portal-particle {
+        animation-duration: 3s;
       }
 
       .hub-cta {
@@ -199,6 +447,16 @@
         bottom: 30px;
         left: 50%;
         transform: translateX(-50%);
+      }
+
+      @media (max-width: 768px) {
+        .portal-grid {
+          gap: 50px;
+        }
+        .portal-frame {
+          width: 180px;
+          height: 180px;
+        }
       }
     </style>
   </head>
@@ -253,34 +511,88 @@
           <div class="portals-title">Choose Your Destination</div>
           
           <div class="portal-grid">
-            <a href="glass-city.html" class="portal-card portal-card--glass">
-              <div class="portal-icon">🏙️</div>
-              <div class="portal-label">World 001 · Upper Tiers</div>
-              <div class="portal-name">Glass City</div>
-              <div class="portal-desc">
-                Perfect surfaces, polished manners. Anything below 4 stars makes you invisible.
+            <!-- Glass City Portal -->
+            <a href="glass-city.html" class="portal-gateway portal-gateway--glass">
+              <div class="portal-frame">
+                <div class="portal-ring-outer"></div>
+                <div class="portal-ring-middle"></div>
+                <div class="portal-ring-inner"></div>
+                <div class="portal-core"></div>
+                <div class="portal-icon">🏙️</div>
+                <div class="portal-particles">
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                </div>
               </div>
-              <div class="portal-status">⬡ Portal Online</div>
+              <div class="portal-info">
+                <div class="portal-label">World 001 · Upper Tiers</div>
+                <div class="portal-name">Glass City</div>
+                <div class="portal-desc">
+                  Perfect surfaces, polished manners. Anything below 4 stars makes you invisible.
+                </div>
+                <div class="portal-status">
+                  <span class="status-dot"></span>
+                  Portal Online
+                </div>
+              </div>
             </a>
 
-            <a href="neon-underpass.html" class="portal-card portal-card--neon">
-              <div class="portal-icon">🌃</div>
-              <div class="portal-label">World 002 · Lower Depths</div>
-              <div class="portal-name">Neon Underpass</div>
-              <div class="portal-desc">
-                Flickering neon and whispered deals. High ratings draw dangerous attention.
+            <!-- Neon Underpass Portal -->
+            <a href="neon-underpass.html" class="portal-gateway portal-gateway--neon">
+              <div class="portal-frame">
+                <div class="portal-ring-outer"></div>
+                <div class="portal-ring-middle"></div>
+                <div class="portal-ring-inner"></div>
+                <div class="portal-core"></div>
+                <div class="portal-icon">🌃</div>
+                <div class="portal-particles">
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                </div>
               </div>
-              <div class="portal-status">⬡ Portal Online</div>
+              <div class="portal-info">
+                <div class="portal-label">World 002 · Lower Depths</div>
+                <div class="portal-name">Neon Underpass</div>
+                <div class="portal-desc">
+                  Flickering neon and whispered deals. High ratings draw dangerous attention.
+                </div>
+                <div class="portal-status">
+                  <span class="status-dot"></span>
+                  Portal Online
+                </div>
+              </div>
             </a>
 
-            <a href="signal-market.html" class="portal-card portal-card--signal">
-              <div class="portal-icon">📡</div>
-              <div class="portal-label">World 003 · Fringe Zone</div>
-              <div class="portal-name">Signal Market</div>
-              <div class="portal-desc">
-                Data and futures commodified. Ratings can be bought, sold, and stolen.
+            <!-- Signal Market Portal -->
+            <a href="signal-market.html" class="portal-gateway portal-gateway--signal">
+              <div class="portal-frame">
+                <div class="portal-ring-outer"></div>
+                <div class="portal-ring-middle"></div>
+                <div class="portal-ring-inner"></div>
+                <div class="portal-core"></div>
+                <div class="portal-icon">📡</div>
+                <div class="portal-particles">
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                  <div class="portal-particle"></div>
+                </div>
               </div>
-              <div class="portal-status">⬡ Portal Online</div>
+              <div class="portal-info">
+                <div class="portal-label">World 003 · Fringe Zone</div>
+                <div class="portal-name">Signal Market</div>
+                <div class="portal-desc">
+                  Data and futures commodified. Ratings can be bought, sold, and stolen.
+                </div>
+                <div class="portal-status">
+                  <span class="status-dot"></span>
+                  Portal Online
+                </div>
+              </div>
             </a>
           </div>
 
