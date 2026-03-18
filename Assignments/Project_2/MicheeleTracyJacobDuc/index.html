@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="tourbot.css" />
     <style>
       :root {
-        --void: #020510;
+        --void: #0a0a12;
         --glow-cyan: #5ad8ff;
         --glow-pink: #ff6ad5;
         --glow-gold: #ffcc66;
@@ -30,283 +30,350 @@
       body {
         font-family: "Courier New", Courier, monospace;
         color: var(--text);
-        background: var(--void);
+        background: linear-gradient(180deg, #e8e4dc 0%, #d0c8bc 50%, #b8b0a0 100%);
       }
 
-      .space-bg {
+      .scene {
         position: fixed;
         inset: 0;
-        background:
-          radial-gradient(ellipse at 50% 50%, rgba(20, 40, 80, 0.4) 0%, transparent 60%),
-          linear-gradient(180deg, #010205 0%, #030812 50%, #010308 100%);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 5vh;
+        perspective: 1200px;
       }
 
-      .stars {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-      }
-
-      .star {
-        position: absolute;
-        border-radius: 50%;
-        background: #fff;
-        animation: twinkle var(--d, 3s) ease-in-out infinite var(--t, 0s);
-      }
-
-      @keyframes twinkle {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.2; }
-      }
-
-      .solar-container {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotateX(75deg);
+      .diorama {
+        position: relative;
+        width: 90vmin;
+        height: 85vmin;
+        max-width: 800px;
+        max-height: 750px;
         transform-style: preserve-3d;
-        width: 900px;
-        height: 900px;
+        transform: rotateX(5deg);
       }
-
-      .orbit {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        border: 1px solid rgba(100, 150, 200, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-      }
-
-      .orbit-1 { width: 200px; height: 200px; }
-      .orbit-2 { width: 340px; height: 340px; }
-      .orbit-3 { width: 500px; height: 500px; }
-      .orbit-4 { width: 680px; height: 680px; }
-      .orbit-5 { width: 860px; height: 860px; }
 
       .sun {
         position: absolute;
-        top: 50%;
+        top: -5%;
         left: 50%;
-        transform: translate(-50%, -50%) rotateX(-75deg);
-        width: 100px;
-        height: 100px;
+        transform: translateX(-50%);
+        width: 280px;
+        height: 280px;
         border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #fff 0%, #ffee55 15%, #ffaa00 45%, #ff6600 75%, #cc2200 100%);
+        background: 
+          radial-gradient(circle at 40% 35%, #fff 0%, transparent 25%),
+          radial-gradient(circle at 50% 50%, #ffee44 0%, #ffcc00 30%, #ffaa00 50%, #ff8800 70%, #ee6600 90%, #cc4400 100%);
         box-shadow:
-          0 0 60px rgba(255, 170, 0, 1),
-          0 0 120px rgba(255, 100, 0, 0.8),
-          0 0 200px rgba(255, 60, 0, 0.5);
-        cursor: default;
-        z-index: 100;
+          0 0 80px rgba(255, 200, 50, 0.8),
+          0 0 150px rgba(255, 150, 0, 0.5),
+          0 0 250px rgba(255, 100, 0, 0.3);
+        z-index: 1;
       }
 
-      .sun-text {
+      .sun-label {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        pointer-events: none;
       }
 
-      .sun-text h2 {
-        font-size: 0.7rem;
+      .sun-label h2 {
+        font-size: 1.1rem;
         font-weight: 700;
-        letter-spacing: 0.1em;
-        color: #220800;
-        text-shadow: 0 0 5px rgba(255, 255, 200, 0.8);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #3a2000;
+        text-shadow: 0 0 10px rgba(255, 255, 200, 0.8);
       }
 
-      .sun-text span {
-        font-size: 0.45rem;
-        letter-spacing: 0.1em;
-        color: #441000;
+      .sun-label span {
+        font-size: 0.6rem;
+        letter-spacing: 0.15em;
+        color: #5a3000;
       }
 
-      .planet-orbit {
+      .base {
         position: absolute;
-        top: 50%;
+        bottom: 0;
         left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 50%;
-        animation: spin var(--speed, 30s) linear infinite;
-        pointer-events: none;
-      }
-
-      .po-1 { width: 200px; height: 200px; --speed: 20s; }
-      .po-2 { width: 340px; height: 340px; --speed: 35s; animation-direction: reverse; }
-      .po-3 { width: 500px; height: 500px; --speed: 50s; }
-      .po-4 { width: 680px; height: 680px; --speed: 70s; animation-direction: reverse; }
-      .po-5 { width: 860px; height: 860px; --speed: 95s; }
-
-      @keyframes spin {
-        from { transform: translate(-50%, -50%) rotate(0deg); }
-        to { transform: translate(-50%, -50%) rotate(360deg); }
-      }
-
-      .planet {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translate(-50%, -50%) rotateX(-75deg);
-        border-radius: 50%;
-        cursor: pointer;
-        pointer-events: auto;
-        text-decoration: none;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-        z-index: 50;
-      }
-
-      .planet:hover {
-        transform: translate(-50%, -50%) rotateX(-75deg) scale(1.25);
-      }
-
-      .planet-glow {
-        position: absolute;
-        inset: -15px;
-        border-radius: 50%;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-        pointer-events: none;
-      }
-
-      .planet:hover .planet-glow {
-        opacity: 1;
-      }
-
-      .planet-sphere {
+        transform: translateX(-50%) rotateX(75deg);
         width: 100%;
-        height: 100%;
+        height: 200px;
+        background: radial-gradient(ellipse at center, #1a1a2a 0%, #0a0a15 60%, #050508 100%);
         border-radius: 50%;
-        position: relative;
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.8),
+          inset 0 0 80px rgba(0, 0, 0, 0.9);
+        z-index: 5;
+      }
+
+      .base-stars {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
         overflow: hidden;
       }
 
-      .planet-sphere::after {
+      .base-star {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 16px solid #f0e060;
+        filter: drop-shadow(0 0 4px rgba(240, 220, 100, 0.8));
+      }
+
+      .base-star::after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        left: -8px;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 16px solid #f0e060;
+      }
+
+      .bs1 { top: 25%; left: 15%; transform: scale(0.7) rotate(15deg); }
+      .bs2 { top: 60%; left: 25%; transform: scale(0.5) rotate(-10deg); }
+      .bs3 { top: 40%; left: 70%; transform: scale(0.6) rotate(25deg); }
+      .bs4 { top: 70%; left: 60%; transform: scale(0.5) rotate(-20deg); }
+      .bs5 { top: 30%; left: 45%; transform: scale(0.4) rotate(5deg); }
+      .bs6 { top: 55%; left: 80%; transform: scale(0.55) rotate(30deg); }
+
+      .planet-stand {
+        position: absolute;
+        bottom: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 10;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.3s ease;
+      }
+
+      .planet-stand:hover {
+        transform: translateY(-10px);
+      }
+
+      .planet-stand:hover .planet-sphere {
+        filter: brightness(1.2);
+      }
+
+      .planet-stand:hover .planet-label {
+        opacity: 1;
+        transform: translateY(-8px);
+      }
+
+      .pole {
+        width: 4px;
+        background: linear-gradient(180deg, #2a3050 0%, #1a2030 100%);
+        border-radius: 2px;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .planet-sphere {
+        border-radius: 50%;
+        position: relative;
+        transition: filter 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .planet-sphere::before {
         content: "";
         position: absolute;
         top: 12%;
         left: 18%;
         width: 30%;
-        height: 22%;
-        background: rgba(255, 255, 255, 0.5);
+        height: 25%;
+        background: rgba(255, 255, 255, 0.6);
         border-radius: 50%;
         filter: blur(4px);
       }
 
       .planet-label {
         position: absolute;
-        top: 50%;
-        left: calc(100% + 15px);
-        transform: translateY(-50%);
+        bottom: calc(100% + 15px);
+        left: 50%;
+        transform: translateX(-50%);
         white-space: nowrap;
         padding: 8px 14px;
-        background: rgba(5, 10, 25, 0.92);
+        background: rgba(10, 15, 30, 0.95);
         border: 1px solid var(--c, rgba(255,255,255,0.3));
         border-radius: 8px;
-        backdrop-filter: blur(8px);
-        pointer-events: none;
+        text-align: center;
         opacity: 0;
-        transition: opacity 0.2s ease;
-      }
-
-      .planet:hover .planet-label {
-        opacity: 1;
+        transition: all 0.3s ease;
+        pointer-events: none;
       }
 
       .planet-label .name {
         font-size: 0.75rem;
         font-weight: 600;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--c, #fff);
       }
 
       .planet-label .tier {
         font-size: 0.55rem;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
         color: var(--muted);
-        margin-top: 3px;
+        margin-top: 2px;
       }
 
-      .p1 { width: 42px; height: 42px; }
-      .p1 .planet-sphere {
-        background: radial-gradient(circle at 30% 30%, #e0d0c0 0%, #a09080 50%, #605040 100%);
-        box-shadow: inset -6px -6px 15px rgba(0,0,0,0.5), 0 0 20px rgba(180, 160, 140, 0.5);
+      .ps1 { left: 8%; }
+      .ps1 .pole { height: 180px; }
+      .ps1 .planet-sphere {
+        width: 90px;
+        height: 90px;
+        background:
+          linear-gradient(135deg, rgba(255,200,100,0.3) 0%, transparent 50%),
+          radial-gradient(circle at 35% 35%, #ffe0a0 0%, #e6a040 40%, #c07020 70%, #804010 100%);
+        box-shadow: 
+          inset -12px -12px 30px rgba(0,0,0,0.4),
+          0 0 40px rgba(255, 180, 80, 0.5);
       }
-      .p1 .planet-glow { background: radial-gradient(circle, rgba(180,160,140,0.5) 0%, transparent 70%); }
-      .p1:hover .planet-sphere { box-shadow: inset -6px -6px 15px rgba(0,0,0,0.5), 0 0 40px rgba(180, 160, 140, 0.8); }
-      .p1 .planet-label { --c: #c0b0a0; }
+      .ps1 .planet-sphere::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: -30%;
+        right: -30%;
+        height: 20px;
+        background: linear-gradient(90deg, 
+          transparent 0%,
+          rgba(230, 200, 120, 0.7) 20%,
+          rgba(255, 220, 150, 0.9) 50%,
+          rgba(230, 200, 120, 0.7) 80%,
+          transparent 100%
+        );
+        transform: translateY(-50%) rotateX(75deg);
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(255, 220, 150, 0.5);
+      }
+      .ps1:hover .planet-sphere { box-shadow: inset -12px -12px 30px rgba(0,0,0,0.4), 0 0 60px rgba(255, 180, 80, 0.8); }
+      .ps1 .planet-label { --c: var(--glow-gold); }
 
-      .p2 { width: 55px; height: 55px; }
-      .p2 .planet-sphere {
-        background: radial-gradient(circle at 30% 30%, #ffe0a0 0%, #e6a040 50%, #a06020 100%);
-        box-shadow: inset -8px -8px 20px rgba(0,0,0,0.4), 0 0 25px rgba(255, 180, 80, 0.6);
+      .ps2 { left: 25%; }
+      .ps2 .pole { height: 120px; }
+      .ps2 .planet-sphere {
+        width: 55px;
+        height: 55px;
+        background:
+          radial-gradient(circle at 35% 35%, #a0d0ff 0%, #5090d0 50%, #3060a0 100%);
+        box-shadow:
+          inset -8px -8px 20px rgba(0,0,0,0.3),
+          0 0 25px rgba(100, 180, 255, 0.5);
       }
-      .p2 .planet-glow { background: radial-gradient(circle, rgba(255,180,80,0.5) 0%, transparent 70%); }
-      .p2:hover .planet-sphere { box-shadow: inset -8px -8px 20px rgba(0,0,0,0.4), 0 0 50px rgba(255, 180, 80, 0.9); }
-      .p2 .planet-label { --c: var(--glow-gold); }
+      .ps2:hover .planet-sphere { box-shadow: inset -8px -8px 20px rgba(0,0,0,0.3), 0 0 50px rgba(100, 180, 255, 0.9); }
+      .ps2 .planet-label { --c: #7ab8ff; }
 
-      .p3 { width: 70px; height: 70px; }
-      .p3 .planet-sphere {
-        background: radial-gradient(circle at 30% 30%, #b0e8ff 0%, #40a8e0 40%, #2070a0 70%, #103860 100%);
-        box-shadow: inset -10px -10px 25px rgba(0,0,0,0.4), 0 0 35px rgba(90, 216, 255, 0.7);
+      .ps3 { left: 42%; }
+      .ps3 .pole { height: 250px; }
+      .ps3 .planet-sphere {
+        width: 75px;
+        height: 75px;
+        background:
+          linear-gradient(160deg, rgba(255,255,255,0.2) 0%, transparent 40%),
+          radial-gradient(circle at 35% 35%, #ffe8d0 0%, #e8c8a0 40%, #c09060 70%, #806040 100%);
+        box-shadow:
+          inset -10px -10px 25px rgba(0,0,0,0.35),
+          0 0 30px rgba(230, 200, 150, 0.5);
       }
-      .p3 .planet-glow { background: radial-gradient(circle, rgba(90,216,255,0.6) 0%, transparent 70%); }
-      .p3:hover .planet-sphere { box-shadow: inset -10px -10px 25px rgba(0,0,0,0.4), 0 0 70px rgba(90, 216, 255, 1); }
-      .p3 .planet-label { --c: var(--glow-cyan); }
+      .ps3:hover .planet-sphere { box-shadow: inset -10px -10px 25px rgba(0,0,0,0.35), 0 0 55px rgba(230, 200, 150, 0.9); }
+      .ps3 .planet-label { --c: #e8c8a0; }
 
-      .p4 { width: 58px; height: 58px; }
-      .p4 .planet-sphere {
-        background: radial-gradient(circle at 30% 30%, #ffc0e0 0%, #e050a0 40%, #a02070 70%, #601040 100%);
-        box-shadow: inset -8px -8px 20px rgba(0,0,0,0.4), 0 0 30px rgba(255, 106, 213, 0.7);
+      .ps4 { left: 55%; }
+      .ps4 .pole { height: 200px; }
+      .ps4 .planet-sphere {
+        width: 50px;
+        height: 50px;
+        background:
+          radial-gradient(circle at 35% 35%, #604030 0%, #402820 50%, #201510 100%);
+        box-shadow:
+          inset -7px -7px 18px rgba(0,0,0,0.5),
+          0 0 20px rgba(100, 70, 50, 0.4);
       }
-      .p4 .planet-glow { background: radial-gradient(circle, rgba(255,106,213,0.6) 0%, transparent 70%); }
-      .p4:hover .planet-sphere { box-shadow: inset -8px -8px 20px rgba(0,0,0,0.4), 0 0 60px rgba(255, 106, 213, 1); }
-      .p4 .planet-label { --c: var(--glow-pink); }
+      .ps4:hover .planet-sphere { box-shadow: inset -7px -7px 18px rgba(0,0,0,0.5), 0 0 40px rgba(100, 70, 50, 0.7); }
+      .ps4 .planet-label { --c: #906050; }
 
-      .p5 { width: 50px; height: 50px; }
-      .p5 .planet-sphere {
-        background: radial-gradient(circle at 30% 30%, #d0b0ff 0%, #9050e0 40%, #5020a0 70%, #301060 100%);
-        box-shadow: inset -7px -7px 18px rgba(0,0,0,0.4), 0 0 25px rgba(170, 102, 255, 0.7);
+      .ps5 { left: 68%; }
+      .ps5 .pole { height: 280px; }
+      .ps5 .planet-sphere {
+        width: 65px;
+        height: 65px;
+        background:
+          radial-gradient(circle at 35% 35%, #c0f0ff 0%, #60c8e8 40%, #3090b0 70%, #206080 100%);
+        box-shadow:
+          inset -9px -9px 22px rgba(0,0,0,0.3),
+          0 0 35px rgba(90, 216, 255, 0.6);
       }
-      .p5 .planet-glow { background: radial-gradient(circle, rgba(170,102,255,0.6) 0%, transparent 70%); }
-      .p5:hover .planet-sphere { box-shadow: inset -7px -7px 18px rgba(0,0,0,0.4), 0 0 55px rgba(170, 102, 255, 1); }
-      .p5 .planet-label { --c: var(--glow-purple); }
+      .ps5:hover .planet-sphere { box-shadow: inset -9px -9px 22px rgba(0,0,0,0.3), 0 0 60px rgba(90, 216, 255, 1); }
+      .ps5 .planet-label { --c: var(--glow-cyan); }
+
+      .ps6 { left: 82%; }
+      .ps6 .pole { height: 150px; }
+      .ps6 .planet-sphere {
+        width: 60px;
+        height: 60px;
+        background:
+          radial-gradient(circle at 35% 35%, #ffc0e0 0%, #e060a0 40%, #a03070 70%, #602050 100%);
+        box-shadow:
+          inset -8px -8px 20px rgba(0,0,0,0.35),
+          0 0 30px rgba(255, 106, 213, 0.6);
+      }
+      .ps6:hover .planet-sphere { box-shadow: inset -8px -8px 20px rgba(0,0,0,0.35), 0 0 55px rgba(255, 106, 213, 1); }
+      .ps6 .planet-label { --c: var(--glow-pink); }
+
+      .ps7 { left: 92%; }
+      .ps7 .pole { height: 100px; }
+      .ps7 .planet-sphere {
+        width: 35px;
+        height: 35px;
+        background:
+          radial-gradient(circle at 35% 35%, #c0c0d0 0%, #808090 50%, #505060 100%);
+        box-shadow:
+          inset -5px -5px 12px rgba(0,0,0,0.4),
+          0 0 15px rgba(150, 150, 170, 0.4);
+      }
+      .ps7:hover .planet-sphere { box-shadow: inset -5px -5px 12px rgba(0,0,0,0.4), 0 0 30px rgba(150, 150, 170, 0.7); }
+      .ps7 .planet-label { --c: #a0a0b0; }
 
       .ui-top {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        padding: 20px 28px;
+        padding: 16px 24px;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        z-index: 200;
+        z-index: 100;
         pointer-events: none;
       }
 
       .ui-top > * { pointer-events: auto; }
 
       .logo h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 300;
-        letter-spacing: 0.45em;
+        letter-spacing: 0.4em;
         text-transform: uppercase;
-        background: linear-gradient(135deg, var(--glow-cyan), var(--glow-pink));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        color: #2a2520;
+        text-shadow: 0 2px 4px rgba(255,255,255,0.5);
       }
 
       .logo p {
         font-size: 0.7rem;
-        letter-spacing: 0.35em;
+        letter-spacing: 0.3em;
         text-transform: uppercase;
-        color: var(--muted);
-        margin-top: 5px;
+        color: #5a5550;
+        margin-top: 4px;
       }
 
       .balance {
@@ -314,10 +381,10 @@
         align-items: center;
         gap: 10px;
         padding: 12px 20px;
-        background: rgba(5, 12, 30, 0.9);
+        background: rgba(20, 25, 40, 0.95);
         border: 1px solid rgba(255, 204, 102, 0.5);
         border-radius: 10px;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
       }
 
       .balance-dot {
@@ -345,12 +412,12 @@
         bottom: 0;
         left: 0;
         right: 0;
-        padding: 18px 28px;
+        padding: 16px 24px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        z-index: 200;
-        background: linear-gradient(transparent, rgba(2, 5, 16, 0.95));
+        z-index: 100;
+        background: linear-gradient(transparent, rgba(180, 170, 160, 0.9));
         pointer-events: none;
       }
 
@@ -358,8 +425,8 @@
 
       .help-btn {
         padding: 10px 18px;
-        background: rgba(5, 12, 30, 0.9);
-        border: 1px solid rgba(122, 130, 166, 0.4);
+        background: rgba(20, 25, 40, 0.95);
+        border: 1px solid rgba(122, 130, 166, 0.5);
         border-radius: 8px;
         color: var(--muted);
         font-family: inherit;
@@ -368,28 +435,33 @@
         text-transform: uppercase;
         cursor: pointer;
         transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       }
 
       .help-btn:hover {
         border-color: var(--glow-cyan);
         color: var(--glow-cyan);
-        box-shadow: 0 0 20px rgba(90, 216, 255, 0.3);
+        box-shadow: 0 4px 25px rgba(90, 216, 255, 0.3);
       }
 
       .legend {
         display: flex;
-        gap: 22px;
+        gap: 18px;
         flex-wrap: wrap;
+        padding: 10px 16px;
+        background: rgba(20, 25, 40, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       }
 
       .legend-item {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 0.68rem;
-        letter-spacing: 0.12em;
+        gap: 6px;
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--muted);
+        color: var(--text);
       }
 
       .legend-dot {
@@ -398,201 +470,155 @@
         border-radius: 50%;
       }
 
-      .legend-dot.cyan { background: var(--glow-cyan); box-shadow: 0 0 8px var(--glow-cyan); }
-      .legend-dot.pink { background: var(--glow-pink); box-shadow: 0 0 8px var(--glow-pink); }
-      .legend-dot.gold { background: var(--glow-gold); box-shadow: 0 0 8px var(--glow-gold); }
-      .legend-dot.purple { background: var(--glow-purple); box-shadow: 0 0 8px var(--glow-purple); }
-      .legend-dot.gray { background: #a09080; box-shadow: 0 0 8px rgba(160,144,128,0.6); }
+      .legend-dot.gold { background: linear-gradient(135deg, #ffe0a0, #c07020); }
+      .legend-dot.blue { background: linear-gradient(135deg, #a0d0ff, #3060a0); }
+      .legend-dot.cream { background: linear-gradient(135deg, #ffe8d0, #c09060); }
+      .legend-dot.cyan { background: linear-gradient(135deg, #c0f0ff, #3090b0); }
+      .legend-dot.pink { background: linear-gradient(135deg, #ffc0e0, #a03070); }
+      .legend-dot.gray { background: linear-gradient(135deg, #c0c0d0, #505060); }
 
       .click-hint {
         position: fixed;
-        top: 50%;
+        bottom: 80px;
         left: 50%;
-        transform: translate(-50%, 280px);
+        transform: translateX(-50%);
         font-size: 0.7rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
-        color: var(--muted);
-        opacity: 0.7;
-        z-index: 10;
-        animation: hint-pulse 3s ease-in-out infinite;
+        color: #4a4540;
+        z-index: 50;
+        animation: hint-bob 2s ease-in-out infinite;
       }
 
-      @keyframes hint-pulse {
-        0%, 100% { opacity: 0.5; }
-        50% { opacity: 0.9; }
+      @keyframes hint-bob {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50% { transform: translateX(-50%) translateY(-5px); }
       }
 
-      @media (max-width: 1000px) {
-        .solar-container { width: 700px; height: 700px; }
-        .orbit-1 { width: 160px; height: 160px; }
-        .orbit-2 { width: 270px; height: 270px; }
-        .orbit-3 { width: 400px; height: 400px; }
-        .orbit-4 { width: 540px; height: 540px; }
-        .orbit-5 { width: 680px; height: 680px; }
-        .po-1 { width: 160px; height: 160px; }
-        .po-2 { width: 270px; height: 270px; }
-        .po-3 { width: 400px; height: 400px; }
-        .po-4 { width: 540px; height: 540px; }
-        .po-5 { width: 680px; height: 680px; }
-        .sun { width: 80px; height: 80px; }
-        .p1 { width: 35px; height: 35px; }
-        .p2 { width: 45px; height: 45px; }
-        .p3 { width: 58px; height: 58px; }
-        .p4 { width: 48px; height: 48px; }
-        .p5 { width: 42px; height: 42px; }
-        .click-hint { transform: translate(-50%, 220px); }
+      @media (max-width: 900px) {
+        .diorama { width: 95vmin; height: 80vmin; }
+        .sun { width: 200px; height: 200px; top: 0; }
+        .sun-label h2 { font-size: 0.9rem; }
+        .ps1 .pole { height: 140px; } .ps1 .planet-sphere { width: 70px; height: 70px; }
+        .ps2 .pole { height: 90px; } .ps2 .planet-sphere { width: 42px; height: 42px; }
+        .ps3 .pole { height: 190px; } .ps3 .planet-sphere { width: 58px; height: 58px; }
+        .ps4 .pole { height: 150px; } .ps4 .planet-sphere { width: 38px; height: 38px; }
+        .ps5 .pole { height: 210px; } .ps5 .planet-sphere { width: 50px; height: 50px; }
+        .ps6 .pole { height: 110px; } .ps6 .planet-sphere { width: 46px; height: 46px; }
+        .ps7 .pole { height: 70px; } .ps7 .planet-sphere { width: 28px; height: 28px; }
+        .base { height: 150px; }
+        .logo h1 { font-size: 1.5rem; }
       }
 
-      @media (max-width: 700px) {
-        .solar-container { width: 550px; height: 550px; transform: translate(-50%, -50%) rotateX(70deg); }
-        .orbit-1 { width: 120px; height: 120px; }
-        .orbit-2 { width: 210px; height: 210px; }
-        .orbit-3 { width: 310px; height: 310px; }
-        .orbit-4 { width: 420px; height: 420px; }
-        .orbit-5 { width: 530px; height: 530px; }
-        .po-1 { width: 120px; height: 120px; }
-        .po-2 { width: 210px; height: 210px; }
-        .po-3 { width: 310px; height: 310px; }
-        .po-4 { width: 420px; height: 420px; }
-        .po-5 { width: 530px; height: 530px; }
-        .sun { width: 65px; height: 65px; }
-        .sun-text h2 { font-size: 0.55rem; }
-        .sun-text span { font-size: 0.38rem; }
-        .p1 { width: 28px; height: 28px; }
-        .p2 { width: 36px; height: 36px; }
-        .p3 { width: 48px; height: 48px; }
-        .p4 { width: 38px; height: 38px; }
-        .p5 { width: 34px; height: 34px; }
+      @media (max-width: 600px) {
+        .diorama { width: 100vmin; height: 75vmin; }
+        .sun { width: 150px; height: 150px; }
+        .sun-label h2 { font-size: 0.7rem; }
+        .sun-label span { font-size: 0.45rem; }
+        .ps1 .pole { height: 100px; } .ps1 .planet-sphere { width: 55px; height: 55px; }
+        .ps2 .pole { height: 65px; } .ps2 .planet-sphere { width: 32px; height: 32px; }
+        .ps3 .pole { height: 140px; } .ps3 .planet-sphere { width: 45px; height: 45px; }
+        .ps4 .pole { height: 110px; } .ps4 .planet-sphere { width: 28px; height: 28px; }
+        .ps5 .pole { height: 155px; } .ps5 .planet-sphere { width: 38px; height: 38px; }
+        .ps6 .pole { height: 80px; } .ps6 .planet-sphere { width: 35px; height: 35px; }
+        .ps7 .pole { height: 50px; } .ps7 .planet-sphere { width: 22px; height: 22px; }
+        .base { height: 100px; }
         .planet-label { display: none; }
-        .logo h1 { font-size: 1.5rem; letter-spacing: 0.3em; }
-        .logo p { font-size: 0.55rem; }
-        .ui-top, .ui-bottom { padding: 14px 18px; }
-        .legend { gap: 14px; }
-        .legend-item { font-size: 0.55rem; }
-        .click-hint { transform: translate(-50%, 180px); font-size: 0.6rem; }
-      }
-
-      @media (max-width: 500px) {
-        .solar-container { width: 420px; height: 420px; }
-        .orbit-1 { width: 90px; height: 90px; }
-        .orbit-2 { width: 160px; height: 160px; }
-        .orbit-3 { width: 240px; height: 240px; }
-        .orbit-4 { width: 320px; height: 320px; }
-        .orbit-5 { width: 400px; height: 400px; }
-        .po-1 { width: 90px; height: 90px; }
-        .po-2 { width: 160px; height: 160px; }
-        .po-3 { width: 240px; height: 240px; }
-        .po-4 { width: 320px; height: 320px; }
-        .po-5 { width: 400px; height: 400px; }
-        .sun { width: 50px; height: 50px; }
-        .p1 { width: 22px; height: 22px; }
-        .p2 { width: 28px; height: 28px; }
-        .p3 { width: 38px; height: 38px; }
-        .p4 { width: 30px; height: 30px; }
-        .p5 { width: 26px; height: 26px; }
-        .logo h1 { font-size: 1.2rem; }
-        .balance { padding: 8px 14px; }
-        .balance span { font-size: 0.8rem; }
-        .click-hint { transform: translate(-50%, 140px); }
+        .logo h1 { font-size: 1.2rem; letter-spacing: 0.25em; }
+        .ui-top, .ui-bottom { padding: 12px 16px; }
+        .legend { gap: 10px; padding: 8px 12px; }
+        .legend-item { font-size: 0.5rem; }
+        .click-hint { font-size: 0.6rem; bottom: 70px; }
       }
     </style>
   </head>
   <body>
-    <div class="space-bg"></div>
-
-    <div class="stars">
-      <div class="star" style="top:3%;left:6%;width:1px;height:1px;--d:3s"></div>
-      <div class="star" style="top:7%;left:18%;width:2px;height:2px;--d:4s;--t:0.5s"></div>
-      <div class="star" style="top:4%;left:32%;width:1px;height:1px;--d:3.5s;--t:1s"></div>
-      <div class="star" style="top:10%;left:48%;width:1px;height:1px;--d:3s;--t:1.5s"></div>
-      <div class="star" style="top:5%;left:65%;width:2px;height:2px;--d:4.5s;--t:0.3s"></div>
-      <div class="star" style="top:8%;left:82%;width:1px;height:1px;--d:3s;--t:0.8s"></div>
-      <div class="star" style="top:15%;left:10%;width:1px;height:1px;--d:3.5s;--t:2s"></div>
-      <div class="star" style="top:18%;left:90%;width:2px;height:2px;--d:4s;--t:0.2s"></div>
-      <div class="star" style="top:12%;left:55%;width:1px;height:1px;--d:3s;--t:1.2s"></div>
-      <div class="star" style="top:22%;left:5%;width:1px;height:1px;--d:4s;--t:0.7s"></div>
-      <div class="star" style="top:25%;left:95%;width:1px;height:1px;--d:3.5s;--t:1.8s"></div>
-      <div class="star" style="top:78%;left:8%;width:1px;height:1px;--d:3s;--t:0.4s"></div>
-      <div class="star" style="top:82%;left:92%;width:2px;height:2px;--d:5s"></div>
-      <div class="star" style="top:88%;left:25%;width:1px;height:1px;--d:4s;--t:1s"></div>
-      <div class="star" style="top:85%;left:60%;width:1px;height:1px;--d:3s;--t:0.6s"></div>
-      <div class="star" style="top:90%;left:78%;width:2px;height:2px;--d:3.5s;--t:1.4s"></div>
-      <div class="star" style="top:6%;left:40%;width:3px;height:3px;--d:5s;background:rgba(255,220,180,0.9)"></div>
-      <div class="star" style="top:14%;left:75%;width:3px;height:3px;--d:4s;--t:1s;background:rgba(180,200,255,0.9)"></div>
-    </div>
-
-    <div class="solar-container">
-      <div class="orbit orbit-1"></div>
-      <div class="orbit orbit-2"></div>
-      <div class="orbit orbit-3"></div>
-      <div class="orbit orbit-4"></div>
-      <div class="orbit orbit-5"></div>
-
-      <div class="sun">
-        <div class="sun-text">
-          <h2>StarStruck</h2>
-          <span>Hub</span>
-        </div>
-      </div>
-
-      <div class="planet-orbit po-1">
-        <a href="shop.html" class="planet p1">
-          <div class="planet-glow"></div>
-          <div class="planet-sphere"></div>
-          <div class="planet-label">
-            <div class="name">Shop</div>
-            <div class="tier">Star Market</div>
+    <div class="scene">
+      <div class="diorama">
+        <div class="sun">
+          <div class="sun-label">
+            <h2>StarStruck</h2>
+            <span>Transit Hub</span>
           </div>
-        </a>
-      </div>
+        </div>
 
-      <div class="planet-orbit po-2">
-        <a href="world-signal.html" class="planet p2">
-          <div class="planet-glow"></div>
+        <a href="world-signal.html" class="planet-stand ps1">
           <div class="planet-sphere"></div>
+          <div class="pole"></div>
           <div class="planet-label">
             <div class="name">Signal Market</div>
             <div class="tier">World 003</div>
           </div>
         </a>
-      </div>
 
-      <div class="planet-orbit po-3">
-        <a href="world-glass.html" class="planet p3">
-          <div class="planet-glow"></div>
+        <a href="shop.html" class="planet-stand ps2">
           <div class="planet-sphere"></div>
+          <div class="pole"></div>
+          <div class="planet-label">
+            <div class="name">Star Shop</div>
+            <div class="tier">Marketplace</div>
+          </div>
+        </a>
+
+        <a href="world-glass.html" class="planet-stand ps3">
+          <div class="planet-sphere"></div>
+          <div class="pole"></div>
           <div class="planet-label">
             <div class="name">Glass City</div>
             <div class="tier">World 001</div>
           </div>
         </a>
-      </div>
 
-      <div class="planet-orbit po-4">
-        <a href="world-neon.html" class="planet p4">
-          <div class="planet-glow"></div>
+        <a href="#" class="planet-stand ps4" id="guidePlanet">
           <div class="planet-sphere"></div>
-          <div class="planet-label">
-            <div class="name">Neon Underpass</div>
-            <div class="tier">World 002</div>
-          </div>
-        </a>
-      </div>
-
-      <div class="planet-orbit po-5">
-        <a href="#" class="planet p5" id="guidePlanet">
-          <div class="planet-glow"></div>
-          <div class="planet-sphere"></div>
+          <div class="pole"></div>
           <div class="planet-label">
             <div class="name">Guide</div>
             <div class="tier">Help Center</div>
           </div>
         </a>
+
+        <a href="world-neon.html" class="planet-stand ps5">
+          <div class="planet-sphere"></div>
+          <div class="pole"></div>
+          <div class="planet-label">
+            <div class="name">Neon Underpass</div>
+            <div class="tier">World 002</div>
+          </div>
+        </a>
+
+        <a href="world-glass.html" class="planet-stand ps6">
+          <div class="planet-sphere"></div>
+          <div class="pole"></div>
+          <div class="planet-label">
+            <div class="name">Glass City</div>
+            <div class="tier">Upper Tiers</div>
+          </div>
+        </a>
+
+        <a href="shop.html" class="planet-stand ps7">
+          <div class="planet-sphere"></div>
+          <div class="pole"></div>
+          <div class="planet-label">
+            <div class="name">Moon Shop</div>
+            <div class="tier">Satellite</div>
+          </div>
+        </a>
+
+        <div class="base">
+          <div class="base-stars">
+            <div class="base-star bs1"></div>
+            <div class="base-star bs2"></div>
+            <div class="base-star bs3"></div>
+            <div class="base-star bs4"></div>
+            <div class="base-star bs5"></div>
+            <div class="base-star bs6"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <p class="click-hint">Click a planet to enter its world</p>
+    <p class="click-hint">↑ Click a planet to enter its world ↑</p>
 
     <div class="ui-top">
       <div class="logo">
@@ -608,11 +634,12 @@
     <div class="ui-bottom">
       <button class="help-btn" id="helpBtn">? How It Works</button>
       <div class="legend">
-        <div class="legend-item"><span class="legend-dot cyan"></span> Glass City</div>
-        <div class="legend-item"><span class="legend-dot pink"></span> Neon</div>
         <div class="legend-item"><span class="legend-dot gold"></span> Signal</div>
-        <div class="legend-item"><span class="legend-dot gray"></span> Shop</div>
-        <div class="legend-item"><span class="legend-dot purple"></span> Guide</div>
+        <div class="legend-item"><span class="legend-dot cream"></span> Glass City</div>
+        <div class="legend-item"><span class="legend-dot cyan"></span> Neon</div>
+        <div class="legend-item"><span class="legend-dot pink"></span> Upper Tiers</div>
+        <div class="legend-item"><span class="legend-dot blue"></span> Shop</div>
+        <div class="legend-item"><span class="legend-dot gray"></span> Guide</div>
       </div>
     </div>
 
