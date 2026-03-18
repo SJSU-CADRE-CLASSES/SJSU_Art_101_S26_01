@@ -11,8 +11,6 @@
         --glow-cyan: #5ad8ff;
         --glow-pink: #ff6ad5;
         --glow-gold: #ffcc66;
-        --glow-orange: #ff8844;
-        --glow-green: #44ff88;
         --glow-purple: #aa66ff;
         --text: #e8ecff;
         --muted: #7a82a6;
@@ -39,8 +37,8 @@
         position: fixed;
         inset: 0;
         background:
-          radial-gradient(ellipse at 50% 50%, rgba(10, 20, 60, 0.8) 0%, transparent 60%),
-          linear-gradient(180deg, #020510 0%, #050820 50%, #030615 100%);
+          radial-gradient(ellipse at 50% 40%, rgba(15, 25, 60, 0.9) 0%, transparent 50%),
+          linear-gradient(180deg, #010308 0%, #040915 40%, #020510 100%);
         z-index: 0;
       }
 
@@ -64,79 +62,92 @@
         50% { opacity: 0.3; }
       }
 
-      .comet {
-        position: absolute;
-        width: 80px;
-        height: 2px;
-        background: linear-gradient(90deg, rgba(100, 200, 255, 0.8), transparent);
-        border-radius: 2px;
-        animation: comet-fly var(--dur, 8s) linear infinite;
-        animation-delay: var(--delay, 0s);
-        opacity: 0;
+      .grid-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(50, 80, 120, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(50, 80, 120, 0.03) 1px, transparent 1px);
+        background-size: 80px 80px;
+        transform: perspective(500px) rotateX(60deg);
+        transform-origin: center 80%;
+        opacity: 0.6;
       }
 
-      @keyframes comet-fly {
-        0% { transform: translateX(0) translateY(0); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { transform: translateX(400px) translateY(200px); opacity: 0; }
+      .solar-wrapper {
+        position: fixed;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+        perspective: 1000px;
       }
 
       .solar-system {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100vmin;
-        height: 100vmin;
-        max-width: 900px;
-        max-height: 900px;
-        z-index: 5;
+        position: relative;
+        width: 160vmin;
+        height: 160vmin;
+        max-width: 1600px;
+        max-height: 1600px;
+        transform: rotateX(65deg) rotateZ(-15deg);
+        transform-style: preserve-3d;
       }
 
       .orbit {
         position: absolute;
         top: 50%;
         left: 50%;
-        border: 1px solid rgba(100, 150, 200, 0.15);
+        border: 1px solid rgba(80, 120, 180, 0.25);
         border-radius: 50%;
         transform: translate(-50%, -50%);
+        box-shadow: 0 0 20px rgba(80, 120, 180, 0.1);
       }
 
-      .orbit-1 { width: 28%; height: 28%; }
-      .orbit-2 { width: 44%; height: 44%; }
-      .orbit-3 { width: 62%; height: 62%; }
-      .orbit-4 { width: 80%; height: 80%; }
-      .orbit-5 { width: 95%; height: 95%; }
+      .orbit-1 { width: 22%; height: 22%; }
+      .orbit-2 { width: 36%; height: 36%; }
+      .orbit-3 { width: 52%; height: 52%; }
+      .orbit-4 { width: 70%; height: 70%; }
+      .orbit-5 { width: 88%; height: 88%; }
 
       .center-sun {
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        width: 140px;
-        height: 140px;
+        transform: translate(-50%, -50%) rotateX(-65deg) rotateZ(15deg);
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
         background: radial-gradient(circle at 35% 35%,
           #fff 0%,
-          #ffe066 15%,
-          #ffaa00 40%,
-          #ff6600 70%,
+          #ffe866 10%,
+          #ffcc00 30%,
+          #ff9900 60%,
+          #ff6600 85%,
           #cc3300 100%
         );
         box-shadow:
-          0 0 60px rgba(255, 170, 0, 0.8),
-          0 0 120px rgba(255, 100, 0, 0.5),
-          0 0 200px rgba(255, 80, 0, 0.3),
-          inset 0 0 40px rgba(255, 255, 200, 0.5);
+          0 0 80px rgba(255, 180, 0, 0.9),
+          0 0 160px rgba(255, 120, 0, 0.6),
+          0 0 280px rgba(255, 80, 0, 0.4),
+          0 0 400px rgba(255, 60, 0, 0.2);
         animation: sun-pulse 4s ease-in-out infinite;
-        cursor: default;
         z-index: 10;
       }
 
       @keyframes sun-pulse {
-        0%, 100% { box-shadow: 0 0 60px rgba(255, 170, 0, 0.8), 0 0 120px rgba(255, 100, 0, 0.5), 0 0 200px rgba(255, 80, 0, 0.3); }
-        50% { box-shadow: 0 0 80px rgba(255, 170, 0, 0.9), 0 0 150px rgba(255, 100, 0, 0.6), 0 0 250px rgba(255, 80, 0, 0.4); }
+        0%, 100% { 
+          box-shadow: 0 0 80px rgba(255, 180, 0, 0.9), 0 0 160px rgba(255, 120, 0, 0.6), 0 0 280px rgba(255, 80, 0, 0.4);
+        }
+        50% { 
+          box-shadow: 0 0 100px rgba(255, 180, 0, 1), 0 0 200px rgba(255, 120, 0, 0.7), 0 0 350px rgba(255, 80, 0, 0.5);
+        }
       }
 
       .sun-label {
@@ -149,20 +160,68 @@
       }
 
       .sun-title {
-        font-size: 1rem;
+        font-size: 0.85rem;
         font-weight: 700;
-        letter-spacing: 0.15em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: #1a0800;
-        text-shadow: 0 0 10px rgba(255, 255, 200, 0.8);
+        color: #1a0500;
+        text-shadow: 0 0 8px rgba(255, 255, 200, 0.9);
       }
 
       .sun-sub {
-        font-size: 0.55rem;
-        letter-spacing: 0.2em;
+        font-size: 0.5rem;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         color: #331100;
         margin-top: 2px;
+      }
+
+      .orbit-path {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform-origin: center;
+        pointer-events: none;
+      }
+
+      .op-1 {
+        width: 22%;
+        height: 22%;
+        transform: translate(-50%, -50%);
+        animation: orbit-spin 25s linear infinite;
+      }
+
+      .op-2 {
+        width: 36%;
+        height: 36%;
+        transform: translate(-50%, -50%);
+        animation: orbit-spin 40s linear infinite reverse;
+      }
+
+      .op-3 {
+        width: 52%;
+        height: 52%;
+        transform: translate(-50%, -50%);
+        animation: orbit-spin 60s linear infinite;
+      }
+
+      .op-4 {
+        width: 70%;
+        height: 70%;
+        transform: translate(-50%, -50%);
+        animation: orbit-spin 85s linear infinite reverse;
+      }
+
+      .op-5 {
+        width: 88%;
+        height: 88%;
+        transform: translate(-50%, -50%);
+        animation: orbit-spin 110s linear infinite;
+      }
+
+      @keyframes orbit-spin {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
       }
 
       .planet {
@@ -171,199 +230,186 @@
         cursor: pointer;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        transform: rotateX(-65deg) rotateZ(15deg);
+        transform-style: preserve-3d;
       }
 
       .planet:hover {
-        transform: scale(1.15);
+        transform: rotateX(-65deg) rotateZ(15deg) scale(1.2);
       }
 
-      .planet-inner {
+      .planet-body {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 8px;
         position: relative;
         overflow: hidden;
       }
 
-      .planet-inner::before {
+      .planet-body::before {
         content: "";
         position: absolute;
-        top: 15%;
-        left: 20%;
-        width: 25%;
-        height: 20%;
-        background: rgba(255, 255, 255, 0.4);
+        top: 10%;
+        left: 15%;
+        width: 35%;
+        height: 25%;
+        background: rgba(255, 255, 255, 0.5);
         border-radius: 50%;
-        filter: blur(4px);
+        filter: blur(6px);
+      }
+
+      .planet-label {
+        position: absolute;
+        left: 110%;
+        top: 50%;
+        transform: translateY(-50%);
+        white-space: nowrap;
+        pointer-events: none;
+        padding: 6px 12px;
+        background: rgba(0, 5, 20, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        backdrop-filter: blur(10px);
       }
 
       .planet-name {
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: #fff;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-        z-index: 1;
       }
 
       .planet-tier {
-        font-size: 0.45rem;
+        font-size: 0.5rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--muted);
         margin-top: 2px;
-        z-index: 1;
       }
 
-      .orbit-wrapper {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform-origin: center;
-        pointer-events: none;
-      }
-
-      .orbit-wrapper .planet {
-        pointer-events: auto;
-      }
-
-      .ow-1 {
-        width: 28%;
-        height: 28%;
-        transform: translate(-50%, -50%);
-        animation: orbit-spin 20s linear infinite;
-      }
-
-      .ow-2 {
-        width: 44%;
-        height: 44%;
-        transform: translate(-50%, -50%);
-        animation: orbit-spin 35s linear infinite reverse;
-      }
-
-      .ow-3 {
-        width: 62%;
-        height: 62%;
-        transform: translate(-50%, -50%);
-        animation: orbit-spin 50s linear infinite;
-      }
-
-      .ow-4 {
-        width: 80%;
-        height: 80%;
-        transform: translate(-50%, -50%);
-        animation: orbit-spin 70s linear infinite reverse;
-      }
-
-      @keyframes orbit-spin {
-        from { transform: translate(-50%, -50%) rotate(0deg); }
-        to { transform: translate(-50%, -50%) rotate(360deg); }
-      }
-
-      .p-glass {
-        width: 70px;
-        height: 70px;
+      .p1 {
+        width: 50px;
+        height: 50px;
         top: 0;
         left: 50%;
-        transform: translateX(-50%) rotate(0deg);
+        margin-left: -25px;
+        margin-top: -25px;
+      }
+
+      .p1 .planet-body {
+        background: radial-gradient(circle at 30% 30%,
+          #c8c8c8 0%,
+          #888888 50%,
+          #555555 100%
+        );
+        box-shadow: 0 0 20px rgba(150, 150, 150, 0.6), inset -8px -8px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .p1:hover .planet-body {
+        box-shadow: 0 0 40px rgba(150, 150, 150, 0.9), 0 0 80px rgba(150, 150, 150, 0.4);
+      }
+
+      .p2 {
+        width: 65px;
+        height: 65px;
+        top: 50%;
+        right: 0;
+        margin-right: -32px;
+        margin-top: -32px;
+      }
+
+      .p2 .planet-body {
+        background: radial-gradient(circle at 30% 30%,
+          #ffe8c8 0%,
+          #e6b060 50%,
+          #cc8030 100%
+        );
+        box-shadow: 0 0 25px rgba(230, 180, 100, 0.7), inset -10px -10px 25px rgba(0, 0, 0, 0.3);
+      }
+
+      .p2:hover .planet-body {
+        box-shadow: 0 0 50px rgba(230, 180, 100, 1), 0 0 100px rgba(230, 180, 100, 0.5);
+      }
+
+      .p3 {
+        width: 75px;
+        height: 75px;
+        bottom: 15%;
+        left: 8%;
+        margin-left: -37px;
+      }
+
+      .p3 .planet-body {
         background: radial-gradient(circle at 30% 30%,
           #a8e6ff 0%,
           #5ad8ff 40%,
-          #2a9fd6 70%,
-          #1a6090 100%
+          #2090c0 70%,
+          #105080 100%
         );
-        box-shadow: 0 0 25px rgba(90, 216, 255, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 30px rgba(90, 216, 255, 0.8), inset -12px -12px 30px rgba(0, 0, 0, 0.3);
       }
 
-      .p-glass:hover {
-        box-shadow: 0 0 40px rgba(90, 216, 255, 0.9), 0 0 80px rgba(90, 216, 255, 0.5);
+      .p3:hover .planet-body {
+        box-shadow: 0 0 60px rgba(90, 216, 255, 1), 0 0 120px rgba(90, 216, 255, 0.5);
       }
 
-      .p-glass .planet-inner { animation: counter-spin 20s linear infinite; }
+      .p3 .planet-label { border-color: rgba(90, 216, 255, 0.4); }
 
-      .p-neon {
+      .p4 {
         width: 60px;
         height: 60px;
-        bottom: 15%;
-        left: 10%;
+        top: 25%;
+        left: 5%;
+        margin-left: -30px;
+      }
+
+      .p4 .planet-body {
         background: radial-gradient(circle at 30% 30%,
           #ffb8e6 0%,
           #ff6ad5 40%,
-          #d63aa0 70%,
-          #901a60 100%
+          #c03090 70%,
+          #701860 100%
         );
-        box-shadow: 0 0 25px rgba(255, 106, 213, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 25px rgba(255, 106, 213, 0.8), inset -10px -10px 25px rgba(0, 0, 0, 0.3);
       }
 
-      .p-neon:hover {
-        box-shadow: 0 0 40px rgba(255, 106, 213, 0.9), 0 0 80px rgba(255, 106, 213, 0.5);
+      .p4:hover .planet-body {
+        box-shadow: 0 0 50px rgba(255, 106, 213, 1), 0 0 100px rgba(255, 106, 213, 0.5);
       }
 
-      .p-neon .planet-inner { animation: counter-spin 35s linear infinite reverse; }
+      .p4 .planet-label { border-color: rgba(255, 106, 213, 0.4); }
 
-      .p-signal {
+      .p5 {
         width: 55px;
         height: 55px;
-        top: 20%;
-        right: 5%;
-        background: radial-gradient(circle at 30% 30%,
-          #ffe6a8 0%,
-          #ffcc66 40%,
-          #d6a030 70%,
-          #906a10 100%
-        );
-        box-shadow: 0 0 25px rgba(255, 204, 102, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.3);
-      }
-
-      .p-signal:hover {
-        box-shadow: 0 0 40px rgba(255, 204, 102, 0.9), 0 0 80px rgba(255, 204, 102, 0.5);
-      }
-
-      .p-signal .planet-inner { animation: counter-spin 50s linear infinite; }
-
-      .p-shop {
-        width: 50px;
-        height: 50px;
         bottom: 5%;
         right: 20%;
+        margin-right: -27px;
+      }
+
+      .p5 .planet-body {
         background: radial-gradient(circle at 30% 30%,
           #d4b8ff 0%,
           #aa66ff 40%,
-          #7730d6 70%,
-          #401090 100%
+          #7030c0 70%,
+          #401080 100%
         );
-        box-shadow: 0 0 25px rgba(170, 102, 255, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 25px rgba(170, 102, 255, 0.8), inset -10px -10px 25px rgba(0, 0, 0, 0.3);
       }
 
-      .p-shop:hover {
-        box-shadow: 0 0 40px rgba(170, 102, 255, 0.9), 0 0 80px rgba(170, 102, 255, 0.5);
+      .p5:hover .planet-body {
+        box-shadow: 0 0 50px rgba(170, 102, 255, 1), 0 0 100px rgba(170, 102, 255, 0.5);
       }
 
-      .p-shop .planet-inner { animation: counter-spin 70s linear infinite reverse; }
-
-      .p-shop .planet-name { font-size: 0.55rem; }
-
-      @keyframes counter-spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(-360deg); }
-      }
+      .p5 .planet-label { border-color: rgba(170, 102, 255, 0.4); }
 
       .ui-overlay {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        padding: 20px;
+        padding: 20px 24px;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
@@ -380,19 +426,20 @@
       }
 
       .logo-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 400;
-        letter-spacing: 0.35em;
+        letter-spacing: 0.4em;
         text-transform: uppercase;
         background: linear-gradient(135deg, var(--glow-cyan), var(--glow-pink));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+        text-shadow: none;
       }
 
       .logo-sub {
-        font-size: 0.65rem;
-        letter-spacing: 0.25em;
+        font-size: 0.7rem;
+        letter-spacing: 0.3em;
         text-transform: uppercase;
         color: var(--muted);
         margin-top: 4px;
@@ -401,147 +448,155 @@
       .balance-chip {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
+        gap: 10px;
+        padding: 12px 20px;
         border: 1px solid rgba(255, 204, 102, 0.6);
-        border-radius: 999px;
-        background: rgba(255, 204, 102, 0.08);
+        border-radius: 8px;
+        background: rgba(0, 5, 20, 0.85);
         color: var(--glow-gold);
-        font-size: 0.85rem;
-        letter-spacing: 0.1em;
-        box-shadow: 0 0 20px rgba(255, 204, 102, 0.2);
+        font-size: 0.9rem;
+        letter-spacing: 0.12em;
+        box-shadow: 0 0 30px rgba(255, 204, 102, 0.15);
         backdrop-filter: blur(10px);
       }
 
       .balance-dot {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         background: var(--glow-gold);
-        box-shadow: 0 0 10px var(--glow-gold);
+        box-shadow: 0 0 12px var(--glow-gold);
         animation: pulse 2s ease-in-out infinite;
       }
 
       @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.3); }
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.7; }
       }
 
-      .bottom-info {
+      .bottom-bar {
         position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         z-index: 20;
+        background: linear-gradient(transparent, rgba(0, 5, 15, 0.9));
         pointer-events: none;
       }
 
-      .info-text {
-        font-size: 0.72rem;
-        letter-spacing: 0.15em;
-        color: var(--muted);
-        max-width: 500px;
-        line-height: 1.6;
+      .bottom-bar > * {
+        pointer-events: auto;
       }
-
-      .legend {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 12px;
-        flex-wrap: wrap;
-      }
-
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.6rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .legend-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-      }
-
-      .legend-dot.cyan { background: var(--glow-cyan); box-shadow: 0 0 8px var(--glow-cyan); }
-      .legend-dot.pink { background: var(--glow-pink); box-shadow: 0 0 8px var(--glow-pink); }
-      .legend-dot.gold { background: var(--glow-gold); box-shadow: 0 0 8px var(--glow-gold); }
-      .legend-dot.purple { background: var(--glow-purple); box-shadow: 0 0 8px var(--glow-purple); }
 
       .help-btn {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        padding: 10px 16px;
+        padding: 10px 18px;
         border: 1px solid rgba(122, 130, 166, 0.5);
-        border-radius: 999px;
-        background: rgba(5, 10, 30, 0.8);
+        border-radius: 6px;
+        background: rgba(5, 10, 30, 0.9);
         color: var(--muted);
         font-family: inherit;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         letter-spacing: 0.15em;
         text-transform: uppercase;
         cursor: pointer;
         transition: all 0.2s ease;
-        z-index: 20;
         backdrop-filter: blur(10px);
       }
 
       .help-btn:hover {
         border-color: var(--glow-cyan);
         color: var(--glow-cyan);
-        box-shadow: 0 0 20px rgba(90, 216, 255, 0.3);
+        box-shadow: 0 0 25px rgba(90, 216, 255, 0.3);
       }
 
-      @media (max-width: 700px) {
+      .legend {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .legend-dot.cyan { background: var(--glow-cyan); box-shadow: 0 0 10px var(--glow-cyan); }
+      .legend-dot.pink { background: var(--glow-pink); box-shadow: 0 0 10px var(--glow-pink); }
+      .legend-dot.gold { background: var(--glow-gold); box-shadow: 0 0 10px var(--glow-gold); }
+      .legend-dot.purple { background: var(--glow-purple); box-shadow: 0 0 10px var(--glow-purple); }
+
+      .scope-label {
+        position: fixed;
+        top: 20px;
+        right: 140px;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        z-index: 20;
+      }
+
+      @media (max-width: 900px) {
         .solar-system {
-          width: 95vmin;
-          height: 95vmin;
+          width: 140vmin;
+          height: 140vmin;
         }
 
-        .center-sun {
-          width: 100px;
-          height: 100px;
-        }
+        .center-sun { width: 90px; height: 90px; }
+        .sun-title { font-size: 0.7rem; }
 
-        .sun-title { font-size: 0.75rem; }
-        .sun-sub { font-size: 0.45rem; }
+        .p1 { width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; }
+        .p2 { width: 50px; height: 50px; margin-right: -25px; margin-top: -25px; }
+        .p3 { width: 60px; height: 60px; margin-left: -30px; }
+        .p4 { width: 48px; height: 48px; margin-left: -24px; }
+        .p5 { width: 44px; height: 44px; margin-right: -22px; }
 
-        .p-glass { width: 55px; height: 55px; }
-        .p-neon { width: 48px; height: 48px; }
-        .p-signal { width: 45px; height: 45px; }
-        .p-shop { width: 40px; height: 40px; }
-
-        .planet-name { font-size: 0.5rem; }
-        .planet-tier { font-size: 0.35rem; }
-
-        .logo-title { font-size: 1.3rem; }
-        .balance-chip { font-size: 0.75rem; padding: 8px 12px; }
-
-        .bottom-info { display: none; }
+        .planet-label { display: none; }
+        .logo-title { font-size: 1.5rem; }
+        .legend { gap: 16px; }
       }
 
-      @media (max-width: 500px) {
-        .center-sun {
-          width: 80px;
-          height: 80px;
+      @media (max-width: 600px) {
+        .solar-system {
+          width: 130vmin;
+          height: 130vmin;
+          transform: rotateX(60deg) rotateZ(-10deg);
         }
 
+        .center-sun { width: 70px; height: 70px; }
         .sun-title { font-size: 0.6rem; }
+        .sun-sub { display: none; }
 
-        .p-glass { width: 45px; height: 45px; }
-        .p-neon { width: 40px; height: 40px; }
-        .p-signal { width: 38px; height: 38px; }
-        .p-shop { width: 35px; height: 35px; }
+        .p1 { width: 32px; height: 32px; }
+        .p2 { width: 40px; height: 40px; }
+        .p3 { width: 48px; height: 48px; }
+        .p4 { width: 38px; height: 38px; }
+        .p5 { width: 35px; height: 35px; }
 
-        .ui-overlay { padding: 12px; }
-        .logo-title { font-size: 1rem; letter-spacing: 0.2em; }
+        .ui-overlay { padding: 12px 16px; }
+        .logo-title { font-size: 1.2rem; letter-spacing: 0.25em; }
+        .logo-sub { font-size: 0.55rem; }
+        .balance-chip { padding: 8px 14px; font-size: 0.8rem; }
+
+        .bottom-bar { padding: 12px 16px; }
+        .legend { gap: 12px; }
+        .legend-item { font-size: 0.55rem; gap: 5px; }
+        .legend-dot { width: 8px; height: 8px; }
       }
     </style>
   </head>
@@ -549,84 +604,106 @@
     <div class="space-bg"></div>
 
     <div class="stars-layer">
-      <div class="star" style="top: 5%; left: 8%; width: 2px; height: 2px; --dur: 3s; --delay: 0s;"></div>
-      <div class="star" style="top: 12%; left: 22%; width: 1px; height: 1px; --dur: 4s; --delay: 0.5s;"></div>
-      <div class="star" style="top: 8%; left: 38%; width: 2px; height: 2px; --dur: 3.5s; --delay: 1s;"></div>
-      <div class="star" style="top: 3%; left: 55%; width: 1px; height: 1px; --dur: 3s; --delay: 1.5s;"></div>
-      <div class="star" style="top: 15%; left: 70%; width: 2px; height: 2px; --dur: 4.5s; --delay: 0.3s;"></div>
-      <div class="star" style="top: 6%; left: 85%; width: 1px; height: 1px; --dur: 3s; --delay: 0.8s;"></div>
-      <div class="star" style="top: 25%; left: 5%; width: 1px; height: 1px; --dur: 3.5s; --delay: 2s;"></div>
-      <div class="star" style="top: 30%; left: 92%; width: 2px; height: 2px; --dur: 4s; --delay: 0.2s;"></div>
-      <div class="star" style="top: 45%; left: 3%; width: 2px; height: 2px; --dur: 3s; --delay: 1.2s;"></div>
-      <div class="star" style="top: 55%; left: 95%; width: 1px; height: 1px; --dur: 4s; --delay: 0.7s;"></div>
-      <div class="star" style="top: 70%; left: 8%; width: 1px; height: 1px; --dur: 3.5s; --delay: 1.8s;"></div>
-      <div class="star" style="top: 75%; left: 90%; width: 2px; height: 2px; --dur: 3s; --delay: 0.4s;"></div>
-      <div class="star" style="top: 85%; left: 15%; width: 2px; height: 2px; --dur: 5s; --delay: 0s;"></div>
-      <div class="star" style="top: 88%; left: 50%; width: 1px; height: 1px; --dur: 4s; --delay: 1s;"></div>
-      <div class="star" style="top: 92%; left: 75%; width: 2px; height: 2px; --dur: 3s; --delay: 0.6s;"></div>
-      <div class="star" style="top: 18%; left: 48%; width: 3px; height: 3px; --dur: 5s; --delay: 0s; background: rgba(255, 200, 150, 0.9);"></div>
-      <div class="star" style="top: 65%; left: 12%; width: 3px; height: 3px; --dur: 4s; --delay: 1s; background: rgba(200, 220, 255, 0.9);"></div>
-      <div class="star" style="top: 40%; left: 88%; width: 3px; height: 3px; --dur: 4.5s; --delay: 0.5s; background: rgba(255, 180, 200, 0.9);"></div>
-
-      <div class="comet" style="top: 10%; left: -100px; --dur: 6s; --delay: 2s;"></div>
-      <div class="comet" style="top: 60%; left: -100px; --dur: 8s; --delay: 5s;"></div>
-      <div class="comet" style="top: 35%; left: -100px; --dur: 7s; --delay: 10s;"></div>
+      <div class="star" style="top: 3%; left: 5%; width: 1px; height: 1px; --dur: 3s;"></div>
+      <div class="star" style="top: 8%; left: 15%; width: 2px; height: 2px; --dur: 4s; --delay: 0.5s;"></div>
+      <div class="star" style="top: 5%; left: 28%; width: 1px; height: 1px; --dur: 3.5s; --delay: 1s;"></div>
+      <div class="star" style="top: 12%; left: 42%; width: 1px; height: 1px; --dur: 3s; --delay: 1.5s;"></div>
+      <div class="star" style="top: 6%; left: 58%; width: 2px; height: 2px; --dur: 4.5s; --delay: 0.3s;"></div>
+      <div class="star" style="top: 10%; left: 72%; width: 1px; height: 1px; --dur: 3s; --delay: 0.8s;"></div>
+      <div class="star" style="top: 4%; left: 88%; width: 2px; height: 2px; --dur: 3.5s; --delay: 2s;"></div>
+      <div class="star" style="top: 18%; left: 8%; width: 1px; height: 1px; --dur: 4s; --delay: 0.2s;"></div>
+      <div class="star" style="top: 22%; left: 92%; width: 1px; height: 1px; --dur: 3s; --delay: 1.2s;"></div>
+      <div class="star" style="top: 15%; left: 35%; width: 2px; height: 2px; --dur: 4s; --delay: 0.7s;"></div>
+      <div class="star" style="top: 20%; left: 65%; width: 1px; height: 1px; --dur: 3.5s; --delay: 1.8s;"></div>
+      <div class="star" style="top: 25%; left: 3%; width: 1px; height: 1px; --dur: 3s; --delay: 0.4s;"></div>
+      <div class="star" style="top: 30%; left: 95%; width: 2px; height: 2px; --dur: 5s;"></div>
+      <div class="star" style="top: 75%; left: 5%; width: 1px; height: 1px; --dur: 4s; --delay: 1s;"></div>
+      <div class="star" style="top: 80%; left: 92%; width: 2px; height: 2px; --dur: 3s; --delay: 0.6s;"></div>
+      <div class="star" style="top: 85%; left: 20%; width: 1px; height: 1px; --dur: 3.5s; --delay: 1.4s;"></div>
+      <div class="star" style="top: 90%; left: 50%; width: 1px; height: 1px; --dur: 4s; --delay: 0.9s;"></div>
+      <div class="star" style="top: 88%; left: 75%; width: 2px; height: 2px; --dur: 3s; --delay: 1.1s;"></div>
+      <div class="star" style="top: 7%; left: 50%; width: 3px; height: 3px; --dur: 5s; background: rgba(255, 220, 180, 0.9);"></div>
+      <div class="star" style="top: 15%; left: 80%; width: 3px; height: 3px; --dur: 4s; --delay: 1s; background: rgba(180, 200, 255, 0.9);"></div>
     </div>
 
-    <div class="solar-system">
-      <div class="orbit orbit-1"></div>
-      <div class="orbit orbit-2"></div>
-      <div class="orbit orbit-3"></div>
-      <div class="orbit orbit-4"></div>
+    <div class="grid-bg"></div>
 
-      <div class="center-sun">
-        <div class="sun-label">
-          <div class="sun-title">StarStruck</div>
-          <div class="sun-sub">Transit Hub</div>
+    <div class="solar-wrapper">
+      <div class="solar-system">
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="orbit orbit-4"></div>
+        <div class="orbit orbit-5"></div>
+
+        <div class="center-sun">
+          <div class="sun-label">
+            <div class="sun-title">StarStruck</div>
+            <div class="sun-sub">Hub</div>
+          </div>
         </div>
-      </div>
 
-      <div class="orbit-wrapper ow-1">
-        <a href="world-glass.html" class="planet p-glass">
-          <div class="planet-inner">
-            <span class="planet-name">Glass City</span>
-            <span class="planet-tier">World 001</span>
-          </div>
-        </a>
-      </div>
+        <!-- Mercury position - small inner planet -->
+        <div class="orbit-path op-1">
+          <a href="shop.html" class="planet p1">
+            <div class="planet-body"></div>
+            <div class="planet-label">
+              <div class="planet-name">Shop</div>
+              <div class="planet-tier">Star Market</div>
+            </div>
+          </a>
+        </div>
 
-      <div class="orbit-wrapper ow-2">
-        <a href="world-neon.html" class="planet p-neon">
-          <div class="planet-inner">
-            <span class="planet-name">Neon</span>
-            <span class="planet-tier">World 002</span>
-          </div>
-        </a>
-      </div>
+        <!-- Venus position -->
+        <div class="orbit-path op-2">
+          <a href="world-signal.html" class="planet p2">
+            <div class="planet-body"></div>
+            <div class="planet-label">
+              <div class="planet-name">Signal</div>
+              <div class="planet-tier">World 003</div>
+            </div>
+          </a>
+        </div>
 
-      <div class="orbit-wrapper ow-3">
-        <a href="world-signal.html" class="planet p-signal">
-          <div class="planet-inner">
-            <span class="planet-name">Signal</span>
-            <span class="planet-tier">World 003</span>
-          </div>
-        </a>
-      </div>
+        <!-- Earth position - main world -->
+        <div class="orbit-path op-3">
+          <a href="world-glass.html" class="planet p3">
+            <div class="planet-body"></div>
+            <div class="planet-label">
+              <div class="planet-name">Glass City</div>
+              <div class="planet-tier">World 001</div>
+            </div>
+          </a>
+        </div>
 
-      <div class="orbit-wrapper ow-4">
-        <a href="shop.html" class="planet p-shop">
-          <div class="planet-inner">
-            <span class="planet-name">Shop</span>
-            <span class="planet-tier">★ Stars</span>
-          </div>
-        </a>
+        <!-- Mars position -->
+        <div class="orbit-path op-4">
+          <a href="world-neon.html" class="planet p4">
+            <div class="planet-body"></div>
+            <div class="planet-label">
+              <div class="planet-name">Neon</div>
+              <div class="planet-tier">World 002</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Outer planet -->
+        <div class="orbit-path op-5">
+          <a href="#" class="planet p5" id="helpPlanet">
+            <div class="planet-body"></div>
+            <div class="planet-label">
+              <div class="planet-name">Guide</div>
+              <div class="planet-tier">Help Center</div>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
 
     <div class="ui-overlay">
       <div class="logo-area">
         <h1 class="logo-title">StarStruck</h1>
-        <p class="logo-sub">The In-Between Dimension</p>
+        <p class="logo-sub">Portal System</p>
       </div>
       <div class="balance-chip">
         <span class="balance-dot"></span>
@@ -634,20 +711,15 @@
       </div>
     </div>
 
-    <div class="bottom-info">
-      <p class="info-text">
-        Click a planet to enter its world. Rate inhabitants to earn stars.
-        Your ratings shape their reality.
-      </p>
+    <div class="bottom-bar">
+      <button class="help-btn" id="helpBtn">? How It Works</button>
       <div class="legend">
         <div class="legend-item"><span class="legend-dot cyan"></span> Glass City</div>
-        <div class="legend-item"><span class="legend-dot pink"></span> Neon Underpass</div>
-        <div class="legend-item"><span class="legend-dot gold"></span> Signal Market</div>
-        <div class="legend-item"><span class="legend-dot purple"></span> Star Shop</div>
+        <div class="legend-item"><span class="legend-dot pink"></span> Neon</div>
+        <div class="legend-item"><span class="legend-dot gold"></span> Signal</div>
+        <div class="legend-item"><span class="legend-dot purple"></span> Guide</div>
       </div>
     </div>
-
-    <button class="help-btn" id="helpBtn">? How It Works</button>
 
     <aside class="tourbot" aria-label="StarStruck tour guide">
       <div class="tourbot-shell" id="tourbotShell">
@@ -682,11 +754,15 @@
 
     <script src="tourbot.js" defer></script>
     <script>
-      document.getElementById("helpBtn").addEventListener("click", () => {
+      const openTourbot = () => {
         const shell = document.getElementById("tourbotShell");
-        if (shell) {
-          shell.parentElement.classList.remove("tourbot-collapsed");
-        }
+        if (shell) shell.parentElement.classList.remove("tourbot-collapsed");
+      };
+
+      document.getElementById("helpBtn").addEventListener("click", openTourbot);
+      document.getElementById("helpPlanet").addEventListener("click", (e) => {
+        e.preventDefault();
+        openTourbot();
       });
     </script>
   </body>
