@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarStruck // Glass City</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tourbot.css" />
+  </head>
+  <body>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Fixed HUD -->
+    <header class="hud">
+      <a href="index.html" class="hud-brand">
+        <div class="hud-logo">★</div>
+        <div class="hud-title">
+          <span class="hud-label">World 001 · Upper Tiers</span>
+          <span class="hud-name">Glass City</span>
+        </div>
+      </a>
+
+      <nav class="hud-nav">
+        <a href="index.html">Hub</a>
+        <a href="glass-city.html" class="active">Glass City</a>
+        <a href="neon-underpass.html">Neon Underpass</a>
+        <a href="signal-market.html">Signal Market</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+
+      <div class="hud-balance">
+        <span class="balance-dot"></span>
+        <span id="balanceDisplay">100.00 ★ balance</span>
+      </div>
+    </header>
+
+    <main class="world-page world-page--glass">
+      <div class="portal-ring portal-ring--1"></div>
+      <div class="portal-ring portal-ring--2"></div>
+
+      <div class="world-content">
+        <p class="world-eyebrow">World 001 · Upper Tiers</p>
+        <h1 class="world-title">
+          <span>Glass City</span>
+        </h1>
+        <p class="world-desc">
+          A realm of perfect surfaces and polished manners. Everyone here speaks
+          in compliments, but listen closely — the silence between words is
+          where the real judgements hide. Your rating determines which doors
+          open. Below four stars, and you become invisible.
+        </p>
+
+        <div class="world-warning">
+          <span>⚠</span>
+          <span>In Glass City, anything less than 4★ is considered an attack.</span>
+        </div>
+
+        <div class="inhabitants">
+          <div class="inhabitants-title">Rate the inhabitants of Glass City</div>
+          <div class="inhabitant-grid">
+            <div class="inhabitant" data-name="Architect Vex">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Architect Vex</div>
+              <div class="inhabitant-role">Tower Designer</div>
+              <div class="inhabitant-stars" data-inhabitant="vex">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Liaison Mora">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Liaison Mora</div>
+              <div class="inhabitant-role">Social Coordinator</div>
+              <div class="inhabitant-stars" data-inhabitant="mora">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Warden Slate">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Warden Slate</div>
+              <div class="inhabitant-role">Access Controller</div>
+              <div class="inhabitant-stars" data-inhabitant="slate">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Curator Lens">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Curator Lens</div>
+              <div class="inhabitant-role">Memory Archivist</div>
+              <div class="inhabitant-stars" data-inhabitant="lens">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-row">
+          <a href="neon-underpass.html" class="cta-primary">Next World: Neon Underpass ⇢</a>
+          <a href="index.html" class="cta-ghost">Return to Hub</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>Glass City · World 001</span>
+      <span>Politeness is armor. Silence is judgement.</span>
+    </footer>
+
+    <!-- TourBot -->
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">Glass City guide</div>
+            </div>
+          </div>
+
+          <div class="tourbot-actions">
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle" aria-label="Collapse">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset" aria-label="Restart">↺</button>
+          </div>
+        </div>
+
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="world-common.js"></script>
+    <script src="tourbot.js" defer></script>
+  </body>
+</html>
