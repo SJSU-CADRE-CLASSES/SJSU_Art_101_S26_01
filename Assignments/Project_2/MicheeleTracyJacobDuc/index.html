@@ -76,11 +76,11 @@
         align-items: center;
       }
 
-      /* Big Main Portal */
+      /* Dystopian Portal */
       .main-portal {
         position: relative;
-        width: 500px;
-        height: 500px;
+        width: 520px;
+        height: 520px;
         cursor: pointer;
         transition: transform 0.5s ease;
       }
@@ -89,7 +89,32 @@
         transform: scale(1.02);
       }
 
-      /* Main portal rings */
+      /* Outer mechanical frame */
+      .portal-frame-outer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 25px solid transparent;
+        background: 
+          linear-gradient(var(--bg), var(--bg)) padding-box,
+          linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e) border-box;
+        box-shadow:
+          0 0 60px rgba(255, 160, 50, 0.3),
+          0 0 120px rgba(255, 100, 50, 0.2),
+          inset 0 0 60px rgba(0, 0, 0, 0.8);
+        animation: frame-pulse 4s ease-in-out infinite;
+      }
+
+      @keyframes frame-pulse {
+        0%, 100% { box-shadow: 0 0 60px rgba(255, 160, 50, 0.3), 0 0 120px rgba(255, 100, 50, 0.2), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+        50% { box-shadow: 0 0 80px rgba(255, 160, 50, 0.5), 0 0 150px rgba(255, 100, 50, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+      }
+
+      /* Main glowing ring */
       .main-ring {
         position: absolute;
         border-radius: 50%;
@@ -99,104 +124,190 @@
       }
 
       .main-ring--1 {
-        width: 100%;
-        height: 100%;
-        border: 4px solid;
-        border-color: var(--accent-2);
-        animation: spin-slow 30s linear infinite;
+        width: 92%;
+        height: 92%;
+        border: 8px solid;
+        border-color: #ff9d4d;
+        animation: spin-slow 60s linear infinite;
         box-shadow: 
-          0 0 30px rgba(90, 216, 255, 0.4),
-          inset 0 0 30px rgba(90, 216, 255, 0.2);
-      }
-
-      .main-ring--1::before,
-      .main-ring--1::after {
-        content: "★";
-        position: absolute;
-        font-size: 1.5rem;
-        color: #5ad8ff;
-        text-shadow: 0 0 20px #5ad8ff;
-      }
-
-      .main-ring--1::before {
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .main-ring--1::after {
-        bottom: -12px;
-        left: 50%;
-        transform: translateX(-50%);
+          0 0 40px rgba(255, 157, 77, 0.8),
+          0 0 80px rgba(255, 120, 50, 0.5),
+          inset 0 0 40px rgba(255, 157, 77, 0.4);
       }
 
       .main-ring--2 {
-        width: 90%;
-        height: 90%;
-        border: 3px dashed rgba(255, 106, 213, 0.6);
-        animation: spin-reverse 25s linear infinite;
+        width: 85%;
+        height: 85%;
+        border: 3px solid rgba(100, 200, 255, 0.4);
+        animation: spin-reverse 45s linear infinite;
+        box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
       }
 
       .main-ring--3 {
-        width: 80%;
-        height: 80%;
-        border: 2px solid rgba(168, 85, 247, 0.5);
-        animation: spin-slow 20s linear infinite;
+        width: 78%;
+        height: 78%;
+        border: 2px solid rgba(255, 157, 77, 0.3);
+        animation: spin-slow 30s linear infinite;
       }
 
-      .main-ring--4 {
-        width: 70%;
-        height: 70%;
-        border: 2px dashed rgba(255, 204, 0, 0.4);
-        animation: spin-reverse 15s linear infinite;
+      /* Tech segments on outer ring */
+      .tech-segment {
+        position: absolute;
+        width: 40px;
+        height: 60px;
+        background: linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 50%, #0a0a1e 100%);
+        border: 2px solid rgba(255, 157, 77, 0.6);
+        border-radius: 4px;
+        box-shadow: 
+          0 0 15px rgba(255, 157, 77, 0.4),
+          inset 0 0 10px rgba(255, 157, 77, 0.2);
+        animation: segment-glow 3s ease-in-out infinite;
       }
 
-      /* Main portal core */
+      .tech-segment::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 40%;
+        background: linear-gradient(180deg, rgba(255, 157, 77, 0.6), transparent);
+        border-radius: 2px;
+      }
+
+      .tech-segment:nth-child(1) { top: -30px; left: 50%; transform: translateX(-50%) rotate(0deg); }
+      .tech-segment:nth-child(2) { top: 50%; right: -30px; transform: translateY(-50%) rotate(90deg); }
+      .tech-segment:nth-child(3) { bottom: -30px; left: 50%; transform: translateX(-50%) rotate(180deg); }
+      .tech-segment:nth-child(4) { top: 50%; left: -30px; transform: translateY(-50%) rotate(-90deg); }
+      .tech-segment:nth-child(5) { top: 12%; right: 8%; transform: rotate(45deg); animation-delay: 0.5s; }
+      .tech-segment:nth-child(6) { bottom: 12%; right: 8%; transform: rotate(135deg); animation-delay: 1s; }
+      .tech-segment:nth-child(7) { bottom: 12%; left: 8%; transform: rotate(-135deg); animation-delay: 1.5s; }
+      .tech-segment:nth-child(8) { top: 12%; left: 8%; transform: rotate(-45deg); animation-delay: 2s; }
+
+      @keyframes segment-glow {
+        0%, 100% { box-shadow: 0 0 15px rgba(255, 157, 77, 0.4), inset 0 0 10px rgba(255, 157, 77, 0.2); }
+        50% { box-shadow: 0 0 25px rgba(255, 157, 77, 0.7), inset 0 0 15px rgba(255, 157, 77, 0.4); }
+      }
+
+      /* Portal core - the glowing center */
       .main-core {
         position: absolute;
-        width: 65%;
-        height: 65%;
+        width: 70%;
+        height: 70%;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
         overflow: hidden;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(200, 230, 255, 0.9) 10%,
+          rgba(100, 180, 255, 0.7) 25%,
+          rgba(50, 100, 200, 0.5) 45%,
+          rgba(20, 40, 80, 0.4) 65%,
+          transparent 85%
+        );
         box-shadow: 
-          0 0 60px rgba(90, 216, 255, 0.5),
-          0 0 120px rgba(255, 106, 213, 0.3),
-          inset 0 0 80px rgba(168, 85, 247, 0.4);
+          0 0 100px rgba(100, 200, 255, 0.8),
+          0 0 200px rgba(255, 160, 100, 0.4),
+          inset 0 0 100px rgba(255, 255, 255, 0.3);
         cursor: pointer;
       }
 
       .main-core::before {
         content: "";
         position: absolute;
-        inset: -100%;
+        inset: -50%;
         background: conic-gradient(
           from 0deg,
-          rgba(90, 216, 255, 0.8),
-          transparent,
-          rgba(255, 106, 213, 0.8),
-          transparent,
-          rgba(255, 204, 0, 0.8),
-          transparent,
-          rgba(90, 216, 255, 0.8)
+          transparent 0deg,
+          rgba(255, 200, 150, 0.3) 30deg,
+          transparent 60deg,
+          rgba(100, 200, 255, 0.2) 120deg,
+          transparent 150deg,
+          rgba(255, 200, 150, 0.3) 210deg,
+          transparent 240deg,
+          rgba(100, 200, 255, 0.2) 300deg,
+          transparent 330deg
         );
-        animation: swirl 8s linear infinite;
+        animation: swirl 20s linear infinite;
       }
 
-      .main-core::after {
-        content: "";
+      /* Light rays emanating from center */
+      .light-rays {
         position: absolute;
-        inset: 20%;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.9) 0%,
-          rgba(200, 220, 255, 0.6) 30%,
-          transparent 70%
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .light-ray {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 4px;
+        height: 300px;
+        background: linear-gradient(
+          to top,
+          rgba(255, 200, 150, 0.8) 0%,
+          rgba(255, 200, 150, 0.4) 20%,
+          rgba(100, 200, 255, 0.2) 50%,
+          transparent 100%
         );
-        animation: pulse-core 3s ease-in-out infinite;
+        transform-origin: bottom center;
+        opacity: 0.6;
+        animation: ray-pulse 3s ease-in-out infinite;
+      }
+
+      .light-ray:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); animation-delay: 0s; }
+      .light-ray:nth-child(2) { transform: translate(-50%, -100%) rotate(30deg); animation-delay: 0.2s; }
+      .light-ray:nth-child(3) { transform: translate(-50%, -100%) rotate(60deg); animation-delay: 0.4s; }
+      .light-ray:nth-child(4) { transform: translate(-50%, -100%) rotate(90deg); animation-delay: 0.6s; }
+      .light-ray:nth-child(5) { transform: translate(-50%, -100%) rotate(120deg); animation-delay: 0.8s; }
+      .light-ray:nth-child(6) { transform: translate(-50%, -100%) rotate(150deg); animation-delay: 1s; }
+      .light-ray:nth-child(7) { transform: translate(-50%, -100%) rotate(180deg); animation-delay: 1.2s; }
+      .light-ray:nth-child(8) { transform: translate(-50%, -100%) rotate(210deg); animation-delay: 1.4s; }
+      .light-ray:nth-child(9) { transform: translate(-50%, -100%) rotate(240deg); animation-delay: 1.6s; }
+      .light-ray:nth-child(10) { transform: translate(-50%, -100%) rotate(270deg); animation-delay: 1.8s; }
+      .light-ray:nth-child(11) { transform: translate(-50%, -100%) rotate(300deg); animation-delay: 2s; }
+      .light-ray:nth-child(12) { transform: translate(-50%, -100%) rotate(330deg); animation-delay: 2.2s; }
+
+      @keyframes ray-pulse {
+        0%, 100% { opacity: 0.4; height: 280px; }
+        50% { opacity: 0.8; height: 320px; }
+      }
+
+      /* Floating debris */
+      .debris {
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .debris-piece {
+        position: absolute;
+        background: linear-gradient(135deg, #3a3a5a 0%, #1a1a2e 100%);
+        border: 1px solid rgba(255, 157, 77, 0.4);
+        box-shadow: 0 0 10px rgba(255, 157, 77, 0.3);
+        animation: float-debris 8s ease-in-out infinite;
+      }
+
+      .debris-piece:nth-child(1) { width: 30px; height: 20px; top: -5%; left: 20%; animation-delay: 0s; border-radius: 4px; }
+      .debris-piece:nth-child(2) { width: 25px; height: 35px; top: 10%; right: -8%; animation-delay: 1s; border-radius: 3px; transform: rotate(30deg); }
+      .debris-piece:nth-child(3) { width: 40px; height: 15px; bottom: 15%; right: 5%; animation-delay: 2s; border-radius: 2px; transform: rotate(-20deg); }
+      .debris-piece:nth-child(4) { width: 20px; height: 40px; bottom: -5%; left: 30%; animation-delay: 3s; border-radius: 4px; transform: rotate(45deg); }
+      .debris-piece:nth-child(5) { width: 35px; height: 25px; top: 20%; left: -5%; animation-delay: 4s; border-radius: 3px; transform: rotate(-15deg); }
+      .debris-piece:nth-child(6) { width: 15px; height: 30px; bottom: 30%; left: -8%; animation-delay: 5s; border-radius: 2px; transform: rotate(60deg); }
+
+      @keyframes float-debris {
+        0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+        25% { transform: translateY(-15px) rotate(calc(var(--rot, 0deg) + 5deg)); }
+        50% { transform: translateY(-8px) rotate(calc(var(--rot, 0deg) - 3deg)); }
+        75% { transform: translateY(-20px) rotate(calc(var(--rot, 0deg) + 8deg)); }
       }
 
       /* Portal entrance text */
@@ -212,52 +323,56 @@
       }
 
       .portal-enter-text h2 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: 700;
-        letter-spacing: 0.15em;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
         color: #fff;
-        text-shadow: 0 0 30px rgba(90, 216, 255, 0.9), 0 0 60px rgba(255, 106, 213, 0.7);
+        text-shadow: 
+          0 0 20px rgba(255, 200, 150, 1),
+          0 0 40px rgba(255, 160, 100, 0.8),
+          0 0 60px rgba(100, 200, 255, 0.6);
         margin-bottom: 8px;
         animation: float-text 3s ease-in-out infinite;
       }
 
       .portal-enter-text p {
-        font-size: 0.85rem;
-        letter-spacing: 0.2em;
-        color: var(--muted);
+        font-size: 0.8rem;
+        letter-spacing: 0.25em;
+        color: rgba(255, 200, 150, 0.8);
+        text-shadow: 0 0 10px rgba(255, 160, 100, 0.5);
       }
 
       @keyframes float-text {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        50% { transform: translateY(-8px); }
       }
 
-      /* Floating runes around main portal */
-      .portal-runes {
+      /* Electric arcs */
+      .electric-arcs {
         position: absolute;
         width: 100%;
         height: 100%;
         pointer-events: none;
       }
 
-      .rune {
+      .arc {
         position: absolute;
-        font-size: 1.5rem;
-        opacity: 0.6;
-        animation: float-rune 4s ease-in-out infinite;
+        width: 2px;
+        height: 40px;
+        background: linear-gradient(to top, rgba(100, 200, 255, 0.8), transparent);
+        box-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+        animation: arc-flicker 0.5s ease-in-out infinite;
       }
 
-      .rune:nth-child(1) { top: 5%; left: 50%; animation-delay: 0s; }
-      .rune:nth-child(2) { top: 25%; right: 5%; animation-delay: 0.5s; }
-      .rune:nth-child(3) { bottom: 25%; right: 5%; animation-delay: 1s; }
-      .rune:nth-child(4) { bottom: 5%; left: 50%; animation-delay: 1.5s; }
-      .rune:nth-child(5) { bottom: 25%; left: 5%; animation-delay: 2s; }
-      .rune:nth-child(6) { top: 25%; left: 5%; animation-delay: 2.5s; }
+      .arc:nth-child(1) { top: 15%; left: 25%; transform: rotate(-30deg); animation-delay: 0s; }
+      .arc:nth-child(2) { top: 20%; right: 20%; transform: rotate(45deg); animation-delay: 0.15s; }
+      .arc:nth-child(3) { bottom: 25%; right: 15%; transform: rotate(-60deg); animation-delay: 0.3s; }
+      .arc:nth-child(4) { bottom: 15%; left: 20%; transform: rotate(30deg); animation-delay: 0.45s; }
 
-      @keyframes float-rune {
-        0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
-        50% { transform: translateY(-15px) scale(1.1); opacity: 1; }
+      @keyframes arc-flicker {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
       }
 
       /* Hidden world portals - revealed when main portal opens */
@@ -490,7 +605,11 @@
       .main-portal.opened .main-core,
       .main-portal.opened .main-ring,
       .main-portal.opened .portal-enter-text,
-      .main-portal.opened .portal-runes {
+      .main-portal.opened .portal-frame-outer,
+      .main-portal.opened .tech-segment,
+      .main-portal.opened .light-rays,
+      .main-portal.opened .electric-arcs,
+      .main-portal.opened .debris {
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.5s ease;
@@ -546,8 +665,29 @@
 
       @media (max-width: 768px) {
         .main-portal {
-          width: 320px;
-          height: 320px;
+          width: 340px;
+          height: 340px;
+        }
+
+        .portal-frame-outer {
+          border-width: 15px;
+        }
+
+        .main-ring--1 {
+          border-width: 5px;
+        }
+
+        .tech-segment {
+          width: 25px;
+          height: 40px;
+        }
+
+        .light-ray {
+          height: 200px;
+        }
+
+        .debris-piece {
+          transform: scale(0.7);
         }
 
         .world-portals.visible {
@@ -600,26 +740,66 @@
         <p class="hub-tagline">The In-Between Dimension · Portal Transit Hub</p>
 
         <div class="main-portal-container">
-          <!-- Big Main Portal -->
+          <!-- Dystopian Portal -->
           <div class="main-portal" id="mainPortal">
+            <!-- Outer mechanical frame -->
+            <div class="portal-frame-outer"></div>
+            
+            <!-- Glowing rings -->
             <div class="main-ring main-ring--1"></div>
             <div class="main-ring main-ring--2"></div>
             <div class="main-ring main-ring--3"></div>
-            <div class="main-ring main-ring--4"></div>
+            
+            <!-- Tech segments around the ring -->
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            
+            <!-- Light rays from center -->
+            <div class="light-rays">
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+            </div>
+            
+            <!-- Glowing core -->
             <div class="main-core"></div>
+            
+            <!-- Electric arcs -->
+            <div class="electric-arcs">
+              <div class="arc"></div>
+              <div class="arc"></div>
+              <div class="arc"></div>
+              <div class="arc"></div>
+            </div>
+            
+            <!-- Floating debris -->
+            <div class="debris">
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+            </div>
             
             <div class="portal-enter-text">
               <h2>Enter Portal</h2>
               <p>Click to reveal worlds</p>
-            </div>
-
-            <div class="portal-runes">
-              <span class="rune">✦</span>
-              <span class="rune">◇</span>
-              <span class="rune">✧</span>
-              <span class="rune">◈</span>
-              <span class="rune">✦</span>
-              <span class="rune">◇</span>
             </div>
 
             <!-- Hidden World Portals (revealed on click) -->
