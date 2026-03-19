@@ -9,14 +9,14 @@
 
 .tourbot-shell {
   border-radius: 22px;
-  border: 1px solid rgba(163, 169, 212, 0.55);
+  border: 1px solid rgba(0, 229, 255, 0.45);
   background:
-    radial-gradient(circle at 20% 0, rgba(255, 255, 255, 0.12), transparent 55%),
-    rgba(3, 7, 27, 0.96);
+    radial-gradient(circle at 20% 0, rgba(0, 229, 255, 0.08), transparent 55%),
+    rgba(3, 8, 16, 0.96);
   backdrop-filter: blur(18px);
   box-shadow:
     0 22px 70px rgba(0, 0, 0, 0.95),
-    0 0 24px rgba(90, 216, 255, 0.55);
+    0 0 24px rgba(0, 229, 255, 0.5);
   overflow: hidden;
 }
 
@@ -26,7 +26,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(163, 169, 212, 0.25);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.25);
 }
 
 .tourbot-title {
@@ -42,15 +42,15 @@
   border-radius: 16px;
   background: radial-gradient(
     circle at 35% 25%,
-    #c9fbff 0,
-    #5ad8ff 35%,
-    #2aa6d6 62%,
-    #0b2a3a 100%
+    #c9fffc 0,
+    #00e5ff 35%,
+    #00a0c0 62%,
+    #051520 100%
   );
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow:
-    0 0 18px rgba(90, 216, 255, 0.9),
-    0 0 18px rgba(255, 106, 213, 0.35);
+    0 0 18px rgba(0, 229, 255, 0.9),
+    0 0 18px rgba(64, 255, 216, 0.4);
   position: relative;
   overflow: visible;
   flex: 0 0 auto;
@@ -67,18 +67,18 @@
   background: radial-gradient(
     circle at 30% 20%,
     #ffffff 0,
-    #5ad8ff 60%,
-    #0b2a3a 100%
+    #00e5ff 60%,
+    #051520 100%
   );
-  box-shadow: 0 0 14px rgba(90, 216, 255, 1);
+  box-shadow: 0 0 14px rgba(0, 229, 255, 1);
 }
 
 .bot-face {
   position: absolute;
   inset: 8px 7px 9px;
   border-radius: 14px;
-  background: linear-gradient(180deg, #1b233a 0, #0b1021 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #0a1825 0, #051015 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,7 +118,7 @@
   border: 2px solid rgba(255, 255, 255, 0.8);
   border-color: transparent transparent rgba(255, 255, 255, 0.8) transparent;
   border-radius: 0 0 24px 24px;
-  filter: drop-shadow(0 0 10px rgba(90, 216, 255, 0.15));
+  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.15));
 }
 
 .tourbot-meta {
@@ -155,9 +155,9 @@
 }
 
 .tourbot-iconbtn {
-  border: 1px solid rgba(163, 169, 212, 0.45);
-  background: rgba(3, 6, 25, 0.85);
-  color: var(--text, #f7f7ff);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: rgba(3, 8, 16, 0.85);
+  color: var(--text, #d0f0ff);
   width: 34px;
   height: 34px;
   border-radius: 12px;
@@ -170,8 +170,8 @@
 
 .tourbot-iconbtn:hover {
   transform: translateY(-1px);
-  border-color: rgba(90, 216, 255, 0.85);
-  background: rgba(10, 12, 40, 0.98);
+  border-color: rgba(0, 229, 255, 0.85);
+  background: rgba(5, 15, 25, 0.98);
 }
 
 .tourbot-body {
@@ -191,22 +191,22 @@
   max-width: 92%;
   border-radius: 14px;
   padding: 9px 10px;
-  border: 1px solid rgba(163, 169, 212, 0.25);
-  background: rgba(6, 8, 28, 0.85);
-  color: var(--text, #f7f7ff);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  background: rgba(5, 12, 20, 0.85);
+  color: var(--text, #d0f0ff);
   line-height: 1.45;
 }
 
 .tourbot-msg.bot {
-  border-color: rgba(90, 216, 255, 0.35);
-  box-shadow: 0 0 0 1px rgba(90, 216, 255, 0.08) inset;
+  border-color: rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.08) inset;
 }
 
 .tourbot-msg.user {
   align-self: flex-end;
-  border-color: rgba(255, 106, 213, 0.35);
-  box-shadow: 0 0 0 1px rgba(255, 106, 213, 0.08) inset;
-  background: rgba(12, 6, 28, 0.85);
+  border-color: rgba(64, 255, 216, 0.35);
+  box-shadow: 0 0 0 1px rgba(64, 255, 216, 0.08) inset;
+  background: rgba(5, 15, 25, 0.85);
 }
 
 .tourbot-choices {
@@ -219,9 +219,9 @@
 .tourbot-choice {
   border-radius: 999px;
   padding: 8px 12px;
-  border: 1px solid rgba(163, 169, 212, 0.45);
-  background: rgba(5, 7, 26, 0.85);
-  color: var(--text, #f7f7ff);
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  background: rgba(5, 12, 20, 0.85);
+  color: var(--text, #d0f0ff);
   cursor: pointer;
   font-size: 0.8rem;
   letter-spacing: 0.12em;
@@ -234,8 +234,8 @@
 
 .tourbot-choice:hover {
   transform: translateY(-1px);
-  border-color: rgba(90, 216, 255, 0.9);
-  background: rgba(10, 12, 40, 0.98);
+  border-color: rgba(0, 229, 255, 0.9);
+  background: rgba(5, 20, 30, 0.98);
 }
 
 .tourbot-stars {
@@ -246,9 +246,9 @@
 }
 
 .starbtn {
-  border: 1px solid rgba(255, 204, 0, 0.7);
-  background: rgba(12, 10, 3, 0.85);
-  color: #ffe36f;
+  border: 1px solid rgba(64, 255, 216, 0.7);
+  background: rgba(5, 15, 20, 0.85);
+  color: #40ffd8;
   border-radius: 999px;
   padding: 7px 10px;
   cursor: pointer;
@@ -263,8 +263,8 @@
 
 .starbtn:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 204, 0, 1);
-  background: rgba(20, 16, 4, 0.98);
+  border-color: rgba(64, 255, 216, 1);
+  background: rgba(5, 25, 30, 0.98);
 }
 
 .tourbot-collapsed .tourbot-shell {
