@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Waves</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: rgba(2, 6, 23, 0.92);
+        --muted: rgba(2, 6, 23, 0.55);
+        --border: rgba(2, 6, 23, 0.14);
+        --shadow: rgba(2, 6, 23, 0.08);
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        overflow: hidden;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 2.2rem;
+        position: relative;
+      }
+
+      .aura {
+        position: absolute;
+        inset: -20%;
+        pointer-events: none;
+        opacity: 0.9;
+        background: radial-gradient(
+          circle at var(--mx, 50%) var(--my, 50%),
+          rgba(2, 6, 23, 0.08),
+          transparent 45%
+        );
+        transition: background 80ms linear;
+      }
+
+      .wrap {
+        width: min(860px, 92vw);
+        text-align: center;
+        animation: fade-in 650ms ease-out both;
+      }
+
+      h1 {
+        margin: 0 0 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        display: inline-block;
+        position: relative;
+        transform: translateZ(0);
+        animation: title-float 3.8s ease-in-out infinite;
+      }
+
+      h1::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -0.35rem;
+        width: 55%;
+        height: 1px;
+        background: rgba(2, 6, 23, 0.18);
+        transform: translateX(-50%);
+      }
+
+      .sub {
+        margin: 0 0 2.1rem;
+        color: var(--muted);
+        letter-spacing: 0.18em;
+        text-transform: lowercase;
+        font-size: 0.95rem;
+        animation: sub-fade 900ms ease-out 120ms both;
+      }
+
+      .links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.6rem;
+        padding-top: 1.35rem;
+        border-top: 1px solid var(--border);
+        position: relative;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        font-size: 1rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        position: relative;
+        padding: 0.35rem 0.2rem;
+        transition: transform 160ms ease, letter-spacing 160ms ease, opacity 160ms ease;
+      }
+
+      a:hover,
+      a:focus-visible {
+        text-decoration: none;
+        transform: translateY(-1px);
+        letter-spacing: 0.18em;
+      }
+
+      a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0.15rem;
+        height: 1px;
+        background: rgba(2, 6, 23, 0.25);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 180ms ease;
+      }
+
+      a:hover::after,
+      a:focus-visible::after {
+        transform: scaleX(1);
+      }
+
+      .scan {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.12;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(2, 6, 23, 0.08) 0 1px,
+          transparent 1px 4px
+        );
+        animation: scan-move 3.2s linear infinite;
+        mix-blend-mode: multiply;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes title-float {
+        0%,
+        100% {
+          transform: translateY(0);
+          filter: drop-shadow(0 10px 18px var(--shadow));
+        }
+        50% {
+          transform: translateY(-4px);
+          filter: drop-shadow(0 16px 24px var(--shadow));
+        }
+      }
+
+      @keyframes sub-fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scan-move {
+        from {
+          transform: translateY(-12px);
+        }
+        to {
+          transform: translateY(12px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="aura" aria-hidden="true"></div>
+      <div class="scan" aria-hidden="true"></div>
+      <div class="wrap">
+        <h1>The Waves</h1>
+        <p class="sub">where would you like to go?</p>
+        <nav class="links" aria-label="Waves">
+          <a href="frutiger%20aero%20wave/frutigerwave.html">Frutiger Aero</a>
+          <a href="synthwave/synthwave.html">Synthwave</a>
+          <a href="vaporwave/vaporwave.html">Vaporwave</a>
+        </nav>
+      </div>
+    </main>
+    <script>
+      (() => {
+        const root = document.documentElement;
+        let raf = 0;
+        const onMove = (e) => {
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            root.style.setProperty("--mx", `${x.toFixed(2)}%`);
+            root.style.setProperty("--my", `${y.toFixed(2)}%`);
+          });
+        };
+        window.addEventListener("pointermove", onMove, { passive: true });
+      })();
+    </script>
+  </body>
+</html>

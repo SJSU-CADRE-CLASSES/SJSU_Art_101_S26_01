@@ -110,9 +110,9 @@
         }
 
         if (!isUndergroundCity()) {
-          addChoice("Underground City", () => {
-            addMsg("Underground City", "user");
-            addMsg("Entering World 003. Deep below, where stars are the only light that matters.");
+          addChoice("Flat World", () => {
+            addMsg("Flat World", "user");
+            addMsg("Entering World 003. The Edge — where maps, passage, and coordinates are locked behind stars.");
             goTo("underground-city.html");
           });
         }
@@ -197,9 +197,9 @@
       addMsg("A realm built brick by brick, where creativity meets commerce. The minifigures here judge each other by their constructions.");
       addMsg("Low ratings mean your creations get dismantled. Build your reputation.");
     } else if (isUndergroundCity()) {
-      addMsg("You've descended into Underground City — World 003.");
-      addMsg("Miles beneath the surface, resources are scarce and darkness is eternal. Only those with stars get access to light.");
-      addMsg("In the depths, your reputation is your only beacon.");
+      addMsg("You've entered Flat World — World 003.");
+      addMsg("A vast, impossible plain under open space. The horizon feels edited, the edges feel unfinished.");
+      addMsg("Here, stars buy maps, passage, and coordinates away from the rim. No rating, no direction.");
     } else {
       addMsg("Welcome to StarStruck — the space between worlds.");
       addMsg("You stand in the Portal Hub — click the main portal to reveal three different worlds.");

@@ -7,12 +7,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="tourbot.css" />
     <style>
-      .world-page--lego {
-        background:
-          radial-gradient(ellipse at 30% 50%, rgba(255, 106, 213, 0.2) 0%, transparent 40%),
-          radial-gradient(ellipse at 80% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 35%),
-          linear-gradient(180deg, #0c0416 0%, #020408 100%);
-      }
+      /* Use shared cyberpunk theme background from styles.css */
 
       .inhabitant {
         cursor: pointer;
@@ -193,7 +188,7 @@
         <a href="index.html">Hub</a>
         <a href="glass-city.html">Glass City</a>
         <a href="lego-world.html" class="active">Lego World</a>
-        <a href="underground-city.html">Underground City</a>
+        <a href="underground-city.html">Flat World</a>
         <a href="shop.html">Shop</a>
       </nav>
 
@@ -206,6 +201,15 @@
     <main class="world-page world-page--lego">
       <div class="portal-ring portal-ring--1"></div>
       <div class="portal-ring portal-ring--3"></div>
+
+      <!-- Reference artwork backdrop -->
+      <img
+        class="lego-world-art"
+        src="assets/lego-world-city.png"
+        alt="Lego World: a modular futuristic dystopian city built from brick-like structures"
+        loading="eager"
+        decoding="async"
+      />
 
       <div class="world-content">
         <p class="world-eyebrow">World 002 · Brick Realm</p>
@@ -287,7 +291,7 @@
         </div>
 
         <div class="cta-row">
-          <a href="underground-city.html" class="cta-primary">Next World: Underground City ⇢</a>
+          <a href="underground-city.html" class="cta-primary">Next World: Flat World ⇢</a>
           <a href="glass-city.html" class="cta-ghost">⇠ Previous World</a>
           <a href="index.html" class="cta-ghost">Return to Hub</a>
         </div>
