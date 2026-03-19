@@ -101,17 +101,17 @@
         border: 25px solid transparent;
         background: 
           linear-gradient(var(--bg), var(--bg)) padding-box,
-          linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e) border-box;
+          linear-gradient(135deg, #0a1520, #082030, #0a3040, #0a1520) border-box;
         box-shadow:
-          0 0 60px rgba(255, 160, 50, 0.3),
-          0 0 120px rgba(255, 100, 50, 0.2),
+          0 0 60px rgba(0, 229, 255, 0.3),
+          0 0 120px rgba(64, 255, 216, 0.2),
           inset 0 0 60px rgba(0, 0, 0, 0.8);
         animation: frame-pulse 4s ease-in-out infinite;
       }
 
       @keyframes frame-pulse {
-        0%, 100% { box-shadow: 0 0 60px rgba(255, 160, 50, 0.3), 0 0 120px rgba(255, 100, 50, 0.2), inset 0 0 60px rgba(0, 0, 0, 0.8); }
-        50% { box-shadow: 0 0 80px rgba(255, 160, 50, 0.5), 0 0 150px rgba(255, 100, 50, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+        0%, 100% { box-shadow: 0 0 60px rgba(0, 229, 255, 0.3), 0 0 120px rgba(64, 255, 216, 0.2), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+        50% { box-shadow: 0 0 80px rgba(0, 229, 255, 0.5), 0 0 150px rgba(64, 255, 216, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.8); }
       }
 
       /* Main glowing ring */
@@ -127,26 +127,26 @@
         width: 92%;
         height: 92%;
         border: 8px solid;
-        border-color: #ff9d4d;
+        border-color: #00e5ff;
         animation: spin-slow 60s linear infinite;
         box-shadow: 
-          0 0 40px rgba(255, 157, 77, 0.8),
-          0 0 80px rgba(255, 120, 50, 0.5),
-          inset 0 0 40px rgba(255, 157, 77, 0.4);
+          0 0 40px rgba(0, 229, 255, 0.8),
+          0 0 80px rgba(64, 255, 216, 0.5),
+          inset 0 0 40px rgba(0, 229, 255, 0.4);
       }
 
       .main-ring--2 {
         width: 85%;
         height: 85%;
-        border: 3px solid rgba(100, 200, 255, 0.4);
+        border: 3px solid rgba(64, 255, 216, 0.5);
         animation: spin-reverse 45s linear infinite;
-        box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+        box-shadow: 0 0 20px rgba(64, 255, 216, 0.4);
       }
 
       .main-ring--3 {
         width: 78%;
         height: 78%;
-        border: 2px solid rgba(255, 157, 77, 0.3);
+        border: 2px solid rgba(0, 229, 255, 0.3);
         animation: spin-slow 30s linear infinite;
       }
 
@@ -155,12 +155,12 @@
         position: absolute;
         width: 40px;
         height: 60px;
-        background: linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 50%, #0a0a1e 100%);
-        border: 2px solid rgba(255, 157, 77, 0.6);
+        background: linear-gradient(180deg, #0a2030 0%, #061520 50%, #030a10 100%);
+        border: 2px solid rgba(0, 229, 255, 0.6);
         border-radius: 4px;
         box-shadow: 
-          0 0 15px rgba(255, 157, 77, 0.4),
-          inset 0 0 10px rgba(255, 157, 77, 0.2);
+          0 0 15px rgba(0, 229, 255, 0.4),
+          inset 0 0 10px rgba(0, 229, 255, 0.2);
         animation: segment-glow 3s ease-in-out infinite;
       }
 
@@ -172,7 +172,7 @@
         transform: translate(-50%, -50%);
         width: 60%;
         height: 40%;
-        background: linear-gradient(180deg, rgba(255, 157, 77, 0.6), transparent);
+        background: linear-gradient(180deg, rgba(0, 229, 255, 0.6), transparent);
         border-radius: 2px;
       }
 
@@ -186,8 +186,8 @@
       .tech-segment:nth-child(8) { top: 12%; left: 8%; transform: rotate(-45deg); animation-delay: 2s; }
 
       @keyframes segment-glow {
-        0%, 100% { box-shadow: 0 0 15px rgba(255, 157, 77, 0.4), inset 0 0 10px rgba(255, 157, 77, 0.2); }
-        50% { box-shadow: 0 0 25px rgba(255, 157, 77, 0.7), inset 0 0 15px rgba(255, 157, 77, 0.4); }
+        0%, 100% { box-shadow: 0 0 15px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.2); }
+        50% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.7), inset 0 0 15px rgba(64, 255, 216, 0.4); }
       }
 
       /* Portal core - the glowing center */
@@ -203,15 +203,15 @@
         background: radial-gradient(
           circle at center,
           rgba(255, 255, 255, 1) 0%,
-          rgba(200, 230, 255, 0.9) 10%,
-          rgba(100, 180, 255, 0.7) 25%,
-          rgba(50, 100, 200, 0.5) 45%,
-          rgba(20, 40, 80, 0.4) 65%,
+          rgba(200, 255, 250, 0.9) 10%,
+          rgba(0, 229, 255, 0.7) 25%,
+          rgba(0, 100, 150, 0.5) 45%,
+          rgba(0, 50, 80, 0.4) 65%,
           transparent 85%
         );
         box-shadow: 
-          0 0 100px rgba(100, 200, 255, 0.8),
-          0 0 200px rgba(255, 160, 100, 0.4),
+          0 0 100px rgba(0, 229, 255, 0.8),
+          0 0 200px rgba(64, 255, 216, 0.4),
           inset 0 0 100px rgba(255, 255, 255, 0.3);
         cursor: pointer;
       }
@@ -223,13 +223,13 @@
         background: conic-gradient(
           from 0deg,
           transparent 0deg,
-          rgba(255, 200, 150, 0.3) 30deg,
+          rgba(0, 229, 255, 0.3) 30deg,
           transparent 60deg,
-          rgba(100, 200, 255, 0.2) 120deg,
+          rgba(64, 255, 216, 0.2) 120deg,
           transparent 150deg,
-          rgba(255, 200, 150, 0.3) 210deg,
+          rgba(0, 229, 255, 0.3) 210deg,
           transparent 240deg,
-          rgba(100, 200, 255, 0.2) 300deg,
+          rgba(64, 255, 216, 0.2) 300deg,
           transparent 330deg
         );
         animation: swirl 20s linear infinite;
@@ -254,9 +254,9 @@
         height: 300px;
         background: linear-gradient(
           to top,
-          rgba(255, 200, 150, 0.8) 0%,
-          rgba(255, 200, 150, 0.4) 20%,
-          rgba(100, 200, 255, 0.2) 50%,
+          rgba(0, 229, 255, 0.8) 0%,
+          rgba(64, 255, 216, 0.4) 20%,
+          rgba(0, 180, 220, 0.2) 50%,
           transparent 100%
         );
         transform-origin: bottom center;
@@ -290,9 +290,9 @@
 
       .debris-piece {
         position: absolute;
-        background: linear-gradient(135deg, #3a3a5a 0%, #1a1a2e 100%);
-        border: 1px solid rgba(255, 157, 77, 0.4);
-        box-shadow: 0 0 10px rgba(255, 157, 77, 0.3);
+        background: linear-gradient(135deg, #1a3040 0%, #0a1520 100%);
+        border: 1px solid rgba(0, 229, 255, 0.4);
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
         animation: float-debris 8s ease-in-out infinite;
       }
 
@@ -329,9 +329,9 @@
         text-transform: uppercase;
         color: #fff;
         text-shadow: 
-          0 0 20px rgba(255, 200, 150, 1),
-          0 0 40px rgba(255, 160, 100, 0.8),
-          0 0 60px rgba(100, 200, 255, 0.6);
+          0 0 20px rgba(0, 229, 255, 1),
+          0 0 40px rgba(64, 255, 216, 0.8),
+          0 0 60px rgba(0, 180, 220, 0.6);
         margin-bottom: 8px;
         animation: float-text 3s ease-in-out infinite;
       }
@@ -339,8 +339,8 @@
       .portal-enter-text p {
         font-size: 0.8rem;
         letter-spacing: 0.25em;
-        color: rgba(255, 200, 150, 0.8);
-        text-shadow: 0 0 10px rgba(255, 160, 100, 0.5);
+        color: rgba(0, 229, 255, 0.9);
+        text-shadow: 0 0 10px rgba(64, 255, 216, 0.5);
       }
 
       @keyframes float-text {
@@ -450,7 +450,7 @@
         border: 12px solid transparent;
         background: 
           linear-gradient(var(--bg), var(--bg)) padding-box,
-          linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e) border-box;
+          linear-gradient(135deg, #0a1520, #082030, #0a3040, #0a1520) border-box;
         box-shadow:
           0 0 30px var(--portal-glow),
           inset 0 0 30px rgba(0, 0, 0, 0.8);
@@ -529,7 +529,7 @@
         position: absolute;
         width: 8px;
         height: 16px;
-        background: linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 100%);
+        background: linear-gradient(180deg, #0a2030 0%, #061520 100%);
         border: 1px solid var(--portal-ring);
         border-radius: 2px;
         box-shadow: 0 0 8px var(--portal-glow);
@@ -566,46 +566,46 @@
         to { transform: translate(-50%, -50%) rotate(0deg); }
       }
 
-      /* Glass City - Cyan/Blue theme */
+      /* Glass City - Bright Cyan theme */
       .world-portal--glass {
-        --portal-glow: rgba(90, 216, 255, 0.5);
-        --portal-glow-inner: rgba(90, 216, 255, 0.3);
-        --portal-ring: #5ad8ff;
-        --portal-ring-inner: rgba(90, 216, 255, 0.4);
+        --portal-glow: rgba(0, 229, 255, 0.6);
+        --portal-glow-inner: rgba(0, 229, 255, 0.4);
+        --portal-ring: #00e5ff;
+        --portal-ring-inner: rgba(0, 229, 255, 0.5);
         --core-center: rgba(255, 255, 255, 0.95);
-        --core-mid: rgba(150, 220, 255, 0.7);
-        --core-outer: rgba(90, 180, 255, 0.4);
-        --core-glow: rgba(90, 216, 255, 0.5);
-        --swirl-color: rgba(90, 216, 255, 0.4);
-        --swirl-color-2: rgba(200, 240, 255, 0.3);
+        --core-mid: rgba(150, 240, 255, 0.7);
+        --core-outer: rgba(0, 180, 220, 0.4);
+        --core-glow: rgba(0, 229, 255, 0.6);
+        --swirl-color: rgba(0, 229, 255, 0.4);
+        --swirl-color-2: rgba(200, 255, 250, 0.3);
       }
 
-      /* Lego World - Pink/Purple theme */
+      /* Lego World - Teal/Green theme */
       .world-portal--lego {
-        --portal-glow: rgba(255, 106, 213, 0.5);
-        --portal-glow-inner: rgba(255, 106, 213, 0.3);
-        --portal-ring: #ff6ad5;
-        --portal-ring-inner: rgba(255, 106, 213, 0.4);
+        --portal-glow: rgba(64, 255, 216, 0.6);
+        --portal-glow-inner: rgba(64, 255, 216, 0.4);
+        --portal-ring: #40ffd8;
+        --portal-ring-inner: rgba(64, 255, 216, 0.5);
         --core-center: rgba(255, 255, 255, 0.95);
-        --core-mid: rgba(255, 180, 230, 0.7);
-        --core-outer: rgba(200, 100, 180, 0.4);
-        --core-glow: rgba(255, 106, 213, 0.5);
-        --swirl-color: rgba(255, 106, 213, 0.4);
-        --swirl-color-2: rgba(168, 85, 247, 0.3);
+        --core-mid: rgba(180, 255, 240, 0.7);
+        --core-outer: rgba(64, 200, 180, 0.4);
+        --core-glow: rgba(64, 255, 216, 0.6);
+        --swirl-color: rgba(64, 255, 216, 0.4);
+        --swirl-color-2: rgba(0, 255, 170, 0.3);
       }
 
-      /* Underground City - Orange/Gold theme */
+      /* Underground City - Electric Blue theme */
       .world-portal--underground {
-        --portal-glow: rgba(255, 180, 80, 0.5);
-        --portal-glow-inner: rgba(255, 157, 77, 0.3);
-        --portal-ring: #ff9d4d;
-        --portal-ring-inner: rgba(255, 180, 80, 0.4);
+        --portal-glow: rgba(80, 180, 255, 0.6);
+        --portal-glow-inner: rgba(80, 180, 255, 0.4);
+        --portal-ring: #50b4ff;
+        --portal-ring-inner: rgba(80, 180, 255, 0.5);
         --core-center: rgba(255, 255, 255, 0.95);
-        --core-mid: rgba(255, 220, 150, 0.7);
-        --core-outer: rgba(255, 160, 80, 0.4);
-        --core-glow: rgba(255, 180, 80, 0.5);
-        --swirl-color: rgba(255, 180, 80, 0.4);
-        --swirl-color-2: rgba(255, 120, 50, 0.3);
+        --core-mid: rgba(180, 220, 255, 0.7);
+        --core-outer: rgba(80, 150, 220, 0.4);
+        --core-glow: rgba(80, 180, 255, 0.6);
+        --swirl-color: rgba(80, 180, 255, 0.4);
+        --swirl-color-2: rgba(120, 200, 255, 0.3);
       }
 
       .world-info {
@@ -627,9 +627,9 @@
         text-shadow: 0 0 20px var(--portal-glow);
       }
 
-      .world-portal--glass .world-name { color: #5ad8ff; }
-      .world-portal--lego .world-name { color: #ff6ad5; }
-      .world-portal--underground .world-name { color: #ff9d4d; }
+      .world-portal--glass .world-name { color: #00e5ff; }
+      .world-portal--lego .world-name { color: #40ffd8; }
+      .world-portal--underground .world-name { color: #50b4ff; }
 
       /* Close button when portals are open */
       .close-portals {
@@ -639,24 +639,24 @@
         left: 50%;
         transform: translateX(-50%);
         padding: 12px 28px;
-        border: 2px solid rgba(255, 157, 77, 0.6);
+        border: 2px solid rgba(0, 229, 255, 0.6);
         border-radius: 999px;
-        background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(10, 10, 30, 0.95));
-        color: #ff9d4d;
+        background: linear-gradient(135deg, rgba(10, 30, 50, 0.95), rgba(5, 15, 30, 0.95));
+        color: #00e5ff;
         font-size: 0.8rem;
         letter-spacing: 0.15em;
         text-transform: uppercase;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 0 20px rgba(255, 157, 77, 0.3);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
         opacity: 0;
         transform: translateX(-50%) translateY(20px);
       }
 
       .close-portals:hover {
-        background: linear-gradient(135deg, rgba(40, 40, 70, 0.95), rgba(20, 20, 50, 0.95));
-        border-color: #ff9d4d;
-        box-shadow: 0 0 30px rgba(255, 157, 77, 0.5);
+        background: linear-gradient(135deg, rgba(15, 40, 60, 0.95), rgba(10, 25, 45, 0.95));
+        border-color: #00e5ff;
+        box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
       }
 
       .close-portals.visible {
@@ -696,8 +696,8 @@
           0deg,
           transparent 0px,
           transparent 2px,
-          rgba(255, 157, 77, 0.03) 2px,
-          rgba(255, 157, 77, 0.03) 4px
+          rgba(0, 229, 255, 0.03) 2px,
+          rgba(0, 229, 255, 0.03) 4px
         );
       }
 
@@ -732,7 +732,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        border: 2px solid rgba(255, 200, 150, 0.6);
+        border: 2px solid rgba(0, 229, 255, 0.6);
         opacity: 0;
       }
 
@@ -764,12 +764,12 @@
         }
         50% {
           opacity: 1;
-          border-color: rgba(255, 200, 150, 0.8);
+          border-color: rgba(0, 229, 255, 0.8);
         }
         100% {
           opacity: 0;
           transform: translate(-50%, -50%) scale(0.5) rotate(180deg);
-          border-color: rgba(100, 200, 255, 0.3);
+          border-color: rgba(64, 255, 216, 0.3);
         }
       }
 
@@ -793,15 +793,15 @@
       @keyframes core-brighten {
         0% { 
           filter: brightness(1);
-          box-shadow: 0 0 100px rgba(100, 200, 255, 0.8), 0 0 200px rgba(255, 160, 100, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 100px rgba(0, 229, 255, 0.8), 0 0 200px rgba(64, 255, 216, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
         }
         50% { 
           filter: brightness(2);
-          box-shadow: 0 0 150px rgba(255, 255, 255, 1), 0 0 300px rgba(255, 200, 150, 0.8), inset 0 0 150px rgba(255, 255, 255, 0.8);
+          box-shadow: 0 0 150px rgba(255, 255, 255, 1), 0 0 300px rgba(0, 229, 255, 0.8), inset 0 0 150px rgba(255, 255, 255, 0.8);
         }
         100% { 
           filter: brightness(1);
-          box-shadow: 0 0 100px rgba(100, 200, 255, 0.8), 0 0 200px rgba(255, 160, 100, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 100px rgba(0, 229, 255, 0.8), 0 0 200px rgba(64, 255, 216, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
         }
       }
 
@@ -865,7 +865,7 @@
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        border: 3px solid rgba(255, 200, 150, 0.8);
+        border: 3px solid rgba(0, 229, 255, 0.8);
         opacity: 0;
         pointer-events: none;
         z-index: 20;
@@ -892,7 +892,7 @@
           height: 800px;
           opacity: 0;
           border-width: 1px;
-          border-color: rgba(100, 200, 255, 0);
+          border-color: rgba(0, 229, 255, 0);
         }
       }
 
