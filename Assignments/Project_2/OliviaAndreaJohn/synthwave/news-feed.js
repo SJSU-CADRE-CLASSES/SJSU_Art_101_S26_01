@@ -3,40 +3,270 @@
   const loading = document.getElementById("news-loading");
   if (!grid || !loading) return;
 
+  const clamp = (v, a2, b2) => Math.max(a2, Math.min(b2, v));
+
+  const project = (p, rotY, rotX, dist) => {
+    let x = p[0];
+    let y = p[1];
+    let z = p[2];
+    const cy = Math.cos(rotY);
+    const sy = Math.sin(rotY);
+    const cx = Math.cos(rotX);
+    const sx = Math.sin(rotX);
+
+    const x1 = x * cy + z * sy;
+    const z1 = -x * sy + z * cy;
+
+    const y2 = y * cx - z1 * sx;
+    const z2 = y * sx + z1 * cx;
+
+    const k = dist / (dist + z2);
+    return [x1 * k, y2 * k, k];
+  };
+
+  const shapes = {
+    token: () => {
+      const pts = [];
+      const edges = [];
+      const rings = 22;
+      for (let i = 0; i < rings; i++) {
+        const ang = (i / rings) * Math.PI * 2;
+        pts.push([Math.cos(ang) * 1.2, Math.sin(ang) * 1.2, 0]);
+        edges.push([i, (i + 1) % rings]);
+      }
+      const inner = pts.length;
+      for (let i = 0; i < rings; i++) {
+        const ang = (i / rings) * Math.PI * 2;
+        pts.push([Math.cos(ang) * 0.7, Math.sin(ang) * 0.7, 0.18]);
+        edges.push([inner + i, inner + ((i + 1) % rings)]);
+        edges.push([i, inner + i]);
+      }
+      return { pts, edges };
+    },
+    camera: () => {
+      const pts = [
+        [-1.2, -0.6, -0.8],
+        [1.2, -0.6, -0.8],
+        [1.2, 0.6, -0.8],
+        [-1.2, 0.6, -0.8],
+        [-1.2, -0.6, 0.8],
+        [1.2, -0.6, 0.8],
+        [1.2, 0.6, 0.8],
+        [-1.2, 0.6, 0.8],
+        [0, 0, 1.25],
+      ];
+      const edges = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 0],
+        [4, 5],
+        [5, 6],
+        [6, 7],
+        [7, 4],
+        [0, 4],
+        [1, 5],
+        [2, 6],
+        [3, 7],
+        [4, 8],
+        [5, 8],
+        [6, 8],
+        [7, 8],
+      ];
+      return { pts, edges };
+    },
+    bowl: () => {
+      const pts = [];
+      const edges = [];
+      const rings = 12;
+      for (let i = 0; i <= rings; i++) {
+        const t = i / rings;
+        const r = 1.2 * (1 - t * 0.35);
+        const y = -0.9 + t * 1.5;
+        const segs = 20;
+        const base = pts.length;
+        for (let j = 0; j < segs; j++) {
+          const ang = (j / segs) * Math.PI * 2;
+          pts.push([Math.cos(ang) * r, y, Math.sin(ang) * r]);
+          edges.push([base + j, base + ((j + 1) % segs)]);
+          if (i > 0) edges.push([base + j, base + j - segs]);
+        }
+      }
+      return { pts, edges };
+    },
+    monorail: () => {
+      const pts = [];
+      const edges = [];
+      const segs = 30;
+      for (let i = 0; i < segs; i++) {
+        const t = i / (segs - 1);
+        pts.push([-1.6 + 3.2 * t, Math.sin(t * Math.PI) * 0.8, 0]);
+        if (i > 0) edges.push([i - 1, i]);
+      }
+      pts.push([-1.2, -0.9, 0.4], [-1.2, 0.1, 0.4], [1.2, -0.9, 0.4], [1.2, 0.1, 0.4]);
+      const b = segs;
+      edges.push([b, b + 1], [b + 2, b + 3]);
+      return { pts, edges };
+    },
+    paper: () => {
+      const pts = [
+        [-1.6, 1.1, 0],
+        [1.6, 1.1, 0],
+        [1.6, -1.1, 0],
+        [-1.6, -1.1, 0],
+        [-1.2, 0.55, 0.15],
+        [1.2, 0.55, 0.15],
+        [1.2, 0.05, 0.15],
+        [-1.2, 0.05, 0.15],
+        [-1.2, -0.35, 0.15],
+        [0.6, -0.35, 0.15],
+      ];
+      const edges = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 0],
+        [4, 5],
+        [5, 6],
+        [6, 7],
+        [7, 4],
+        [8, 9],
+      ];
+      return { pts, edges };
+    },
+  };
+
+  const kindFromLabel = (label) => {
+    const up = String(label || "").toUpperCase();
+    if (up.includes("TOKEN") || up.includes("TOKENS") || up.includes("CURATE"))
+      return "token";
+    if (up.includes("VISION") || up.includes("SAFE") || up.includes("ALERT"))
+      return "camera";
+    if (up.includes("TRANSIT")) return "monorail";
+    if (up.includes("MENU")) return "bowl";
+    return "paper";
+  };
+
   const svg = (a, b, label) => {
-    const content = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="${a}"/>
-      <stop offset="1" stop-color="${b}"/>
-    </linearGradient>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="12" result="blur"/>
-      <feColorMatrix type="matrix" values="
-        1 0 0 0 0
-        0 1 0 0 0
-        0 0 1 0 0
-        0 0 0 0.9 0" result="glow"/>
-      <feMerge>
-        <feMergeNode in="glow"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
-  <rect width="1200" height="675" fill="url(#g)"/>
-  <g opacity="0.6">
-    <path d="M0 520 L1200 380" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-    <path d="M0 560 L1200 420" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
-    <path d="M0 600 L1200 460" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
-  </g>
-  <g filter="url(#glow)">
-    <circle cx="940" cy="170" r="82" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.45)" stroke-width="3"/>
-    <rect x="88" y="86" width="560" height="62" rx="18" fill="rgba(2,6,23,0.45)" stroke="rgba(255,255,255,0.22)"/>
-    <text x="118" y="128" font-family="Orbitron, Arial" font-size="30" letter-spacing="6" fill="rgba(248,250,252,0.92)">${label}</text>
-  </g>
-</svg>`;
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(content)}`;
+    // Kept name "svg" so the existing article list doesn't need to change.
+    // It now generates a wireframe thumbnail image (data URL).
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 675;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+
+    const bg = ctx.createLinearGradient(0, 0, w, h);
+    bg.addColorStop(0, "rgba(8, 0, 30, 1)");
+    bg.addColorStop(1, "rgba(2, 6, 23, 1)");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    // Floor grid
+    ctx.save();
+    ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(70,245,255,0.18)";
+    const gridY = h * 0.72;
+    for (let i = 0; i < 14; i++) {
+      const y = gridY + i * (h * 0.03);
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(255,55,185,0.14)";
+    for (let i = 0; i < 16; i++) {
+      const x = (i / 15) * w;
+      ctx.beginPath();
+      ctx.moveTo(x, gridY);
+      ctx.lineTo(w * 0.5 + (x - w * 0.5) * 0.14, h);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Label pill
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    ctx.fillStyle = "rgba(2,6,23,0.55)";
+    ctx.strokeStyle = "rgba(255,255,255,0.22)";
+    ctx.lineWidth = 3;
+    const pillW = 560;
+    const pillH = 66;
+    const pillX = 90;
+    const pillY = 88;
+    const r = 18;
+    ctx.beginPath();
+    ctx.moveTo(pillX + r, pillY);
+    ctx.arcTo(pillX + pillW, pillY, pillX + pillW, pillY + pillH, r);
+    ctx.arcTo(pillX + pillW, pillY + pillH, pillX, pillY + pillH, r);
+    ctx.arcTo(pillX, pillY + pillH, pillX, pillY, r);
+    ctx.arcTo(pillX, pillY, pillX + pillW, pillY, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "rgba(248,250,252,0.92)";
+    ctx.font = '30px "Orbitron", Arial';
+    ctx.fillText(label, pillX + 28, pillY + 44);
+    ctx.restore();
+
+    const kind = kindFromLabel(label);
+    const shape = (shapes[kind] || shapes.paper)();
+
+    const rotY = 0.75;
+    const rotX = -0.22;
+    const dist = 4.3;
+    const centerX = w * 0.5;
+    const centerY = h * 0.56;
+    const scale = Math.min(w, h) * 0.16;
+
+    const proj = shape.pts.map((p) => project(p, rotY, rotX, dist));
+
+    // Glow
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = b;
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    for (const e of shape.edges) {
+      const pa = proj[e[0]];
+      const pb = proj[e[1]];
+      ctx.moveTo(centerX + pa[0] * scale, centerY - pa[1] * scale);
+      ctx.lineTo(centerX + pb[0] * scale, centerY - pb[1] * scale);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // Main
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = a;
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    for (const e of shape.edges) {
+      const pa = proj[e[0]];
+      const pb = proj[e[1]];
+      const depth = clamp((pa[2] + pb[2]) * 0.5, 0.25, 1.2);
+      ctx.globalAlpha = 0.55 + depth * 0.35;
+      ctx.moveTo(centerX + pa[0] * scale, centerY - pa[1] * scale);
+      ctx.lineTo(centerX + pb[0] * scale, centerY - pb[1] * scale);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // Glitch slice
+    ctx.globalAlpha = 0.18;
+    const sliceY = Math.floor(h * 0.44);
+    const sliceH = Math.floor(h * 0.05);
+    ctx.drawImage(canvas, 0, sliceY, w, sliceH, Math.floor(w * 0.01), sliceY, w, sliceH);
+    ctx.globalAlpha = 1;
+
+    return canvas.toDataURL("image/png");
   };
 
   const base = [

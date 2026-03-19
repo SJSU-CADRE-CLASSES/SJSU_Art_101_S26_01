@@ -3,66 +3,204 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Wave Surfer</title>
+    <title>The Waves</title>
     <style>
+      :root {
+        --bg: #050505;
+        --panel: #0c0c0c;
+        --border: rgba(255, 255, 255, 0.16);
+        --text: rgba(255, 255, 255, 0.9);
+        --muted: rgba(255, 255, 255, 0.68);
+      }
+
       body {
         margin: 0;
         padding: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        background: #ffffff;
-        color: #111827;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
       }
 
       main {
         min-height: 100vh;
         display: grid;
-        place-items: center;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.4rem;
+        padding: 2.2rem;
       }
 
-      .box {
-        width: min(520px, calc(100vw - 48px));
+      .left {
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: radial-gradient(
+            circle at top left,
+            rgba(255, 255, 255, 0.06),
+            transparent 55%
+          ),
+          var(--panel);
+        padding: 1.6rem 1.6rem 1.4rem;
+      }
+
+      .right {
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: radial-gradient(
+            circle at top right,
+            rgba(255, 255, 255, 0.06),
+            transparent 55%
+          ),
+          var(--panel);
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
       }
 
       h1 {
-        font-size: 1.25rem;
-        font-weight: 500;
-        margin: 0 0 0.75rem 0;
+        font-size: clamp(2.6rem, 4.4vw, 4rem);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0 0 1rem 0;
+        font-weight: 700;
       }
 
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: grid;
-        gap: 0.35rem;
+      .desc {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.65;
+        white-space: pre-line;
       }
 
-      a {
-        color: inherit;
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      .tab {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(0, 0, 0, 0.35);
+        color: rgba(255, 255, 255, 0.88);
         text-decoration: none;
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
-      a:hover,
-      a:focus-visible {
-        text-decoration: underline;
+      .tab:hover,
+      .tab:focus-visible {
+        border-color: rgba(255, 255, 255, 0.32);
+        filter: brightness(1.05);
+      }
+
+      .tab.is-active {
+        border-color: rgba(255, 255, 255, 0.42);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #ffffff;
+      }
+
+      @media (max-width: 980px) {
+        main {
+          grid-template-columns: minmax(0, 1fr);
+          padding: 1.25rem;
+        }
       }
     </style>
   </head>
   <body>
     <main>
-      <div class="box">
-        <h1>The Wave Surfer</h1>
-        <ul>
-          <li><a href="synthwave/synthwave.html">Synthwave</a></li>
-          <li>
-            <a href="frutiger%20aero%20wave/frutigerwave.html"
-              >Frutiger Aero Wave</a
-            >
-          </li>
-          <li><a href="vaporwave/vaporwave.html">Vaporwave</a></li>
-        </ul>
-      </div>
+      <section class="left">
+        <h1>The Waves</h1>
+        <div class="desc">
+Our website exists in a distant future world based entirely on Internet aesthetics, most
+notably Frutiger Aero, Synthwave, and Vaporwave. The world is a utopia, depicting the most
+ideal version of the future, but if it were based solely on these aforementioned aesthetics. This
+plays into the main ideas of these aesthetics, especially Frutiger Aero. Frutiger Aero was heavily
+rooted in ideas of a utopic future.
+Our website would reflect ideas of skeuomorphism, where new technologies emulate
+older technologies. This would be a recurring theme throughout the different pages, because even
+though our world exists in the distant future, the technology would emulate what would be
+considered older or maybe even obsolete technology.
+Our website starts with a blank, nondescript homepage. This is called The Wave Surfer.
+You click a link to whatever Wave you would like to explore, and it takes you to a page that tells
+you all about that Wave. There would be beautiful, vibrant images of what the world looks like,
+in an effort to sell you on the idea of spending time in that specific wave (sector of the world).
+From here, visitors have the option to “teleport” to any of the three worlds and have a unique
+experience in each one.
+The Waves and the Wave Surfer are controlled by a benevolent governmental force. The
+government generates revenue through taxing the vendors that live in the Waves. Therefore, the
+government tries to sell you on the idea of living in this perfect utopia so they can get your
+money, essentially.
+        </div>
+      </section>
+
+      <section class="right" aria-label="Wave preview">
+        <nav class="tabs" aria-label="Preview pages">
+          <a class="tab is-active" href="waves.html" data-preview="waves.html">Waves</a>
+          <a
+            class="tab"
+            href="frutiger%20aero%20wave/frutigerwave.html"
+            data-preview="frutiger%20aero%20wave/frutigerwave.html"
+            >Frutiger-Aero</a
+          >
+          <a
+            class="tab"
+            href="vaporwave/vaporwave.html"
+            data-preview="vaporwave/vaporwave.html"
+            >Vaporwave</a
+          >
+          <a
+            class="tab"
+            href="synthwave/synthwave.html"
+            data-preview="synthwave/synthwave.html"
+            >Synthwave</a
+          >
+        </nav>
+        <iframe
+          name="waves-preview"
+          title="Waves preview"
+          src="waves.html"
+          loading="lazy"
+        ></iframe>
+      </section>
     </main>
+
+    <script>
+      (() => {
+        const frame = document.querySelector('iframe[name="waves-preview"]');
+        const tabs = Array.from(document.querySelectorAll(".tab[data-preview]"));
+        if (!frame || !tabs.length) return;
+
+        const setActive = (el) => {
+          for (const t of tabs) t.classList.toggle("is-active", t === el);
+        };
+
+        const setPreview = (el) => {
+          const next = el.getAttribute("data-preview");
+          if (!next) return;
+          if (frame.getAttribute("src") !== next) frame.setAttribute("src", next);
+          setActive(el);
+        };
+
+        // Preview on hover/focus, click navigates to page (no target).
+        for (const t of tabs) {
+          t.addEventListener("mouseenter", () => setPreview(t), { passive: true });
+          t.addEventListener("focus", () => setPreview(t));
+        }
+      })();
+    </script>
   </body>
 </html>

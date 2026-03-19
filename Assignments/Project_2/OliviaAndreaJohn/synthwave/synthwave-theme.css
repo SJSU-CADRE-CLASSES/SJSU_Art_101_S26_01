@@ -44,15 +44,17 @@ body {
   inset: 0;
   z-index: -3;
   background-image: linear-gradient(
-      rgba(88, 28, 135, 0.6) 1px,
+      rgba(255, 55, 185, 0.35) 1px,
       transparent 1px
     ),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.7) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(70, 245, 255, 0.55) 1px, transparent 1px);
   background-size: 100% 36px, 60px 100%;
   transform-origin: center bottom;
   transform: perspective(650px) rotateX(70deg);
   animation: grid-scroll 18s linear infinite;
-  opacity: 0.55;
+  opacity: 0.78;
+  filter: drop-shadow(0 0 10px rgba(70, 245, 255, 0.2))
+    drop-shadow(0 0 12px rgba(255, 55, 185, 0.14));
 }
 
 @keyframes grid-scroll {
@@ -88,6 +90,19 @@ body {
     transparent 0 5px,
     black 5px 11px
   );
+  animation: sun-amber 5.2s ease-in-out infinite;
+}
+
+@keyframes sun-amber {
+  0% {
+    filter: blur(0.55px) hue-rotate(-10deg) saturate(1.05) brightness(1.02);
+  }
+  50% {
+    filter: blur(0.55px) hue-rotate(12deg) saturate(1.22) brightness(1.06);
+  }
+  100% {
+    filter: blur(0.55px) hue-rotate(-10deg) saturate(1.05) brightness(1.02);
+  }
 }
 
 .overlay-vignette {
@@ -154,21 +169,58 @@ body {
 }
 
 .pixel-crush {
-  display: none;
+  display: block;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.06) 0 1px,
+      rgba(0, 0, 0, 0) 1px 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 255, 255, 0.03) 0 1px,
+      rgba(0, 0, 0, 0) 1px 6px
+    );
 }
 
 .crt-overlay {
-  display: none;
+  display: block;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.22;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.0) 0 2px,
+      rgba(0, 0, 0, 0.22) 2px 3px
+    ),
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(70, 245, 255, 0.10),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 50% 70%,
+      rgba(255, 55, 185, 0.08),
+      transparent 58%
+    );
+  animation: crt-flicker 2.4s ease-in-out infinite alternate;
 }
 
 /* 3D landing title animation */
 .hero-title-3d {
   display: inline-block;
-  transform-origin: bottom center;
-  transform: perspective(900px) rotateX(78deg) translateY(40px) scale(1.05);
-  text-shadow: 0 18px 32px rgba(0, 0, 0, 0.9),
-    0 0 26px rgba(255, 106, 193, 0.9);
-  animation: hero-standup 1.4s ease-out forwards;
+  transform: translateY(0);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.65),
+    0 0 26px rgba(255, 106, 193, 0.55);
 }
 
 @keyframes hero-standup {
@@ -223,9 +275,9 @@ header {
 }
 
 .header-inner {
-  max-width: 1080px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 2.2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -241,11 +293,24 @@ header {
   text-shadow: 0 0 14px rgba(15, 23, 42, 0.9);
 }
 
+.brand a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.brand a:hover,
+.brand a:focus-visible {
+  text-decoration: none;
+  filter: brightness(1.05);
+}
+
 nav {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: flex-end;
+  margin-left: auto;
 }
 
 nav a {
@@ -490,6 +555,27 @@ main {
   border-radius: 1.3rem;
   background: #0f172a;
   box-shadow: 0 18px 32px rgba(15, 23, 42, 0.9);
+  overflow: hidden;
+  position: relative;
+}
+
+.section-visual canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.wire-caption {
+  position: absolute;
+  inset: auto 1rem 1rem 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: "Orbitron", system-ui, sans-serif;
+  color: rgba(248, 250, 252, 0.86);
+  text-shadow: 0 0 18px rgba(0, 0, 0, 0.8);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .section-copy {
@@ -950,6 +1036,9 @@ main {
     align-items: flex-start;
   }
   nav {
+    justify-content: flex-start;
+  }
+
   .section-card {
     flex-direction: column;
   }
@@ -957,8 +1046,6 @@ main {
   .section-visual,
   .section-copy {
     width: 100%;
-  }
-    justify-content: flex-start;
   }
 }
 

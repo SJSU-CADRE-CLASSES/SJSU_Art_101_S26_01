@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Waves</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: rgba(2, 6, 23, 0.92);
+        --muted: rgba(2, 6, 23, 0.55);
+        --border: rgba(2, 6, 23, 0.14);
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 2.2rem;
+      }
+
+      .wrap {
+        width: min(860px, 92vw);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+      }
+
+      .sub {
+        margin: 0 0 2.1rem;
+        color: var(--muted);
+        letter-spacing: 0.18em;
+        text-transform: lowercase;
+        font-size: 0.95rem;
+      }
+
+      .links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.6rem;
+        padding-top: 1.35rem;
+        border-top: 1px solid var(--border);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        font-size: 1rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      a:hover,
+      a:focus-visible {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="wrap">
+        <h1>The Waves</h1>
+        <p class="sub">where would you like to go?</p>
+        <nav class="links" aria-label="Waves">
+          <a href="frutiger%20aero%20wave/frutigerwave.html">Frutiger Aero</a>
+          <a href="synthwave/synthwave.html">Synthwave</a>
+          <a href="vaporwave/vaporwave.html">Vaporwave</a>
+        </nav>
+      </div>
+    </main>
+  </body>
+</html>
