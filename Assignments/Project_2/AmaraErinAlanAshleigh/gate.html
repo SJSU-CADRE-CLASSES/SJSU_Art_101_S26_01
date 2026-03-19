@@ -665,6 +665,24 @@
             const shellEl = document.getElementById("camera-shell");
             const humanBanner = document.getElementById("human-banner");
 
+            // If the user already solved the access code, skip the second scan.
+            let codeVerified = false;
+            try {
+                codeVerified = localStorage.getItem("tritonAccessCodeVerified") === "1";
+            } catch (e) {
+                codeVerified = false;
+            }
+
+            if (codeVerified) {
+                setStatus("Access code verified. Bypassing scan.", "ok");
+                document.body.classList.add("page-fade-out");
+                humanBanner.classList.add("show");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 900);
+                return;
+            }
+
             let faceMesh = null;
             let cameraFeed = null;
             let sweepStartTime = null;
