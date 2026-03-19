@@ -5,6 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Waves ™ – Synthwave News</title>
     <link rel="stylesheet" href="synthwave-theme.css" />
+    <style>
+      .news-main {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 2.5rem 2rem 3.5rem;
+      }
+
+      .news-shell {
+        background: linear-gradient(
+          135deg,
+          rgba(15, 23, 42, 0.98),
+          rgba(30, 64, 175, 0.9)
+        );
+        border-radius: 1.2rem;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        box-shadow: 0 0 26px rgba(15, 23, 42, 0.9);
+        padding: 1.6rem 1.7rem 1.8rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .news-shell::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(
+          circle at top left,
+          rgba(56, 189, 248, 0.2),
+          transparent 55%
+        );
+        opacity: 0.9;
+        pointer-events: none;
+      }
+
+      .news-head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.25rem;
+        align-items: baseline;
+        justify-content: space-between;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        margin-bottom: 1.25rem;
+      }
+
+      .news-kicker {
+        font-family: "Orbitron", system-ui, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        font-size: 0.85rem;
+        color: rgba(70, 245, 255, 0.95);
+        margin: 0 0 0.35rem;
+      }
+
+      .news-title {
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 1.35rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin: 0;
+        color: rgba(255, 55, 185, 0.95);
+        text-shadow: -2px 0 rgba(56, 189, 248, 0.6),
+          2px 0 rgba(244, 114, 182, 0.6);
+      }
+
+      .news-sub {
+        margin: 0;
+        color: rgba(226, 232, 240, 0.78);
+        font-size: 0.85rem;
+        line-height: 1.55;
+        max-width: 44rem;
+      }
+
+      .news-status {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(15, 23, 42, 0.7);
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(248, 250, 252, 0.92);
+      }
+
+      .news-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(70, 245, 255, 0.95);
+        box-shadow: 0 0 12px rgba(70, 245, 255, 0.9);
+      }
+
+      .news-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+
+      .news-card {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(2, 6, 23, 0.72);
+        box-shadow: 0 0 24px rgba(2, 6, 23, 0.7);
+        display: grid;
+        grid-template-rows: 150px auto;
+        min-height: 260px;
+      }
+
+      .news-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(1.2) contrast(1.05);
+      }
+
+      .news-meta {
+        padding: 0.85rem 0.95rem 1rem;
+      }
+
+      .news-eyebrow {
+        margin: 0 0 0.35rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(70, 245, 255, 0.85);
+      }
+
+      .news-h {
+        margin: 0 0 0.45rem;
+        font-size: 0.9rem;
+        line-height: 1.35;
+        color: rgba(248, 250, 252, 0.94);
+      }
+
+      .news-p {
+        margin: 0;
+        font-size: 0.78rem;
+        color: rgba(226, 232, 240, 0.75);
+        line-height: 1.5;
+      }
+
+      .news-footer {
+        margin-top: 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .news-loading {
+        position: relative;
+        z-index: 1;
+        margin-top: 1rem;
+        font-size: 0.78rem;
+        opacity: 0.78;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-family: "Orbitron", system-ui, sans-serif;
+      }
+    </style>
   </head>
   <body>
     <div class="starfield"></div>
@@ -25,32 +199,45 @@
           <a href="synthwave.html#shopping">Shopping</a>
           <a href="synthwave.html#food">Food</a>
           <a href="synthwave.html#new">New</a>
-          <a href="synthwave.html#help">Help / FAQ</a>
           <a href="synthwave.html#token">Token Top‑Up</a>
         </nav>
       </div>
     </header>
 
-    <main class="page-main">
-      <section class="page-shell">
-        <h1 class="page-kicker">The Waves ™</h1>
-        <h2 class="page-title">New · Synthwave</h2>
-        <p>
-          Use this space for announcements: new clubs, events, seasonal color
-          shifts, or any other updates that change the shape of the Synthwave
-          skyline.
-        </p>
-        <p>
-          Turn this into a news feed, a changelog, or a billboard‑style layout
-          that cycles through the latest experiences in the wave.
-        </p>
-        <div class="page-back">
-          <a href="synthwave.html">← Back to Synthwave hub</a>
-        </div>
+    <main class="news-main">
+      <section class="news-shell">
+        <header class="news-head">
+          <div>
+            <div class="news-kicker">The Waves ™</div>
+            <h1 class="news-title">New · Curated Feed</h1>
+            <p class="news-sub">
+              Official updates from the Synthwave sector. Headlines are selected
+              for clarity, comfort, and alignment. If you feel uneasy, scroll —
+              the next story will correct it.
+            </p>
+          </div>
+          <div class="news-status" title="Feed status">
+            <span class="news-dot"></span>
+            Always On · Verified
+          </div>
+        </header>
+
+        <section class="news-grid" id="news-grid" aria-label="Synthwave news feed"></section>
+        <div class="news-loading" id="news-loading">Loading more…</div>
+
+        <footer class="news-footer">
+          <a href="synthwave.html" class="section-button">
+            <span>← Back to Synthwave hub</span>
+          </a>
+          <div style="font-size:0.78rem; opacity:0.78;">
+            Tip: keep scrolling for “stability updates.”
+          </div>
+        </footer>
       </section>
     </main>
 
     <script src="synthwave-theme.js" defer></script>
+    <script src="news-feed.js" defer></script>
   </body>
 </html>
 

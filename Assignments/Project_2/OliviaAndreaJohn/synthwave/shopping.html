@@ -5,6 +5,268 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Waves ™ – Synthwave Shopping</title>
     <link rel="stylesheet" href="synthwave-theme.css" />
+    <style>
+      .boutique-stage {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: radial-gradient(circle at top, #2a0040, #050010 60%);
+        box-shadow:
+          0 0 40px rgba(255, 0, 204, 0.45),
+          0 0 80px rgba(0, 255, 255, 0.3);
+        min-height: min(66vh, 680px);
+      }
+
+      .boutique-stage canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .boutique-ui {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+        gap: 1rem;
+        padding: 1.2rem;
+        pointer-events: none;
+      }
+
+      .boutique-card {
+        pointer-events: auto;
+        align-self: start;
+        justify-self: end;
+        width: min(360px, 92%);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: radial-gradient(
+            circle at top left,
+            rgba(255, 0, 204, 0.22),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(0, 255, 255, 0.14),
+            transparent 55%
+          ),
+          rgba(5, 0, 18, 0.75);
+        backdrop-filter: blur(16px);
+        box-shadow:
+          0 0 26px rgba(255, 0, 204, 0.25),
+          0 0 44px rgba(0, 255, 255, 0.18);
+        padding: 1rem 1rem 1.1rem;
+      }
+
+      .boutique-card h2 {
+        margin: 0 0 0.35rem;
+        font-family: "Orbitron", system-ui, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.85rem;
+        color: #ff37b9;
+      }
+
+      .boutique-sub {
+        margin: 0 0 0.75rem;
+        color: rgba(226, 232, 240, 0.82);
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+
+      .boutique-items {
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .boutique-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.35rem 0.8rem;
+        align-items: baseline;
+        padding: 0.65rem 0.75rem;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(15, 23, 42, 0.55);
+        cursor: pointer;
+      }
+
+      .boutique-item.is-active {
+        border-color: rgba(0, 255, 255, 0.6);
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.22);
+        background: rgba(15, 23, 42, 0.75);
+      }
+
+      .boutique-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: rgba(248, 250, 252, 0.92);
+      }
+
+      .boutique-price {
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        color: rgba(70, 245, 255, 0.95);
+      }
+
+      .boutique-note {
+        grid-column: 1 / -1;
+        margin: 0;
+        font-size: 0.74rem;
+        color: rgba(226, 232, 240, 0.72);
+        line-height: 1.45;
+      }
+
+      .boutique-actions {
+        margin-top: 0.85rem;
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .boutique-btn {
+        pointer-events: auto;
+        appearance: none;
+        border: 1px solid rgba(56, 189, 248, 0.9);
+        background: radial-gradient(
+          circle at top,
+          rgba(248, 250, 252, 0.94),
+          rgba(148, 163, 184, 0.9)
+        );
+        color: #020617;
+        border-radius: 999px;
+        padding: 0.55rem 0.95rem;
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        cursor: pointer;
+        box-shadow: 0 0 18px rgba(34, 211, 238, 0.85);
+      }
+
+      .boutique-btn--ghost {
+        background: rgba(15, 23, 42, 0.75);
+        color: rgba(248, 250, 252, 0.92);
+        border-color: rgba(148, 163, 184, 0.55);
+        box-shadow: none;
+      }
+
+      .tryon-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem;
+        background: rgba(2, 6, 23, 0.72);
+        backdrop-filter: blur(10px);
+      }
+
+      .tryon-modal.is-open {
+        display: flex;
+      }
+
+      .tryon-shell {
+        width: min(1120px, 96vw);
+        height: min(82vh, 820px);
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: radial-gradient(circle at top, #2a0040, #050010 60%);
+        box-shadow:
+          0 0 50px rgba(255, 0, 204, 0.38),
+          0 0 100px rgba(0, 255, 255, 0.22);
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      }
+
+      .tryon-stage {
+        position: relative;
+      }
+
+      .tryon-stage canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .tryon-panel {
+        border-left: 1px solid rgba(255, 255, 255, 0.14);
+        padding: 1rem 1rem 1.2rem;
+        background: linear-gradient(
+          180deg,
+          rgba(15, 23, 42, 0.65),
+          rgba(5, 0, 18, 0.78)
+        );
+      }
+
+      .tryon-title {
+        margin: 0 0 0.35rem;
+        font-family: "Orbitron", system-ui, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 0.85rem;
+        color: rgba(70, 245, 255, 0.95);
+      }
+
+      .tryon-desc {
+        margin: 0 0 0.9rem;
+        color: rgba(226, 232, 240, 0.78);
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+
+      .tryon-row {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .tryon-select {
+        width: 100%;
+        padding: 0.55rem 0.7rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(2, 6, 23, 0.6);
+        color: rgba(248, 250, 252, 0.92);
+        font-family: "Roboto Mono", system-ui, monospace;
+        font-size: 0.8rem;
+      }
+
+      .tryon-close {
+        position: absolute;
+        top: 0.9rem;
+        right: 0.9rem;
+        z-index: 2;
+      }
+
+      @media (max-width: 980px) {
+        .boutique-ui {
+          grid-template-columns: minmax(0, 1fr);
+          align-content: start;
+        }
+
+        .boutique-card {
+          justify-self: start;
+          width: min(520px, 96%);
+        }
+
+        .tryon-shell {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: minmax(0, 1fr) auto;
+          height: min(88vh, 880px);
+        }
+
+        .tryon-panel {
+          border-left: none;
+          border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="starfield"></div>
@@ -31,51 +293,29 @@
         <div class="shopping-hero-copy">
           <h1 class="shopping-title">Shopping</h1>
           <p class="shopping-tagline">
-            Curated stalls and neon markets from across the Synthwave sector.
+            Luxury synthwave apparel — priced to keep the token economy hungry.
           </p>
         </div>
       </section>
 
-      <section class="shopping-filters">
-        <button class="shopping-filter is-active">All</button>
-        <button class="shopping-filter">Records</button>
-        <button class="shopping-filter">Apparel</button>
-        <button class="shopping-filter">Hardware</button>
-        <button class="shopping-filter">Tokens</button>
-      </section>
-
-      <section id="shopping-grid" class="shopping-grid">
-        <article class="shopping-item">
-          <div class="shopping-thumb shopping-thumb--records"></div>
-          <div class="shopping-meta">
-            <h2 class="shopping-name">Neon Utopia Records</h2>
-            <p class="shopping-desc">Analog synths, cassettes, live set archives.</p>
-          </div>
-        </article>
-
-        <article class="shopping-item">
-          <div class="shopping-thumb shopping-thumb--fashion"></div>
-          <div class="shopping-meta">
-            <h2 class="shopping-name">Chrome Corridor</h2>
-            <p class="shopping-desc">Reflective outerwear, techwear silhouettes.</p>
-          </div>
-        </article>
-
-        <article class="shopping-item">
-          <div class="shopping-thumb shopping-thumb--gear"></div>
-          <div class="shopping-meta">
-            <h2 class="shopping-name">Grid Hardware Lab</h2>
-            <p class="shopping-desc">Decks, samplers, and retro‑fitted consoles.</p>
-          </div>
-        </article>
-
-        <article class="shopping-item">
-          <div class="shopping-thumb shopping-thumb--tokens"></div>
-          <div class="shopping-meta">
-            <h2 class="shopping-name">Token Exchange</h2>
-            <p class="shopping-desc">Access chips, passes, limited‑run keys.</p>
-          </div>
-        </article>
+      <section class="boutique-stage" aria-label="3D boutique showcase">
+        <div class="boutique-ui">
+          <div></div>
+          <aside class="boutique-card">
+            <h2>Wireframe Boutique</h2>
+            <p class="boutique-sub">
+              Select an outfit. The render rotates in realtime. Click <b>Try On</b>
+              to open the character customizer.
+            </p>
+            <div class="boutique-items" id="boutique-items"></div>
+            <div class="boutique-actions">
+              <button class="boutique-btn" id="tryon-open">Try On</button>
+              <button class="boutique-btn boutique-btn--ghost" id="buy-btn">
+                Buy (tokens)
+              </button>
+            </div>
+          </aside>
+        </div>
       </section>
 
       <section class="shopping-footer">
@@ -86,6 +326,7 @@
     </main>
 
     <script src="synthwave-theme.js" defer></script>
+    <script type="module" src="shopping-boutique.js"></script>
   </body>
 </html>
 
