@@ -13,6 +13,166 @@
           radial-gradient(ellipse at 80% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 35%),
           linear-gradient(180deg, #0c0416 0%, #020408 100%);
       }
+
+      .inhabitant {
+        cursor: pointer;
+      }
+
+      .inhabitant:focus-visible {
+        outline: 2px solid rgba(255, 106, 213, 0.8);
+        outline-offset: 4px;
+      }
+
+      .lw-review-btn {
+        margin-left: auto;
+        border: 1px solid var(--border);
+        background: rgba(18, 26, 42, 0.65);
+        color: var(--text, #eaf3ff);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+      }
+
+      .lw-review-btn:hover {
+        border-color: rgba(255, 106, 213, 0.55);
+      }
+
+      .lw-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10050;
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      .lw-modal[aria-hidden="false"] {
+        display: flex;
+      }
+
+      .lw-modal-panel {
+        width: min(720px, calc(100vw - 28px));
+        max-height: min(78vh, 720px);
+        overflow: auto;
+        background: var(--panel, rgba(10, 14, 22, 0.85));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 18px;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(14px);
+      }
+
+      .lw-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+      }
+
+      .lw-modal-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .lw-modal-title strong {
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+      }
+
+      .lw-modal-title span {
+        opacity: 0.8;
+        font-size: 0.9rem;
+      }
+
+      .lw-modal-close {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        background: transparent;
+        color: var(--text, #eaf3ff);
+        border-radius: 12px;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
+      .lw-modal-body {
+        padding: 16px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .lw-bubble {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 12px 14px;
+        line-height: 1.4;
+      }
+
+      .lw-bubble.npc {
+        background: rgba(255, 106, 213, 0.08);
+      }
+
+      .lw-bubble.user {
+        background: rgba(168, 85, 247, 0.08);
+        align-self: flex-end;
+      }
+
+      .lw-choices {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 6px;
+      }
+
+      .lw-choice {
+        text-align: left;
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        background: rgba(18, 26, 42, 0.55);
+        color: var(--text, #eaf3ff);
+        border-radius: 14px;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+
+      .lw-choice:hover {
+        border-color: rgba(255, 106, 213, 0.55);
+      }
+
+      .lw-review-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .lw-review-item {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .lw-review-item strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .lw-review-meta {
+        opacity: 0.8;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+
+      .lw-review-empty {
+        opacity: 0.85;
+        padding: 14px;
+        border: 1px dashed var(--border, rgba(255, 255, 255, 0.18));
+        border-radius: 16px;
+      }
     </style>
   </head>
   <body>
@@ -65,7 +225,12 @@
         </div>
 
         <div class="inhabitants">
-          <div class="inhabitants-title">Rate the inhabitants of Lego World</div>
+          <div class="inhabitants-title" style="display:flex;align-items:center;gap:12px;">
+            <span>Rate the inhabitants of Lego World</span>
+            <button class="lw-review-btn" type="button" id="lwOpenReview">
+              Interaction Review
+            </button>
+          </div>
           <div class="inhabitant-grid">
             <div class="inhabitant" data-name="Builder Bob">
               <div class="inhabitant-avatar">🧱</div>
@@ -134,6 +299,20 @@
       <span>Everything is awesome... if your rating is high enough.</span>
     </footer>
 
+    <!-- Interaction modal (kept outside world-page to avoid clipping) -->
+    <div class="lw-modal" id="lwModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="lw-modal-panel" role="document">
+        <div class="lw-modal-head">
+          <div class="lw-modal-title">
+            <strong id="lwModalTitle">Interaction</strong>
+            <span id="lwModalSubtitle">Choose how you respond.</span>
+          </div>
+          <button class="lw-modal-close" type="button" id="lwModalClose" aria-label="Close">Close</button>
+        </div>
+        <div class="lw-modal-body" id="lwModalBody"></div>
+      </div>
+    </div>
+
     <!-- TourBot -->
     <aside class="tourbot" aria-label="StarStruck tour guide">
       <div class="tourbot-shell" id="tourbotShell">
@@ -170,5 +349,496 @@
 
     <script src="world-common.js"></script>
     <script src="tourbot.js" defer></script>
+    <script>
+      (() => {
+        const STORAGE_KEY = "legoWorldInteractionLog_v1";
+
+        const safeParse = (raw, fallback) => {
+          try {
+            const parsed = JSON.parse(raw);
+            return parsed ?? fallback;
+          } catch {
+            return fallback;
+          }
+        };
+
+        let memoryLog = [];
+        const canUseSessionStorage = (() => {
+          try {
+            const testKey = "__lw_storage_test__";
+            sessionStorage.setItem(testKey, "1");
+            sessionStorage.removeItem(testKey);
+            return true;
+          } catch {
+            return false;
+          }
+        })();
+
+        const loadLog = () => {
+          if (!canUseSessionStorage) return memoryLog;
+          return safeParse(sessionStorage.getItem(STORAGE_KEY), []);
+        };
+
+        const saveLog = (items) => {
+          memoryLog = items;
+          if (!canUseSessionStorage) return;
+          try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+          } catch {
+            // ignore storage failures (private mode / blocked storage)
+          }
+        };
+
+        const nowStamp = () => {
+          const d = new Date();
+          return d.toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        };
+
+        const personalities = {
+          "Builder Bob": {
+            tone: "helpful",
+            openers: [
+              "Hey! You look like you could use a spare brick. What’re you building?",
+              "New face! Want a quick trick so your tower doesn’t wobble?",
+              "Careful where you step—loose studs everywhere. You okay?",
+            ],
+            replies: {
+              compliment: [
+                "Aw thanks! Here—try this: always stagger seams. Makes everything stronger.",
+                "You’re sweet. If you want to impress them, build with intent, not speed.",
+                "Appreciate it! The secret is patience… and not biting the pieces.",
+              ],
+              ask: [
+                "Absolutely. Rule one: never mock a build mid-progress. That’s how you get dismantled.",
+                "Sure! Trade first: I’ll help you, you promise to leave one kind rating today.",
+                "Yep. If you’re stuck, rebuild smaller. In Lego World, small wins stack.",
+              ],
+              apologize: [
+                "No worries. We all misclick a brick sometimes.",
+                "It’s fine—just reset and rebuild. That’s the whole vibe here.",
+                "Apology accepted. Want to make it right? Help me sort by color.",
+              ],
+            },
+          },
+          "Brick Queen": {
+            tone: "rude",
+            openers: [
+              "Kneel—no, actually, don’t. You’ll smudge the display base.",
+              "Another visitor. How quaint. Don’t touch anything.",
+              "If your rating is low, your opinion is decorative at best.",
+            ],
+            replies: {
+              compliment: [
+                "Correct. My kingdom is flawless. Continue admiring quietly.",
+                "Flattery is a common currency. I prefer rare pieces.",
+                "Good. Recognition is the minimum.",
+              ],
+              ask: [
+                "Guidance? Build yourself a backbone first.",
+                "No. Earn the manual.",
+                "Ask the peasants. They adore explaining themselves.",
+              ],
+              apologize: [
+                "Hmph. Don’t repeat the error.",
+                "Accepted. Barely. Stand straighter.",
+                "I’ll allow it. This time.",
+              ],
+            },
+          },
+          "Mini Knight": {
+            tone: "kind",
+            openers: [
+              "Halt—oh! Sorry. Reflex. Are you safe?",
+              "Traveler! The castle gates are strict. Need an escort past the critics?",
+              "I swear loyalty to good builds and kinder hearts. What brings you here?",
+            ],
+            replies: {
+              compliment: [
+                "Honor to you. In return: keep your head up. They can’t dismantle courage.",
+                "You’re gracious. If you see someone mocked, defend their work—not their status.",
+                "Thank you. Your words are sturdier than any wall.",
+              ],
+              ask: [
+                "Gladly. If they threaten to dismantle you, offer collaboration. It confuses bullies.",
+                "Yes. Protect the foundation: friends, habits, small rituals. That’s your castle.",
+                "Of course. Don’t hoard your best pieces. Share one—people remember that.",
+              ],
+              apologize: [
+                "Apology accepted. You’re trying—that’s brave here.",
+                "No harm done. Want to practice a ‘clean recovery’ line?",
+                "It’s alright. Even knights trip on loose studs.",
+              ],
+            },
+          },
+          "Spacefig": {
+            tone: "dismissive",
+            openers: [
+              "I’m on mission time. You have exactly ten seconds of gravity.",
+              "If you’re not here to launch, don’t block the runway.",
+              "Ratings? Yeah. They fuel the ship. If you’re low-star, you’re ballast.",
+            ],
+            replies: {
+              compliment: [
+                "Cool. Don’t make it weird.",
+                "Acknowledged. Now step aside.",
+                "Compliments don’t change trajectory.",
+              ],
+              ask: [
+                "Can’t. I don’t do tutorials.",
+                "Read the flight plan. Or don’t fly.",
+                "You want help? Find a builder. I fly—others fix.",
+              ],
+              apologize: [
+                "Whatever. Just don’t cost me a launch window.",
+                "Fine. Move.",
+                "Noted. Next.",
+              ],
+            },
+          },
+        };
+
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        const modal = document.getElementById("lwModal");
+        const modalTitle = document.getElementById("lwModalTitle");
+        const modalSubtitle = document.getElementById("lwModalSubtitle");
+        const modalBody = document.getElementById("lwModalBody");
+        const modalClose = document.getElementById("lwModalClose");
+        const openReviewBtn = document.getElementById("lwOpenReview");
+
+        if (!modal || !modalTitle || !modalSubtitle || !modalBody || !modalClose || !openReviewBtn) return;
+
+        let lastActiveEl = null;
+
+        const openModal = () => {
+          lastActiveEl = document.activeElement;
+          modal.setAttribute("aria-hidden", "false");
+          modalClose.focus();
+        };
+
+        const closeModal = () => {
+          modal.setAttribute("aria-hidden", "true");
+          modalBody.innerHTML = "";
+          if (lastActiveEl && typeof lastActiveEl.focus === "function") lastActiveEl.focus();
+        };
+
+        modalClose.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
+        });
+
+        const renderBubble = (who, text) => {
+          const div = document.createElement("div");
+          div.className = `lw-bubble ${who}`;
+          div.textContent = text;
+          modalBody.appendChild(div);
+        };
+
+        const renderChoices = (items) => {
+          const wrap = document.createElement("div");
+          wrap.className = "lw-choices";
+          items.forEach((item) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "lw-choice";
+            btn.textContent = item.label;
+            btn.addEventListener("click", item.onClick);
+            wrap.appendChild(btn);
+          });
+          modalBody.appendChild(wrap);
+        };
+
+        const logInteraction = (entry) => {
+          const items = loadLog();
+          items.push(entry);
+          saveLog(items);
+        };
+
+        const followupsByTone = {
+          kind: {
+            prompt: "They lean closer. What do you do next?",
+            options: [
+              {
+                label: "Share a small fear (be real)",
+                userLine: "You: “I’m scared they’ll take my build apart.”",
+                npcReplies: [
+                  "Then build community into it. A shared build is harder to dismantle without witnesses.",
+                  "Let them see you keep building anyway. Persistence is armor here.",
+                  "Fear means you care. Use it—double-check your foundation, then keep going.",
+                ],
+              },
+              {
+                label: "Ask for a knightly tip",
+                userLine: "You: “What’s the bravest thing to do here?”",
+                npcReplies: [
+                  "Praise someone’s half-finished work. It tells them they’re safe to try.",
+                  "Defend the builder, not the rating. That’s how you change a room.",
+                  "Be kind without begging for credit. Quiet bravery lasts.",
+                ],
+              },
+            ],
+          },
+          helpful: {
+            prompt: "They gesture at the pieces. Your move?",
+            options: [
+              {
+                label: "Ask for a practical rule",
+                userLine: "You: “Give me one rule that saves builds.”",
+                npcReplies: [
+                  "Stagger seams. Always. That’s how you survive pressure.",
+                  "Test-fit before you commit. It’s faster than fixing a collapse.",
+                  "Start small, then iterate. Big builds are just repeated wins.",
+                ],
+              },
+              {
+                label: "Offer to help them build",
+                userLine: "You: “Want a partner? I can hold the base.”",
+                npcReplies: [
+                  "Yes! Team builds are the best builds. Let’s make something that outlasts the rating board.",
+                  "Deal. You stabilize, I stack. We’ll prove kindness is a blueprint.",
+                  "Perfect. Shared weight makes taller towers.",
+                ],
+              },
+            ],
+          },
+          rude: {
+            prompt: "They smirk like they already won. What do you do?",
+            options: [
+              {
+                label: "Push back with humor",
+                userLine: "You: “Okay, Your Majesty. I’ll admire from a safe distance.”",
+                npcReplies: [
+                  "At least you understand hierarchy. Don’t mistake that for friendship.",
+                  "Hmph. Acceptable. Your wit is… tolerable.",
+                  "Good. Distance improves most things.",
+                ],
+              },
+              {
+                label: "Exit politely (deny them drama)",
+                userLine: "You: “Understood. I won’t take more of your time.”",
+                npcReplies: [
+                  "Finally.",
+                  "As you should.",
+                  "Leave. And don’t chip the crown.",
+                ],
+              },
+            ],
+          },
+          dismissive: {
+            prompt: "They keep scanning the horizon. Your move?",
+            options: [
+              {
+                label: "Ask one direct question",
+                userLine: "You: “What do you need to launch?”",
+                npcReplies: [
+                  "Clear runway. Good ratings. Zero hesitation.",
+                  "Fuel, focus, and a crew that doesn’t panic mid-build.",
+                  "Less talking. More alignment.",
+                ],
+              },
+              {
+                label: "Step aside (respect the mission)",
+                userLine: "You: “I’ll get out of your way. Good luck.”",
+                npcReplies: [
+                  "Smart.",
+                  "Finally, someone who understands space.",
+                  "Thanks. Don’t touch the controls.",
+                ],
+              },
+            ],
+          },
+          mixed: {
+            prompt: "The bricks click like a verdict. What now?",
+            options: [
+              {
+                label: "Ask what matters here",
+                userLine: "You: “What matters more: fun or approval?”",
+                npcReplies: [
+                  "Approval buys pieces. Fun keeps you building after they leave.",
+                  "Both. But only one makes you human.",
+                  "Fun is the rebellion. Approval is the rent.",
+                ],
+              },
+              {
+                label: "Walk away and reset",
+                userLine: "You: “I’m going to reset and try again.”",
+                npcReplies: ["Good. Rebuild.", "That’s the rule here: rebuild.", "Do it. Again and again."],
+              },
+            ],
+          },
+        };
+
+        const startInteraction = (name) => {
+          const p = personalities[name] || {
+            tone: "mixed",
+            openers: ["A minifigure turns, expression permanently cheerful."],
+            replies: {
+              compliment: ["They nod, plastic smile unwavering."],
+              ask: ["They point to a pile of instructions."],
+              apologize: ["They accept, then click into place beside you."],
+            },
+          };
+
+          const opener = pick(p.openers);
+
+          modalTitle.textContent = name;
+          modalSubtitle.textContent = "Pick one response. This will be saved to your review.";
+          modalBody.innerHTML = "";
+
+          renderBubble("npc", opener);
+
+          const choices = [
+            { key: "compliment", label: "Compliment their build" },
+            { key: "ask", label: "Ask for help" },
+            { key: "apologize", label: "Apologize (reset the vibe)" },
+          ];
+
+          renderChoices(
+            choices.map((c) => ({
+              label: c.label,
+              onClick: () => {
+                const existing = modalBody.querySelector(".lw-choices");
+                if (existing) existing.remove();
+
+                const userLine =
+                  c.key === "compliment"
+                    ? "You: “That build is seriously impressive.”"
+                    : c.key === "ask"
+                      ? "You: “Can you show me how to survive the rating board?”"
+                      : "You: “Sorry. I didn’t mean to mess up your build.”";
+
+                const npcReply = pick(p.replies[c.key] || ["..."]);
+                renderBubble("user", userLine);
+                setTimeout(() => {
+                  renderBubble("npc", npcReply);
+
+                  const followup = followupsByTone[p.tone] || followupsByTone.mixed;
+                  modalSubtitle.textContent = followup.prompt;
+                  renderChoices(
+                    followup.options.map((o) => ({
+                      label: o.label,
+                      onClick: () => {
+                        const existing2 = modalBody.querySelector(".lw-choices");
+                        if (existing2) existing2.remove();
+
+                        const userLine2 = o.userLine;
+                        const npcReply2 = pick(o.npcReplies || ["..."]);
+                        renderBubble("user", userLine2);
+                        setTimeout(() => {
+                          renderBubble("npc", npcReply2);
+
+                          logInteraction({
+                            at: nowStamp(),
+                            inhabitant: name,
+                            tone: p.tone,
+                            transcript: [
+                              { who: "npc", text: opener },
+                              { who: "user", text: userLine },
+                              { who: "npc", text: npcReply },
+                              { who: "user", text: userLine2 },
+                              { who: "npc", text: npcReply2 },
+                            ],
+                          });
+
+                          setTimeout(() => {
+                            renderReview();
+                          }, 250);
+                        }, 250);
+                      },
+                    }))
+                  );
+                }, 250);
+              },
+            }))
+          );
+
+          openModal();
+        };
+
+        const renderReview = () => {
+          modalTitle.textContent = "Interaction Review";
+          modalSubtitle.textContent = "Everything you’ve said in Lego World (this session).";
+          modalBody.innerHTML = "";
+
+          const items = loadLog();
+          if (!items.length) {
+            const empty = document.createElement("div");
+            empty.className = "lw-review-empty";
+            empty.textContent = "No interactions yet. Click an inhabitant card to trigger one.";
+            modalBody.appendChild(empty);
+            openModal();
+            return;
+          }
+
+          const list = document.createElement("div");
+          list.className = "lw-review-list";
+          items
+            .slice()
+            .reverse()
+            .forEach((it) => {
+              const row = document.createElement("div");
+              row.className = "lw-review-item";
+              const transcriptHtml = (it.transcript || [])
+                .map((t) => {
+                  const label = t.who === "user" ? "You" : "Them";
+                  const content = t.who === "user" ? (t.text || "").replace(/^You:\s*/, "") : t.text || "";
+                  return `<div style="margin-bottom:8px;"><em>${label}:</em> ${content}</div>`;
+                })
+                .join("");
+
+              row.innerHTML = `
+                <strong>${it.inhabitant}</strong>
+                <div class="lw-review-meta">${it.at} · tone: ${it.tone}</div>
+                ${transcriptHtml}
+              `;
+              list.appendChild(row);
+            });
+
+          modalBody.appendChild(list);
+          renderChoices([
+            {
+              label: "Clear review (this session)",
+              onClick: () => {
+                saveLog([]);
+                renderReview();
+              },
+            },
+            { label: "Close", onClick: closeModal },
+          ]);
+          openModal();
+        };
+
+        openReviewBtn.addEventListener("click", () => {
+          renderReview();
+        });
+
+        document.querySelectorAll(".inhabitant").forEach((card) => {
+          if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "0");
+          const name = card.dataset.name || "Unknown";
+
+          card.addEventListener("click", (e) => {
+            const target = e.target;
+            if (target && target.closest && target.closest(".inhabitant-stars")) return;
+            startInteraction(name);
+          });
+
+          card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              startInteraction(name);
+            }
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

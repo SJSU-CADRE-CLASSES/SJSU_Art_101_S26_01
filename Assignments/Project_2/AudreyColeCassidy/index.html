@@ -11,10 +11,25 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 24px;
-            min-height: calc(100vh - 120px);
-            padding: 20px;
+            padding: 12px 20px 20px;
+        }
+        .index-buttons.init .index-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            filter: brightness(0.8) contrast(1.1);
+            animation: button-init 0.75s steps(14, end) forwards;
+        }
+        .index-buttons.init .index-btn:nth-child(1) { animation-delay: 0ms; }
+        .index-buttons.init .index-btn:nth-child(2) { animation-delay: 120ms; }
+        .index-buttons.init .index-btn:nth-child(3) { animation-delay: 240ms; }
+        @keyframes button-init {
+            0%   { opacity: 0.05; transform: translateY(12px); box-shadow: 0 0 0 rgba(51,255,51,0); }
+            30%  { opacity: 0.22; transform: translateY(8px);  box-shadow: 0 0 18px rgba(51,255,51,0.05); }
+            55%  { opacity: 0.12; transform: translateY(10px); box-shadow: 0 0 26px rgba(51,255,51,0.12); }
+            80%  { opacity: 0.7;  transform: translateY(2px);  box-shadow: 0 0 22px rgba(51,255,51,0.18); }
+            100% { opacity: 1;    transform: translateY(0);    box-shadow: 0 0 0 rgba(51,255,51,0); }
         }
         .index-btn {
             font-family: 'VT323', monospace;
@@ -32,12 +47,105 @@
             background: rgba(51, 255, 51, 0.15);
             box-shadow: 0 0 12px #33ff33;
         }
+        /* Green "panel overlay" like chat.html */
+        .index-btn.chat-overlay {
+            position: relative;
+            overflow: hidden;
+            background: rgba(51, 255, 51, 0.2);
+            box-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+        }
+        .index-btn.chat-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.85;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(51, 255, 51, 0.25) 0%,
+                rgba(51, 255, 51, 0.12) 40%,
+                rgba(51, 255, 51, 0.02) 80%,
+                transparent 100%
+            );
+            mix-blend-mode: screen;
+        }
+        .index-btn.chat-overlay:hover {
+            background: rgba(51, 255, 51, 0.28);
+            box-shadow: 0 0 12px rgba(51, 255, 51, 0.45);
+        }
+        .index-btn.chat-overlay:active {
+            background: rgba(51, 255, 51, 0.35);
+        }
         .index-btn-disabled {
             opacity: 0.6;
             color: #1a331a;
             border-color: #1a331a;
             cursor: default;
             pointer-events: none;
+        }
+        .index-logo-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 16px 0 8px;
+        }
+        .index-logo-frame {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+        .index-logo-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(51, 255, 51, 0.12) 0px,
+                rgba(51, 255, 51, 0.12) 1px,
+                rgba(0, 0, 0, 0) 3px,
+                rgba(0, 0, 0, 0) 6px
+            );
+            mix-blend-mode: screen;
+        }
+        .index-logo {
+            max-width: 100%;
+            width: 840px;
+            height: auto;
+            display: block;
+        }
+        .index-logo.init {
+            transform-origin: 50% 50%;
+            animation: logo-init 1.45s steps(18, end) forwards;
+            filter: brightness(0.7) contrast(1.15) saturate(0.9);
+            opacity: 0.15;
+            clip-path: inset(0 100% 0 0);
+        }
+        .index-logo-frame.init::after {
+            opacity: 1;
+            animation: logo-scan 1.45s steps(18, end) forwards;
+        }
+        .index-logo.glitch {
+            animation: image-glitch 0.2s steps(2) forwards;
+        }
+        @keyframes logo-init {
+            0%   { opacity: 0.05; transform: translateY(2px) scaleY(0.98); clip-path: inset(0 100% 0 0); filter: brightness(0.5) contrast(1.2); }
+            20%  { opacity: 0.28; transform: translateY(0)  scaleY(1);    clip-path: inset(0 80% 0 0);  filter: brightness(0.9) contrast(1.2); }
+            45%  { opacity: 0.18; transform: translateX(-2px);             clip-path: inset(0 55% 0 0);  filter: brightness(0.7) contrast(1.35); }
+            70%  { opacity: 0.55; transform: translateX(1px);              clip-path: inset(0 18% 0 0);  filter: brightness(1.05) contrast(1.25); }
+            100% { opacity: 1;    transform: translate(0, 0);              clip-path: inset(0 0 0 0);    filter: brightness(1) contrast(1); }
+        }
+        @keyframes logo-scan {
+            0%   { opacity: 0.0; }
+            15%  { opacity: 0.85; }
+            100% { opacity: 0.0; }
+        }
+        @keyframes image-glitch {
+            0% { transform: translate(0, 0); filter: brightness(1); opacity: 1; }
+            25% { transform: translate(-4px, 2px); filter: brightness(1.4); opacity: 0.9; }
+            50% { transform: translate(3px, -2px); filter: brightness(0.7); opacity: 1; }
+            75% { transform: translate(2px, 1px); filter: brightness(1.2); opacity: 0.95; }
+            100% { transform: translate(0, 0); filter: brightness(1); opacity: 1; }
         }
         .loading-overlay {
             display: none;
@@ -54,15 +162,46 @@
         .loading-overlay.active {
             display: flex;
         }
+        /* When Pilot Terminal Access popup is active, only show logo behind it */
+        body.pilot-loading #main-content .index-buttons {
+            opacity: 0;
+            pointer-events: none;
+        }
+        body.pilot-loading #main-content .index-logo-wrap,
+        body.pilot-loading #main-content .index-logo-frame,
+        body.pilot-loading #main-content .index-logo {
+            opacity: 1;
+        }
         .loading-popup {
             font-family: 'VT323', monospace;
             width: 320px;
             padding: 20px;
-            background: #0a0f0a;
+            position: relative;
+            overflow: hidden;
+            background: rgba(51, 255, 51, 0.2);
             border: 2px solid #33ff33;
             box-shadow: 0 0 20px rgba(51, 255, 51, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
             color: #33ff33;
             font-size: 1.1rem;
+        }
+        .loading-popup::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.85;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(51, 255, 51, 0.25) 0%,
+                rgba(51, 255, 51, 0.12) 40%,
+                rgba(51, 255, 51, 0.02) 80%,
+                transparent 100%
+            );
+            mix-blend-mode: screen;
+        }
+        .loading-popup > * {
+            position: relative;
+            z-index: 1;
         }
         .loading-popup .loading-title {
             text-align: center;
@@ -140,9 +279,13 @@
     </div>
 
     <div class="terminal-container main-content-wrap" id="main-content">
-        <header class="header">MAIN TERMINAL</header>
+        <div class="index-logo-wrap">
+            <div class="index-logo-frame" id="logo-frame">
+                <img src="fake logo.png" alt="SERVITOR - warp space computing services" class="index-logo" id="index-logo">
+            </div>
+        </div>
         <div class="index-buttons">
-            <a href="personal.html" class="index-btn" id="pilot-btn">PILOT DATA</a>
+            <a href="personal.html" class="index-btn chat-overlay" id="pilot-btn">PILOT DATA</a>
             <span class="index-btn index-btn-disabled">ENGINEER</span>
             <span class="index-btn index-btn-disabled">BLACK BOX</span>
         </div>
@@ -162,7 +305,7 @@
             var bootOutput = document.getElementById('boot-output');
             var mainContent = document.getElementById('main-content');
             var bootLines = [
-                'BIOSCAN TERMINAL v2.1.4',
+                'BIOSCAN TERMINAL v2.4.00',
                 '',
                 'MEMORY TEST: 64K OK',
                 'MEMORY TEST: 256K OK',
@@ -178,11 +321,14 @@
                 'MOUNTING NETWORK DRIVE...',
                 'AUTHENTICATING SECTOR 7...',
                 '',
-                'SYSTEM READY.',
+                'SYSTEM READY...',
                 ''
             ];
 
-            var BOOT_DURATION_MS = 2000;
+            // Slow the boot typing sequence slightly
+            var BOOT_LINE_SLOWDOWN_MS = 150;
+            var BOOT_FINISH_PADDING_MS = 300;
+            var SYSTEM_READY_DOT_INTERVAL_MS = 100;
 
             function bootTypeLine(text, delay, cb) {
                 setTimeout(function() {
@@ -193,8 +339,25 @@
                             i++;
                             setTimeout(tick, 4 + Math.random() * 6);
                         } else {
-                            bootOutput.textContent += '\n';
-                            if (cb) cb();
+                            // If the line ends with "...", animate the dots as "loading"
+                            if (text.slice(-3) === '...') {
+                                var base = text.slice(0, -3);
+                                bootOutput.textContent = bootOutput.textContent.slice(0, -3); // remove already typed dots
+                                var dot = 0;
+                                (function dotTick() {
+                                    if (dot < 3) {
+                                        bootOutput.textContent += '.';
+                                        dot++;
+                                        setTimeout(dotTick, SYSTEM_READY_DOT_INTERVAL_MS);
+                                    } else {
+                                        bootOutput.textContent += '\n';
+                                        if (cb) cb();
+                                    }
+                                })();
+                            } else {
+                                bootOutput.textContent += '\n';
+                                if (cb) cb();
+                            }
                         }
                     }
                     tick();
@@ -208,12 +371,36 @@
                     (function(line, delay) {
                         bootTypeLine(line, delay, null);
                     })(bootLines[j], t);
-                    t += (bootLines[j].length * 5) + 25;
+                    t += (bootLines[j].length * 5) + 25 + BOOT_LINE_SLOWDOWN_MS;
+                    if (bootLines[j].slice(-3) === '...') {
+                        t += (SYSTEM_READY_DOT_INTERVAL_MS * 3);
+                    }
                 }
+                var BOOT_DURATION_MS = t + BOOT_FINISH_PADDING_MS;
                 setTimeout(function() {
                     bootOutput.innerHTML = bootOutput.textContent + '<span class="cursor">_</span>';
                     bootScreen.classList.add('hidden');
                     mainContent.classList.add('visible');
+
+                    // Kick off "logo initializing" effect as the main screen appears
+                    var logo = document.getElementById('index-logo');
+                    var logoFrame = document.getElementById('logo-frame');
+                    var indexButtons = document.querySelector('.index-buttons');
+                    if (logo && logoFrame) {
+                        logo.classList.add('init');
+                        logoFrame.classList.add('init');
+                        setTimeout(function() {
+                            logo.classList.remove('init');
+                            logoFrame.classList.remove('init');
+                        }, 1550);
+                    }
+                    if (indexButtons) {
+                        indexButtons.classList.add('init');
+                        setTimeout(function() {
+                            indexButtons.classList.remove('init');
+                        }, 1550);
+                    }
+
                     setTimeout(function() {
                         bootScreen.style.display = 'none';
                     }, 800);
@@ -244,7 +431,8 @@
                     if (i < text.length) {
                         output.innerHTML += text[i];
                         i++;
-                        setTimeout(tick, 30 + Math.random() * 40);
+                        // Match the initial boot typing speed
+                        setTimeout(tick, 4 + Math.random() * 6);
                     } else {
                         output.innerHTML += ' [OK]\n';
                         if (cb) cb();
@@ -255,6 +443,7 @@
 
             pilotBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                document.body.classList.add('pilot-loading');
                 overlay.classList.add('active');
                 output.innerHTML = '';
 
@@ -279,9 +468,31 @@
                     output.innerHTML += '\n>> REDIRECTING TO PILOT TERMINAL...<span class="blink">█</span>';
                     setTimeout(function() {
                         window.location.href = 'personal.html';
-                    }, 400);
-                }, 4000);
+                    }, 1400);
+                }, 6000);
             });
+        })();
+
+        // ----- Occasional logo glitch -----
+        (function() {
+            var logo = document.querySelector('.index-logo');
+            if (!logo) return;
+            function scheduleGlitch() {
+                var delay = 3000 + Math.random() * 5000;
+                setTimeout(function() {
+                    // Don't interrupt the init animation
+                    if (logo.classList.contains('init')) {
+                        scheduleGlitch();
+                        return;
+                    }
+                    logo.classList.add('glitch');
+                    setTimeout(function() {
+                        logo.classList.remove('glitch');
+                    }, 220);
+                    scheduleGlitch();
+                }, delay);
+            }
+            setTimeout(scheduleGlitch, 2500);
         })();
     </script>
 </body>
