@@ -3,621 +3,507 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StarStruck // Star Shop</title>
+    <title>StarStruck // Star Exchange</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tourbot.css" />
     <style>
-      :root {
-        --bg: #030810;
-        --bg-alt: #051018;
-        --panel: rgba(5, 15, 25, 0.95);
-        --accent: #00e5ff;
-        --accent-2: #40ffd8;
-        --accent-warn: #00ffaa;
-        --text: #d0f0ff;
-        --muted: #5a9ab8;
-        --border-subtle: rgba(0, 229, 255, 0.25);
-        --shadow-strong: 0 28px 80px rgba(0, 0, 0, 0.95);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
+      /* Shop-specific styles */
+      .shop-hero {
         min-height: 100vh;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-          "Segoe UI", sans-serif;
-        color: var(--text);
-        background:
-          radial-gradient(circle at 10% 0, #051525 0, transparent 50%),
-          radial-gradient(circle at 90% 100%, #041820 0, transparent 55%),
-          linear-gradient(160deg, #030810 0, #030810 40%, #020508 100%);
-        overflow-x: hidden;
-      }
-
-      .page {
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 20px 20px 60px;
-      }
-
-      header {
-        position: sticky;
-        top: 14px;
-        z-index: 10;
-        margin-bottom: 26px;
-      }
-
-      .nav-shell {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        border-radius: 999px;
-        padding: 10px 18px;
-        background:
-          radial-gradient(circle at 0 0, rgba(0, 229, 255, 0.08), transparent 55%),
-          rgba(3, 10, 18, 0.94);
-        border: 1px solid rgba(0, 229, 255, 0.5);
-        backdrop-filter: blur(22px);
-        box-shadow:
-          0 18px 60px rgba(0, 0, 0, 0.9),
-          0 0 26px rgba(0, 229, 255, 0.4);
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .brand-mark {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        background:
-          radial-gradient(circle at 30% 10%, #ffffff 0, #c9fffc 28%, #00e5ff 45%, #030810 80%);
-        box-shadow:
-          0 0 18px rgba(0, 229, 255, 0.8),
-          0 0 26px rgba(64, 255, 216, 0.7);
         position: relative;
-        overflow: hidden;
+        padding: 100px 24px 60px;
       }
 
-      .brand-mark::after {
-        content: "★";
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        color: #02030a;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      .shop-container {
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
-      .brand-text {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.1;
+      .shop-header {
+        text-align: center;
+        margin-bottom: 50px;
       }
 
-      .brand-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.22em;
+      .shop-eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 0.4em;
         text-transform: uppercase;
         color: var(--muted);
+        margin-bottom: 16px;
       }
 
-      .brand-name {
-        font-size: 1.02rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-      }
-
-      nav {
-        display: flex;
-        gap: 8px;
-      }
-
-      nav a {
-        font-size: 0.8rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        padding: 6px 12px;
-        border-radius: 999px;
-        text-decoration: none;
-        color: var(--muted);
-        border: 1px solid transparent;
-        transition:
-          background 0.16s ease,
-          color 0.16s ease,
-          border-color 0.16s ease,
-          transform 0.1s ease;
-      }
-
-      nav a:hover {
-        color: var(--text);
-        border-color: rgba(0, 229, 255, 0.8);
-        background: rgba(5, 15, 30, 0.92);
-        transform: translateY(-1px);
-      }
-
-      nav a.active {
-        color: #030810;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        border-color: transparent;
-        box-shadow:
-          0 0 18px rgba(0, 229, 255, 0.9),
-          0 0 26px rgba(64, 255, 216, 0.7);
-      }
-
-      .credit-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(64, 255, 216, 0.75);
-        background: radial-gradient(circle at 0 0, rgba(64, 255, 216, 0.2), transparent 55%);
-        color: #40ffd8;
-      }
-
-      .credit-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #40ffd8;
-        box-shadow: 0 0 12px rgba(64, 255, 216, 0.9);
-      }
-
-      main {
-        margin-top: 32px;
-      }
-
-      .section {
-        border-radius: 26px;
-        padding: 30px 24px 32px;
-        background:
-          linear-gradient(145deg, rgba(0, 229, 255, 0.04), transparent 45%),
-          radial-gradient(circle at 100% 0, rgba(0, 229, 255, 0.12), transparent 55%),
-          radial-gradient(circle at 0 100%, rgba(64, 255, 216, 0.1), transparent 55%),
-          rgba(3, 10, 18, 0.95);
-        border: 1px solid rgba(0, 229, 255, 0.35);
-        box-shadow: var(--shadow-strong);
-        display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-        gap: 28px;
-        align-items: flex-start;
-      }
-
-      .eyebrow {
-        font-size: 0.8rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 10px;
-      }
-
-      h1 {
-        margin: 0 0 10px;
-        letter-spacing: 0.04em;
-        font-size: 2.1rem;
-      }
-
-      h1 span {
-        background: linear-gradient(135deg, #ffffff, #40ffd8);
+      .shop-title {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #fff, var(--accent));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
       }
 
-      .lede {
+      .shop-desc {
         font-size: 1rem;
         color: var(--muted);
-        max-width: 36rem;
+        max-width: 600px;
+        margin: 0 auto;
         line-height: 1.7;
-        margin-bottom: 18px;
       }
 
-      .panel {
-        border-radius: 22px;
-        padding: 16px 16px 14px;
-        background:
-          radial-gradient(circle at 20% 0, rgba(0, 229, 255, 0.1), transparent 55%),
-          radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.15), transparent 60%),
-          var(--panel);
-        border: 1px solid rgba(0, 229, 255, 0.4);
-        box-shadow:
-          0 18px 50px rgba(0, 0, 0, 0.9),
-          0 0 22px rgba(0, 229, 255, 0.5);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        font-size: 0.78rem;
-      }
-
-      .panel-title {
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .panel-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.7rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        padding: 4px 9px;
-        border-radius: 999px;
-        border: 1px solid rgba(0, 229, 255, 0.8);
-        background: rgba(5, 15, 25, 0.95);
-        color: var(--accent);
-      }
-
-      .panel-status-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--accent);
-        box-shadow: 0 0 14px rgba(0, 229, 255, 1);
-      }
-
-      .economy-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 12px;
-      }
-
-      .economy-card {
+      /* Balance Display */
+      .balance-panel {
+        position: fixed;
+        top: 90px;
+        right: 24px;
+        z-index: 50;
+        padding: 16px 24px;
         border-radius: 16px;
-        padding: 10px 10px 9px;
-        border: 1px dashed rgba(0, 229, 255, 0.4);
-        background: rgba(5, 12, 20, 0.9);
-        font-size: 0.78rem;
+        background: rgba(5, 15, 25, 0.95);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 229, 255, 0.2);
       }
 
-      .product-media {
-        width: 100%;
-        aspect-ratio: 16 / 10;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 229, 255, 0.3);
-        object-fit: cover;
-        display: block;
-        margin-bottom: 8px;
-        background: rgba(0, 0, 0, 0.35);
-      }
-
-      .economy-title {
-        font-size: 0.72rem;
+      .balance-label {
+        font-size: 0.7rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--muted);
         margin-bottom: 4px;
       }
 
-      .economy-value {
+      .balance-amount {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--accent-2);
+        text-shadow: 0 0 20px rgba(64, 255, 216, 0.5);
+      }
+
+      .balance-amount.low {
+        color: #ff6b6b;
+        text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+      }
+
+      /* Product Grid */
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+
+      .product-card {
+        position: relative;
+        border-radius: 20px;
+        background: rgba(5, 15, 25, 0.9);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 229, 255, 0.2);
+      }
+
+      .product-card.purchased {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .product-card.purchased::after {
+        content: "OWNED";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-15deg);
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--accent-2);
+        text-shadow: 0 0 20px rgba(64, 255, 216, 0.8);
+        z-index: 10;
+      }
+
+      .product-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(64, 255, 216, 0.05));
+      }
+
+      .product-image-placeholder {
+        width: 100%;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(64, 255, 216, 0.05));
+        border-bottom: 1px solid var(--border);
+      }
+
+      .product-content {
+        padding: 20px;
+      }
+
+      .product-category {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .product-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .product-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 16px;
+        min-height: 60px;
+      }
+
+      .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .product-price {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent-2);
+      }
+
+      .buy-btn {
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: transparent;
+        color: var(--accent);
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .buy-btn:hover {
+        background: var(--accent);
+        color: var(--bg);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+      }
+
+      .buy-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      /* Inventory Section */
+      .inventory-section {
+        margin-top: 60px;
+        padding: 30px;
+        border-radius: 20px;
+        background: rgba(5, 15, 25, 0.9);
+        border: 1px solid var(--border);
+      }
+
+      .inventory-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .inventory-title::before {
+        content: "📦";
+      }
+
+      .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .inventory-item {
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(0, 229, 255, 0.1);
+        border: 1px dashed var(--border);
+        text-align: center;
+        font-size: 0.85rem;
+      }
+
+      .inventory-item-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      .inventory-empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 40px;
         font-size: 0.9rem;
       }
 
-      .highlight {
-        color: #40ffd8;
+      /* Purchase Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
 
-      .divider {
-        margin: 12px 0 10px;
-        border-top: 1px dashed rgba(0, 229, 255, 0.4);
-      }
-
-      .economy {
-        font-size: 0.82rem;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-
-      #cartPanel {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px dashed rgba(0, 229, 255, 0.35);
-      }
-
-      #cartItems {
-        list-style: none;
-        padding-left: 0;
-        margin: 6px 0 6px;
-      }
-
-      #cartItems li {
-        font-size: 0.8rem;
-        margin-bottom: 2px;
-      }
-
-      .cart-meta {
-        font-size: 0.78rem;
-      }
-
-      .add-to-cart {
-        margin-top: 6px;
-        border-radius: 999px;
-        padding: 6px 10px;
-        border: 1px solid rgba(0, 229, 255, 0.6);
-        background: rgba(5, 12, 20, 0.9);
-        color: var(--text);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        cursor: pointer;
-        transition:
-          transform 0.1s ease,
-          background 0.16s ease,
-          border-color 0.16s ease;
-      }
-
-      .add-to-cart:hover {
-        transform: translateY(-1px);
-        border-color: rgba(0, 229, 255, 0.9);
-        background: rgba(5, 20, 30, 0.98);
-      }
-
-      footer {
-        margin-top: 28px;
-        font-size: 0.72rem;
-        color: var(--muted);
+      .modal-overlay.active {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 8px;
-        padding: 10px 2px 0;
-        border-top: 1px dashed rgba(0, 229, 255, 0.35);
+        opacity: 1;
       }
 
-      footer span {
-        letter-spacing: 0.18em;
+      .modal {
+        background: rgba(5, 15, 25, 0.98);
+        border: 1px solid var(--accent);
+        border-radius: 24px;
+        padding: 32px;
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+        box-shadow: 0 0 60px rgba(0, 229, 255, 0.3);
+      }
+
+      .modal-overlay.active .modal {
+        transform: scale(1);
+      }
+
+      .modal-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .modal-item {
+        font-size: 1.1rem;
+        color: var(--accent-2);
+        margin-bottom: 16px;
+      }
+
+      .modal-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent-2);
+        margin-bottom: 8px;
+      }
+
+      .modal-balance {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .modal-btn {
+        padding: 12px 24px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
-      @media (max-width: 880px) {
-        .section {
-          grid-template-columns: minmax(0, 1fr);
-        }
+      .modal-btn.confirm {
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        border: none;
+        color: var(--bg);
       }
 
-      @media (max-width: 720px) {
-        header .nav-shell {
-          flex-direction: column;
-          align-items: flex-start;
-          border-radius: 20px;
-        }
-
-        nav {
-          flex-wrap: wrap;
-          width: 100%;
-        }
+      .modal-btn.confirm:hover {
+        box-shadow: 0 0 30px rgba(0, 229, 255, 0.6);
+        transform: scale(1.05);
       }
 
-      @media (max-width: 560px) {
-        .page {
-          padding: 16px 14px 40px;
+      .modal-btn.cancel {
+        background: transparent;
+        border: 1px solid var(--muted);
+        color: var(--muted);
+      }
+
+      .modal-btn.cancel:hover {
+        border-color: var(--text);
+        color: var(--text);
+      }
+
+      /* Success Animation */
+      .purchase-success {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1001;
+        text-align: center;
+        pointer-events: none;
+        opacity: 0;
+        animation: purchase-pop 2s ease forwards;
+      }
+
+      .purchase-success .icon {
+        font-size: 6rem;
+        animation: bounce 0.5s ease;
+      }
+
+      .purchase-success .text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent-2);
+        text-shadow: 0 0 30px rgba(64, 255, 216, 0.8);
+        margin-top: 16px;
+      }
+
+      @keyframes purchase-pop {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        40% { transform: translate(-50%, -50%) scale(1); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translate(-50%, -60%) scale(1); }
+      }
+
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+      }
+
+      /* Insufficient Funds */
+      .insufficient-funds {
+        animation: shake 0.5s ease;
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-10px); }
+        80% { transform: translateX(10px); }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .balance-panel {
+          position: static;
+          margin-bottom: 30px;
+          text-align: center;
         }
 
-        .section {
-          padding: 22px 16px 24px;
-          border-radius: 20px;
+        .products-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
-    <link rel="stylesheet" href="tourbot.css" />
   </head>
   <body>
-    <div class="page">
-      <header>
-        <div class="nav-shell">
-          <div class="brand">
-            <div class="brand-mark"></div>
-            <div class="brand-text">
-              <span class="brand-label">Multi‑World Access Gate</span>
-              <span class="brand-name">StarStruck</span>
-            </div>
-          </div>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
 
-          <nav>
-            <a href="index.html">Hub</a>
-            <a href="glass-city.html">Glass City</a>
-            <a href="lego-world.html">Lego World</a>
-            <a href="underground-city.html">Underground City</a>
-            <a href="shop.html" class="active">Shop</a>
-          </nav>
+    <!-- Fixed HUD -->
+    <header class="hud">
+      <a href="index.html" class="hud-brand">
+        <div class="hud-logo">★</div>
+        <div class="hud-title">
+          <span class="hud-label">Star Exchange Terminal</span>
+          <span class="hud-name">StarStruck</span>
+        </div>
+      </a>
 
-          <div class="credit-chip">
-            <span class="credit-dot"></span>
-            <span id="balanceDisplay">100.00 ★ balance</span>
+      <nav class="hud-nav">
+        <a href="index.html">Hub</a>
+        <a href="glass-city.html">Glass City</a>
+        <a href="lego-world.html">Lego World</a>
+        <a href="underground-city.html">Underground City</a>
+        <a href="shop.html" class="active">Shop</a>
+      </nav>
+
+      <div class="hud-balance">
+        <span class="balance-dot"></span>
+        <span id="balanceDisplay">100.00 ★ balance</span>
+      </div>
+    </header>
+
+    <main class="shop-hero world-page--hub">
+      <div class="portal-ring portal-ring--1"></div>
+      <div class="portal-ring portal-ring--2"></div>
+
+      <!-- Balance Panel -->
+      <div class="balance-panel">
+        <div class="balance-label">Available Stars</div>
+        <div class="balance-amount" id="mainBalance">100.00 ★</div>
+      </div>
+
+      <div class="shop-container">
+        <div class="shop-header">
+          <p class="shop-eyebrow">Star Exchange · Trading Terminal</p>
+          <h1 class="shop-title">Spend Your Stars</h1>
+          <p class="shop-desc">
+            In StarStruck, every interaction has a price. Your ratings become currency, 
+            and currency becomes survival. Choose wisely — not everyone can afford to lose a star.
+          </p>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+          <!-- Products will be rendered by JavaScript -->
+        </div>
+
+        <!-- Inventory Section -->
+        <div class="inventory-section">
+          <h2 class="inventory-title">Your Inventory</h2>
+          <div class="inventory-grid" id="inventoryGrid">
+            <div class="inventory-empty">Your inventory is empty. Purchase items to see them here.</div>
           </div>
         </div>
-      </header>
+      </div>
+    </main>
 
-      <main>
-        <section class="section">
-          <div>
-            <p class="eyebrow">StarStruck exchange</p>
-            <h1>
-              Spend your stars<br />
-              on <span>what survival costs.</span>
-            </h1>
-            <p class="lede">
-              This page shows what your ratings might have to buy: safety,
-              warmth, motion, and status. TourBot can walk you through what each
-              price really means.
-            </p>
-            <p class="lede">
-              Scroll through the items, add a few to your cart, and watch how
-              fast 100★ disappears.
-            </p>
-          </div>
-
-          <div class="panel" aria-label="StarStruck star shop">
-            <div class="panel-header">
-              <span class="panel-title">Shop · star‑priced necessities</span>
-              <span class="panel-status">
-                <span class="panel-status-dot"></span>
-                concept only
-              </span>
-            </div>
-
-            <div class="economy-grid">
-              <div class="economy-card">
-                <img
-                  class="product-media"
-                  src="assets/neon-drink.png"
-                  alt="A glowing neon drink with ice cubes"
-                  loading="lazy"
-                />
-                <div class="economy-title">Luminous Icewave</div>
-                <div class="economy-value highlight">4.0★</div>
-                <p>
-                  A mood‑stabilizing drink served in the upper tiers. It calms
-                  your nerves before rating someone whose stars control your
-                  rent.
-                </p>
-                <button
-                  class="add-to-cart"
-                  type="button"
-                  data-name="Luminous Icewave"
-                  data-cost="4.0"
-                >
-                  Add to cart
-                </button>
-              </div>
-
-              <div class="economy-card">
-                <img
-                  class="product-media"
-                  src="assets/food-platter.png"
-                  alt="A colorful spread of different foods"
-                  loading="lazy"
-                />
-                <div class="economy-title">Warm meal signal</div>
-                <div class="economy-value highlight">1.8★</div>
-                <p>
-                  One night of hot food, paid for entirely by the kindness
-                  strangers chose not to withhold.
-                </p>
-                <button
-                  class="add-to-cart"
-                  type="button"
-                  data-name="Warm meal signal"
-                  data-cost="1.8"
-                >
-                  Add to cart
-                </button>
-              </div>
-
-              <div class="economy-card">
-                <div class="economy-title">Reputation reset</div>
-                <div class="economy-value highlight">9.0★</div>
-                <p>
-                  Erases your lowest public rating. Almost no one can afford it,
-                  so most people simply learn to live with the damage.
-                </p>
-                <button
-                  class="add-to-cart"
-                  type="button"
-                  data-name="Reputation reset"
-                  data-cost="9.0"
-                >
-                  Add to cart
-                </button>
-              </div>
-
-              <div class="economy-card">
-                <img
-                  class="product-media"
-                  src="assets/neon-pack.png"
-                  alt="A futuristic backpack with glowing blue accents"
-                  loading="lazy"
-                />
-                <div class="economy-title">Courier Pack (Neon‑Seal)</div>
-                <div class="economy-value highlight">12.0★</div>
-                <p>
-                  A sealed carrier for cross‑world deliveries. It keeps your
-                  reputation chip dry, your rations cold, and your secrets
-                  quieter than your breath.
-                </p>
-                <button
-                  class="add-to-cart"
-                  type="button"
-                  data-name="Courier Pack (Neon‑Seal)"
-                  data-cost="12.0"
-                >
-                  Add to cart
-                </button>
-              </div>
-
-              <div class="economy-card">
-                <img
-                  class="product-media"
-                  src="assets/avtr-car.png"
-                  alt="A sleek futuristic car with glowing blue wheels"
-                  loading="lazy"
-                />
-                <div class="economy-title">AVTR Drift Capsule</div>
-                <div class="economy-value highlight">45.0★</div>
-                <p>
-                  A bio‑responsive vehicle that reads your pulse to choose a safe
-                  route. People call it freedom. The system calls it a luxury.
-                </p>
-                <button
-                  class="add-to-cart"
-                  type="button"
-                  data-name="AVTR Drift Capsule"
-                  data-cost="45.0"
-                >
-                  Add to cart
-                </button>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="economy">
-              <p>
-                In the main StarStruck experience, TourBot tracks a fictional
-                balance as you rate encounters. Imagine transferring those stars
-                here — who would you help first, if you could choose who gets to
-                buy what?
-              </p>
-            </div>
-
-            <div class="economy" id="cartPanel">
-              <p><strong>Cart</strong></p>
-              <ul id="cartItems"></ul>
-              <p class="cart-meta">
-                Cart total:
-                <span id="cartTotal">0.0★</span>
-                <br />
-                Remaining balance:
-                <span id="cartBalance">100.00★</span>
-              </p>
-              <p class="cart-meta" id="cartMessage"></p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer>
-        <span>StarStruck · star shop</span>
-        <span>Every price is a story.</span>
-      </footer>
+    <!-- Purchase Confirmation Modal -->
+    <div class="modal-overlay" id="purchaseModal">
+      <div class="modal">
+        <div class="modal-icon" id="modalIcon">🛒</div>
+        <h3 class="modal-title">Confirm Purchase</h3>
+        <p class="modal-item" id="modalItem">Item Name</p>
+        <div class="modal-price" id="modalPrice">0.00 ★</div>
+        <p class="modal-balance" id="modalBalance">Balance after purchase: 0.00 ★</p>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" id="cancelBtn">Cancel</button>
+          <button class="modal-btn confirm" id="confirmBtn">Purchase</button>
+        </div>
+      </div>
     </div>
 
     <aside class="tourbot" aria-label="StarStruck tour guide">
@@ -641,24 +527,8 @@
           </div>
 
           <div class="tourbot-actions">
-            <button
-              class="tourbot-iconbtn"
-              type="button"
-              id="tourbotToggle"
-              aria-label="Collapse or expand chat"
-              title="Collapse / expand"
-            >
-              ▾
-            </button>
-            <button
-              class="tourbot-iconbtn"
-              type="button"
-              id="tourbotReset"
-              aria-label="Restart tour"
-              title="Restart tour"
-            >
-              ↺
-            </button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle" aria-label="Collapse or expand chat" title="Collapse / expand">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset" aria-label="Restart tour" title="Restart tour">↺</button>
           </div>
         </div>
 
@@ -670,7 +540,290 @@
     </aside>
 
     <script src="tourbot.js" defer></script>
-    <script src="shop.js" defer></script>
+    <script>
+      // Shop data
+      const products = [
+        {
+          id: 1,
+          name: "Luminous Icewave",
+          category: "Consumable",
+          price: 4.0,
+          icon: "🥤",
+          image: "assets/neon-drink.png",
+          description: "A mood‑stabilizing drink served in the upper tiers. It calms your nerves before rating someone whose stars control your rent."
+        },
+        {
+          id: 2,
+          name: "Warm Meal Signal",
+          category: "Consumable",
+          price: 1.8,
+          icon: "🍱",
+          image: "assets/food-platter.png",
+          description: "One night of hot food, paid for entirely by the kindness strangers chose not to withhold."
+        },
+        {
+          id: 3,
+          name: "Reputation Reset",
+          category: "Service",
+          price: 9.0,
+          icon: "🔄",
+          image: null,
+          description: "Erases your lowest public rating. Almost no one can afford it, so most people simply learn to live with the damage."
+        },
+        {
+          id: 4,
+          name: "Courier Pack (Neon‑Seal)",
+          category: "Equipment",
+          price: 12.0,
+          icon: "🎒",
+          image: "assets/neon-pack.png",
+          description: "A sealed carrier for cross‑world deliveries. It keeps your reputation chip dry and your secrets quieter than your breath."
+        },
+        {
+          id: 5,
+          name: "AVTR Drift Capsule",
+          category: "Vehicle",
+          price: 45.0,
+          icon: "🚗",
+          image: "assets/avtr-car.png",
+          description: "A bio‑responsive vehicle that reads your pulse to choose a safe route. People call it freedom. The system calls it a luxury."
+        },
+        {
+          id: 6,
+          name: "Neural Dampener",
+          category: "Augment",
+          price: 25.0,
+          icon: "🧠",
+          image: null,
+          description: "Blocks incoming negative ratings from affecting your mood. The emotional numbness is a feature, not a bug."
+        },
+        {
+          id: 7,
+          name: "Holographic ID",
+          category: "Document",
+          price: 15.0,
+          icon: "🪪",
+          image: null,
+          description: "A temporary identity that lets you walk through upper-tier zones without your real rating being visible."
+        },
+        {
+          id: 8,
+          name: "Sleep Pod Token",
+          category: "Shelter",
+          price: 3.5,
+          icon: "🛏️",
+          image: null,
+          description: "8 hours in a climate-controlled capsule. Dreams are free, but waking up costs stars."
+        }
+      ];
+
+      // State
+      let balance = 100.0;
+      let inventory = [];
+      let pendingPurchase = null;
+
+      // DOM Elements
+      const productsGrid = document.getElementById('productsGrid');
+      const inventoryGrid = document.getElementById('inventoryGrid');
+      const mainBalance = document.getElementById('mainBalance');
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      const purchaseModal = document.getElementById('purchaseModal');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalItem = document.getElementById('modalItem');
+      const modalPrice = document.getElementById('modalPrice');
+      const modalBalance = document.getElementById('modalBalance');
+      const confirmBtn = document.getElementById('confirmBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+
+      // Render products
+      function renderProducts() {
+        productsGrid.innerHTML = products.map(product => {
+          const owned = inventory.includes(product.id);
+          const canAfford = balance >= product.price;
+          
+          return `
+            <div class="product-card ${owned ? 'purchased' : ''}" data-id="${product.id}">
+              ${product.image 
+                ? `<img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.outerHTML='<div class=\\'product-image-placeholder\\'>${product.icon}</div>'">`
+                : `<div class="product-image-placeholder">${product.icon}</div>`
+              }
+              <div class="product-content">
+                <div class="product-category">${product.category}</div>
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-desc">${product.description}</p>
+                <div class="product-footer">
+                  <span class="product-price">${product.price.toFixed(1)} ★</span>
+                  <button class="buy-btn" ${owned || !canAfford ? 'disabled' : ''} onclick="initPurchase(${product.id})">
+                    ${owned ? 'Owned' : canAfford ? 'Buy Now' : 'Can\'t Afford'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render inventory
+      function renderInventory() {
+        if (inventory.length === 0) {
+          inventoryGrid.innerHTML = '<div class="inventory-empty">Your inventory is empty. Purchase items to see them here.</div>';
+          return;
+        }
+
+        inventoryGrid.innerHTML = inventory.map(id => {
+          const product = products.find(p => p.id === id);
+          return `
+            <div class="inventory-item">
+              <div class="inventory-item-icon">${product.icon}</div>
+              <div>${product.name}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Update balance display
+      function updateBalanceDisplay() {
+        mainBalance.textContent = balance.toFixed(2) + ' ★';
+        balanceDisplay.textContent = balance.toFixed(2) + ' ★ balance';
+        
+        if (balance < 10) {
+          mainBalance.classList.add('low');
+        } else {
+          mainBalance.classList.remove('low');
+        }
+      }
+
+      // Initialize purchase
+      function initPurchase(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product || inventory.includes(productId)) return;
+
+        if (balance < product.price) {
+          // Insufficient funds animation
+          mainBalance.classList.add('insufficient-funds');
+          setTimeout(() => mainBalance.classList.remove('insufficient-funds'), 500);
+          return;
+        }
+
+        pendingPurchase = product;
+        modalIcon.textContent = product.icon;
+        modalItem.textContent = product.name;
+        modalPrice.textContent = product.price.toFixed(1) + ' ★';
+        modalBalance.textContent = `Balance after purchase: ${(balance - product.price).toFixed(2)} ★`;
+        
+        purchaseModal.classList.add('active');
+      }
+
+      // Confirm purchase
+      function confirmPurchase() {
+        if (!pendingPurchase) return;
+
+        const product = pendingPurchase;
+        
+        // Deduct balance
+        balance -= product.price;
+        inventory.push(product.id);
+        
+        // Close modal
+        purchaseModal.classList.remove('active');
+        
+        // Show success animation
+        showPurchaseSuccess(product);
+        
+        // Update displays
+        updateBalanceDisplay();
+        renderProducts();
+        renderInventory();
+        
+        pendingPurchase = null;
+      }
+
+      // Show purchase success
+      function showPurchaseSuccess(product) {
+        const success = document.createElement('div');
+        success.className = 'purchase-success';
+        success.innerHTML = `
+          <div class="icon">${product.icon}</div>
+          <div class="text">Purchased!</div>
+        `;
+        document.body.appendChild(success);
+        
+        // Play sound effect
+        playPurchaseSound();
+        
+        setTimeout(() => success.remove(), 2000);
+      }
+
+      // Play purchase sound
+      function playPurchaseSound() {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Success chime
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          
+          oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+          oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+          
+          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNode.gain.exponentialDecayTo = 0.01;
+          gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+          
+          oscillator.start();
+          oscillator.stop(audioCtx.currentTime + 0.4);
+        } catch (e) {
+          // Audio not supported
+        }
+      }
+
+      // Cancel purchase
+      function cancelPurchase() {
+        purchaseModal.classList.remove('active');
+        pendingPurchase = null;
+      }
+
+      // Generate particles
+      function generateParticles() {
+        const container = document.getElementById("particles");
+        if (!container) return;
+        
+        const count = 30;
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement("div");
+          p.classList.add("particle");
+          p.style.left = Math.random() * 100 + "%";
+          p.style.animationDelay = Math.random() * 12 + "s";
+          p.style.animationDuration = 10 + Math.random() * 8 + "s";
+          container.appendChild(p);
+        }
+      }
+
+      // Event listeners
+      confirmBtn.addEventListener('click', confirmPurchase);
+      cancelBtn.addEventListener('click', cancelPurchase);
+      purchaseModal.addEventListener('click', (e) => {
+        if (e.target === purchaseModal) cancelPurchase();
+      });
+
+      // Keyboard support
+      document.addEventListener('keydown', (e) => {
+        if (purchaseModal.classList.contains('active')) {
+          if (e.key === 'Escape') cancelPurchase();
+          if (e.key === 'Enter') confirmPurchase();
+        }
+      });
+
+      // Initialize
+      generateParticles();
+      renderProducts();
+      renderInventory();
+      updateBalanceDisplay();
+    </script>
   </body>
 </html>
-
