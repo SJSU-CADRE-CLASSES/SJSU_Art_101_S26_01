@@ -1,0 +1,345 @@
+/* Alexandra Hernandez – Project 1 */
+:root {
+  --bg: #0a0a0a;
+  --text: #e8e8e8;
+  --accent: #c45c41;
+  --accent-light: #e8a090;
+  --muted: #888;
+  --card: #161616;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --radius: 12px;
+  --font-head: "Georgia", "Times New Roman", serif;
+  --font-body: "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation */
+.site-header {
+  background: var(--card);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.nav-inner {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-title {
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.site-title a {
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-title a:hover {
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: color 0.2s, background 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+  background: rgba(196, 92, 65, 0.15);
+}
+
+.nav-links a.active {
+  color: var(--accent);
+  background: rgba(196, 92, 65, 0.2);
+}
+
+/* Main content */
+main {
+  flex: 1;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Home hero */
+.hero {
+  text-align: center;
+  padding: 0.75rem 0 0.5rem;
+}
+
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  margin: 0 0 0.35rem;
+  color: var(--text);
+}
+
+.hero .tagline {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(196, 92, 65, 0.35);
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(44, 42, 40, 0.12);
+}
+
+/* Cards / sections */
+.section-title {
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  margin: 0 0 0.75rem;
+  color: var(--text);
+}
+
+.card-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(196, 92, 65, 0.3);
+}
+
+.card h3 {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+  color: var(--text);
+}
+
+.card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* About page */
+.about-intro {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 40rem;
+  margin-bottom: 2rem;
+}
+
+.about-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.about-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.about-list li:last-child {
+  border-bottom: none;
+}
+
+.about-list .label {
+  font-weight: 600;
+  min-width: 7rem;
+  color: var(--text);
+}
+
+/* Projects page */
+.project-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card:hover {
+  transform: translateX(6px);
+  box-shadow: 0 8px 28px rgba(44, 42, 40, 0.1);
+}
+
+.project-card h3 {
+  font-family: var(--font-head);
+  margin: 0 0 0.5rem;
+  color: var(--text);
+}
+
+.project-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Contact page */
+.contact-form {
+  max-width: 28rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(196, 92, 65, 0.15);
+}
+
+.contact-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-actions {
+  margin-top: 0.5rem;
+}
+
+/* Footer */
+.site-footer {
+  background: var(--card);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  padding: 0.5rem 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.site-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Interactive: simple reveal on scroll (optional enhancement) */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

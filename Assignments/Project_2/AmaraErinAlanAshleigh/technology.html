@@ -324,6 +324,45 @@
             color: #66ffe6;
         }
 
+        .game-stats {
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .game-stat-pill {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 0 10px rgba(0, 224, 200, 0.12);
+            font-size: 9pt;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .game-progress-shell {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.45);
+            background: rgba(0, 0, 0, 0.55);
+        }
+        .game-progress-track {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(0, 224, 200, 0.15);
+            overflow: hidden;
+        }
+        .game-progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.25), rgba(0, 255, 230, 0.95));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.45);
+            transition: width 220ms ease-out;
+        }
+
         .bubble-column {
             position: fixed;
             bottom: -40px;
@@ -488,6 +527,10 @@
 
                 <div class="puzzle-panel" id="puzzle-panel">
                     <p class="puzzle-title">Access Challenge</p>
+                    <div class="game-stats">
+                        <div class="game-stat-pill">Attempts: <span id="attempts-left">3</span>/3</div>
+                        <div class="game-stat-pill">Timer: <span id="timer-left">20</span>s</div>
+                    </div>
                     <div>
                         Sync the sonar nodes from shallow to deep by clicking each node in order.<br>
                         Node A: 40m | Node B: 10m | Node C: 25m<br>
@@ -499,8 +542,13 @@
                         <button class="node-btn" type="button" data-node="C">Node C // 25m</button>
                     </div>
                     <div class="sequence-display" id="sequence-display">Current sequence: ---</div>
+                    <div class="game-progress-shell" aria-hidden="true">
+                        <div class="game-progress-track">
+                            <div class="game-progress-fill" id="game-progress-fill"></div>
+                        </div>
+                    </div>
                     <div class="puzzle-controls">
-                        <button id="puzzle-submit" class="puzzle-btn" type="button">unlock table</button>
+                        <button id="puzzle-submit" class="puzzle-btn" type="button" disabled>validate ping</button>
                         <button id="puzzle-reset" class="puzzle-btn" type="button">reset sequence</button>
                     </div>
                     <div class="puzzle-status" id="puzzle-status">Hint: lowest depth value goes first.</div>
@@ -544,58 +592,128 @@
             const sequenceEl = document.getElementById("sequence-display");
             const techGrid = document.getElementById("tech-grid");
             const puzzlePanel = document.getElementById("puzzle-panel");
+            const attemptsLeftEl = document.getElementById("attempts-left");
+            const timerLeftEl = document.getElementById("timer-left");
+            const progressFillEl = document.getElementById("game-progress-fill");
             const selection = [];
+            const CORRECT_SEQUENCE = "BCA";
+            const MAX_NODES = 3;
+            const MAX_ATTEMPTS = 3;
+            const TIME_LIMIT_S = 20;
+            let attemptsLeft = MAX_ATTEMPTS;
+            let timeLeft = TIME_LIMIT_S;
+            let timerInterval = null;
 
             function renderSequence() {
                 sequenceEl.textContent =
                     "Current sequence: " + (selection.length ? selection.join("") : "---");
             }
 
+            function renderProgress() {
+                const pct = Math.round((selection.length / MAX_NODES) * 100);
+                progressFillEl.style.width = pct + "%";
+            }
+
+            function setSubmitEnabled(enabled) {
+                submitBtn.disabled = !enabled;
+            }
+
             function resetSequence() {
                 selection.length = 0;
                 nodeButtons.forEach((btn) => btn.classList.remove("selected"));
                 renderSequence();
+                renderProgress();
+                setSubmitEnabled(false);
+            }
+
+            function setStatus(text, variant) {
+                statusEl.className = "puzzle-status";
+                if (variant === "error") statusEl.classList.add("error");
+                if (variant === "ok") statusEl.classList.add("ok");
+                statusEl.textContent = text;
+            }
+
+            function startTimer() {
+                clearInterval(timerInterval);
+                timeLeft = TIME_LIMIT_S;
+                timerLeftEl.textContent = String(timeLeft);
+                timerInterval = setInterval(() => {
+                    timeLeft -= 1;
+                    timerLeftEl.textContent = String(timeLeft);
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        handleFailure("Timer expired. Sonar desynced.");
+                    }
+                }, 1000);
+            }
+
+            function handleFailure(message) {
+                attemptsLeft -= 1;
+                attemptsLeftEl.textContent = String(attemptsLeft);
+                setStatus(message + " Try again.", "error");
+                resetSequence();
+                startTimer();
+
+                if (attemptsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    nodeButtons.forEach((btn) => (btn.disabled = true));
+                    submitBtn.disabled = true;
+                    resetBtn.disabled = true;
+                    setStatus("Too many failures. Terminal locked.", "error");
+                }
             }
 
             nodeButtons.forEach((button) => {
                 button.addEventListener("click", () => {
+                    if (attemptsLeft <= 0) return;
                     const node = button.dataset.node;
-                    if (selection.length >= 3 || selection.includes(node)) {
+                    if (selection.length >= MAX_NODES || selection.includes(node)) {
                         return;
                     }
                     selection.push(node);
                     button.classList.add("selected");
                     renderSequence();
-                    statusEl.className = "puzzle-status";
-                    statusEl.textContent = "Sequence locked in. Press unlock table to verify.";
+                    renderProgress();
+
+                    if (selection.length === MAX_NODES) {
+                        setSubmitEnabled(true);
+                        setStatus("Sequence complete. Activate validation ping.", "ok");
+                    } else {
+                        setStatus("Node locked. Keep syncing...", "ok");
+                        setSubmitEnabled(false);
+                    }
                 });
             });
 
             function checkAnswer() {
-                if (selection.length !== 3) {
-                    statusEl.className = "puzzle-status error";
-                    statusEl.textContent = "Select all 3 nodes before verifying.";
+                if (selection.length !== MAX_NODES) {
+                    setStatus("Select all 3 nodes before validating.", "error");
                     return;
                 }
-                const isCorrect = selection.join("") === "BCA";
+                const isCorrect = selection.join("") === CORRECT_SEQUENCE;
 
                 if (isCorrect) {
                     techGrid.classList.remove("is-locked");
                     puzzlePanel.style.display = "none";
+                    clearInterval(timerInterval);
                 } else {
-                    statusEl.className = "puzzle-status error";
-                    statusEl.textContent = "Sequence mismatch. Reset and try again.";
+                    handleFailure("Ping rejected. Sequence mismatch.");
                 }
             }
 
             submitBtn.addEventListener("click", checkAnswer);
             resetBtn.addEventListener("click", () => {
                 resetSequence();
-                statusEl.className = "puzzle-status";
-                statusEl.textContent = "Sequence reset. Try again.";
+                setStatus("Sequence reset. Resync the sonar nodes.", "ok");
+                startTimer();
             });
 
             renderSequence();
+            renderProgress();
+            attemptsLeftEl.textContent = String(attemptsLeft);
+            timerLeftEl.textContent = String(timeLeft);
+            setSubmitEnabled(false);
+            startTimer();
         })();
     </script>
 </body>
