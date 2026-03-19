@@ -44,6 +44,28 @@
             overflow-x: hidden;
             overflow-y: auto;
         }
+
+        /* themed scrollbar (page scroll) */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 224, 200, 0.75) rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar {
+            width: 12px;
+        }
+        html::-webkit-scrollbar-track {
+            background: rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 0.95), rgba(0, 160, 255, 0.65));
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            border-radius: 999px;
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.35);
+        }
+        html::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 1), rgba(0, 160, 255, 0.8));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.55);
+        }
         body::before {
             content: "";
             position: fixed;
