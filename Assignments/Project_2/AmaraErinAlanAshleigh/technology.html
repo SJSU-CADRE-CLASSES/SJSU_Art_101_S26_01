@@ -311,6 +311,18 @@
             letter-spacing: 0.08em;
             opacity: 0.95;
         }
+        .game-canvas {
+            display: block;
+            width: 100%;
+            max-width: 720px;
+            margin: 12px 0 0;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            box-shadow:
+                0 0 18px rgba(0, 224, 200, 0.35),
+                inset 0 0 10px rgba(0, 224, 200, 0.16);
+            background: rgba(0, 0, 0, 0.4);
+        }
         .puzzle-status {
             margin-top: 8px;
             font-size: 9pt;
@@ -322,6 +334,45 @@
         }
         .puzzle-status.ok {
             color: #66ffe6;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .game-stat-pill {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 0 10px rgba(0, 224, 200, 0.12);
+            font-size: 9pt;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .game-progress-shell {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.45);
+            background: rgba(0, 0, 0, 0.55);
+        }
+        .game-progress-track {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(0, 224, 200, 0.15);
+            overflow: hidden;
+        }
+        .game-progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.25), rgba(0, 255, 230, 0.95));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.45);
+            transition: width 220ms ease-out;
         }
 
         .bubble-column {
@@ -470,7 +521,7 @@
         <nav class="nav-links">
             <a href="index.html">home</a>
             <a href="history.html">history</a>
-            <a href="technology.html">technology</a>
+            <a href="technology.html?gate=1">technology</a>
             <a href="science.html">science</a>
             <a href="products.html">products</a>
         </nav>
@@ -488,22 +539,25 @@
 
                 <div class="puzzle-panel" id="puzzle-panel">
                     <p class="puzzle-title">Access Challenge</p>
+                    <div class="game-stats">
+                        <div class="game-stat-pill">Attempts: <span id="attempts-left">3</span>/3</div>
+                        <div class="game-stat-pill">Timer: <span id="timer-left">20</span>s</div>
+                    </div>
                     <div>
-                        Sync the sonar nodes from shallow to deep by clicking each node in order.<br>
-                        Node A: 40m | Node B: 10m | Node C: 25m<br>
-                        Build a 3-node sequence to unlock.
+                        Mission: pilot the merfish through the sonar field and collect all <b>3</b> reef pings.<br>
+                        Controls: move your mouse over the screen to steer the fish.
                     </div>
-                    <div class="node-grid">
-                        <button class="node-btn" type="button" data-node="A">Node A // 40m</button>
-                        <button class="node-btn" type="button" data-node="B">Node B // 10m</button>
-                        <button class="node-btn" type="button" data-node="C">Node C // 25m</button>
+                    <canvas id="game-canvas" class="game-canvas" width="720" height="320"></canvas>
+                    <div class="game-progress-shell" aria-hidden="true">
+                        <div class="game-progress-track">
+                            <div class="game-progress-fill" id="game-progress-fill"></div>
+                        </div>
                     </div>
-                    <div class="sequence-display" id="sequence-display">Current sequence: ---</div>
                     <div class="puzzle-controls">
-                        <button id="puzzle-submit" class="puzzle-btn" type="button">unlock table</button>
-                        <button id="puzzle-reset" class="puzzle-btn" type="button">reset sequence</button>
+                        <button id="puzzle-submit" class="puzzle-btn" type="button">start sonar run</button>
+                        <button id="puzzle-reset" class="puzzle-btn" type="button" disabled>replay run</button>
                     </div>
-                    <div class="puzzle-status" id="puzzle-status">Hint: lowest depth value goes first.</div>
+                    <div class="puzzle-status" id="puzzle-status">Tip: grab the glowing pings before the timer hits zero.</div>
                 </div>
 
                 <div class="tech-grid is-locked" id="tech-grid">
@@ -537,65 +591,463 @@
     </main>
     <script>
         (function () {
-            const nodeButtons = document.querySelectorAll(".node-btn");
+            const canvas = document.getElementById("game-canvas");
+            const ctx = canvas.getContext("2d");
+
             const submitBtn = document.getElementById("puzzle-submit");
             const resetBtn = document.getElementById("puzzle-reset");
             const statusEl = document.getElementById("puzzle-status");
-            const sequenceEl = document.getElementById("sequence-display");
             const techGrid = document.getElementById("tech-grid");
             const puzzlePanel = document.getElementById("puzzle-panel");
-            const selection = [];
+            const attemptsLeftEl = document.getElementById("attempts-left");
+            const timerLeftEl = document.getElementById("timer-left");
+            const progressFillEl = document.getElementById("game-progress-fill");
 
-            function renderSequence() {
-                sequenceEl.textContent =
-                    "Current sequence: " + (selection.length ? selection.join("") : "---");
+            const MAX_ATTEMPTS = 3;
+            const TIME_LIMIT_S = 20;
+            const REQUIRED_PINGS = 3;
+
+            const FISH_R = 14;
+            const TARGET_R = 18;
+            const UNLOCK_KEY = "tritonTechUnlocked";
+
+            let attemptsLeft = MAX_ATTEMPTS;
+            let timeLeft = TIME_LIMIT_S;
+            let timerInterval = null;
+            let state = "idle"; // idle | playing | won
+            let collected = 0;
+            const params = new URLSearchParams(window.location.search);
+            const isGateMode = params.get("gate") === "1";
+            let alreadyUnlocked = false;
+            try {
+                alreadyUnlocked = localStorage.getItem(UNLOCK_KEY) === "1";
+            } catch (e) {
+                alreadyUnlocked = false;
             }
 
-            function resetSequence() {
-                selection.length = 0;
-                nodeButtons.forEach((btn) => btn.classList.remove("selected"));
-                renderSequence();
+            if (!isGateMode && !alreadyUnlocked) {
+                window.location.replace("technology.html?gate=1");
+                return;
             }
 
-            nodeButtons.forEach((button) => {
-                button.addEventListener("click", () => {
-                    const node = button.dataset.node;
-                    if (selection.length >= 3 || selection.includes(node)) {
-                        return;
+            if (isGateMode && alreadyUnlocked) {
+                window.location.replace("technology.html");
+                return;
+            }
+
+            const pointer = { active: false, x: canvas.width * 0.45, y: canvas.height * 0.55 };
+            const fish = { x: canvas.width * 0.12, y: canvas.height * 0.55, vx: 0, vy: 0 };
+            const targets = [];
+
+            function setStatus(text, variant) {
+                statusEl.className = "puzzle-status";
+                if (variant === "error") statusEl.classList.add("error");
+                if (variant === "ok") statusEl.classList.add("ok");
+                statusEl.textContent = text;
+            }
+
+            function setProgress() {
+                const pct = Math.round((collected / REQUIRED_PINGS) * 100);
+                progressFillEl.style.width = pct + "%";
+            }
+
+            function dist2(ax, ay, bx, by) {
+                const dx = ax - bx;
+                const dy = ay - by;
+                return dx * dx + dy * dy;
+            }
+
+            function spawnTargets() {
+                targets.length = 0;
+                const padding = 70;
+
+                for (let i = 0; i < REQUIRED_PINGS; i++) {
+                    let x = canvas.width / 2;
+                    let y = canvas.height / 2;
+                    let tries = 0;
+
+                    while (tries < 60) {
+                        x = padding + Math.random() * (canvas.width - padding * 2);
+                        y = padding + Math.random() * (canvas.height - padding * 2);
+
+                        // Keep away from fish start and other targets
+                        if (dist2(x, y, fish.x, fish.y) < Math.pow(TARGET_R + 26, 2)) {
+                            tries++;
+                            continue;
+                        }
+
+                        let tooClose = false;
+                        for (const t of targets) {
+                            if (dist2(x, y, t.x, t.y) < Math.pow(TARGET_R + 16, 2)) {
+                                tooClose = true;
+                                break;
+                            }
+                        }
+                        if (tooClose) {
+                            tries++;
+                            continue;
+                        }
+
+                        break;
                     }
-                    selection.push(node);
-                    button.classList.add("selected");
-                    renderSequence();
-                    statusEl.className = "puzzle-status";
-                    statusEl.textContent = "Sequence locked in. Press unlock table to verify.";
-                });
-            });
 
-            function checkAnswer() {
-                if (selection.length !== 3) {
-                    statusEl.className = "puzzle-status error";
-                    statusEl.textContent = "Select all 3 nodes before verifying.";
+                    targets.push({ x, y, collected: false, id: i + 1, pulseSeed: Math.random() * 10 });
+                }
+            }
+
+            function resetRun({ keepAttempts }) {
+                state = "idle";
+                collected = 0;
+                setProgress();
+
+                fish.x = canvas.width * 0.12;
+                fish.y = canvas.height * 0.55;
+                fish.vx = 0;
+                fish.vy = 0;
+
+                pointer.active = false;
+                spawnTargets();
+
+                if (!keepAttempts) {
+                    attemptsLeft = MAX_ATTEMPTS;
+                    attemptsLeftEl.textContent = String(attemptsLeft);
+                }
+
+                clearInterval(timerInterval);
+                timerInterval = null;
+
+                timeLeft = TIME_LIMIT_S;
+                timerLeftEl.textContent = String(timeLeft);
+
+                submitBtn.disabled = attemptsLeft <= 0;
+                resetBtn.disabled = true;
+            }
+
+            function startTimer() {
+                clearInterval(timerInterval);
+                timeLeft = TIME_LIMIT_S;
+                timerLeftEl.textContent = String(timeLeft);
+
+                timerInterval = setInterval(() => {
+                    timeLeft -= 1;
+                    timerLeftEl.textContent = String(timeLeft);
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        handleFailure("Timer expired. Signal lost.");
+                    }
+                }, 1000);
+            }
+
+            function handleFailure(message) {
+                attemptsLeft -= 1;
+                attemptsLeftEl.textContent = String(attemptsLeft);
+
+                clearInterval(timerInterval);
+                timerInterval = null;
+                state = "idle";
+
+                collected = 0;
+                setProgress();
+
+                if (attemptsLeft <= 0) {
+                    submitBtn.disabled = true;
+                    resetBtn.disabled = true;
+                    setStatus("Too many failures. Terminal locked.", "error");
                     return;
                 }
-                const isCorrect = selection.join("") === "BCA";
 
-                if (isCorrect) {
-                    techGrid.classList.remove("is-locked");
-                    puzzlePanel.style.display = "none";
-                } else {
-                    statusEl.className = "puzzle-status error";
-                    statusEl.textContent = "Sequence mismatch. Reset and try again.";
+                resetRun({ keepAttempts: true });
+                setStatus(message + " Start the run again.", "error");
+            }
+
+            function beginRun() {
+                if (state === "won") return;
+                if (attemptsLeft <= 0) return;
+
+                state = "playing";
+                collected = 0;
+                setProgress();
+
+                resetBtn.disabled = false;
+                submitBtn.disabled = true;
+
+                pointer.active = false;
+                fish.x = canvas.width * 0.12;
+                fish.y = canvas.height * 0.55;
+                fish.vx = 0;
+                fish.vy = 0;
+
+                spawnTargets();
+                setStatus("Sonar run started. Collect all 3 reef pings.", "ok");
+                startTimer();
+            }
+
+            function win() {
+                state = "won";
+                clearInterval(timerInterval);
+                timerInterval = null;
+
+                try {
+                    localStorage.setItem(UNLOCK_KEY, "1");
+                } catch (e) {
+                    // ignore storage failures
+                }
+
+                setStatus("Gate opened. Entering technology tab...", "ok");
+                setTimeout(() => {
+                    window.location.href = "technology.html";
+                }, 450);
+            }
+
+            function canvasPointFromEvent(event) {
+                const rect = canvas.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
+                const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+                return { x, y };
+            }
+
+            canvas.addEventListener("mousemove", (event) => {
+                const p = canvasPointFromEvent(event);
+                pointer.active = true;
+                pointer.x = p.x;
+                pointer.y = p.y;
+            });
+
+            canvas.addEventListener("mouseleave", () => {
+                pointer.active = false;
+            });
+
+            canvas.addEventListener("touchstart", (event) => {
+                if (!event.touches || !event.touches[0]) return;
+                const touch = event.touches[0];
+                const p = canvasPointFromEvent(touch);
+                pointer.active = true;
+                pointer.x = p.x;
+                pointer.y = p.y;
+            }, { passive: true });
+
+            canvas.addEventListener("touchmove", (event) => {
+                if (!event.touches || !event.touches[0]) return;
+                const touch = event.touches[0];
+                const p = canvasPointFromEvent(touch);
+                pointer.active = true;
+                pointer.x = p.x;
+                pointer.y = p.y;
+            }, { passive: true });
+
+            submitBtn.addEventListener("click", beginRun);
+            resetBtn.addEventListener("click", () => {
+                resetRun({ keepAttempts: true });
+                beginRun();
+            });
+
+            function drawBackground(tNow) {
+                const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                g.addColorStop(0, "rgba(0, 224, 200, 0.10)");
+                g.addColorStop(0.4, "rgba(0, 0, 0, 0.60)");
+                g.addColorStop(1, "rgba(0, 0, 0, 0.85)");
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Scan line sweep
+                const scanY = (tNow / 3.5) % canvas.height;
+                ctx.fillStyle = "rgba(0, 255, 230, 0.05)";
+                ctx.fillRect(0, scanY, canvas.width, 10);
+
+                // Subtle horizon grid
+                ctx.strokeStyle = "rgba(0, 224, 200, 0.10)";
+                ctx.lineWidth = 1;
+                for (let y = 0; y < canvas.height; y += 28) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                // Ambient sonar rings
+                const cx = canvas.width * 0.62;
+                const cy = canvas.height * 0.45;
+                ctx.strokeStyle = "rgba(0, 255, 230, 0.08)";
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 3; i++) {
+                    const r = (tNow / 10) % (220 + i * 40) + i * 10;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.stroke();
                 }
             }
 
-            submitBtn.addEventListener("click", checkAnswer);
-            resetBtn.addEventListener("click", () => {
-                resetSequence();
-                statusEl.className = "puzzle-status";
-                statusEl.textContent = "Sequence reset. Try again.";
-            });
+            function drawTargets(tNow) {
+                for (const t of targets) {
+                    if (t.collected) continue;
+                    const pulse = 0.5 + 0.5 * Math.sin((tNow / 450) + t.pulseSeed);
 
-            renderSequence();
+                    ctx.save();
+                    ctx.translate(t.x, t.y);
+
+                    // Glow ring
+                    ctx.beginPath();
+                    ctx.arc(0, 0, TARGET_R + pulse * 7, 0, Math.PI * 2);
+                    ctx.strokeStyle = "rgba(0, 255, 230, 0.30)";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    const grad = ctx.createRadialGradient(0, 0, 1, 0, 0, TARGET_R + 6);
+                    grad.addColorStop(0, "rgba(102, 255, 230, 0.95)");
+                    grad.addColorStop(0.6, "rgba(0, 255, 230, 0.55)");
+                    grad.addColorStop(1, "rgba(0, 255, 230, 0.0)");
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, TARGET_R + pulse * 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Core
+                    ctx.fillStyle = "rgba(0, 255, 230, 0.9)";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 5.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+                    ctx.font = "700 10pt 'ArcadeFont', system-ui, sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(String(t.id), 0, 0);
+
+                    ctx.restore();
+                }
+            }
+
+            function drawFish(tNow) {
+                // Two-frame pixel fish for an 8-bit video-game look.
+                const frames = [
+                    [
+                        "...kkbbbbkk.",
+                        "..kkbbbbbbkk",
+                        ".kkbbssyybbk",
+                        "kkbbbssyybbk",
+                        "kkbbbssyybbk",
+                        ".kkbbssyybbk",
+                        "..kkbbbbbbkk",
+                        "...k..k....k",
+                    ],
+                    [
+                        "...kkbbbbkk.",
+                        "..kkbbbbbbkk",
+                        ".kkbbssyybbk",
+                        "kkbbbssyybbk",
+                        "kkbbbssyybbk",
+                        ".kkbbssyybbk",
+                        "..kkbbbbbbkk",
+                        "..k....k..k.",
+                    ],
+                ];
+
+                const frameIdx = Math.floor(tNow / 170) % 2;
+                const sprite = frames[frameIdx];
+                const PIX = 3;
+                const SPR_W = sprite[0].length;
+                const SPR_H = sprite.length;
+                const halfW = (SPR_W * PIX) / 2;
+                const halfH = (SPR_H * PIX) / 2;
+
+                const flipX = fish.vx < -0.04;
+                const bob = Math.sin(tNow / 180) * 1.2;
+
+                const colorMap = {
+                    ".": "rgba(0,0,0,0)",
+                    "k": "rgba(110, 255, 236, 0.95)", // outline
+                    "b": "rgba(0, 235, 210, 0.92)",   // body
+                    "s": "rgba(0, 190, 170, 0.86)",   // shading stripe
+                    "y": "rgba(18, 26, 32, 0.96)",    // eye
+                };
+
+                ctx.save();
+                ctx.translate(fish.x, fish.y + bob);
+                if (flipX) ctx.scale(-1, 1);
+
+                // Pixel shadow for game sprite depth.
+                ctx.fillStyle = "rgba(0, 0, 0, 0.32)";
+                ctx.fillRect(-halfW + 2, halfH - 1, SPR_W * PIX - 4, 3);
+
+                for (let row = 0; row < SPR_H; row++) {
+                    const line = sprite[row];
+                    const y = row * PIX - halfH;
+                    for (let col = 0; col < SPR_W; col++) {
+                        const ch = line[col];
+                        if (ch === ".") continue;
+                        const x = col * PIX - halfW;
+                        ctx.fillStyle = colorMap[ch] || colorMap.b;
+                        ctx.fillRect(x, y, PIX, PIX);
+                    }
+                }
+
+                ctx.restore();
+            }
+
+            function update(dt) {
+                if (state !== "playing") return;
+
+                const targetX = pointer.active ? pointer.x : fish.x + 40;
+                const targetY = pointer.active ? pointer.y : fish.y;
+                const dx = targetX - fish.x;
+                const dy = targetY - fish.y;
+
+                fish.vx += dx * 0.002;
+                fish.vy += dy * 0.002;
+                fish.vx *= 0.92;
+                fish.vy *= 0.92;
+
+                fish.x += fish.vx * dt;
+                fish.y += fish.vy * dt;
+
+                fish.x = Math.max(FISH_R + 6, Math.min(canvas.width - FISH_R - 6, fish.x));
+                fish.y = Math.max(FISH_R + 6, Math.min(canvas.height - FISH_R - 6, fish.y));
+
+                for (const t of targets) {
+                    if (t.collected) continue;
+                    const d = dist2(fish.x, fish.y, t.x, t.y);
+                    if (d <= Math.pow(FISH_R + TARGET_R * 0.62, 2)) {
+                        t.collected = true;
+                        collected += 1;
+                        setProgress();
+
+                        setStatus(`Ping ${t.id} captured. ${collected}/${REQUIRED_PINGS} collected.`, "ok");
+                        if (collected >= REQUIRED_PINGS) {
+                            win();
+                        }
+                    }
+                }
+            }
+
+            let lastTs = null;
+            function loop(ts) {
+                if (lastTs === null) lastTs = ts;
+                const dt = Math.min(2.5, (ts - lastTs) / 16.666);
+                lastTs = ts;
+
+                drawBackground(ts);
+                drawTargets(ts);
+                drawFish(ts);
+                update(dt);
+
+                requestAnimationFrame(loop);
+            }
+
+            // Initial render + UI state
+            if (!isGateMode && alreadyUnlocked) {
+                techGrid.classList.remove("is-locked");
+                puzzlePanel.style.display = "none";
+                submitBtn.disabled = true;
+                resetBtn.disabled = true;
+                state = "won";
+            }
+            attemptsLeftEl.textContent = String(attemptsLeft);
+            timerLeftEl.textContent = String(timeLeft);
+            setProgress();
+            setStatus("Tip: grab the glowing pings before the timer hits zero.", undefined);
+            resetRun({ keepAttempts: true });
+            requestAnimationFrame(loop);
         })();
     </script>
 </body>

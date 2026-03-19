@@ -564,7 +564,7 @@
         <nav class="nav-links">
             <a href="index.html">home</a>
             <a href="history.html">history</a>
-            <a href="technology.html">technology</a>
+            <a href="technology.html?gate=1">technology</a>
             <a href="science.html">science</a>
             <a href="products.html">products</a>
         </nav>
@@ -587,12 +587,15 @@
 
                 <div class="detail-panel" style="margin-top: 18px;">
                     <div class="detail-label">Suit overview</div>
-                    The dry suit is split into two main pieces: the pressure adjusting suit and the oxygen converting tail.
+                    The dry suit is split into two main pieces: the pressure adjusting suit and the oxygen converting tail. It also has a HUD monitor installed that displays the user's vitals for safety. 
                 </div>
 
                 <div class="choice-grid">
                     <button class="choice-card" data-modal-target="#modal-suit">
                         <span>Pressure Suit</span>
+                    </button>
+                    <button class="choice-card" data-modal-target="#modal-vitals">
+                        <span>Vitals</span>
                     </button>
                     <button class="choice-card" data-modal-target="#modal-tail">
                         <span>Oxygenated Tail</span>
@@ -662,6 +665,18 @@
                         Bubbles of carbon dioxide push out through the tail fins.
                     </li>
                 </ul>
+            </div>
+            <button class="modal-close" data-modal-close>close window</button>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modal-vitals">
+        <div class="modal-panel">
+            <h3 class="modal-title"></h3>
+            <div class="modal-body">
+                <div class="modal-inline-image" aria-hidden="true">
+                    <img src="MerfolkSuitHUD.webp" alt="MerfolkSuitHUD" style="width: min(450px, 100%); height: auto; display: block;" />
+                </div>
             </div>
             <button class="modal-close" data-modal-close>close window</button>
         </div>
