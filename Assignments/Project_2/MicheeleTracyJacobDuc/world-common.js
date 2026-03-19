@@ -1,13 +1,26 @@
 // Shared functionality for all world pages
 const DEFAULT_BALANCE = 100;
+const STORAGE_BALANCE_KEY = "starBalance_v1";
 
-// Initialize balance from session or default
+// Initialize balance from storage (shared across hub/world/shop)
 let balance = DEFAULT_BALANCE;
+try {
+  const raw = sessionStorage.getItem(STORAGE_BALANCE_KEY);
+  const stored = raw == null ? NaN : Number(raw);
+  if (!Number.isNaN(stored) && Number.isFinite(stored)) balance = stored;
+} catch {
+  // ignore storage failures
+}
 
 function updateBalance(newVal) {
   balance = newVal;
   const el = document.getElementById("balanceDisplay");
   if (el) el.textContent = balance.toFixed(2) + " ★ balance";
+  try {
+    sessionStorage.setItem(STORAGE_BALANCE_KEY, String(balance));
+  } catch {
+    // ignore
+  }
 }
 
 // Make updateBalance globally accessible
@@ -40,14 +53,6 @@ function generateParticles() {
 // Rating feedback popup
 function showRatingFeedback(name, rating) {
   const isElimination = Number(rating) === 1;
-  // If the user rates 1★, the inhabitant is eliminated, but the user's
-  // balance does not change.
-  const delta = isElimination ? 0 : Number(rating);
-
-  balance += delta;
-  // Prevent negative balance from breaking downstream UI expectations.
-  if (balance < 0) balance = 0;
-  updateBalance(balance);
 
   // Special elimination animation (inject once).
   const ensureElimKeyframes = () => {
@@ -95,7 +100,7 @@ function showRatingFeedback(name, rating) {
         ${String(name).trim() || "Inhabitant"} is being eliminated due to their low star balance
       </div>
       <div style="color: rgba(255, 77, 106, 0.98); font-size: 1rem;">
-        No stars were deducted from you.
+        You did not earn or lose stars for rating 1★.
       </div>
     `;
   } else {
@@ -107,7 +112,7 @@ function showRatingFeedback(name, rating) {
         Rated <strong>${name}</strong>
       </div>
       <div style="color: #40ffd8; font-size: 0.9rem;">
-        +${delta.toFixed(2)} ★ earned
+        Your balance did not change.
       </div>
     `;
   }
