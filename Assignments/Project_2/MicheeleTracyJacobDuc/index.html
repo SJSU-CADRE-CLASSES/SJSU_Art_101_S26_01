@@ -89,7 +89,7 @@
         height: 520px;
         cursor: pointer;
         transition: transform 0.5s ease;
-        margin: 0 auto;
+        margin: 60px auto 0;
       }
 
       .main-portal:hover {
@@ -1174,6 +1174,245 @@
           height: 12px;
         }
       }
+
+      /* ========================================
+         WORLD PORTAL ENTRY TRANSITION
+         ======================================== */
+      
+      /* Full-screen transition overlay */
+      .world-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .world-transition.active {
+        pointer-events: all;
+        opacity: 1;
+      }
+
+      /* Tunnel effect background */
+      .tunnel-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, transparent 0%, var(--bg) 100%);
+      }
+
+      /* Concentric rings rushing toward viewer */
+      .tunnel-rings {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100vmax;
+        height: 100vmax;
+      }
+
+      .tunnel-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid var(--transition-color, var(--accent));
+        opacity: 0;
+      }
+
+      .tunnel-ring:nth-child(1) { width: 10%; height: 10%; }
+      .tunnel-ring:nth-child(2) { width: 20%; height: 20%; }
+      .tunnel-ring:nth-child(3) { width: 30%; height: 30%; }
+      .tunnel-ring:nth-child(4) { width: 40%; height: 40%; }
+      .tunnel-ring:nth-child(5) { width: 50%; height: 50%; }
+      .tunnel-ring:nth-child(6) { width: 60%; height: 60%; }
+      .tunnel-ring:nth-child(7) { width: 70%; height: 70%; }
+      .tunnel-ring:nth-child(8) { width: 80%; height: 80%; }
+      .tunnel-ring:nth-child(9) { width: 90%; height: 90%; }
+      .tunnel-ring:nth-child(10) { width: 100%; height: 100%; }
+
+      .world-transition.active .tunnel-ring {
+        animation: ring-rush 1.5s ease-in forwards;
+      }
+
+      .world-transition.active .tunnel-ring:nth-child(1) { animation-delay: 0s; }
+      .world-transition.active .tunnel-ring:nth-child(2) { animation-delay: 0.05s; }
+      .world-transition.active .tunnel-ring:nth-child(3) { animation-delay: 0.1s; }
+      .world-transition.active .tunnel-ring:nth-child(4) { animation-delay: 0.15s; }
+      .world-transition.active .tunnel-ring:nth-child(5) { animation-delay: 0.2s; }
+      .world-transition.active .tunnel-ring:nth-child(6) { animation-delay: 0.25s; }
+      .world-transition.active .tunnel-ring:nth-child(7) { animation-delay: 0.3s; }
+      .world-transition.active .tunnel-ring:nth-child(8) { animation-delay: 0.35s; }
+      .world-transition.active .tunnel-ring:nth-child(9) { animation-delay: 0.4s; }
+      .world-transition.active .tunnel-ring:nth-child(10) { animation-delay: 0.45s; }
+
+      @keyframes ring-rush {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.1);
+          border-width: 20px;
+        }
+        30% {
+          opacity: 1;
+          border-width: 8px;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(3);
+          border-width: 1px;
+        }
+      }
+
+      /* Central bright flash */
+      .tunnel-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff 0%, var(--transition-color, var(--accent)) 30%, transparent 70%);
+        opacity: 0;
+        box-shadow: 
+          0 0 100px var(--transition-color, var(--accent)),
+          0 0 200px var(--transition-color, var(--accent)),
+          0 0 300px var(--transition-color, var(--accent));
+      }
+
+      .world-transition.active .tunnel-center {
+        animation: center-expand 1.5s ease-in forwards;
+      }
+
+      @keyframes center-expand {
+        0% {
+          width: 10px;
+          height: 10px;
+          opacity: 1;
+        }
+        50% {
+          width: 100px;
+          height: 100px;
+          opacity: 1;
+        }
+        100% {
+          width: 300vmax;
+          height: 300vmax;
+          opacity: 1;
+        }
+      }
+
+      /* World name display during transition */
+      .transition-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        text-align: center;
+        opacity: 0;
+      }
+
+      .world-transition.active .transition-text {
+        animation: text-appear 1.5s ease-out forwards;
+      }
+
+      .transition-text .entering {
+        font-size: 0.8rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 8px;
+      }
+
+      .transition-text .world-destination {
+        font-size: clamp(2rem, 6vw, 4rem);
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 
+          0 0 30px var(--transition-color, var(--accent)),
+          0 0 60px var(--transition-color, var(--accent));
+      }
+
+      @keyframes text-appear {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.5);
+        }
+        20% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+        30% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        70% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(1.5);
+        }
+      }
+
+      /* Speed lines effect */
+      .speed-lines {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .speed-line {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 0;
+        background: linear-gradient(to bottom, transparent, var(--transition-color, var(--accent)), transparent);
+        opacity: 0;
+        transform-origin: top center;
+      }
+
+      .world-transition.active .speed-line {
+        animation: speed-stretch 1s ease-in forwards;
+      }
+
+      @keyframes speed-stretch {
+        0% {
+          height: 0;
+          opacity: 0;
+        }
+        30% {
+          height: 150vh;
+          opacity: 0.8;
+        }
+        100% {
+          height: 200vh;
+          opacity: 0;
+        }
+      }
+
+      /* Clicked portal highlight */
+      .world-portal.entering {
+        z-index: 100;
+        animation: portal-zoom 0.8s ease-in forwards;
+      }
+
+      @keyframes portal-zoom {
+        0% {
+          transform: scale(1);
+          filter: brightness(1);
+        }
+        50% {
+          transform: scale(1.5);
+          filter: brightness(2);
+        }
+        100% {
+          transform: scale(20);
+          filter: brightness(3);
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1409,6 +1648,29 @@
       </div>
     </aside>
 
+    <!-- World Portal Transition Overlay -->
+    <div class="world-transition" id="worldTransition">
+      <div class="tunnel-bg"></div>
+      <div class="tunnel-rings">
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+      </div>
+      <div class="speed-lines" id="speedLines"></div>
+      <div class="tunnel-center"></div>
+      <div class="transition-text">
+        <div class="entering">Entering</div>
+        <div class="world-destination" id="worldDestination">Glass City</div>
+      </div>
+    </div>
+
     <script src="world-common.js"></script>
     <script src="tourbot.js" defer></script>
     <script>
@@ -1554,6 +1816,122 @@
         });
         portal.addEventListener('mouseleave', () => {
           portal.style.filter = '';
+        });
+      });
+
+      // ========================================
+      // WORLD PORTAL ENTRY TRANSITION
+      // ========================================
+      
+      const worldTransition = document.getElementById('worldTransition');
+      const worldDestination = document.getElementById('worldDestination');
+      const speedLinesContainer = document.getElementById('speedLines');
+      
+      // World portal colors
+      const portalColors = {
+        'glass': '#00e5ff',
+        'lego': '#40ffd8',
+        'underground': '#50b4ff'
+      };
+
+      // World names
+      const worldNames = {
+        'glass-city.html': 'Glass City',
+        'lego-world.html': 'Lego World',
+        'underground-city.html': 'Underground City'
+      };
+
+      // Generate speed lines
+      function generateSpeedLines() {
+        speedLinesContainer.innerHTML = '';
+        const lineCount = 40;
+        for (let i = 0; i < lineCount; i++) {
+          const line = document.createElement('div');
+          line.className = 'speed-line';
+          const angle = (360 / lineCount) * i;
+          const distance = 50 + Math.random() * 50;
+          line.style.transform = `rotate(${angle}deg) translateY(-${distance}vh)`;
+          line.style.animationDelay = `${Math.random() * 0.3}s`;
+          speedLinesContainer.appendChild(line);
+        }
+      }
+
+      // Play warp sound
+      function playWarpSound() {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Rising whoosh
+          const osc1 = audioCtx.createOscillator();
+          const gain1 = audioCtx.createGain();
+          osc1.connect(gain1);
+          gain1.connect(audioCtx.destination);
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(100, audioCtx.currentTime);
+          osc1.frequency.exponentialRampToValueAtTime(2000, audioCtx.currentTime + 1);
+          gain1.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+          osc1.start(audioCtx.currentTime);
+          osc1.stop(audioCtx.currentTime + 1.2);
+
+          // Bass rumble
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(60, audioCtx.currentTime);
+          osc2.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 1);
+          gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+          osc2.start(audioCtx.currentTime);
+          osc2.stop(audioCtx.currentTime + 1);
+        } catch (e) {
+          // Audio not supported
+        }
+      }
+
+      // Handle world portal clicks
+      worldPortals.querySelectorAll('.world-portal').forEach(portal => {
+        portal.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const href = this.getAttribute('href');
+          const worldName = worldNames[href] || 'Unknown World';
+          
+          // Determine portal color based on class
+          let color = portalColors['glass'];
+          if (this.classList.contains('world-portal--lego')) {
+            color = portalColors['lego'];
+          } else if (this.classList.contains('world-portal--underground')) {
+            color = portalColors['underground'];
+          }
+          
+          // Set transition color
+          worldTransition.style.setProperty('--transition-color', color);
+          
+          // Set destination text
+          worldDestination.textContent = worldName;
+          
+          // Generate fresh speed lines
+          generateSpeedLines();
+          
+          // Add entering class to clicked portal
+          this.classList.add('entering');
+          
+          // Play sound
+          playWarpSound();
+          
+          // Activate transition
+          worldTransition.classList.add('active');
+          
+          // Screen shake
+          screenShake();
+          
+          // Navigate after animation
+          setTimeout(() => {
+            window.location.href = href;
+          }, 1400);
         });
       });
     </script>
