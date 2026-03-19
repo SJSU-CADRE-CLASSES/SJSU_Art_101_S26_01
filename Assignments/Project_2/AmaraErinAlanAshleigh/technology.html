@@ -521,7 +521,7 @@
         <nav class="nav-links">
             <a href="index.html">home</a>
             <a href="history.html">history</a>
-            <a href="technology.html">technology</a>
+            <a href="technology.html?gate=1">technology</a>
             <a href="science.html">science</a>
             <a href="products.html">products</a>
         </nav>
@@ -556,7 +556,6 @@
                     <div class="puzzle-controls">
                         <button id="puzzle-submit" class="puzzle-btn" type="button">start sonar run</button>
                         <button id="puzzle-reset" class="puzzle-btn" type="button" disabled>replay run</button>
-                        <button id="continue-next" class="puzzle-btn" type="button" disabled>open water goggles</button>
                     </div>
                     <div class="puzzle-status" id="puzzle-status">Tip: grab the glowing pings before the timer hits zero.</div>
                 </div>
@@ -597,7 +596,6 @@
 
             const submitBtn = document.getElementById("puzzle-submit");
             const resetBtn = document.getElementById("puzzle-reset");
-            const continueBtn = document.getElementById("continue-next");
             const statusEl = document.getElementById("puzzle-status");
             const techGrid = document.getElementById("tech-grid");
             const puzzlePanel = document.getElementById("puzzle-panel");
@@ -611,12 +609,31 @@
 
             const FISH_R = 14;
             const TARGET_R = 18;
+            const UNLOCK_KEY = "tritonTechUnlocked";
 
             let attemptsLeft = MAX_ATTEMPTS;
             let timeLeft = TIME_LIMIT_S;
             let timerInterval = null;
             let state = "idle"; // idle | playing | won
             let collected = 0;
+            const params = new URLSearchParams(window.location.search);
+            const isGateMode = params.get("gate") === "1";
+            let alreadyUnlocked = false;
+            try {
+                alreadyUnlocked = localStorage.getItem(UNLOCK_KEY) === "1";
+            } catch (e) {
+                alreadyUnlocked = false;
+            }
+
+            if (!isGateMode && !alreadyUnlocked) {
+                window.location.replace("technology.html?gate=1");
+                return;
+            }
+
+            if (isGateMode && alreadyUnlocked) {
+                window.location.replace("technology.html");
+                return;
+            }
 
             const pointer = { active: false, x: canvas.width * 0.45, y: canvas.height * 0.55 };
             const fish = { x: canvas.width * 0.12, y: canvas.height * 0.55, vx: 0, vy: 0 };
@@ -704,7 +721,6 @@
 
                 submitBtn.disabled = attemptsLeft <= 0;
                 resetBtn.disabled = true;
-                continueBtn.disabled = true;
             }
 
             function startTimer() {
@@ -737,7 +753,6 @@
                 if (attemptsLeft <= 0) {
                     submitBtn.disabled = true;
                     resetBtn.disabled = true;
-                    continueBtn.disabled = true;
                     setStatus("Too many failures. Terminal locked.", "error");
                     return;
                 }
@@ -754,7 +769,6 @@
                 collected = 0;
                 setProgress();
 
-                continueBtn.disabled = true;
                 resetBtn.disabled = false;
                 submitBtn.disabled = true;
 
@@ -774,14 +788,16 @@
                 clearInterval(timerInterval);
                 timerInterval = null;
 
-                techGrid.classList.remove("is-locked");
-                puzzlePanel.style.display = "block";
+                try {
+                    localStorage.setItem(UNLOCK_KEY, "1");
+                } catch (e) {
+                    // ignore storage failures
+                }
 
-                submitBtn.disabled = true;
-                resetBtn.disabled = true;
-                continueBtn.disabled = false;
-
-                setStatus("Gate opened. Next interface unlocked.", "ok");
+                setStatus("Gate opened. Entering technology tab...", "ok");
+                setTimeout(() => {
+                    window.location.href = "technology.html";
+                }, 450);
             }
 
             function canvasPointFromEvent(event) {
@@ -819,10 +835,6 @@
                 pointer.x = p.x;
                 pointer.y = p.y;
             }, { passive: true });
-
-            continueBtn.addEventListener("click", () => {
-                window.location.href = "water-goggles.html";
-            });
 
             submitBtn.addEventListener("click", beginRun);
             resetBtn.addEventListener("click", () => {
@@ -1023,6 +1035,13 @@
             }
 
             // Initial render + UI state
+            if (!isGateMode && alreadyUnlocked) {
+                techGrid.classList.remove("is-locked");
+                puzzlePanel.style.display = "none";
+                submitBtn.disabled = true;
+                resetBtn.disabled = true;
+                state = "won";
+            }
             attemptsLeftEl.textContent = String(attemptsLeft);
             timerLeftEl.textContent = String(timeLeft);
             setProgress();
