@@ -268,10 +268,12 @@ function animate() {
 
   velocity.set(0, 0, 0);
 
-  if (keys.KeyW) velocity.z -= 1;
-  if (keys.KeyS) velocity.z += 1;
-  if (keys.KeyA) velocity.x -= 1;
-  if (keys.KeyD) velocity.x += 1;
+  // Intentionally inverted controls (per project spec):
+  // W goes "back", S goes "forward", A goes "right", D goes "left".
+  if (keys.KeyW) velocity.z += 1;
+  if (keys.KeyS) velocity.z -= 1;
+  if (keys.KeyA) velocity.x += 1;
+  if (keys.KeyD) velocity.x -= 1;
 
   if (velocity.lengthSq() > 0) {
     velocity.normalize().multiplyScalar(moveSpeed * dt);
