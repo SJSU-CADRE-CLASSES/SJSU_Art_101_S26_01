@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <style>
-        /* Chat page overrides - BLTMR PLC layout (mirror reference image) */
         body.chat-page-bltmr { background: radial-gradient(ellipse at center, rgba(51, 255, 51, 0.25) 0%, rgba(51, 255, 51, 0.12) 40%, rgba(51, 255, 51, 0.02) 80%, transparent 100%), #000; color: #33ff33; overflow: hidden; }
         body.chat-page-bltmr .terminal-container { padding: 20px 26px; max-width: none; height: 100vh; overflow: hidden; }
         body.chat-page-bltmr .main-content { margin-top: 0; padding-top: 0; }
@@ -60,8 +59,9 @@
             border: none;
             margin-left: 2px;
             padding: 10.5px 14px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             line-height: calc(1em + 0.1rem);
+            font-weight: 550;
             color: #000;
             background: rgba(51, 255, 51, 0.35);
             text-decoration: none;
@@ -102,6 +102,7 @@
             display: flex;
             flex-direction: column;
             min-height: 320px;
+            font-size: 1.1rem; /* single source of truth for chat text sizing */
         }
         .bltmr-chat-messages {
             flex: 1;
@@ -190,7 +191,7 @@
         }
         .bltmr-chat-messages .chat-message {
             font-weight: normal;
-            font-size: 1.1rem;
+            font-size: inherit;
             line-height: calc(1em + 0.1rem);
         }
         .bltmr-chat-messages .msg-other { color: #fff; }
@@ -236,7 +237,9 @@
             border: none;
             color: #33ff33;
             font-family: 'VT323', monospace;
-            font-size: 1.2rem;
+            font-size: inherit;
+            font-weight: normal;
+            line-height: calc(1em + 0.1rem);
             outline: none;
             caret-color: #33ff33;
             resize: none;
@@ -307,7 +310,7 @@
         .bltmr-officer-top {
             display: flex;
             gap: 12px;
-            align-items: stretch;
+            align-items: center;
         }
         .bltmr-officer-photo {
             width: 75px;
@@ -337,12 +340,16 @@
         }
         .bltmr-officer-fields {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
             font-size: 0.95rem;
             line-height: calc(1em + 0.1rem);
             color: #33ff33;
         }
         .bltmr-bio {
-            font-size: 0.9rem;
+            font-size: 1.0rem;
             line-height: calc(1em + 0.1rem);
             color: #33ff33;
             border-top: 1.5px solid rgba(51, 255, 51, 0.45);
