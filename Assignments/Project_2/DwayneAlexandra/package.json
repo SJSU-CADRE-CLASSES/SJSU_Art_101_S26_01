@@ -1,0 +1,9 @@
+{
+  "name": "island-3js",
+  "version": "1.0.0",
+  "description": "Fortnite-style island in Three.js",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {}
+}
