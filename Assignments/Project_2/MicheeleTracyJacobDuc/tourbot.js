@@ -30,6 +30,74 @@
     }
   };
 
+  function spawnBalanceDeltaToast(deltaStars) {
+    if (!creditChipValue) return;
+    const delta = Number(deltaStars);
+    if (Number.isNaN(delta) || delta === 0) return;
+
+    const rect = creditChipValue.getBoundingClientRect();
+    const abs = Math.abs(delta);
+    const starCount = abs.toFixed(0);
+
+    const toast = document.createElement("div");
+    toast.className = `balance-delta-toast ${delta > 0 ? "positive" : "negative"}`;
+    toast.textContent =
+      delta > 0
+        ? `Congratulations, you earned ${starCount} stars`
+        : `Sadly, you lost ${starCount} stars`;
+    toast.style.left = rect.left + rect.width / 2 + "px";
+    toast.style.top = rect.top + "px";
+
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 2000);
+  }
+
+  function spawnEliminationToast(inhabitantName) {
+    if (!creditChipValue) return;
+    const name = String(inhabitantName || "").trim() || "Inhabitant";
+
+    const rect = creditChipValue.getBoundingClientRect();
+
+    const toast = document.createElement("div");
+    toast.className = "elimination-toast";
+    toast.textContent = `${name} is being eliminated due to their low star balance`;
+    toast.style.left = rect.left + rect.width / 2 + "px";
+    toast.style.top = rect.top + "px";
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 1600);
+  }
+
+  // Expose a hook so world pages can award or deduct stars after interactions.
+  // World pages call: window.adjustBalance(deltaStars, contextText)
+  window.adjustBalance = (deltaStars, contextText = "Inhabitant reaction") => {
+    const delta = Number(deltaStars);
+    if (Number.isNaN(delta) || delta === 0) {
+      if (typeof deltaStars === "number" && deltaStars === 0) {
+        addMsg(`Inhabitant Verdict: 0★. ${contextText}`, "bot");
+      }
+      // still clamp / update balance (harmless)
+      setBalance(balance + (Number(deltaStars) || 0));
+      return;
+    }
+
+    const nextRaw = balance + delta;
+    const nextRounded = Math.max(0, Math.round(nextRaw * 100) / 100);
+    const actualDelta = nextRounded - balance;
+
+    spawnBalanceDeltaToast(actualDelta);
+    setBalance(nextRaw);
+
+    const abs = Math.abs(actualDelta);
+    const sign = actualDelta > 0 ? "+" : "-";
+    addMsg(
+      `Inhabitant Verdict: ${sign}${abs.toFixed(0)}★. ${contextText}`,
+      "bot"
+    );
+  };
+
   const addMsg = (text, who = "bot") => {
     const node = document.createElement("div");
     node.className = `tourbot-msg ${who}`;
@@ -61,11 +129,31 @@
       btn.textContent = `${i}★`;
       btn.addEventListener("click", () => {
         addMsg(`${i}★`, "user");
-        const earned = i * 1;
-        setBalance(balance + earned);
-        addMsg(
-          `Logged. That rating earned ${earned.toFixed(0)}★ of currency. This shapes their reality.`
-        );
+
+        const targetName =
+          window.__currentInhabitantForRating ||
+          window.__lastInhabitantForRating ||
+          "Inhabitant";
+
+        // 1★ is a brutal verdict: the inhabitant gets eliminated.
+        // For 1★, your balance does NOT change (no deduction).
+        let delta = i * 1;
+        if (i === 1) {
+          spawnEliminationToast(targetName);
+          delta = 0;
+          addMsg(
+            `Brutal verdict: ${String(targetName).trim() || "Inhabitant"} is eliminated.`,
+            "bot"
+          );
+        } else {
+          addMsg(
+            `Logged. That rating earned ${delta.toFixed(0)}★ of currency. This shapes their reality.`,
+            "bot"
+          );
+        }
+
+        setBalance(balance + delta);
+
         addMsg("What do you want to do next?");
         offerMenu();
       });

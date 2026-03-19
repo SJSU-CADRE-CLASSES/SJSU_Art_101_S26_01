@@ -1934,6 +1934,34 @@
           }, 1400);
         });
       });
+
+      // HUD navigation transitions between worlds
+      document.querySelectorAll('.hud-nav a[href]').forEach((link) => {
+        const href = link.getAttribute('href');
+        if (!href || !worldNames[href]) return;
+
+        link.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          if (isAnimating) return;
+          isAnimating = true;
+
+          let color = portalColors['glass'];
+          if (href === 'lego-world.html') color = portalColors['lego'];
+          if (href === 'underground-city.html') color = portalColors['underground'];
+
+          worldTransition.style.setProperty('--transition-color', color);
+          worldDestination.textContent = worldNames[href] || 'Unknown World';
+          generateSpeedLines();
+          worldTransition.classList.add('active');
+
+          screenShake();
+          playWarpSound();
+
+          setTimeout(() => {
+            window.location.href = href;
+          }, 1400);
+        });
+      });
     </script>
   </body>
 </html>
