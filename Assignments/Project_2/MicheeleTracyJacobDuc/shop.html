@@ -6,15 +6,15 @@
     <title>StarStruck // Star Shop</title>
     <style>
       :root {
-        --bg: #02030a;
-        --bg-alt: #060716;
-        --panel: #080a1a;
-        --accent: #ff6ad5;
-        --accent-2: #5ad8ff;
-        --accent-warn: #ffcc00;
-        --text: #f7f7ff;
-        --muted: #a3a9d4;
-        --border-subtle: rgba(163, 169, 212, 0.25);
+        --bg: #030810;
+        --bg-alt: #051018;
+        --panel: rgba(5, 15, 25, 0.95);
+        --accent: #00e5ff;
+        --accent-2: #40ffd8;
+        --accent-warn: #00ffaa;
+        --text: #d0f0ff;
+        --muted: #5a9ab8;
+        --border-subtle: rgba(0, 229, 255, 0.25);
         --shadow-strong: 0 28px 80px rgba(0, 0, 0, 0.95);
       }
 
@@ -29,9 +29,9 @@
           "Segoe UI", sans-serif;
         color: var(--text);
         background:
-          radial-gradient(circle at 10% 0, #2d1b55 0, transparent 50%),
-          radial-gradient(circle at 90% 100%, #003847 0, transparent 55%),
-          linear-gradient(160deg, #02030a 0, #02030a 40%, #000000 100%);
+          radial-gradient(circle at 10% 0, #051525 0, transparent 50%),
+          radial-gradient(circle at 90% 100%, #041820 0, transparent 55%),
+          linear-gradient(160deg, #030810 0, #030810 40%, #020508 100%);
         overflow-x: hidden;
       }
 
@@ -56,13 +56,13 @@
         border-radius: 999px;
         padding: 10px 18px;
         background:
-          radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 55%),
-          rgba(3, 7, 27, 0.94);
-        border: 1px solid rgba(163, 169, 212, 0.6);
+          radial-gradient(circle at 0 0, rgba(0, 229, 255, 0.08), transparent 55%),
+          rgba(3, 10, 18, 0.94);
+        border: 1px solid rgba(0, 229, 255, 0.5);
         backdrop-filter: blur(22px);
         box-shadow:
           0 18px 60px rgba(0, 0, 0, 0.9),
-          0 0 26px rgba(90, 216, 255, 0.45);
+          0 0 26px rgba(0, 229, 255, 0.4);
       }
 
       .brand {
@@ -77,10 +77,10 @@
         border-radius: 10px;
         border: 1px solid rgba(255, 255, 255, 0.7);
         background:
-          radial-gradient(circle at 30% 10%, #ffffff 0, #ffccfb 28%, #ff6ad5 45%, #02030a 80%);
+          radial-gradient(circle at 30% 10%, #ffffff 0, #c9fffc 28%, #00e5ff 45%, #030810 80%);
         box-shadow:
-          0 0 18px rgba(255, 106, 213, 0.8),
-          0 0 26px rgba(90, 216, 255, 0.9);
+          0 0 18px rgba(0, 229, 255, 0.8),
+          0 0 26px rgba(64, 255, 216, 0.7);
         position: relative;
         overflow: hidden;
       }
@@ -139,18 +139,18 @@
 
       nav a:hover {
         color: var(--text);
-        border-color: rgba(90, 216, 255, 0.8);
-        background: rgba(3, 9, 38, 0.92);
+        border-color: rgba(0, 229, 255, 0.8);
+        background: rgba(5, 15, 30, 0.92);
         transform: translateY(-1px);
       }
 
       nav a.active {
-        color: #02030a;
-        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        color: #030810;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
         border-color: transparent;
         box-shadow:
-          0 0 18px rgba(90, 216, 255, 0.9),
-          0 0 26px rgba(255, 106, 213, 0.85);
+          0 0 18px rgba(0, 229, 255, 0.9),
+          0 0 26px rgba(64, 255, 216, 0.7);
       }
 
       .credit-chip {
@@ -160,17 +160,17 @@
         font-size: 0.8rem;
         padding: 6px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(255, 204, 0, 0.75);
-        background: radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.2), transparent 55%);
-        color: #ffe36f;
+        border: 1px solid rgba(64, 255, 216, 0.75);
+        background: radial-gradient(circle at 0 0, rgba(64, 255, 216, 0.2), transparent 55%);
+        color: #40ffd8;
       }
 
       .credit-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #ffe36f;
-        box-shadow: 0 0 12px rgba(255, 204, 0, 0.9);
+        background: #40ffd8;
+        box-shadow: 0 0 12px rgba(64, 255, 216, 0.9);
       }
 
       main {
@@ -181,11 +181,11 @@
         border-radius: 26px;
         padding: 30px 24px 32px;
         background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 45%),
-          radial-gradient(circle at 100% 0, rgba(90, 216, 255, 0.16), transparent 55%),
-          radial-gradient(circle at 0 100%, rgba(255, 106, 213, 0.16), transparent 55%),
-          rgba(3, 5, 23, 0.95);
-        border: 1px solid rgba(163, 169, 212, 0.45);
+          linear-gradient(145deg, rgba(0, 229, 255, 0.04), transparent 45%),
+          radial-gradient(circle at 100% 0, rgba(0, 229, 255, 0.12), transparent 55%),
+          radial-gradient(circle at 0 100%, rgba(64, 255, 216, 0.1), transparent 55%),
+          rgba(3, 10, 18, 0.95);
+        border: 1px solid rgba(0, 229, 255, 0.35);
         box-shadow: var(--shadow-strong);
         display: grid;
         grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
@@ -208,7 +208,7 @@
       }
 
       h1 span {
-        background: linear-gradient(135deg, #ffffff, #ff9ff3);
+        background: linear-gradient(135deg, #ffffff, #40ffd8);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -226,13 +226,13 @@
         border-radius: 22px;
         padding: 16px 16px 14px;
         background:
-          radial-gradient(circle at 20% 0, rgba(255, 255, 255, 0.12), transparent 55%),
-          radial-gradient(circle at 100% 100%, rgba(90, 216, 255, 0.18), transparent 60%),
+          radial-gradient(circle at 20% 0, rgba(0, 229, 255, 0.1), transparent 55%),
+          radial-gradient(circle at 100% 100%, rgba(0, 229, 255, 0.15), transparent 60%),
           var(--panel);
-        border: 1px solid rgba(163, 169, 212, 0.5);
+        border: 1px solid rgba(0, 229, 255, 0.4);
         box-shadow:
           0 18px 50px rgba(0, 0, 0, 0.9),
-          0 0 22px rgba(90, 216, 255, 0.6);
+          0 0 22px rgba(0, 229, 255, 0.5);
         position: relative;
         overflow: hidden;
       }
@@ -260,17 +260,17 @@
         text-transform: uppercase;
         padding: 4px 9px;
         border-radius: 999px;
-        border: 1px solid rgba(90, 216, 255, 0.8);
-        background: rgba(4, 18, 29, 0.95);
-        color: var(--accent-2);
+        border: 1px solid rgba(0, 229, 255, 0.8);
+        background: rgba(5, 15, 25, 0.95);
+        color: var(--accent);
       }
 
       .panel-status-dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: var(--accent-2);
-        box-shadow: 0 0 14px rgba(90, 216, 255, 1);
+        background: var(--accent);
+        box-shadow: 0 0 14px rgba(0, 229, 255, 1);
       }
 
       .economy-grid {
@@ -283,8 +283,8 @@
       .economy-card {
         border-radius: 16px;
         padding: 10px 10px 9px;
-        border: 1px dashed rgba(163, 169, 212, 0.55);
-        background: rgba(7, 9, 28, 0.9);
+        border: 1px dashed rgba(0, 229, 255, 0.4);
+        background: rgba(5, 12, 20, 0.9);
         font-size: 0.78rem;
       }
 
@@ -292,7 +292,7 @@
         width: 100%;
         aspect-ratio: 16 / 10;
         border-radius: 12px;
-        border: 1px solid rgba(163, 169, 212, 0.35);
+        border: 1px solid rgba(0, 229, 255, 0.3);
         object-fit: cover;
         display: block;
         margin-bottom: 8px;
@@ -312,12 +312,12 @@
       }
 
       .highlight {
-        color: #ffcc66;
+        color: #40ffd8;
       }
 
       .divider {
         margin: 12px 0 10px;
-        border-top: 1px dashed rgba(163, 169, 212, 0.5);
+        border-top: 1px dashed rgba(0, 229, 255, 0.4);
       }
 
       .economy {
@@ -329,7 +329,7 @@
       #cartPanel {
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px dashed rgba(163, 169, 212, 0.45);
+        border-top: 1px dashed rgba(0, 229, 255, 0.35);
       }
 
       #cartItems {
@@ -351,8 +351,8 @@
         margin-top: 6px;
         border-radius: 999px;
         padding: 6px 10px;
-        border: 1px solid rgba(163, 169, 212, 0.7);
-        background: rgba(5, 7, 26, 0.9);
+        border: 1px solid rgba(0, 229, 255, 0.6);
+        background: rgba(5, 12, 20, 0.9);
         color: var(--text);
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -366,8 +366,8 @@
 
       .add-to-cart:hover {
         transform: translateY(-1px);
-        border-color: rgba(90, 216, 255, 0.9);
-        background: rgba(10, 12, 40, 0.98);
+        border-color: rgba(0, 229, 255, 0.9);
+        background: rgba(5, 20, 30, 0.98);
       }
 
       footer {
@@ -379,7 +379,7 @@
         justify-content: space-between;
         gap: 8px;
         padding: 10px 2px 0;
-        border-top: 1px dashed rgba(163, 169, 212, 0.45);
+        border-top: 1px dashed rgba(0, 229, 255, 0.35);
       }
 
       footer span {
