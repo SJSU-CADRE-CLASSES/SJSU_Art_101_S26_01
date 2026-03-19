@@ -105,7 +105,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x050011, 0.06);
 
 const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 120);
-camera.position.set(0, 3.2, 9.2);
+camera.position.set(0, 4.15, 11.2);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(window.devicePixelRatio || 1);
@@ -162,7 +162,7 @@ scene.add(cyan);
 scene.add(cyan.target);
 
 const carousel = new THREE.Group();
-carousel.position.set(0, 1.2, 0);
+carousel.position.set(0, 1.55, 0);
 scene.add(carousel);
 
 function wire(hex, opacity = 0.9) {
@@ -209,7 +209,7 @@ function makeDishMesh(d) {
   const ringGeo = new THREE.TorusGeometry(1.45, 0.03, 10, 80);
   const ring = new THREE.Mesh(ringGeo, wire(col, 0.7));
   ring.rotation.x = Math.PI / 2;
-  ring.position.y = -0.9;
+  ring.position.y = -0.75;
   g.add(ring);
 
   return g;
@@ -285,6 +285,7 @@ function animate() {
     dishMeshes[i].rotation.x = Math.sin(now * 0.001 + i) * 0.05;
   }
 
+  camera.lookAt(0, 1.55, 0);
   renderer.render(scene, camera);
 }
 animate();

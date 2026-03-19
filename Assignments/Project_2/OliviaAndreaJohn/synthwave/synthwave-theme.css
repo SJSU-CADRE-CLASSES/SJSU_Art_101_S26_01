@@ -390,6 +390,38 @@ main {
     0 0 2px #020617;
 }
 
+.hero-title--rgb {
+  background: linear-gradient(
+    90deg,
+    #ff375f,
+    #ff37b9,
+    #8d72ff,
+    #46f5ff,
+    #2dff9d,
+    #ffe66b,
+    #ff375f
+  );
+  background-size: 320% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rgb-sweep 3.6s linear infinite;
+  text-shadow:
+    0 0 38px rgba(70, 245, 255, 0.28),
+    0 0 52px rgba(255, 55, 185, 0.22);
+}
+
+@keyframes rgb-sweep {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    background-position: 100% 50%;
+    filter: hue-rotate(360deg);
+  }
+}
+
 .hero-tagline {
   font-size: 1.02rem;
   color: var(--text-muted);
@@ -697,6 +729,215 @@ main {
 
 .shopping-footer {
   margin-top: 2.5rem;
+}
+
+/* Token console */
+.token-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.2rem;
+  margin: 1rem 0 1.2rem;
+}
+
+.token-card {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: radial-gradient(
+      circle at top left,
+      rgba(255, 0, 204, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(0, 255, 255, 0.12),
+      transparent 55%
+    ),
+    rgba(5, 0, 18, 0.55);
+  backdrop-filter: blur(16px);
+  padding: 1.1rem 1.2rem 1.2rem;
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 0 26px rgba(255, 0, 204, 0.18),
+    0 0 44px rgba(0, 255, 255, 0.12);
+}
+
+.token-card-title {
+  font-family: "Orbitron", system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  color: rgba(70, 245, 255, 0.92);
+  margin-bottom: 0.7rem;
+}
+
+.token-balance-num {
+  font-family: "Orbitron", system-ui, sans-serif;
+  letter-spacing: 0.16em;
+  font-size: 1.8rem;
+  color: rgba(248, 250, 252, 0.95);
+  text-shadow:
+    0 0 18px rgba(70, 245, 255, 0.16),
+    0 0 24px rgba(255, 55, 185, 0.12);
+}
+
+.token-balance-sub {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.token-balance-days {
+  color: rgba(255, 230, 107, 0.95);
+  font-weight: 700;
+}
+
+.token-warning {
+  margin-top: 0.8rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(2, 6, 23, 0.55);
+  padding: 0.7rem 0.8rem;
+  font-size: 0.78rem;
+  color: rgba(226, 232, 240, 0.76);
+  line-height: 1.5;
+}
+
+.job-console {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.job-label span {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 0.35rem;
+}
+
+.job-select {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(2, 6, 23, 0.6);
+  color: rgba(248, 250, 252, 0.92);
+  font-family: "Roboto Mono", system-ui, monospace;
+  font-size: 0.82rem;
+}
+
+.job-details {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 23, 42, 0.55);
+  padding: 0.85rem 0.9rem;
+}
+
+.job-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.35rem;
+  color: rgba(248, 250, 252, 0.94);
+}
+
+.job-blurb {
+  font-size: 0.78rem;
+  color: rgba(226, 232, 240, 0.75);
+  line-height: 1.5;
+  margin-bottom: 0.7rem;
+}
+
+.job-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.job-stat-k {
+  opacity: 0.85;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  margin-right: 0.4rem;
+}
+
+.job-risk {
+  font-family: "Orbitron", system-ui, sans-serif;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+}
+
+.job-risk--low {
+  color: rgba(45, 255, 157, 0.92);
+}
+.job-risk--medium {
+  color: rgba(255, 230, 107, 0.92);
+}
+.job-risk--high {
+  color: rgba(255, 55, 95, 0.92);
+}
+
+.job-fineprint {
+  margin-top: 0.7rem;
+  font-size: 0.74rem;
+  color: rgba(226, 232, 240, 0.68);
+  line-height: 1.45;
+}
+
+.job-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+}
+
+.job-btn {
+  appearance: none;
+  border: 1px solid rgba(56, 189, 248, 0.9);
+  background: radial-gradient(
+    circle at top,
+    rgba(248, 250, 252, 0.94),
+    rgba(148, 163, 184, 0.9)
+  );
+  color: #020617;
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  font-family: "Orbitron", system-ui, sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.85);
+}
+
+.job-btn--ghost {
+  background: rgba(15, 23, 42, 0.75);
+  color: rgba(248, 250, 252, 0.92);
+  border-color: rgba(148, 163, 184, 0.55);
+  box-shadow: none;
+}
+
+.job-log {
+  margin-top: 0.4rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(2, 6, 23, 0.55);
+  padding: 0.7rem 0.8rem;
+  font-size: 0.78rem;
+  color: rgba(226, 232, 240, 0.8);
+  line-height: 1.5;
+  min-height: 2.6rem;
+}
+
+@media (max-width: 900px) {
+  .token-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 768px) {

@@ -3,8 +3,8 @@
   const loading = document.getElementById("news-loading");
   if (!grid || !loading) return;
 
-  const svg = (a, b, label) =>
-    `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`<?xml version="1.0" encoding="UTF-8"?>
+  const svg = (a, b, label) => {
+    const content = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
@@ -35,8 +35,9 @@
     <rect x="88" y="86" width="560" height="62" rx="18" fill="rgba(2,6,23,0.45)" stroke="rgba(255,255,255,0.22)"/>
     <text x="118" y="128" font-family="Orbitron, Arial" font-size="30" letter-spacing="6" fill="rgba(248,250,252,0.92)">${label}</text>
   </g>
-</svg>`)}`
-    );
+</svg>`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(content)}`;
+  };
 
   const base = [
     {
