@@ -127,6 +127,45 @@ let deleteTargetText = null;
 let deleteIndex = 0;
 let deleteLastTime = 0;
 const DELETE_CHAR_DELAY = 0.045;
+// Proximity beep for Library boulder
+let proximityAudioCtx = null;
+let lastLibraryBeepAt = 0;
+const LIB_BEEP_NEAR_DIST = 6;
+const LIB_BEEP_FAR_DIST = 42;
+
+function ensureProximityAudio() {
+  if (!proximityAudioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    proximityAudioCtx = new Ctx();
+  }
+  if (proximityAudioCtx.state === 'suspended') {
+    proximityAudioCtx.resume().catch(() => {});
+  }
+  return proximityAudioCtx;
+}
+
+function playLibraryBeep(intensity) {
+  const ctx = ensureProximityAudio();
+  if (!ctx) return;
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type = 'bandpass';
+  filt.frequency.value = 920 + intensity * 320;
+  filt.Q.value = 2.0;
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(860 + intensity * 260, t);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.02 + intensity * 0.05, t + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+  osc.connect(filt);
+  filt.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.13);
+}
 
 async function init() {
   scene = new THREE.Scene();
@@ -1213,6 +1252,7 @@ async function init() {
   controls.maxPolarAngle = Math.PI;
 
   document.body.addEventListener('click', () => {
+    ensureProximityAudio();
     if (!controls.isLocked) {
       controls.lock();
       prompt.style.opacity = '0';
@@ -1969,6 +2009,25 @@ function animate(time) {
   if (fwd.lengthSq() < 1e-4) fwd.set(0, 0, -1);
   fwd.normalize();
   const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+
+  // Proximity sonar beep: louder/faster as player nears Library boulder
+  if (controls.isLocked) {
+    const distToLibrary = camera.position.distanceTo(LIBRARY_POSITION);
+    const distNorm = THREE.MathUtils.clamp(
+      (distToLibrary - LIB_BEEP_NEAR_DIST) / (LIB_BEEP_FAR_DIST - LIB_BEEP_NEAR_DIST),
+      0,
+      1,
+    );
+    const intensity = 1 - distNorm; // 0 far, 1 near
+    if (intensity > 0.01) {
+      const beepInterval = THREE.MathUtils.lerp(1.45, 0.28, intensity);
+      const nowSec = (time ?? performance.now()) / 1000;
+      if (nowSec - lastLibraryBeepAt >= beepInterval) {
+        playLibraryBeep(intensity);
+        lastLibraryBeepAt = nowSec;
+      }
+    }
+  }
 
   // Seat — directly under camera, rotates with view
   seatMesh.position.copy(camera.position);
