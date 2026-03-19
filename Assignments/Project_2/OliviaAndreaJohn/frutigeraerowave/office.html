@@ -144,6 +144,214 @@
       border: 0;
       display: block;
     }
+
+    .ipod {
+      position: fixed;
+      right: 40px;
+      top: 56px;
+      width: 150px;
+      height: 260px;
+      border-radius: 28px;
+      padding: 14px 12px;
+      background:
+        radial-gradient(circle at 20% 0%, #ffffff, #e8f5ff 55%, #c7e6ff 100%);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 16px 32px rgba(0, 64, 105, 0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 8;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .ipod--dragging {
+      cursor: grabbing;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.95),
+        0 20px 36px rgba(0, 64, 105, 0.9);
+    }
+
+    .ipod-screen {
+      width: 100%;
+      height: 130px;
+      border-radius: 14px;
+      padding: 6px 8px;
+      background:
+        linear-gradient(145deg, #b4e5ff, #ffffff);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+        inset 0 0 12px rgba(0, 96, 164, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .ipod-screen-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .ipod-screen-title {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(0, 52, 96, 0.9);
+    }
+
+    .ipod-tabs {
+      display: inline-flex;
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1px;
+      border-radius: 999px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.8),
+        0 1px 2px rgba(0, 60, 110, 0.35);
+    }
+
+    .ipod-tab {
+      border: none;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: transparent;
+      color: rgba(0, 60, 110, 0.8);
+      cursor: pointer;
+    }
+
+    .ipod-tab.ipod-tab--active {
+      background: linear-gradient(135deg, #3ac8ff, #1a7bff);
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 8px rgba(0, 108, 214, 0.9);
+    }
+
+    .ipod-screen-body {
+      flex: 1;
+      position: relative;
+    }
+
+    .ipod-tab-panel {
+      position: absolute;
+      inset: 0;
+    }
+
+    .ipod-tab-panel--hidden {
+      display: none;
+    }
+
+    .ipod-screen-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      max-height: 90px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .ipod-screen-menu::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
+    .ipod-screen-menu a {
+      display: block;
+      padding: 4px 6px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: rgba(0, 45, 82, 0.95);
+      background: rgba(255, 255, 255, 0.46);
+    }
+
+    .ipod-screen-menu a:hover {
+      background: linear-gradient(135deg, #3ac8ff, #1a7bff);
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 12px rgba(0, 108, 214, 0.9);
+    }
+
+    .ipod-screen-menu a.ipod-active {
+      background: linear-gradient(135deg, #3ac8ff, #1a7bff);
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 12px rgba(0, 108, 214, 0.9);
+    }
+
+    .ipod-wheel {
+      width: 100px;
+      height: 100px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, #ffffff, #e8edf5);
+      box-shadow:
+        inset 0 0 0 1px rgba(200, 210, 225, 0.9),
+        0 8px 16px rgba(0, 32, 64, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(80, 96, 120, 0.9);
+    }
+
+    .ipod-wheel-center {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, #ffffff, #e4edf7);
+      box-shadow:
+        inset 0 0 0 1px rgba(210, 220, 235, 0.95),
+        0 2px 4px rgba(0, 40, 80, 0.45);
+    }
+
+    .ipod-wheel-label {
+      position: absolute;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .ipod-wheel-label--menu {
+      top: 8px;
+    }
+
+    .ipod-wheel-label--play {
+      bottom: 8px;
+    }
+
+    .ipod-wheel-label--prev {
+      left: 10px;
+    }
+
+    .ipod-wheel-label--next {
+      right: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .ipod {
+        transform: scale(0.9);
+        transform-origin: top left;
+      }
+    }
   </style>
 
   <!-- Three.js CDN -->
@@ -176,6 +384,212 @@
       allowfullscreen
     ></iframe>
   </div>
+
+  <aside class="ipod" aria-label="Frutiger-Aero navigation iPod">
+    <div class="ipod-screen">
+      <div class="ipod-screen-header">
+        <div class="ipod-screen-title">frutiger-aero</div>
+        <div class="ipod-tabs">
+          <button class="ipod-tab ipod-tab--active" data-ipod-tab="nav">Scenes</button>
+          <button class="ipod-tab" data-ipod-tab="music">Music</button>
+        </div>
+      </div>
+      <div class="ipod-screen-body">
+        <ul class="ipod-screen-menu ipod-tab-panel ipod-tab-panel-nav">
+          <li><a class="ipod-link" href="../index.html">▶ Home screen</a></li>
+          <li><a class="ipod-link" href="./frutigerwave.html">▶ Frutiger-Aero Wave</a></li>
+          <li><a class="ipod-link" href="./office.html">▶ Frutiger-Aero Office</a></li>
+          <li><a class="ipod-link" href="../vaporwave/vaporwave.html">▶ Vaporwave scene</a></li>
+          <li><a class="ipod-link" href="../synthwave/synthwave.html">▶ Synthwave scene</a></li>
+        </ul>
+
+        <div class="ipod-screen-music ipod-tab-panel ipod-tab-panel-music ipod-tab-panel--hidden">
+          <iframe
+            title="Symphony on Spotify"
+            src="https://open.spotify.com/embed/track/1x5sYLZiu9r5E43kMlt9f8?utm_source=generator"
+            width="100%"
+            height="80"
+            frameborder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="ipod-wheel" aria-hidden="true">
+      <div class="ipod-wheel-center"></div>
+      <div class="ipod-wheel-label ipod-wheel-label--menu" role="button" tabindex="0">MENU</div>
+      <div class="ipod-wheel-label ipod-wheel-label--play" role="button" tabindex="0">▶▮▮</div>
+      <div class="ipod-wheel-label ipod-wheel-label--prev" role="button" tabindex="0">◀◀</div>
+      <div class="ipod-wheel-label ipod-wheel-label--next" role="button" tabindex="0">▶▶</div>
+    </div>
+  </aside>
+
+  <script>
+    window.addEventListener("load", function () {
+      (function () {
+        const ipod = document.querySelector(".ipod");
+        if (!ipod) return;
+
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+
+        function onPointerDown(ev) {
+          // Don't start drag when clicking on an actual control/link
+          const target = ev.target;
+          if (target && (target.closest("a") || target.closest("button") || target.tagName === "IFRAME")) return;
+
+          isDragging = true;
+          ipod.classList.add("ipod--dragging");
+
+          const rect = ipod.getBoundingClientRect();
+          startX = ev.clientX;
+          startY = ev.clientY;
+          startLeft = rect.left;
+          startTop = rect.top;
+
+          // Convert from right/top positioning to left/top during drag
+          ipod.style.right = "auto";
+          ipod.style.left = rect.left + "px";
+          ipod.style.top = rect.top + "px";
+
+          window.addEventListener("pointermove", onPointerMove);
+          window.addEventListener("pointerup", onPointerUp);
+        }
+
+        function onPointerMove(ev) {
+          if (!isDragging) return;
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
+
+          const newLeft = startLeft + dx;
+          const newTop = startTop + dy;
+
+          const maxLeft = window.innerWidth - ipod.offsetWidth;
+          const maxTop = window.innerHeight - ipod.offsetHeight;
+
+          ipod.style.left = Math.min(Math.max(0, newLeft), Math.max(0, maxLeft)) + "px";
+          ipod.style.top = Math.min(Math.max(0, newTop), Math.max(0, maxTop)) + "px";
+        }
+
+        function onPointerUp() {
+          if (!isDragging) return;
+          isDragging = false;
+          ipod.classList.remove("ipod--dragging");
+          window.removeEventListener("pointermove", onPointerMove);
+          window.removeEventListener("pointerup", onPointerUp);
+        }
+
+        ipod.addEventListener("pointerdown", onPointerDown);
+      })();
+
+      const links = Array.from(document.querySelectorAll(".ipod-link"));
+      const menu = document.querySelector(".ipod-screen-menu");
+      const prevBtn = document.querySelector(".ipod-wheel-label--prev");
+      const nextBtn = document.querySelector(".ipod-wheel-label--next");
+      const playBtn = document.querySelector(".ipod-wheel-label--play");
+      const tabs = Array.from(document.querySelectorAll(".ipod-tab"));
+      const navPanel = document.querySelector(".ipod-tab-panel-nav");
+      const musicPanel = document.querySelector(".ipod-tab-panel-music");
+
+      if (
+        !links.length ||
+        !menu ||
+        !prevBtn ||
+        !nextBtn ||
+        !playBtn ||
+        !tabs.length ||
+        !navPanel ||
+        !musicPanel
+      ) {
+        return;
+      }
+
+      let index = 0;
+      let activeTab = "nav";
+
+      function updateActive() {
+        links.forEach((link, i) => {
+          link.classList.toggle("ipod-active", activeTab === "nav" && i === index);
+        });
+
+        if (activeTab !== "nav") return;
+
+        const active = links[index];
+        if (active) {
+          const itemTop = active.offsetTop;
+          const itemBottom = itemTop + active.offsetHeight;
+          const viewTop = menu.scrollTop;
+          const viewBottom = viewTop + menu.clientHeight;
+
+          if (itemTop < viewTop) {
+            menu.scrollTop = itemTop;
+          } else if (itemBottom > viewBottom) {
+            menu.scrollTop = itemBottom - menu.clientHeight;
+          }
+        }
+      }
+
+      function move(delta) {
+        if (activeTab !== "nav") return;
+        index = (index + delta + links.length) % links.length;
+        updateActive();
+      }
+
+      function activate() {
+        if (activeTab === "nav") {
+          const current = links[index];
+          if (current) current.click();
+        }
+      }
+
+      function setTab(tab) {
+        activeTab = tab;
+        tabs.forEach((btn) => {
+          btn.classList.toggle("ipod-tab--active", btn.dataset.ipodTab === tab);
+        });
+
+        if (tab === "nav") {
+          navPanel.classList.remove("ipod-tab-panel--hidden");
+          musicPanel.classList.add("ipod-tab-panel--hidden");
+        } else {
+          navPanel.classList.add("ipod-tab-panel--hidden");
+          musicPanel.classList.remove("ipod-tab-panel--hidden");
+        }
+
+        updateActive();
+      }
+
+      prevBtn.addEventListener("click", function () {
+        move(-1);
+      });
+      nextBtn.addEventListener("click", function () {
+        move(1);
+      });
+      playBtn.addEventListener("click", activate);
+
+      [prevBtn, nextBtn, playBtn].forEach((btn) => {
+        btn.addEventListener("keydown", function (ev) {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            btn.click();
+          }
+        });
+      });
+
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          setTab(btn.dataset.ipodTab);
+        });
+      });
+
+      setTab("nav");
+    });
+  </script>
 
   <script>
     const canvas = document.getElementById("scene");
