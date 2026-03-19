@@ -49,6 +49,16 @@
             height: auto;
             display: block;
         }
+        .index-logo.glitch {
+            animation: image-glitch 0.2s steps(2) forwards;
+        }
+        @keyframes image-glitch {
+            0% { transform: translate(0, 0); filter: brightness(1); opacity: 1; }
+            25% { transform: translate(-4px, 2px); filter: brightness(1.4); opacity: 0.9; }
+            50% { transform: translate(3px, -2px); filter: brightness(0.7); opacity: 1; }
+            75% { transform: translate(2px, 1px); filter: brightness(1.2); opacity: 0.95; }
+            100% { transform: translate(0, 0); filter: brightness(1); opacity: 1; }
+        }
         .loading-overlay {
             display: none;
             position: fixed;
@@ -150,7 +160,6 @@
     </div>
 
     <div class="terminal-container main-content-wrap" id="main-content">
-        <header class="header">MAIN TERMINAL</header>
         <div class="index-logo-wrap">
             <img src="fake logo.png" alt="SERVITOR - warp space computing services" class="index-logo">
         </div>
@@ -295,6 +304,23 @@
                     }, 400);
                 }, 4000);
             });
+        })();
+
+        // ----- Occasional logo glitch -----
+        (function() {
+            var logo = document.querySelector('.index-logo');
+            if (!logo) return;
+            function scheduleGlitch() {
+                var delay = 3000 + Math.random() * 5000;
+                setTimeout(function() {
+                    logo.classList.add('glitch');
+                    setTimeout(function() {
+                        logo.classList.remove('glitch');
+                    }, 220);
+                    scheduleGlitch();
+                }, delay);
+            }
+            setTimeout(scheduleGlitch, 2500);
         })();
     </script>
 </body>
