@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node Maze</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    touch-action: none; /* Prevent scrolling on mobile devices */
+  }
+
+  /* Full screen canvas for cables */
+  #cable-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none; /* Let pointer events pass through to nodes behind the canvas layer if any */
+  }
+
+  /* Nodes */
+  .node {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    cursor: grab;
+    
+    /* Synth Patch Input Metallic Look */
+    background: radial-gradient(circle at 35% 35%, #555 0%, #151515 80%);
+    border: 3px solid #333;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    user-select: none;
+    transition: box-shadow 0.2s, transform 0.1s, filter 0.2s;
+  }
+  
+  /* The synth patch hole */
+  .node::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #020202;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.1);
+  }
+  
+  .node:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  .node.node-red {
+    border-color: #ff4040;
+    box-shadow: 0 0 15px rgba(255, 64, 64, 0.4);
+  }
+  
+  .node.node-green {
+    border-color: #39ff14; 
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+  }
+  
+  .node.node-grey {
+    border-color: #888888;
+    box-shadow: 0 0 15px rgba(136, 136, 136, 0.4);
+  }
+
+  /* Console Log UI */
+  .console-log {
+    position: fixed;
+    top: 60px;
+    left: 30px;
+    z-index: 5;
+    color: #00ffd5;
+    text-shadow: 0 0 8px rgba(0, 255, 213, 0.6);
+    pointer-events: none; /* Let clicks pass through except for links */
+  }
+
+  .console-log pre {
+    font-family: monospace;
+    font-size: 14px;
+    margin-bottom: 10px;
+    white-space: pre;
+    line-height: 1.2;
+  }
+
+  .console-log .jack-in-btn {
+    pointer-events: auto; /* Re-enable clicks for the button */
+    display: none;
+    margin-top: 15px;
+    font-size: 1.2em;
+    padding: 8px 16px;
+  }
+
+  .title-text {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    z-index: 5;
+    text-shadow: 0 0 10px #00ffd5;
+    font-size: 24px;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .instructions {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    text-shadow: 0 0 5px #00ffd5;
+    pointer-events: none;
+    color: rgba(0, 255, 213, 0.7);
+    font-size: 18px;
+    letter-spacing: 0.1em;
+  }
+
+  .completed-text {
+    color: #ffd84d;
+    text-shadow: 0 0 10px #ffd84d;
+    animation: blink 1.2s infinite;
+  }
+</style>
+</head>
+<body>
+
+<div class="title-text">:: nodeMaze Init ::</div>
+<div class="console-log">
+  <pre id="terminal-log">> system init
+> create secure link...</pre>
+  <a href="index.html" class="retro-btn jack-in-btn" id="jack-in-btn">JACK IN</a>
+</div>
+
+<div class="instructions">Patch the sequence: RED -> GREEN -> BLUE -> GREY</div>
+
+<canvas id="cable-canvas"></canvas>
+
+<!-- The Draggable Nodes -->
+<div id="node-red" class="node node-red" data-id="red"></div>
+<div id="node-green" class="node node-green" data-id="green"></div>
+<div id="node-blue" class="node node-blue" data-id="blue"></div>
+<div id="node-grey" class="node node-grey" data-id="grey"></div>
+
+<!-- Success Terminal (Removed in favor of console logic) -->
+
+<script>
+  // DOM Elements
+  const canvas = document.getElementById('cable-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  const nodes = {
+    red: document.getElementById('node-red'),
+    green: document.getElementById('node-green'),
+    blue: document.getElementById('node-blue'),
+    grey: document.getElementById('node-grey')
+  };
+
+  // State Management
+  const state = {
+    isDragging: false,
+    dragStartNode: null,
+    mouseX: 0,
+    mouseY: 0,
+    connections: {
+        redToGreen: false,
+        greenToBlue: false,
+        blueToGrey: false
+    }
+  };
+
+  const positions = {
+    red: { x: 0, y: 0 },
+    green: { x: 0, y: 0 },
+    blue: { x: 0, y: 0 },
+    grey: { x: 0, y: 0 }
+  };
+
+  const lineColors = {
+    red: '#ff4040',
+    green: '#39ff14',
+    blue: '#40a0ff',
+    grey: '#888888'
+  };
+
+  // Canvas Sizing
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawCables();
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  // Spawns nodes randomly avoiding edges
+  function randomizePosition(nodeId) {
+    const padding = 100; // Keep 100px away from the edges
+    const maxX = window.innerWidth - padding * 2;
+    const maxY = window.innerHeight - padding * 2;
+    
+    // We try to prevent overlaps by a small generic degree, or we just rely on pure random
+    // and let users find them
+    let posX = padding + Math.random() * maxX;
+    let posY = padding + Math.random() * maxY;
+    
+    positions[nodeId] = { x: posX, y: posY };
+    
+    nodes[nodeId].style.left = posX + 'px';
+    nodes[nodeId].style.top = posY + 'px';
+  }
+
+  function initPositions() {
+    Object.keys(nodes).forEach(id => randomizePosition(id));
+  }
+
+  // Helper to draw a slack cable between two points
+  function drawSlackCable(startX, startY, endX, endY) {
+    const midX = (startX + endX) / 2;
+    const midY = (startY + endY) / 2;
+    
+    const distance = Math.hypot(endX - startX, endY - startY);
+    const slackAmount = Math.min(distance * 0.4, 250); // Bound the droop
+
+    const cpX = midX;
+    const cpY = midY + slackAmount;
+
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+  }
+
+  // Draw lines
+  function drawCables() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Draw active connections
+    if (state.connections.redToGreen) {
+        ctx.beginPath();
+        ctx.strokeStyle = lineColors.red;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = lineColors.red;
+        drawSlackCable(positions.red.x, positions.red.y, positions.green.x, positions.green.y);
+        ctx.stroke();
+    }
+    
+    if (state.connections.greenToBlue) {
+        ctx.beginPath();
+        ctx.strokeStyle = lineColors.green;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = lineColors.green;
+        drawSlackCable(positions.green.x, positions.green.y, positions.blue.x, positions.blue.y);
+        ctx.stroke();
+    }
+    
+    if (state.connections.blueToGrey) {
+        ctx.beginPath();
+        ctx.strokeStyle = lineColors.blue;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = lineColors.blue;
+        drawSlackCable(positions.blue.x, positions.blue.y, positions.grey.x, positions.grey.y);
+        ctx.stroke();
+    }
+
+    // Draw the currently dragging cable
+    if (state.isDragging && state.dragStartNode) {
+        ctx.beginPath();
+        ctx.strokeStyle = lineColors[state.dragStartNode];
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = ctx.strokeStyle;
+        
+        drawSlackCable(positions[state.dragStartNode].x, positions[state.dragStartNode].y, state.mouseX, state.mouseY);
+        ctx.stroke();
+    }
+    
+    // reset shadow
+    ctx.shadowBlur = 0;
+  }
+
+  // Event Listeners for Drag Logic
+  Object.keys(nodes).forEach(id => {
+    const el = nodes[id];
+    
+    el.addEventListener('pointerdown', (e) => {
+        // Enforce puzzle sequence
+        // Red must be patched first
+        if (id === 'red' && !state.connections.redToGreen) {
+            state.isDragging = true;
+            state.dragStartNode = id;
+            el.style.zIndex = 25;
+            
+            // Bring target into dragging context
+            el.setPointerCapture(e.pointerId);
+        } else if (id === 'green' && state.connections.redToGreen && !state.connections.greenToBlue) {
+            // Green to Blue is unlocked
+            state.isDragging = true;
+            state.dragStartNode = id;
+            el.style.zIndex = 25;
+            
+            el.setPointerCapture(e.pointerId);
+        } else if (id === 'blue' && state.connections.greenToBlue && !state.connections.blueToGrey) {
+            // Blue to Grey is unlocked
+            state.isDragging = true;
+            state.dragStartNode = id;
+            el.style.zIndex = 25;
+            
+            el.setPointerCapture(e.pointerId);
+        }
+    });
+
+    el.addEventListener('pointermove', (e) => {
+        if (state.isDragging && state.dragStartNode === id) {
+            state.mouseX = e.clientX;
+            state.mouseY = e.clientY;
+            drawCables();
+        }
+    });
+
+    el.addEventListener('pointerup', (e) => {
+        if (!state.isDragging) return;
+        
+        // Use elementsFromPoint to see if we dropped on another node
+        const dropTargets = document.elementsFromPoint(e.clientX, e.clientY);
+        let droppedOnId = null;
+        
+        for (let target of dropTargets) {
+            if (target.classList.contains('node') && target !== el) {
+                droppedOnId = target.dataset.id;
+                break;
+            }
+        }
+
+        // Logic check
+        if (state.dragStartNode === 'red' && droppedOnId === 'green') {
+            state.connections.redToGreen = true;
+            nodes.red.style.filter = `drop-shadow(0 0 10px ${lineColors.red})`;
+            nodes.green.style.filter = `drop-shadow(0 0 10px ${lineColors.green})`;
+        } else if (state.dragStartNode === 'green' && droppedOnId === 'blue') {
+            state.connections.greenToBlue = true;
+            nodes.green.style.filter = `drop-shadow(0 0 15px ${lineColors.green})`;
+            nodes.blue.style.filter = `drop-shadow(0 0 15px ${lineColors.blue})`;
+        } else if (state.dragStartNode === 'blue' && droppedOnId === 'grey') {
+            state.connections.blueToGrey = true;
+            nodes.blue.style.filter = `drop-shadow(0 0 20px ${lineColors.blue})`;
+            nodes.grey.style.filter = `drop-shadow(0 0 20px ${lineColors.grey})`;
+            puzzleCompleted();
+        }
+
+        // Reset dragging state
+        state.isDragging = false;
+        state.dragStartNode = null;
+        el.style.zIndex = 20;
+        el.releasePointerCapture(e.pointerId);
+        
+        // Clear active drawing line but keep persistent ones
+        drawCables();
+    });
+  });
+
+  function puzzleCompleted() {
+    const instr = document.querySelector('.instructions');
+    instr.textContent = "SEQUENCE VERIFIED. GATEWAY OPEN.";
+    instr.classList.add('completed-text');
+    
+    // Update terminal log with ASCII-style output
+    const log = document.getElementById('terminal-log');
+    log.innerHTML = `> system init\n> create secure link...\n> \n> [====================]\n> link secure\n`;
+    
+    // Show 'jack in' button below log
+    document.getElementById('jack-in-btn').style.display = 'inline-block';
+  }
+
+  // Initialization
+  initPositions();
+  resizeCanvas();
+
+</script>
+</body>
+</html>

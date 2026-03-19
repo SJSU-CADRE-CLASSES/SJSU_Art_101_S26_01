@@ -4,26 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page 1 — the no‑pet rule</title>
-    <style>
-        body { font-family: Georgia, serif; background-color: #fffdf7; margin: 0; padding: 0; }
-        header { background-color: #ffe0b5; padding: 1.25rem; text-align: center; }
-        main { max-width: 700px; margin: 0 auto; padding: 1.5rem; }
-        p { margin-bottom: 0.75rem; }
-        a { color: #c05a1a; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        footer { text-align: center; padding: 1rem; font-size: 0.9rem; color: #666; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <header>
+<body class="page-rules">
+    <header class="site-header">
         <h1>Page 1 — the no‑pet rule</h1>
+        <p class="cat-emoji-row" aria-hidden="true">🙅‍♀️ · 🏠 · 🐱?</p>
+        <p class="tagline">ONCE UPON A TIME: no cats. (this part is boring on purpose.)</p>
     </header>
     <main>
-        <p>Our house started as a very clear 🙅‍♀️ pet house. No fur on the couch, no litter boxes, no mystery scratches on the furniture.</p>
-        <p>It seemed simple: less mess, more calm, zero cat hair in the laundry. At least, that was the plan.</p>
-        <p><a href="index.html">Back to main page</a> · <a href="page2.html">Next: how the cats arrived</a></p>
+        <p class="lede">Our house started as a very clear <span class="main-illu-inline main-illu-inline--wide" aria-hidden="true" title="no pets"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="14" cy="14" r="11" fill="var(--cat-fill-strong)" stroke="currentColor"/><line x1="8" y1="8" x2="20" y2="20"/></svg></span> pet house. No fur on the couch, no litter boxes, no mystery scratches on the furniture.</p>
+        <figure class="cat-visual">
+            <div class="cat-visual-art" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+                    <rect x="24" y="40" width="192" height="100" rx="8" fill="var(--cat-fill)" stroke="currentColor" stroke-dasharray="8 6" opacity="0.9"/>
+                    <text x="120" y="100" text-anchor="middle" font-size="28" fill="currentColor" stroke="none" font-family="Georgia,serif">no pets</text>
+                    <circle cx="120" cy="98" r="42" stroke="currentColor" fill="none" stroke-width="2.5"/>
+                    <line x1="88" y1="66" x2="152" y2="130" stroke="currentColor" stroke-width="2.5"/>
+                </svg>
+            </div>
+            <figcaption class="cat-visual-caption">rules!!! (cats can’t read rules. problem solved.)</figcaption>
+        </figure>
+        <p><span class="section-kicker">big brain idea</span></p>
+        <p>Less mess! More calm! NO fuzzy socks in the dryer! …yeah that lasted approx. 0 seconds. <strong>ha ha ha</strong></p>
+        <div class="cat-divider" aria-hidden="true">
+            <span class="cat-divider__text">uh oh</span>
+            <span class="cat-divider__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 28 Q18 8 28 28" fill="none"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="18" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="24" cy="12" r="2" fill="currentColor" stroke="none"/></svg></span>
+            <span class="cat-divider__text">here comes trouble</span>
+        </div>
+        <figure class="cat-visual tall">
+            <div class="cat-visual-art" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="100" cy="155" rx="38" ry="28" fill="var(--cat-fill-strong)"/>
+                    <circle cx="100" cy="88" r="40" fill="var(--cat-fill-strong)"/>
+                    <path d="M68 62 L55 28 L78 52 M132 62 L145 28 L122 52"/>
+                    <path d="M138 140 Q175 115 182 78"/>
+                    <ellipse cx="86" cy="82" rx="5" ry="6" fill="currentColor" stroke="none"/>
+                    <ellipse cx="114" cy="82" rx="5" ry="6" fill="currentColor" stroke="none"/>
+                    <path d="M88 102 Q100 112 112 102"/>
+                </svg>
+            </div>
+            <figcaption class="cat-visual-caption">PLOT TWIST: cat. (told you.)</figcaption>
+        </figure>
+        <p class="nav-links">
+            <a href="index.html">Back to main page</a>
+            <a href="page2.html">Next: how the cats arrived</a>
+        </p>
     </main>
-    <footer>
+    <footer class="site-footer">
+        <p class="footer-paws" aria-hidden="true">🐾</p>
         <p>how our 🙅‍♀️ pet house turned into a 7 (8) 🐱 household</p>
     </footer>
 </body>

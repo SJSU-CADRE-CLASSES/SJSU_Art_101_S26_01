@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triton Alliance // Access Gate</title>
+    <style>
+        @font-face {
+            font-family: "HybridFont";
+            src: url("Hybrid_b.ttf") format("truetype");
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "ArcadeFont";
+            src: url("arcade font/ARCADE_N.TTF") format("truetype");
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "ArcadeFont";
+            src: url("arcade font/ARCADE_I.TTF") format("truetype");
+            font-weight: normal;
+            font-style: italic;
+        }
+        @font-face {
+            font-family: "ArcadeFont";
+            src: url("arcade font/ARCADE_R.TTF") format("truetype");
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            background: radial-gradient(circle at top, #00151a 0, #000000 55%, #000000 100%);
+            color: #00e0c8;
+            font-family: "HybridFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            transition: opacity 0.6s ease-out;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* grid overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0, 224, 200, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 224, 200, 0.03) 1px, transparent 1px);
+            background-size: 100% 3px, 3px 100%;
+            mix-blend-mode: screen;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* shared aquatic animations */
+        .aqua-caustics {
+            position: fixed;
+            inset: -20%;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(0, 224, 200, 0.16), transparent 55%),
+                radial-gradient(circle at 80% 30%, rgba(0, 160, 255, 0.18), transparent 60%),
+                radial-gradient(circle at 30% 80%, rgba(0, 224, 200, 0.12), transparent 55%);
+            mix-blend-mode: screen;
+            opacity: 0.35;
+            filter: blur(4px);
+            animation: drift-caustics 26s linear infinite alternate;
+            z-index: 0;
+        }
+
+        .sonar-rings {
+            position: fixed;
+            left: 50%;
+            top: 60%;
+            width: 40vmin;
+            height: 40vmin;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 0 rgba(0, 224, 200, 0.18),
+                0 0 0 20px rgba(0, 224, 200, 0.12),
+                0 0 0 40px rgba(0, 224, 200, 0.08);
+            animation: sonar-pulse 18s ease-out infinite;
+            z-index: 0;
+        }
+
+        .bubble-column {
+            position: fixed;
+            bottom: -40px;
+            width: 4px;
+            height: 140px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(0, 224, 200, 0.8), transparent 70%);
+            opacity: 0.22;
+            filter: blur(1px);
+            animation: bubbles-rise 14s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bubble-column--left {
+            left: 6%;
+            animation-duration: 18s;
+        }
+        .bubble-column--right {
+            right: 8%;
+            animation-duration: 13s;
+            animation-delay: -4s;
+        }
+        .bubble-column--mid {
+            left: 50%;
+            transform: translateX(-50%);
+            animation-duration: 16s;
+            animation-delay: -8s;
+        }
+
+        .chrome-bar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 32px;
+            border-bottom: 1px solid rgba(0, 224, 200, 0.35);
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.08), rgba(0, 0, 0, 0.9));
+            box-shadow:
+                0 0 12px rgba(0, 224, 200, 0.45),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        .chrome-id {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 7pt;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #66ffe6;
+            text-shadow: 0 0 6px rgba(0, 224, 200, 0.9);
+        }
+
+        .chrome-status {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #00ffa6;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            margin-right: 8px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #00ffa6 45%, transparent 60%);
+            box-shadow: 0 0 12px rgba(0, 255, 166, 0.85);
+            animation: status-blink 1.2s ease-in-out infinite;
+        }
+
+        .status-orbit {
+            position: relative;
+            display: inline-block;
+            width: 28px;
+            height: 12px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+
+        .status-orbit-dot {
+            position: absolute;
+            top: 50%;
+            width: 4px;
+            height: 4px;
+            border-radius: 999px;
+            background: #00ffa6;
+            box-shadow: 0 0 8px rgba(0, 255, 166, 0.9);
+            transform: translate(-50%, -50%);
+            animation: orbit-dots 2.2s linear infinite;
+        }
+
+        .page-shell {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px 32px;
+        }
+
+        .page-content {
+            position: relative;
+            width: min(1180px, 100%);
+            border-radius: 22px;
+            padding: 40px 52px 44px;
+            background:
+                radial-gradient(circle at top left, rgba(0, 224, 200, 0.12), transparent 65%),
+                radial-gradient(circle at bottom right, rgba(0, 160, 255, 0.12), transparent 60%),
+                rgba(0, 0, 0, 0.9);
+            box-shadow:
+                0 0 40px rgba(0, 224, 200, 0.45),
+                0 0 80px rgba(0, 80, 120, 0.65);
+            border: 1px solid rgba(0, 224, 200, 0.5);
+            outline: 1px solid rgba(0, 255, 230, 0.25);
+            outline-offset: 6px;
+        }
+
+        .scan-line {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(
+                90deg,
+                transparent 0,
+                rgba(0, 224, 200, 0.03) 44%,
+                rgba(0, 224, 200, 0.4) 50%,
+                rgba(0, 224, 200, 0.03) 56%,
+                transparent 100%
+            );
+            mix-blend-mode: screen;
+            opacity: 0.0;
+            animation: data-scan 10s linear infinite;
+        }
+
+        .page-content-inner {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 36px;
+            align-items: center;
+            justify-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: "HybridFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 48pt;
+            margin: 0 0 10px;
+            text-align: center;
+            text-shadow:
+                0 0 10px rgba(0, 224, 200, 0.9),
+                0 0 24px rgba(0, 224, 200, 0.8);
+        }
+
+        h2 {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 20pt;
+            margin: 0 0 22px;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+
+        .info-text {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 13pt;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .info-label {
+            display: inline-block;
+            margin-bottom: 6px;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #66ffe6;
+        }
+
+        .controls {
+            margin-top: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.16), rgba(0, 0, 0, 0.9));
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 12pt;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            cursor: pointer;
+            text-shadow: 0 0 8px rgba(0, 224, 200, 0.8);
+        }
+
+        .btn[disabled] {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .status-line {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .status-line--error {
+            color: #ff7f7f;
+        }
+
+        .status-line--ok {
+            color: #66ffe6;
+        }
+
+        .camera-shell {
+            position: relative;
+            justify-self: center;
+            width: min(520px, 100%);
+            aspect-ratio: 4 / 3;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 224, 200, 0.6);
+            box-shadow:
+                0 0 20px rgba(0, 224, 200, 0.55),
+                inset 0 0 10px rgba(0, 224, 200, 0.3);
+            background: radial-gradient(circle at top, rgba(0, 224, 200, 0.15), rgba(0, 0, 0, 0.95));
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.1) saturate(1.1);
+        }
+
+        .camera-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px rgba(0, 224, 200, 0.35);
+            background-image:
+                linear-gradient(rgba(0, 224, 200, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 224, 200, 0.06) 1px, transparent 1px);
+            background-size: 100% 18px, 18px 100%;
+            mix-blend-mode: screen;
+        }
+
+#mesh-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 6px rgba(0, 224, 200, 0.85));
+}
+
+        .camera-status-pill {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background: rgba(0, 0, 0, 0.7);
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+        }
+
+        .camera-countdown {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 11pt;
+        }
+
+        .scan-bars {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            right: 10px;
+            height: 6px;
+            display: flex;
+            gap: 4px;
+            pointer-events: none;
+        }
+
+        .scan-bar {
+            flex: 1;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.0), rgba(0, 224, 200, 0.7), rgba(0, 224, 200, 0.0));
+            opacity: 0.18;
+            transform-origin: center;
+            animation: scan-bars 1.4s ease-in-out infinite;
+        }
+
+        .scan-bar:nth-child(2) {
+            animation-delay: -0.25s;
+        }
+
+        .scan-bar:nth-child(3) {
+            animation-delay: -0.5s;
+        }
+
+        @keyframes drift-caustics {
+            0% {
+                transform: translate3d(-4%, -2%, 0) scale(1.1);
+            }
+            50% {
+                transform: translate3d(3%, 2%, 0) scale(1.05);
+            }
+            100% {
+                transform: translate3d(6%, -4%, 0) scale(1.15);
+            }
+        }
+
+        @keyframes sonar-pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.7);
+                opacity: 0.25;
+                box-shadow:
+                    0 0 0 0 rgba(0, 224, 200, 0.22),
+                    0 0 0 12px rgba(0, 224, 200, 0.15),
+                    0 0 0 26px rgba(0, 224, 200, 0.08);
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(1.35);
+                opacity: 0.02;
+                box-shadow:
+                    0 0 0 40px rgba(0, 224, 200, 0.0),
+                    0 0 0 80px rgba(0, 224, 200, 0.0),
+                    0 0 0 120px rgba(0, 224, 200, 0.0);
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes data-scan {
+            0% {
+                opacity: 0;
+                transform: translateX(-60%);
+            }
+            10% {
+                opacity: 0.5;
+            }
+            40% {
+                opacity: 0.3;
+            }
+            60% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0;
+                transform: translateX(60%);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(60%);
+            }
+        }
+
+        @keyframes status-blink {
+            0%, 30% {
+                opacity: 1;
+            }
+            45% {
+                opacity: 0.15;
+            }
+            60% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 0.15;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+
+        @keyframes face-line-scan {
+            0% {
+                top: 18%;
+                opacity: 0.6;
+            }
+            30% {
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                top: 82%;
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes orbit-dots {
+            0% {
+                left: -10%;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                left: 110%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes scan-bars {
+            0% {
+                opacity: 0.08;
+                transform: scaleY(0.5);
+            }
+            40% {
+                opacity: 0.5;
+                transform: scaleY(1.1);
+            }
+            80% {
+                opacity: 0.2;
+                transform: scaleY(0.8);
+            }
+            100% {
+                opacity: 0.08;
+                transform: scaleY(0.5);
+            }
+        }
+
+        @keyframes bubbles-rise {
+            0% {
+                transform: translate3d(0, 40px, 0) scaleY(0.7);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.2;
+            }
+            60% {
+                opacity: 0.35;
+            }
+            100% {
+                transform: translate3d(0, -120vh, 0) scaleY(1.1);
+                opacity: 0;
+            }
+        }
+
+        .page-fade-out {
+            opacity: 0;
+        }
+
+        .human-banner {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 55pt;
+            text-transform: uppercase;
+            letter-spacing: 0.35em;
+            color: #ffb347;
+            text-shadow:
+                0 0 14px rgba(255, 179, 71, 1),
+                0 0 40px rgba(255, 179, 71, 0.9);
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            z-index: 5;
+        }
+
+        .human-banner.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="aqua-caustics"></div>
+    <div class="sonar-rings"></div>
+    <div class="bubble-column bubble-column--left"></div>
+    <div class="bubble-column bubble-column--mid"></div>
+    <div class="bubble-column bubble-column--right"></div>
+
+    <div id="human-banner" class="human-banner">
+        HUMAN DETECTED
+    </div>
+
+    <header class="chrome-bar">
+        <div class="chrome-id">TRITON ALLIANCE // ACCESS GATE</div>
+        <div class="chrome-status">
+            <span class="status-dot"></span>identity check
+            <span class="status-orbit">
+                <span class="status-orbit-dot"></span>
+            </span>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="page-content">
+            <div class="scan-line"></div>
+            <div class="page-content-inner">
+                <div>
+                    <h1>Human Verification</h1>
+                    <h2>pre‑access protocol</h2>
+
+                    <div class="controls">
+                        <button id="start-btn" class="btn">start scan</button>
+                    </div>
+
+                    <div id="gate-status" class="status-line">
+                        awaiting scan request…
+                    </div>
+                </div>
+
+                <div class="camera-shell" id="camera-shell">
+                    <video id="camera" autoplay playsinline muted></video>
+                    <canvas id="mesh-canvas"></canvas>
+                    <div class="camera-overlay"></div>
+                    <div class="face-grid">
+                        <div class="face-grid-crosshair"></div>
+                        <div class="face-scan-line"></div>
+                    </div>
+                    <div class="camera-status-pill" id="camera-label">camera idle</div>
+                    <div class="camera-countdown" id="countdown"></div>
+                    <div class="scan-bars">
+                        <div class="scan-bar"></div>
+                        <div class="scan-bar"></div>
+                        <div class="scan-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MediaPipe dependencies for face mesh wireframe -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script>
+        (function () {
+            const startBtn = document.getElementById("start-btn");
+            const statusEl = document.getElementById("gate-status");
+            const videoEl = document.getElementById("camera");
+            const meshCanvas = document.getElementById("mesh-canvas");
+            const meshCtx = meshCanvas.getContext("2d");
+            const labelEl = document.getElementById("camera-label");
+            const countdownEl = document.getElementById("countdown");
+            const shellEl = document.getElementById("camera-shell");
+            const humanBanner = document.getElementById("human-banner");
+
+            let faceMesh = null;
+            let cameraFeed = null;
+            let sweepStartTime = null;
+            let sweepActive = false;
+            let meshDetectedTime = null;
+            const ENTER_DELAY_MS = 4000;
+
+            function setStatus(text, variant) {
+                statusEl.textContent = text;
+                statusEl.classList.remove("status-line--error", "status-line--ok");
+                if (variant === "error") {
+                    statusEl.classList.add("status-line", "status-line--error");
+                } else if (variant === "ok") {
+                    statusEl.classList.add("status-line", "status-line--ok");
+                } else {
+                    statusEl.classList.add("status-line");
+                }
+            }
+
+            async function startScan() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    setStatus("camera access not supported in this browser.", "error");
+                    return;
+                }
+
+                if (typeof FaceMesh === "undefined" || typeof Camera === "undefined") {
+                    setStatus("visual mesh system failed to load.", "error");
+                    return;
+                }
+
+                try {
+                    startBtn.disabled = true;
+                    setStatus("requesting camera access…");
+                    labelEl.textContent = "initializing";
+
+                    // initialize face mesh
+                    if (!faceMesh) {
+                        faceMesh = new FaceMesh({
+                            locateFile: (file) =>
+                                "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/" + file,
+                        });
+                        faceMesh.setOptions({
+                            maxNumFaces: 1,
+                            refineLandmarks: true,
+                            minDetectionConfidence: 0.5,
+                            minTrackingConfidence: 0.5,
+                        });
+                        faceMesh.onResults((results) => {
+                            meshCtx.save();
+                            meshCtx.clearRect(0, 0, meshCanvas.width, meshCanvas.height);
+
+                            // add subtle scan glow
+                            meshCtx.fillStyle = "rgba(0, 224, 200, 0.08)";
+                            meshCtx.fillRect(0, 0, meshCanvas.width, meshCanvas.height);
+
+                            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                                const landmarks = results.multiFaceLandmarks[0];
+
+                                // once mesh is detected the first time, stop sweep and schedule enter
+                                if (meshDetectedTime === null) {
+                                    meshDetectedTime = performance.now();
+                                    sweepActive = false;
+                                    setTimeout(() => {
+                                        finishAndEnter();
+                                    }, ENTER_DELAY_MS);
+                                }
+
+                                // tessellated wireframe
+                                if (typeof drawConnectors === "function" && typeof FACEMESH_TESSELATION !== "undefined") {
+                                    drawConnectors(meshCtx, landmarks, FACEMESH_TESSELATION, {
+                                        color: "rgba(0, 255, 204, 0.45)",
+                                        lineWidth: 0.5,
+                                    });
+                                }
+
+                                // landmark points
+                                if (typeof drawLandmarks === "function") {
+                                    drawLandmarks(meshCtx, landmarks, {
+                                        radius: 1.0,
+                                        color: "rgba(0, 255, 204, 0.95)",
+                                    });
+                                }
+                            }
+
+                            // sweeping scan band overlay while mesh is "loading"
+                            if (sweepActive && sweepStartTime !== null && meshCanvas.width && meshCanvas.height) {
+                                const now = performance.now();
+                                const cycle = 2200; // ms for a full sweep cycle
+                                const t = ((now - sweepStartTime) % cycle) / cycle; // 0..1 repeating
+                                const x = meshCanvas.width * t;
+
+                                const bandWidth = 160;
+                                const grad = meshCtx.createLinearGradient(x - bandWidth / 2, 0, x + bandWidth / 2, 0);
+                                grad.addColorStop(0, "rgba(0, 255, 204, 0.0)");
+                                grad.addColorStop(0.5, "rgba(0, 255, 204, 0.55)");
+                                grad.addColorStop(1, "rgba(0, 255, 204, 0.0)");
+
+                                meshCtx.fillStyle = grad;
+                                meshCtx.fillRect(x - bandWidth / 2, 0, bandWidth, meshCanvas.height);
+                            }
+
+                            meshCtx.restore();
+                        });
+                    }
+
+                    function resizeCanvasToVideo() {
+                        if (!videoEl.videoWidth || !videoEl.videoHeight) return;
+                        meshCanvas.width = videoEl.videoWidth;
+                        meshCanvas.height = videoEl.videoHeight;
+                    }
+
+                    // tie Mediapipe camera helper to our video element
+                    if (!cameraFeed) {
+                        cameraFeed = new Camera(videoEl, {
+                            onFrame: async () => {
+                                resizeCanvasToVideo();
+                                await faceMesh.send({ image: videoEl });
+                            },
+                            width: 640,
+                            height: 480,
+                        });
+                    }
+
+                    await cameraFeed.start();
+                    labelEl.textContent = "scanning";
+                    shellEl.classList.add("scanning");
+                    sweepStartTime = performance.now();
+                    sweepActive = true;
+                    meshDetectedTime = null;
+                    beginScanSequence();
+                } catch (err) {
+                    console.error(err);
+                    setStatus("camera access denied or unavailable.", "error");
+                    labelEl.textContent = "camera error";
+                    startBtn.disabled = false;
+                }
+            }
+
+            function beginScanSequence() {
+                setStatus("scanning facial planes…");
+                countdownEl.textContent = "";
+            }
+
+            function finishAndEnter() {
+                shellEl.classList.remove("scanning");
+                if (cameraFeed && typeof cameraFeed.stop === "function") {
+                    cameraFeed.stop();
+                }
+
+                // start fading the page to black as HUMAN DETECTED appears
+                document.body.classList.add("page-fade-out");
+                humanBanner.classList.add("show");
+
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1500);
+            }
+
+            startBtn.addEventListener("click", startScan);
+        })();
+    </script>
+</body>
+</html>
