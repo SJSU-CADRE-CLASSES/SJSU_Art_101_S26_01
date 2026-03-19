@@ -240,6 +240,89 @@
             letter-spacing: 0.04em;
             opacity: 0.95;
         }
+        .tech-grid.is-locked {
+            display: none;
+        }
+
+        .puzzle-panel {
+            margin-bottom: 20px;
+            padding: 16px 18px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 18, 20, 0.9);
+            box-shadow:
+                0 0 14px rgba(0, 224, 200, 0.45),
+                inset 0 0 10px rgba(0, 224, 200, 0.25);
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            line-height: 1.6;
+        }
+        .puzzle-title {
+            margin: 0 0 8px;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #66ffe6;
+        }
+        .puzzle-controls {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .node-grid {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .node-btn {
+            padding: 10px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.6);
+            background: rgba(0, 0, 0, 0.7);
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .node-btn.selected {
+            border-color: rgba(102, 255, 230, 0.95);
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.65);
+        }
+        .puzzle-btn {
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.16), rgba(0, 0, 0, 0.9));
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            cursor: pointer;
+        }
+        .sequence-display {
+            margin-top: 8px;
+            font-size: 9pt;
+            letter-spacing: 0.08em;
+            opacity: 0.95;
+        }
+        .puzzle-status {
+            margin-top: 8px;
+            font-size: 9pt;
+            letter-spacing: 0.08em;
+            opacity: 0.95;
+        }
+        .puzzle-status.error {
+            color: #ff7f7f;
+        }
+        .puzzle-status.ok {
+            color: #66ffe6;
+        }
 
         .bubble-column {
             position: fixed;
@@ -403,7 +486,27 @@
                 <h1>Alliance Technology</h1>
                 <h2>interface systems</h2>
 
-                <div class="tech-grid">
+                <div class="puzzle-panel" id="puzzle-panel">
+                    <p class="puzzle-title">Access Challenge</p>
+                    <div>
+                        Sync the sonar nodes from shallow to deep by clicking each node in order.<br>
+                        Node A: 40m | Node B: 10m | Node C: 25m<br>
+                        Build a 3-node sequence to unlock.
+                    </div>
+                    <div class="node-grid">
+                        <button class="node-btn" type="button" data-node="A">Node A // 40m</button>
+                        <button class="node-btn" type="button" data-node="B">Node B // 10m</button>
+                        <button class="node-btn" type="button" data-node="C">Node C // 25m</button>
+                    </div>
+                    <div class="sequence-display" id="sequence-display">Current sequence: ---</div>
+                    <div class="puzzle-controls">
+                        <button id="puzzle-submit" class="puzzle-btn" type="button">unlock table</button>
+                        <button id="puzzle-reset" class="puzzle-btn" type="button">reset sequence</button>
+                    </div>
+                    <div class="puzzle-status" id="puzzle-status">Hint: lowest depth value goes first.</div>
+                </div>
+
+                <div class="tech-grid is-locked" id="tech-grid">
                     <div class="tech-card">
                         <span class="tech-label"><a href="water-goggles.html">water goggles</a></span>
                         <div class="tech-value">
@@ -432,5 +535,68 @@
             </div>
         </section>
     </main>
+    <script>
+        (function () {
+            const nodeButtons = document.querySelectorAll(".node-btn");
+            const submitBtn = document.getElementById("puzzle-submit");
+            const resetBtn = document.getElementById("puzzle-reset");
+            const statusEl = document.getElementById("puzzle-status");
+            const sequenceEl = document.getElementById("sequence-display");
+            const techGrid = document.getElementById("tech-grid");
+            const puzzlePanel = document.getElementById("puzzle-panel");
+            const selection = [];
+
+            function renderSequence() {
+                sequenceEl.textContent =
+                    "Current sequence: " + (selection.length ? selection.join("") : "---");
+            }
+
+            function resetSequence() {
+                selection.length = 0;
+                nodeButtons.forEach((btn) => btn.classList.remove("selected"));
+                renderSequence();
+            }
+
+            nodeButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    const node = button.dataset.node;
+                    if (selection.length >= 3 || selection.includes(node)) {
+                        return;
+                    }
+                    selection.push(node);
+                    button.classList.add("selected");
+                    renderSequence();
+                    statusEl.className = "puzzle-status";
+                    statusEl.textContent = "Sequence locked in. Press unlock table to verify.";
+                });
+            });
+
+            function checkAnswer() {
+                if (selection.length !== 3) {
+                    statusEl.className = "puzzle-status error";
+                    statusEl.textContent = "Select all 3 nodes before verifying.";
+                    return;
+                }
+                const isCorrect = selection.join("") === "BCA";
+
+                if (isCorrect) {
+                    techGrid.classList.remove("is-locked");
+                    puzzlePanel.style.display = "none";
+                } else {
+                    statusEl.className = "puzzle-status error";
+                    statusEl.textContent = "Sequence mismatch. Reset and try again.";
+                }
+            }
+
+            submitBtn.addEventListener("click", checkAnswer);
+            resetBtn.addEventListener("click", () => {
+                resetSequence();
+                statusEl.className = "puzzle-status";
+                statusEl.textContent = "Sequence reset. Try again.";
+            });
+
+            renderSequence();
+        })();
+    </script>
 </body>
 </html>
