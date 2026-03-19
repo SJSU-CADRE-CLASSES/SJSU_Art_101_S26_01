@@ -42,7 +42,30 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* themed scrollbar (page scroll) */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 224, 200, 0.75) rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar {
+            width: 12px;
+        }
+        html::-webkit-scrollbar-track {
+            background: rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 0.95), rgba(0, 160, 255, 0.65));
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            border-radius: 999px;
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.35);
+        }
+        html::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 1), rgba(0, 160, 255, 0.8));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.55);
         }
 
         /* grid overlay */
@@ -316,6 +339,52 @@
 
         .status-line--ok {
             color: #66ffe6;
+        }
+
+        .code-puzzle {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 18, 20, 0.9);
+            box-shadow:
+                0 0 14px rgba(0, 224, 200, 0.45),
+                inset 0 0 10px rgba(0, 224, 200, 0.25);
+            text-align: left;
+        }
+        .code-puzzle[hidden] {
+            display: none;
+        }
+        .code-title {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #66ffe6;
+            margin-bottom: 6px;
+        }
+        .code-equation {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 12pt;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+        .code-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .code-input {
+            min-width: 220px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 224, 200, 0.6);
+            background: rgba(0, 0, 0, 0.75);
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            letter-spacing: 0.08em;
         }
 
         .camera-shell {
@@ -626,6 +695,22 @@
                     <div id="gate-status" class="status-line">
                         awaiting scan request…
                     </div>
+
+                    <div id="code-puzzle" class="code-puzzle" hidden>
+                        <div class="code-title">Numerical access challenge</div>
+                        <div class="code-equation" id="code-equation">...</div>
+                        <div class="code-controls">
+                            <input
+                                id="code-input"
+                                class="code-input"
+                                inputmode="numeric"
+                                maxlength="4"
+                                placeholder="enter result"
+                                aria-label="Numerical puzzle answer"
+                            />
+                            <button id="code-submit" class="btn" type="button">verify code</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="camera-shell" id="camera-shell">
@@ -647,6 +732,7 @@
             </div>
         </section>
     </main>
+    <script src="audio.js"></script>
 
     <!-- MediaPipe dependencies for face mesh wireframe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
@@ -664,6 +750,11 @@
             const countdownEl = document.getElementById("countdown");
             const shellEl = document.getElementById("camera-shell");
             const humanBanner = document.getElementById("human-banner");
+            const codePuzzleEl = document.getElementById("code-puzzle");
+            const codeEquationEl = document.getElementById("code-equation");
+            const codeInputEl = document.getElementById("code-input");
+            const codeSubmitBtn = document.getElementById("code-submit");
+            let expectedCode = "";
 
             let faceMesh = null;
             let cameraFeed = null;
@@ -808,22 +899,56 @@
                 countdownEl.textContent = "";
             }
 
+            function generateCodePuzzle() {
+                let a, b, c, result;
+                do {
+                    a = Math.floor(Math.random() * 40) + 20; // 20..59
+                    b = Math.floor(Math.random() * 20) + 10; // 10..29
+                    c = Math.floor(Math.random() * 60) + 10; // 10..69
+                    result = a * b + c;
+                } while (result < 1000 || result > 9999);
+
+                expectedCode = String(result);
+                codeEquationEl.textContent = "Solve: (" + a + " x " + b + ") + " + c;
+                codeInputEl.value = "";
+            }
+
+            function verifyCode() {
+                const entered = String(codeInputEl.value || "").trim();
+                if (entered === expectedCode) {
+                    setStatus("code accepted. opening main node…", "ok");
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 700);
+                } else {
+                    setStatus("incorrect result. try again.", "error");
+                    codeInputEl.select();
+                }
+            }
+
             function finishAndEnter() {
                 shellEl.classList.remove("scanning");
                 if (cameraFeed && typeof cameraFeed.stop === "function") {
                     cameraFeed.stop();
                 }
 
-                // start fading the page to black as HUMAN DETECTED appears
-                document.body.classList.add("page-fade-out");
+                // Show confirmation, then reveal puzzle gate.
                 humanBanner.classList.add("show");
+                setStatus("human verified. solve numerical code to continue.", "ok");
 
                 setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 1500);
+                    humanBanner.classList.remove("show");
+                    codePuzzleEl.hidden = false;
+                    codeInputEl.focus();
+                }, 1200);
             }
 
             startBtn.addEventListener("click", startScan);
+            codeSubmitBtn.addEventListener("click", verifyCode);
+            codeInputEl.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") verifyCode();
+            });
+            generateCodePuzzle();
         })();
     </script>
 </body>
