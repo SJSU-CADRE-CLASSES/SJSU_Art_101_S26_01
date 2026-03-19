@@ -11,10 +11,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 24px;
-            min-height: calc(100vh - 120px);
-            padding: 20px;
+            padding: 12px 20px 20px;
         }
         .index-btn {
             font-family: 'VT323', monospace;
@@ -38,6 +37,17 @@
             border-color: #1a331a;
             cursor: default;
             pointer-events: none;
+        }
+        .index-logo-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 16px 0 8px;
+        }
+        .index-logo {
+            max-width: 100%;
+            width: 840px;
+            height: auto;
+            display: block;
         }
         .loading-overlay {
             display: none;
@@ -141,6 +151,9 @@
 
     <div class="terminal-container main-content-wrap" id="main-content">
         <header class="header">MAIN TERMINAL</header>
+        <div class="index-logo-wrap">
+            <img src="fake logo.png" alt="SERVITOR - warp space computing services" class="index-logo">
+        </div>
         <div class="index-buttons">
             <a href="personal.html" class="index-btn" id="pilot-btn">PILOT DATA</a>
             <span class="index-btn index-btn-disabled">ENGINEER</span>
