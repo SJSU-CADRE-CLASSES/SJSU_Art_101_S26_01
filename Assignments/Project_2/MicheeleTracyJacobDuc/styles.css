@@ -265,9 +265,49 @@ body::after {
 
 .world-page--glass {
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(0, 229, 255, 0.1) 0%, transparent 40%),
-    radial-gradient(ellipse at 70% 70%, rgba(64, 255, 216, 0.15) 0%, transparent 35%),
-    linear-gradient(180deg, #051520 0%, var(--bg) 100%);
+    radial-gradient(ellipse at 45% 18%, rgba(0, 229, 255, 0.18) 0%, transparent 42%),
+    radial-gradient(ellipse at 70% 65%, rgba(64, 255, 216, 0.14) 0%, transparent 36%),
+    radial-gradient(ellipse at 12% 62%, rgba(80, 180, 255, 0.08) 0%, transparent 40%),
+    linear-gradient(180deg, #04101a 0%, #030810 35%, var(--bg) 100%);
+}
+
+/* Glass City: floating crystal metropolis layer */
+.world-page--glass::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 72% 44%, rgba(157, 78, 221, 0.06) 0%, transparent 42%),
+    radial-gradient(circle at 55% 12%, rgba(255, 215, 120, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 45% 68%, rgba(64, 255, 216, 0.06) 0%, transparent 46%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 55%),
+    radial-gradient(circle at 12% 80%, rgba(0, 0, 0, 0.8) 0%, transparent 40%);
+  opacity: 1;
+  pointer-events: none;
+  filter: blur(0px);
+  z-index: 0;
+}
+
+.world-page--glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(0, 229, 255, 0.08) 0%, transparent 55%),
+    radial-gradient(circle at 15% 40%, rgba(64, 255, 216, 0.06) 0%, transparent 55%),
+    radial-gradient(circle at 60% 85%, rgba(255, 220, 140, 0.04) 0%, transparent 60%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 2px,
+      transparent 6px
+    );
+  opacity: 0.45;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .world-page--lego {
@@ -342,6 +382,165 @@ body::after {
   z-index: 10;
   max-width: 900px;
   text-align: center;
+}
+
+.glass-skyline {
+  position: absolute;
+  left: 50%;
+  bottom: -40px;
+  transform: translateX(-50%);
+  width: min(1100px, calc(100vw - 40px));
+  height: 420px;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 24px rgba(0, 229, 255, 0.12));
+}
+
+.glass-city-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  z-index: 1;
+  opacity: 0.55;
+  filter: saturate(1.05) contrast(1.05) brightness(0.75) blur(0.2px);
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+.glass-city-art::selection {
+  background: transparent;
+}
+
+.world-page--glass .world-content {
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.55);
+}
+
+.glass-skyline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 90%;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(0, 229, 255, 0.18) 0%, transparent 62%),
+    radial-gradient(ellipse at 35% 80%, rgba(64, 255, 216, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 85%, rgba(255, 215, 120, 0.08) 0%, transparent 60%);
+  opacity: 0.85;
+  filter: blur(10px);
+}
+
+.glass-tower {
+  position: absolute;
+  bottom: 0;
+  width: var(--w, 46px);
+  height: var(--h, 280px);
+  left: var(--x, 50%);
+  transform: translateX(-50%) skewX(var(--skew, -8deg)) rotate(var(--rot, 0deg));
+  transform-origin: bottom center;
+  border-radius: 10px 10px 16px 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(0, 229, 255, 0.12) 28%, rgba(64, 255, 216, 0.08) 55%, rgba(3, 8, 16, 0.65) 100%),
+    linear-gradient(135deg, rgba(0, 229, 255, 0.22), transparent 55%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.45) 0%, transparent 40%);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  box-shadow:
+    inset 0 0 30px rgba(255, 255, 255, 0.08),
+    inset 0 0 80px rgba(0, 229, 255, 0.06),
+    0 0 18px rgba(0, 229, 255, 0.12);
+  opacity: 0.9;
+  clip-path: polygon(12% 0%, 88% 0%, 100% 12%, 92% 100%, 8% 100%, 0% 12%);
+}
+
+.glass-tower::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 22%, transparent 44%),
+    linear-gradient(90deg, transparent 0%, rgba(0, 229, 255, 0.22) 65%, transparent 86%);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  filter: blur(0.2px);
+  animation: glass-sheen 4.8s ease-in-out infinite;
+}
+
+.glass-tower::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 12px;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(0, 229, 255, 0.35) 40%, transparent 70%);
+  opacity: 0.85;
+  filter: blur(0.2px);
+}
+
+@keyframes glass-sheen {
+  0%,
+  100% {
+    transform: translateX(-6%);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateX(8%);
+    opacity: 0.75;
+  }
+}
+
+.glass-spire {
+  position: absolute;
+  left: 50%;
+  top: -90px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: calc(var(--w, 46px) * 0.32) solid transparent;
+  border-right: calc(var(--w, 46px) * 0.32) solid transparent;
+  border-bottom: 100px solid rgba(0, 229, 255, 0.22);
+  filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.18));
+  opacity: 0.8;
+}
+
+.glass-spire::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 72px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(64, 255, 216, 0.25), transparent);
+  box-shadow: 0 0 14px rgba(64, 255, 216, 0.35);
+  opacity: 0.9;
+}
+
+/* Tower layout (shard/prism skyline) */
+.glass-tower:nth-child(1)  { --x: 10%; --w: 44px; --h: 240px; --skew: -10deg; --rot: -2deg; opacity: 0.78; }
+.glass-tower:nth-child(2)  { --x: 18%; --w: 54px; --h: 320px; --skew: -12deg; --rot: 1deg; }
+.glass-tower:nth-child(3)  { --x: 26%; --w: 40px; --h: 280px; --skew: -9deg; --rot: -1deg; opacity: 0.82; }
+.glass-tower:nth-child(4)  { --x: 34%; --w: 70px; --h: 380px; --skew: -14deg; --rot: 2deg; }
+.glass-tower:nth-child(5)  { --x: 43%; --w: 46px; --h: 300px; --skew: -11deg; --rot: -1deg; opacity: 0.86; }
+.glass-tower:nth-child(6)  { --x: 52%; --w: 92px; --h: 420px; --skew: -16deg; --rot: 1deg; }
+.glass-tower:nth-child(7)  { --x: 61%; --w: 52px; --h: 340px; --skew: -12deg; --rot: -2deg; }
+.glass-tower:nth-child(8)  { --x: 70%; --w: 66px; --h: 390px; --skew: -15deg; --rot: 2deg; opacity: 0.88; }
+.glass-tower:nth-child(9)  { --x: 78%; --w: 42px; --h: 290px; --skew: -10deg; --rot: -1deg; opacity: 0.82; }
+.glass-tower:nth-child(10) { --x: 86%; --w: 58px; --h: 330px; --skew: -13deg; --rot: 1deg; opacity: 0.86; }
+.glass-tower:nth-child(11) { --x: 92%; --w: 38px; --h: 250px; --skew: -9deg; --rot: 0deg; opacity: 0.76; }
+.glass-tower:nth-child(12) { --x: 6%;  --w: 34px; --h: 210px; --skew: -8deg; --rot: 2deg; opacity: 0.7; }
+
+@media (max-width: 768px) {
+  .glass-skyline {
+    height: 340px;
+    bottom: -55px;
+    opacity: 0.95;
+  }
 }
 
 .world-eyebrow {
