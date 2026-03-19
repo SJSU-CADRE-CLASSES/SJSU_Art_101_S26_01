@@ -556,6 +556,134 @@
             { key: "apologize", label: "Apologize (repair the vibe)" },
           ];
 
+          const followupsByTone = {
+            kind: {
+              prompt: "They soften a little. What do you do next?",
+              options: [
+                {
+                  key: "share",
+                  label: "Share something honest (drop the performance)",
+                  userLine: "You: “Honestly? I’m trying not to disappear in here.”",
+                  npcReplies: [
+                    "Then anchor yourself: pick one true thing and repeat it when the room gets sharp. You’ll stay visible to you.",
+                    "You won’t disappear if you keep choosing sincerity—quietly, consistently. That’s how you outlast this place.",
+                    "I see you. And you can learn the script without becoming it. Start with your breath. Slow is strength.",
+                  ],
+                },
+                {
+                  key: "ask-tip",
+                  label: "Ask for one practical tip",
+                  userLine: "You: “Give me one rule I can survive by.”",
+                  npcReplies: [
+                    "Never chase their approval mid-sentence. Finish your thought, then smile. It reads as unshakable.",
+                    "If someone goes cold, offer a question about their craft. People thaw when they feel admired.",
+                    "Treat stars like medicine: small doses at the right time. Not charity. Care.",
+                  ],
+                },
+              ],
+            },
+            helpful: {
+              prompt: "They watch you like a document being revised. Your move?",
+              options: [
+                {
+                  key: "rewrite",
+                  label: "Ask to rewrite the moment (edit the record)",
+                  userLine: "You: “If we could redo that, what would the better line be?”",
+                  npcReplies: [
+                    "Say: ‘I’m still learning your customs.’ Then pause. The pause is the power—let them fill it with respect.",
+                    "Replace defense with curiosity. Ask what they’re proud of. Pride is the easiest thread to pull.",
+                    "Speak as if you belong, even if you’re afraid. Belonging is a posture before it’s a fact.",
+                  ],
+                },
+                {
+                  key: "mirror",
+                  label: "Ask what they really collect here",
+                  userLine: "You: “What do you actually keep—behind the polish?”",
+                  npcReplies: [
+                    "Contradictions. The smile that shakes. The compliment that cuts. The kindness people deny they needed.",
+                    "Proof that everyone here is more fragile than they pretend. I keep it so someone remembers to be gentle.",
+                    "The unspoken. The almost-cry. The almost-apology. Those are the truest artifacts in Glass City.",
+                  ],
+                },
+              ],
+            },
+            rude: {
+              prompt: "They look unimpressed. How do you respond?",
+              options: [
+                {
+                  key: "pushback",
+                  label: "Push back (politely, but firmly)",
+                  userLine: "You: “I’m not here to be diminished. Just talk to me like I’m real.”",
+                  npcReplies: [
+                    "Bold. Risky. I respect the geometry of it. Don’t expect gratitude.",
+                    "Hmph. Fine. Then don’t beg for approval. Stand straight and stop apologizing with your eyes.",
+                    "You’re either brave or careless. Either way, you’ll last longer than most.",
+                  ],
+                },
+                {
+                  key: "exit",
+                  label: "Exit gracefully (deny them the drama)",
+                  userLine: "You: “Understood. I’ll let you get back to it.”",
+                  npcReplies: [
+                    "Finally, someone who understands efficiency.",
+                    "Good. Keep your dignity. It’s the only thing they can’t tax.",
+                    "Acceptable. Try not to scratch any surfaces on your way out.",
+                  ],
+                },
+              ],
+            },
+            dismissive: {
+              prompt: "They treat you like background noise. What do you do?",
+              options: [
+                {
+                  key: "comply",
+                  label: "Comply and keep it short (play it safe)",
+                  userLine: "You: “I’ll be quick. What’s the fastest way not to get locked out?”",
+                  npcReplies: [
+                    "Avoid hesitation. People mistake it for guilt. Move like you’re authorized.",
+                    "Don’t offer explanations. Explanations sound like weakness. State, then act.",
+                    "Keep your rating above 4★ or keep your head down. Those are your options.",
+                  ],
+                },
+                {
+                  key: "observe",
+                  label: "Observe them (turn the gaze back)",
+                  userLine: "You: “You watch everyone. Does it ever get lonely?”",
+                  npcReplies: [
+                    "Irrelevant.",
+                    "Lonely is not a security category.",
+                    "…Move along.",
+                  ],
+                },
+              ],
+            },
+            mixed: {
+              prompt: "The air feels reflective. What do you do next?",
+              options: [
+                {
+                  key: "steady",
+                  label: "Steady yourself (choose your next words carefully)",
+                  userLine: "You: “I’m listening. Tell me what matters here.”",
+                  npcReplies: [
+                    "Control. Presentation. Silence. And the tiny rebellions people call kindness.",
+                    "What matters is what they can measure. What saves you is what they can’t.",
+                    "The city rewards polish, but it’s hungry for truth. Don’t feed it all at once.",
+                  ],
+                },
+                {
+                  key: "leave",
+                  label: "Leave (protect your energy)",
+                  userLine: "You: “I’m going to step away before I say the wrong thing.”",
+                  npcReplies: [
+                    "Wise. The wrong sentence can cost a life here.",
+                    "Good choice. Survival is also an art.",
+                    "Go. Keep your edges intact.",
+                  ],
+                },
+              ],
+            },
+          };
+
           renderChoices(
             choices.map((c) => ({
               label: c.label,
@@ -575,38 +703,43 @@
                 renderBubble("user", userLine);
                 setTimeout(() => {
                   renderBubble("npc", npcReply);
-                  renderChoices([
-                    {
-                      label: "Save and close",
+
+                  const followup = followupsByTone[p.tone] || followupsByTone.mixed;
+                  modalSubtitle.textContent = followup.prompt;
+                  renderChoices(
+                    followup.options.map((o) => ({
+                      label: o.label,
                       onClick: () => {
-                        logInteraction({
-                          at: nowStamp(),
-                          inhabitant: name,
-                          tone: p.tone,
-                          opener,
-                          userChoice: c.key,
-                          userLine,
-                          reply: npcReply,
-                        });
-                        closeModal();
+                        const existing2 = modalBody.querySelector(".gc-choices");
+                        if (existing2) existing2.remove();
+
+                        const userLine2 = o.userLine;
+                        const npcReply2 = pick(o.npcReplies || ["..."]);
+                        renderBubble("user", userLine2);
+                        setTimeout(() => {
+                          renderBubble("npc", npcReply2);
+
+                          // Auto-save, then auto-open review (as requested).
+                          logInteraction({
+                            at: nowStamp(),
+                            inhabitant: name,
+                            tone: p.tone,
+                            transcript: [
+                              { who: "npc", text: opener },
+                              { who: "user", text: userLine },
+                              { who: "npc", text: npcReply },
+                              { who: "user", text: userLine2 },
+                              { who: "npc", text: npcReply2 },
+                            ],
+                          });
+
+                          setTimeout(() => {
+                            renderReview();
+                          }, 250);
+                        }, 250);
                       },
-                    },
-                    {
-                      label: "Save and open review",
-                      onClick: () => {
-                        logInteraction({
-                          at: nowStamp(),
-                          inhabitant: name,
-                          tone: p.tone,
-                          opener,
-                          userChoice: c.key,
-                          userLine,
-                          reply: npcReply,
-                        });
-                        renderReview();
-                      },
-                    },
-                  ]);
+                    }))
+                  );
                 }, 250);
               },
             }))
@@ -638,12 +771,18 @@
             .forEach((it) => {
               const row = document.createElement("div");
               row.className = "gc-review-item";
+              const transcriptHtml = (it.transcript || [])
+                .map((t) => {
+                  const label = t.who === "user" ? "You" : "Them";
+                  const content = t.who === "user" ? (t.text || "").replace(/^You:\s*/, "") : (t.text || "");
+                  return `<div style="margin-bottom:8px;"><em>${label}:</em> ${content}</div>`;
+                })
+                .join("");
+
               row.innerHTML = `
                 <strong>${it.inhabitant}</strong>
                 <div class="gc-review-meta">${it.at} · tone: ${it.tone}</div>
-                <div style="margin-bottom:8px;"><em>Them:</em> ${it.opener}</div>
-                <div style="margin-bottom:8px;"><em>You:</em> ${it.userLine.replace(/^You:\s*/, "")}</div>
-                <div><em>Them:</em> ${it.reply}</div>
+                ${transcriptHtml}
               `;
               list.appendChild(row);
             });
