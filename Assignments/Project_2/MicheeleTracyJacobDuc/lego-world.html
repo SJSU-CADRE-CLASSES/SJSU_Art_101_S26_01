@@ -362,8 +362,32 @@
           }
         };
 
-        const loadLog = () => safeParse(sessionStorage.getItem(STORAGE_KEY), []);
-        const saveLog = (items) => sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        let memoryLog = [];
+        const canUseSessionStorage = (() => {
+          try {
+            const testKey = "__lw_storage_test__";
+            sessionStorage.setItem(testKey, "1");
+            sessionStorage.removeItem(testKey);
+            return true;
+          } catch {
+            return false;
+          }
+        })();
+
+        const loadLog = () => {
+          if (!canUseSessionStorage) return memoryLog;
+          return safeParse(sessionStorage.getItem(STORAGE_KEY), []);
+        };
+
+        const saveLog = (items) => {
+          memoryLog = items;
+          if (!canUseSessionStorage) return;
+          try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+          } catch {
+            // ignore storage failures (private mode / blocked storage)
+          }
+        };
 
         const nowStamp = () => {
           const d = new Date();
