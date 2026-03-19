@@ -39,7 +39,7 @@
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 1200;
+        z-index: 10050;
         background: rgba(0, 0, 0, 0.6);
       }
 
@@ -279,20 +279,6 @@
           </div>
         </div>
 
-        <!-- Interaction modal -->
-        <div class="gc-modal" id="gcModal" aria-hidden="true" role="dialog" aria-modal="true">
-          <div class="gc-modal-panel" role="document">
-            <div class="gc-modal-head">
-              <div class="gc-modal-title">
-                <strong id="gcModalTitle">Interaction</strong>
-                <span id="gcModalSubtitle">Choose how you respond.</span>
-              </div>
-              <button class="gc-modal-close" type="button" id="gcModalClose" aria-label="Close">Close</button>
-            </div>
-            <div class="gc-modal-body" id="gcModalBody"></div>
-          </div>
-        </div>
-
         <div class="cta-row">
           <a href="lego-world.html" class="cta-primary">Next World: Lego World ⇢</a>
           <a href="index.html" class="cta-ghost">Return to Hub</a>
@@ -304,6 +290,20 @@
       <span>Glass City · World 001</span>
       <span>Politeness is armor. Silence is judgement.</span>
     </footer>
+
+    <!-- Interaction modal (kept outside world-page to avoid clipping) -->
+    <div class="gc-modal" id="gcModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="gc-modal-panel" role="document">
+        <div class="gc-modal-head">
+          <div class="gc-modal-title">
+            <strong id="gcModalTitle">Interaction</strong>
+            <span id="gcModalSubtitle">Choose how you respond.</span>
+          </div>
+          <button class="gc-modal-close" type="button" id="gcModalClose" aria-label="Close">Close</button>
+        </div>
+        <div class="gc-modal-body" id="gcModalBody"></div>
+      </div>
+    </div>
 
     <!-- TourBot -->
     <aside class="tourbot" aria-label="StarStruck tour guide">
