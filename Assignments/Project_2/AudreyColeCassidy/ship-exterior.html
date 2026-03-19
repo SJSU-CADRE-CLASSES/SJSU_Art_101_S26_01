@@ -19,8 +19,8 @@
         <!-- Header - split layout -->
         <header class="termiini-header">
             <div class="header-left">
-                <div class="header-title-main">TERMIINI</div>
-                <div class="header-title-sub">TERMINAL</div>
+                <div class="header-title-main">SERVITOR:</div>
+                <div class="header-title-sub">DIAGNOSTIC SCANNER</div>
             </div>
             <div class="header-center">
                 <div class="header-field">
@@ -43,6 +43,13 @@
                 </div>
             </div>
         </header>
+
+        <!-- Tabs - page links beneath header -->
+        <nav class="termiini-top-nav">
+            <a href="personal.html" class="footer-btn">PERSONAL</a>
+            <a href="ship-exterior.html" class="footer-btn active">SHIP EXTERIOR</a>
+            <a href="chat.html" class="footer-btn">CHAT-VOX</a>
+        </nav>
 
         <!-- Main content - 3 columns -->
         <div class="termiini-main">
@@ -123,22 +130,16 @@
             </aside>
         </div>
 
-        <!-- Footer - horizontal button bar -->
+        <!-- Footer -->
         <footer class="termiini-footer">
-            <a href="personal.html" class="footer-btn"><span class="footer-btn-icon">●</span></a>
-            <a href="personal.html" class="footer-btn">PERSONAL</a>
-            <a href="warp-dilation.html" class="footer-btn">WARP DILATION</a>
-            <a href="ship-exterior.html" class="footer-btn active">SHIP EXTERIOR</a>
-            <a href="chat.html" class="footer-btn">CHAT-VOX</a>
-            <a href="log-in.html" class="footer-btn footer-btn-icon-only">⌂</a>
-            <span class="footer-hint">q: return to dashboard</span>
+            <span class="footer-hint">q: to log out of user</span>
         </footer>
     </div>
 
     <script>
         const contentArea = document.querySelector('.main-display-content');
-        const pages = ['personal.html', 'warp-dilation.html', 'ship-exterior.html', 'chat.html'];
-        const currentIndex = 2;
+        const pages = ['personal.html', 'ship-exterior.html', 'chat.html'];
+        const currentIndex = 1;
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'q' || e.key === 'Q') {

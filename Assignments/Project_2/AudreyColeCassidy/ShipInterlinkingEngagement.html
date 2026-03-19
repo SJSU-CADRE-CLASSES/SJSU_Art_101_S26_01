@@ -39,6 +39,7 @@
     </div>
 
     <div class="arrow-sequence-overlay" id="arrow-sequence-overlay">
+        <button type="button" class="diagnostic-return-btn" id="diagnostic-return-btn" style="display: none;">← RETURN</button>
         <div class="arrow-sequence-box" id="arrow-sequence-box">
             <div class="arrow-sequence-inner">
                 <span class="arrow-cell" data-index="0" data-key="ArrowLeft">←</span>
@@ -120,6 +121,8 @@
                 if (successView) successView.style.display = 'none';
                 var loadView = document.getElementById('diagnostic-load-view');
                 if (loadView) loadView.style.display = 'none';
+                var returnBtn = document.getElementById('diagnostic-return-btn');
+                if (returnBtn) returnBtn.style.display = 'none';
                 overlay.classList.add('arrow-sequence-overlay-open');
             }
 
@@ -134,16 +137,33 @@
                 if (successView) successView.style.display = 'flex';
                 var loadView = document.getElementById('diagnostic-load-view');
                 if (loadView) loadView.style.display = 'none';
+                var returnBtn = document.getElementById('diagnostic-return-btn');
+                if (returnBtn) returnBtn.style.display = 'none';
             }
 
             var diagnosticLoadBtn = document.getElementById('diagnostic-load-btn');
             var diagnosticLoadView = document.getElementById('diagnostic-load-view');
             var diagnosticLoadImage = document.getElementById('diagnostic-load-image');
+            var returnBtn = document.getElementById('diagnostic-return-btn');
+
+            function resetToSuccessView() {
+                if (diagnosticLoadView) diagnosticLoadView.style.display = 'none';
+                if (successView) successView.style.display = 'flex';
+                if (returnBtn) returnBtn.style.display = 'none';
+            }
+
+            if (returnBtn) {
+                returnBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    resetToSuccessView();
+                });
+            }
 
             if (diagnosticLoadBtn) {
                 diagnosticLoadBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     if (successView) successView.style.display = 'none';
+                    if (returnBtn) returnBtn.style.display = 'none';
                     var dashedLines = document.getElementById('diagnostic-dashed-lines');
                     var connectionStrength = document.getElementById('diagnostic-connection-strength');
                     var connectionDetails = document.getElementById('diagnostic-connection-details');
@@ -168,6 +188,7 @@
                         }
                         if (connectionDetails) connectionDetails.style.display = 'block';
                         diagnosticLoadView.classList.add('diagnostic-load-complete');
+                        if (returnBtn) returnBtn.style.display = 'block';
                     }, 5000);
                 });
             }
