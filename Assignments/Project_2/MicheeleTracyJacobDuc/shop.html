@@ -618,7 +618,15 @@
       ];
 
       // State
+      const STORAGE_BALANCE_KEY = "starBalance_v1";
       let balance = 100.0;
+      try {
+        const raw = sessionStorage.getItem(STORAGE_BALANCE_KEY);
+        const stored = raw == null ? NaN : Number(raw);
+        if (!Number.isNaN(stored) && Number.isFinite(stored)) balance = stored;
+      } catch {
+        // ignore
+      }
       let inventory = [];
       let pendingPurchase = null;
 
@@ -690,6 +698,12 @@
           mainBalance.classList.add('low');
         } else {
           mainBalance.classList.remove('low');
+        }
+
+        try {
+          sessionStorage.setItem(STORAGE_BALANCE_KEY, String(balance));
+        } catch {
+          // ignore
         }
       }
 

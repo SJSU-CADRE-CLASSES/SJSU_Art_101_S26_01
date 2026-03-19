@@ -7,12 +7,23 @@
 
   if (!shell || !log || !choices || !toggleBtn || !resetBtn) return;
 
+  const STORAGE_BALANCE_KEY = "starBalance_v1";
+
   const creditChipValue = document.querySelector("#balanceDisplay") || 
                           document.querySelector(".credit-chip span:last-child") ||
                           document.querySelector(".hud-balance span:last-child");
   const DEFAULT_START_BALANCE = 100;
 
-  const readBalance = () => DEFAULT_START_BALANCE;
+  const readBalance = () => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_BALANCE_KEY);
+      const stored = raw == null ? NaN : Number(raw);
+      if (!Number.isNaN(stored) && Number.isFinite(stored)) return stored;
+    } catch {
+      // ignore
+    }
+    return DEFAULT_START_BALANCE;
+  };
 
   let balance = readBalance();
 
@@ -24,6 +35,11 @@
     balance = Math.max(0, Math.round(next * 100) / 100);
     if (creditChipValue) {
       creditChipValue.textContent = `${balance.toFixed(2)} ★ balance`;
+    }
+    try {
+      sessionStorage.setItem(STORAGE_BALANCE_KEY, String(balance));
+    } catch {
+      // ignore
     }
     if (typeof window.updateBalance === "function") {
       window.updateBalance(balance);
@@ -135,24 +151,20 @@
           window.__lastInhabitantForRating ||
           "Inhabitant";
 
-        // 1★ is a brutal verdict: the inhabitant gets eliminated.
-        // For 1★, your balance does NOT change (no deduction).
-        let delta = i * 1;
+        // You do not earn stars from rating.
+        // 1★ still eliminates the inhabitant, but your balance stays unchanged.
         if (i === 1) {
           spawnEliminationToast(targetName);
-          delta = 0;
           addMsg(
             `Brutal verdict: ${String(targetName).trim() || "Inhabitant"} is eliminated.`,
             "bot"
           );
         } else {
           addMsg(
-            `Logged. That rating earned ${delta.toFixed(0)}★ of currency. This shapes their reality.`,
+            `Logged. You rated ${i}★, but your balance did not change.`,
             "bot"
           );
         }
-
-        setBalance(balance + delta);
 
         addMsg("What do you want to do next?");
         offerMenu();
