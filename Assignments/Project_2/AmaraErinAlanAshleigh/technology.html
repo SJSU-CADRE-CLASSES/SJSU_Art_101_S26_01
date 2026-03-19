@@ -556,6 +556,7 @@
                     <div class="puzzle-controls">
                         <button id="puzzle-submit" class="puzzle-btn" type="button">start sonar run</button>
                         <button id="puzzle-reset" class="puzzle-btn" type="button" disabled>replay run</button>
+                        <button id="continue-next" class="puzzle-btn" type="button" disabled>open water goggles</button>
                     </div>
                     <div class="puzzle-status" id="puzzle-status">Tip: grab the glowing pings before the timer hits zero.</div>
                 </div>
@@ -596,6 +597,7 @@
 
             const submitBtn = document.getElementById("puzzle-submit");
             const resetBtn = document.getElementById("puzzle-reset");
+            const continueBtn = document.getElementById("continue-next");
             const statusEl = document.getElementById("puzzle-status");
             const techGrid = document.getElementById("tech-grid");
             const puzzlePanel = document.getElementById("puzzle-panel");
@@ -615,13 +617,6 @@
             let timerInterval = null;
             let state = "idle"; // idle | playing | won
             let collected = 0;
-            const UNLOCK_KEY = "tritonTechUnlocked";
-            let alreadyUnlocked = false;
-            try {
-                alreadyUnlocked = localStorage.getItem(UNLOCK_KEY) === "1";
-            } catch (e) {
-                alreadyUnlocked = false;
-            }
 
             const pointer = { active: false, x: canvas.width * 0.45, y: canvas.height * 0.55 };
             const fish = { x: canvas.width * 0.12, y: canvas.height * 0.55, vx: 0, vy: 0 };
@@ -709,6 +704,7 @@
 
                 submitBtn.disabled = attemptsLeft <= 0;
                 resetBtn.disabled = true;
+                continueBtn.disabled = true;
             }
 
             function startTimer() {
@@ -741,6 +737,7 @@
                 if (attemptsLeft <= 0) {
                     submitBtn.disabled = true;
                     resetBtn.disabled = true;
+                    continueBtn.disabled = true;
                     setStatus("Too many failures. Terminal locked.", "error");
                     return;
                 }
@@ -756,6 +753,8 @@
                 state = "playing";
                 collected = 0;
                 setProgress();
+
+                continueBtn.disabled = true;
                 resetBtn.disabled = false;
                 submitBtn.disabled = true;
 
@@ -775,23 +774,12 @@
                 clearInterval(timerInterval);
                 timerInterval = null;
 
-                try {
-                    localStorage.setItem(UNLOCK_KEY, "1");
-                } catch (e) {
-                    // ignore storage failures
-                }
-
                 techGrid.classList.remove("is-locked");
-                puzzlePanel.style.display = "none";
+                puzzlePanel.style.display = "block";
+
                 submitBtn.disabled = true;
                 resetBtn.disabled = true;
-
-                // Transition effect: focus on the unlocked technology cards.
-                try {
-                    techGrid.scrollIntoView({ behavior: "smooth", block: "center" });
-                } catch (e) {
-                    // ignore
-                }
+                continueBtn.disabled = false;
 
                 setStatus("Gate opened. Next interface unlocked.", "ok");
             }
@@ -831,6 +819,10 @@
                 pointer.x = p.x;
                 pointer.y = p.y;
             }, { passive: true });
+
+            continueBtn.addEventListener("click", () => {
+                window.location.href = "water-goggles.html";
+            });
 
             submitBtn.addEventListener("click", beginRun);
             resetBtn.addEventListener("click", () => {
@@ -914,51 +906,66 @@
                 }
             }
 
-            function drawFish() {
-                const sprite = [
-                    "......kkkkkk....",
-                    "....kkbbbbbbkk..",
-                    "..kkbbbbssssbbkk",
-                    "..kbbbbbssyybbkk",
-                    ".kkbbbbbssyybbk.",
-                    ".kbbbbbssyybbkk.",
-                    "..kbbbbbssyybbkk",
-                    "....kkbbbbbbkk..",
-                    "...kkbbbbbbkk...",
-                    "..k.k...........",
+            function drawFish(tNow) {
+                // Two-frame pixel fish for an 8-bit video-game look.
+                const frames = [
+                    [
+                        "...kkbbbbkk.",
+                        "..kkbbbbbbkk",
+                        ".kkbbssyybbk",
+                        "kkbbbssyybbk",
+                        "kkbbbssyybbk",
+                        ".kkbbssyybbk",
+                        "..kkbbbbbbkk",
+                        "...k..k....k",
+                    ],
+                    [
+                        "...kkbbbbkk.",
+                        "..kkbbbbbbkk",
+                        ".kkbbssyybbk",
+                        "kkbbbssyybbk",
+                        "kkbbbssyybbk",
+                        ".kkbbssyybbk",
+                        "..kkbbbbbbkk",
+                        "..k....k..k.",
+                    ],
                 ];
 
-                // 16 columns x 10 rows; pixel size chosen to roughly match FISH_R.
+                const frameIdx = Math.floor(tNow / 170) % 2;
+                const sprite = frames[frameIdx];
+                const PIX = 3;
                 const SPR_W = sprite[0].length;
                 const SPR_H = sprite.length;
-                const PIX = 2;
-
-                // Flip to face movement direction (prefer actual velocity).
-                const flipX = fish.vx < -0.05;
-
-                ctx.save();
-                ctx.translate(fish.x, fish.y);
-                if (flipX) ctx.scale(-1, 1);
-
-                const colorMap = {
-                    ".": "rgba(0,0,0,0)",
-                    "k": "rgba(102, 255, 230, 0.9)", // outline
-                    "b": "rgba(0, 255, 230, 0.85)", // main body
-                    "s": "rgba(0, 224, 200, 0.65)", // highlight stripes
-                    "y": "rgba(0, 20, 26, 0.95)", // eye/pupil
-                };
-
                 const halfW = (SPR_W * PIX) / 2;
                 const halfH = (SPR_H * PIX) / 2;
 
+                const flipX = fish.vx < -0.04;
+                const bob = Math.sin(tNow / 180) * 1.2;
+
+                const colorMap = {
+                    ".": "rgba(0,0,0,0)",
+                    "k": "rgba(110, 255, 236, 0.95)", // outline
+                    "b": "rgba(0, 235, 210, 0.92)",   // body
+                    "s": "rgba(0, 190, 170, 0.86)",   // shading stripe
+                    "y": "rgba(18, 26, 32, 0.96)",    // eye
+                };
+
+                ctx.save();
+                ctx.translate(fish.x, fish.y + bob);
+                if (flipX) ctx.scale(-1, 1);
+
+                // Pixel shadow for game sprite depth.
+                ctx.fillStyle = "rgba(0, 0, 0, 0.32)";
+                ctx.fillRect(-halfW + 2, halfH - 1, SPR_W * PIX - 4, 3);
+
                 for (let row = 0; row < SPR_H; row++) {
-                    const y = row * PIX - halfH;
                     const line = sprite[row];
+                    const y = row * PIX - halfH;
                     for (let col = 0; col < SPR_W; col++) {
                         const ch = line[col];
                         if (ch === ".") continue;
                         const x = col * PIX - halfW;
-                        ctx.fillStyle = colorMap[ch] || "rgba(0, 255, 230, 0.85)";
+                        ctx.fillStyle = colorMap[ch] || colorMap.b;
                         ctx.fillRect(x, y, PIX, PIX);
                     }
                 }
@@ -1009,23 +1016,13 @@
 
                 drawBackground(ts);
                 drawTargets(ts);
-                drawFish();
+                drawFish(ts);
                 update(dt);
 
                 requestAnimationFrame(loop);
             }
 
             // Initial render + UI state
-            if (alreadyUnlocked) {
-                techGrid.classList.remove("is-locked");
-                puzzlePanel.style.display = "none";
-                submitBtn.disabled = true;
-                resetBtn.disabled = true;
-                state = "won";
-                setStatus("Access verified. Systems unlocked.", "ok");
-                requestAnimationFrame(loop);
-                return;
-            }
             attemptsLeftEl.textContent = String(attemptsLeft);
             timerLeftEl.textContent = String(timeLeft);
             setProgress();
