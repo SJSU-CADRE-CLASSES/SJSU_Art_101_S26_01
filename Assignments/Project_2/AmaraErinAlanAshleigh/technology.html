@@ -240,6 +240,72 @@
             letter-spacing: 0.04em;
             opacity: 0.95;
         }
+        .tech-grid.is-locked {
+            display: none;
+        }
+
+        .puzzle-panel {
+            margin-bottom: 20px;
+            padding: 16px 18px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 18, 20, 0.9);
+            box-shadow:
+                0 0 14px rgba(0, 224, 200, 0.45),
+                inset 0 0 10px rgba(0, 224, 200, 0.25);
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            line-height: 1.6;
+        }
+        .puzzle-title {
+            margin: 0 0 8px;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #66ffe6;
+        }
+        .puzzle-controls {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .puzzle-input {
+            min-width: 220px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 224, 200, 0.6);
+            background: rgba(0, 0, 0, 0.75);
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            letter-spacing: 0.06em;
+        }
+        .puzzle-btn {
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.16), rgba(0, 0, 0, 0.9));
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            cursor: pointer;
+        }
+        .puzzle-status {
+            margin-top: 8px;
+            font-size: 9pt;
+            letter-spacing: 0.08em;
+            opacity: 0.95;
+        }
+        .puzzle-status.error {
+            color: #ff7f7f;
+        }
+        .puzzle-status.ok {
+            color: #66ffe6;
+        }
 
         .bubble-column {
             position: fixed;
@@ -403,7 +469,26 @@
                 <h1>Alliance Technology</h1>
                 <h2>interface systems</h2>
 
-                <div class="tech-grid">
+                <div class="puzzle-panel" id="puzzle-panel">
+                    <p class="puzzle-title">Access Challenge</p>
+                    <div>
+                        I guide ships and divers through dark water, flashing signals from sea to shore.<br>
+                        What am I?
+                    </div>
+                    <div class="puzzle-controls">
+                        <input
+                            id="puzzle-answer"
+                            class="puzzle-input"
+                            type="text"
+                            placeholder="type your answer"
+                            aria-label="Puzzle answer"
+                        />
+                        <button id="puzzle-submit" class="puzzle-btn" type="button">unlock table</button>
+                    </div>
+                    <div class="puzzle-status" id="puzzle-status">Hint: it starts with "bea...".</div>
+                </div>
+
+                <div class="tech-grid is-locked" id="tech-grid">
                     <div class="tech-card">
                         <span class="tech-label"><a href="water-goggles.html">water goggles</a></span>
                         <div class="tech-value">
@@ -432,5 +517,37 @@
             </div>
         </section>
     </main>
+    <script>
+        (function () {
+            const answerInput = document.getElementById("puzzle-answer");
+            const submitBtn = document.getElementById("puzzle-submit");
+            const statusEl = document.getElementById("puzzle-status");
+            const techGrid = document.getElementById("tech-grid");
+            const puzzlePanel = document.getElementById("puzzle-panel");
+
+            function checkAnswer() {
+                const normalized = answerInput.value.trim().toLowerCase();
+                const isCorrect = normalized === "beacon" || normalized === "a beacon";
+
+                if (isCorrect) {
+                    techGrid.classList.remove("is-locked");
+                    puzzlePanel.style.display = "none";
+                    statusEl.className = "puzzle-status ok";
+                    statusEl.textContent = "Access granted.";
+                } else {
+                    statusEl.className = "puzzle-status error";
+                    statusEl.textContent = "Not quite. Try again.";
+                }
+            }
+
+            submitBtn.addEventListener("click", checkAnswer);
+            answerInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    checkAnswer();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
