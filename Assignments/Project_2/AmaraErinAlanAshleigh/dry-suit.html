@@ -319,6 +319,7 @@
             border: 1px solid rgba(0, 224, 200, 0.8);
             background: rgba(0, 20, 22, 0.95);
             color: #ccfff8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 11.25pt;
             letter-spacing: 0.16em;
             text-transform: uppercase;
@@ -558,11 +559,25 @@
             <button class="modal-close" data-modal-close>close window</button>
         </div>
     </div>
+
+    <audio id="ui-beep" src="beep sfx.mp3" preload="auto"></audio>
 </body>
 <script>
     (function () {
         const triggers = document.querySelectorAll('[data-modal-target]');
         const closeButtons = document.querySelectorAll('[data-modal-close]');
+        const uiBeep = document.getElementById('ui-beep');
+
+        function playBeep() {
+            if (!uiBeep) return;
+            try {
+                uiBeep.volume = 0.5;
+                uiBeep.currentTime = 0;
+                uiBeep.play();
+            } catch (e) {
+                // ignore if the browser blocks autoplay
+            }
+        }
 
         function openModal(id) {
             const modal = document.querySelector(id);
@@ -573,6 +588,13 @@
         function closeModal(modal) {
             modal.classList.remove('modal-backdrop--visible');
         }
+
+        // Play sound on all button clicks
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                playBeep();
+            });
+        });
 
         triggers.forEach(button => {
             button.addEventListener('click', () => {
