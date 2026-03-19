@@ -25,13 +25,13 @@ function generateParticles() {
     p.style.left = Math.random() * 100 + "%";
     p.style.animationDelay = Math.random() * 12 + "s";
     p.style.animationDuration = 10 + Math.random() * 8 + "s";
-    const hue = Math.random() > 0.5 ? "cyan" : Math.random() > 0.5 ? "pink" : "purple";
-    if (hue === "pink") {
-      p.style.background = "var(--accent)";
-      p.style.boxShadow = "0 0 8px var(--glow-pink)";
-    } else if (hue === "purple") {
+    const hue = Math.random() > 0.5 ? "cyan" : Math.random() > 0.5 ? "teal" : "electric";
+    if (hue === "teal") {
+      p.style.background = "var(--accent-2)";
+      p.style.boxShadow = "0 0 8px var(--glow-teal)";
+    } else if (hue === "electric") {
       p.style.background = "var(--accent-3)";
-      p.style.boxShadow = "0 0 8px var(--glow-purple)";
+      p.style.boxShadow = "0 0 8px var(--glow-electric)";
     }
     container.appendChild(p);
   }
@@ -57,12 +57,12 @@ function showRatingFeedback(name, rating) {
     text-align: center;
     animation: fade-in-out 2s forwards;
     backdrop-filter: blur(12px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(90, 216, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 229, 255, 0.3);
   `;
   popup.innerHTML = `
     <div style="font-size: 2rem; margin-bottom: 8px;">${"★".repeat(rating)}${"☆".repeat(5 - rating)}</div>
     <div style="font-size: 1.1rem; margin-bottom: 4px;">Rated <strong>${name}</strong></div>
-    <div style="color: #ffe36f; font-size: 0.9rem;">+${earned.toFixed(2)} ★ earned</div>
+    <div style="color: #40ffd8; font-size: 0.9rem;">+${earned.toFixed(2)} ★ earned</div>
   `;
   document.body.appendChild(popup);
   setTimeout(() => popup.remove(), 2000);
