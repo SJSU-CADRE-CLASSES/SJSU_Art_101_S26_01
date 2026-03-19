@@ -674,6 +674,15 @@
 </body>
 <script>
     (function () {
+        try {
+            if (localStorage.getItem("tritonTechUnlocked") !== "1") {
+                window.location.replace("technology.html");
+                return;
+            }
+        } catch (e) {
+            // ignore storage failures
+        }
+
         const triggers = document.querySelectorAll('[data-modal-target]');
         const closeButtons = document.querySelectorAll('[data-modal-close]');
         const uiBeep = document.getElementById('ui-beep');

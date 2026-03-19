@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triton Alliance // AI Core</title>
+    <title>Triton Alliance // Access Code</title>
     <style>
         @font-face {
             font-family: "HybridFont";
@@ -43,6 +43,7 @@
             min-height: 100vh;
             overflow: hidden;
         }
+
         body::before {
             content: "";
             position: fixed;
@@ -116,7 +117,6 @@
             text-transform: uppercase;
             letter-spacing: 0.2em;
             color: #00ffa6;
-            animation: status-pulse 2.4s ease-in-out infinite;
         }
         .status-dot {
             display: inline-block;
@@ -171,7 +171,6 @@
             outline: 1px solid rgba(0, 255, 230, 0.25);
             outline-offset: 6px;
         }
-
         .scan-line {
             position: absolute;
             inset: 0;
@@ -192,11 +191,13 @@
         .page-content-inner {
             position: relative;
             z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
         }
 
         h1 {
             font-family: "HybridFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 32pt;
+            font-size: 42pt;
             margin: 0 0 8px;
             text-align: left;
             text-shadow:
@@ -205,70 +206,94 @@
         }
         h2 {
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            font-size: 16pt;
+            font-size: 18pt;
             margin: 0 0 20px;
             text-transform: uppercase;
             letter-spacing: 0.18em;
         }
 
-        .detail-panel {
+        .code-panel {
             padding: 18px 22px 22px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid rgba(0, 224, 200, 0.6);
             background: rgba(0, 18, 20, 0.9);
             box-shadow:
                 0 0 18px rgba(0, 224, 200, 0.55),
-                inset 0 0 14px rgba(0, 224, 200, 0.3);
+                inset 0 0 16px rgba(0, 224, 200, 0.35);
             font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 11pt;
             line-height: 1.6;
         }
-        .detail-label {
+
+        .code-label {
             font-size: 10pt;
             text-transform: uppercase;
             letter-spacing: 0.18em;
             color: #66ffe6;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
-        .bubble-column {
-            position: fixed;
-            bottom: -40px;
-            width: 4px;
-            height: 140px;
+
+        .puzzle-equation {
+            margin: 10px 0 14px;
+            font-size: 14pt;
+            letter-spacing: 0.04em;
+            opacity: 0.95;
+        }
+
+        .code-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .code-input {
+            min-width: 240px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background: rgba(0, 0, 0, 0.75);
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 12pt;
+            letter-spacing: 0.12em;
+        }
+
+        .btn {
+            padding: 10px 16px;
             border-radius: 999px;
-            background: radial-gradient(circle, rgba(0, 224, 200, 0.8), transparent 70%);
-            opacity: 0.22;
-            filter: blur(1px);
-            animation: bubbles-rise 14s linear infinite;
-            pointer-events: none;
-            z-index: 0;
+            border: 1px solid rgba(0, 224, 200, 0.7);
+            background: linear-gradient(90deg, rgba(0, 224, 200, 0.16), rgba(0, 0, 0, 0.9));
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            cursor: pointer;
         }
-        .bubble-column--left {
-            left: 6%;
-            animation-duration: 18s;
+        .btn[disabled] {
+            opacity: 0.45;
+            cursor: default;
         }
-        .bubble-column--right {
-            right: 8%;
-            animation-duration: 13s;
-            animation-delay: -4s;
+
+        .status-line {
+            margin-top: 10px;
+            font-size: 10pt;
+            letter-spacing: 0.08em;
+            opacity: 0.95;
         }
-        .bubble-column--mid {
-            left: 50%;
-            transform: translateX(-50%);
-            animation-duration: 16s;
-            animation-delay: -8s;
+        .status-line.error {
+            color: #ff7f7f;
+        }
+        .status-line.ok {
+            color: #66ffe6;
         }
 
         @keyframes drift-caustics {
-            0% {
-                transform: translate3d(-4%, -2%, 0) scale(1.1);
-            }
-            50% {
-                transform: translate3d(3%, 2%, 0) scale(1.05);
-            }
-            100% {
-                transform: translate3d(6%, -4%, 0) scale(1.15);
-            }
+            0% { transform: translate3d(-4%, -2%, 0) scale(1.1); }
+            50% { transform: translate3d(3%, 2%, 0) scale(1.05); }
+            100% { transform: translate3d(6%, -4%, 0) scale(1.15); }
         }
 
         @keyframes sonar-pulse {
@@ -288,129 +313,165 @@
                     0 0 0 80px rgba(0, 224, 200, 0.0),
                     0 0 0 120px rgba(0, 224, 200, 0.0);
             }
-            100% {
-                opacity: 0;
-            }
+            100% { opacity: 0; }
         }
 
         @keyframes data-scan {
-            0% {
-                opacity: 0;
-                transform: translateX(-60%);
-            }
-            10% {
-                opacity: 0.5;
-            }
-            40% {
-                opacity: 0.3;
-            }
-            60% {
-                opacity: 0.5;
-            }
-            90% {
-                opacity: 0;
-                transform: translateX(60%);
-            }
-            100% {
-                opacity: 0;
-                transform: translateX(60%);
-            }
-        }
-
-        @keyframes status-pulse {
-            0%, 100% {
-                transform: translateY(0);
-                text-shadow: 0 0 6px rgba(0, 255, 166, 0.6);
-            }
-            50% {
-                transform: translateY(-1px);
-                text-shadow: 0 0 12px rgba(0, 255, 166, 1);
-            }
+            0% { opacity: 0; transform: translateX(-60%); }
+            10% { opacity: 0.5; }
+            40% { opacity: 0.3; }
+            60% { opacity: 0.5; }
+            90% { opacity: 0; transform: translateX(60%); }
+            100% { opacity: 0; transform: translateX(60%); }
         }
 
         @keyframes status-blink {
-            0%, 30% {
-                opacity: 1;
-            }
-            45% {
-                opacity: 0.15;
-            }
-            60% {
-                opacity: 1;
-            }
-            75% {
-                opacity: 0.15;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        @keyframes bubbles-rise {
-            0% {
-                transform: translate3d(0, 40px, 0) scaleY(0.7);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.2;
-            }
-            60% {
-                opacity: 0.35;
-            }
-            100% {
-                transform: translate3d(0, -120vh, 0) scaleY(1.1);
-                opacity: 0;
-            }
+            0%, 30% { opacity: 1; }
+            45% { opacity: 0.15; }
+            60% { opacity: 1; }
+            75% { opacity: 0.15; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="aqua-caustics"></div>
     <div class="sonar-rings"></div>
-    <div class="bubble-column bubble-column--left"></div>
-    <div class="bubble-column bubble-column--mid"></div>
-    <div class="bubble-column bubble-column--right"></div>
 
     <header class="chrome-bar">
-        <div class="chrome-id">TRITON ALLIANCE // AI CORE</div>
-        <nav class="nav-links">
-            <a href="index.html">home</a>
-            <a href="history.html">history</a>
-            <a href="technology.html">technology</a>
-            <a href="science.html">science</a>
-            <a href="products.html">products</a>
-        </nav>
-        <div class="chrome-status">
-            <span class="status-dot"></span>module: active
-        </div>
+        <div class="chrome-id">TRITON ALLIANCE // ACCESS CODE</div>
+        <div class="chrome-status"><span class="status-dot"></span>auth: awaiting code</div>
     </header>
 
     <main class="page-shell">
         <section class="page-content">
             <div class="scan-line"></div>
             <div class="page-content-inner">
-                <h1>Alliance AI</h1>
-                <h2>coordination core</h2>
+                <h1>Access Code</h1>
+                <h2>numerical authorization</h2>
 
-                <div class="detail-panel">
-                    <div class="detail-label">Alliance spec</div>
-                    Distributed intelligence nodes that route navigation, communications, and environmental safeguards
-                    between surface cities and seafolk enclaves. Each AI core balances human directives with oceanic
-                    conservation protocols to keep the alliance in equilibrium.
+                <div class="code-panel">
+                    <div class="code-label">Compute & Enter Code</div>
+                    <div id="attempts-meta" class="status-line">Attempts left: 3</div>
+                    <div class="puzzle-equation" id="equation">
+                        ...
+                    </div>
+
+                    <div class="code-controls">
+                        <input
+                            id="code-input"
+                            class="code-input"
+                            inputmode="numeric"
+                            maxlength="4"
+                            placeholder="4-digit code"
+                            aria-label="Access code"
+                        />
+                        <button id="verify-btn" class="btn" type="button">verify</button>
+                    </div>
+
+                    <div class="status-line" id="status-line">
+                        Hint: code is a direct result of the equation shown above.
+                    </div>
                 </div>
             </div>
         </section>
     </main>
+
     <script>
         (function () {
-            try {
-                if (localStorage.getItem("tritonTechUnlocked") !== "1") {
-                    window.location.replace("technology.html");
-                }
-            } catch (e) {
-                // ignore storage failures
+            const attemptsLeftMeta = document.getElementById("attempts-meta");
+            const equationEl = document.getElementById("equation");
+            const inputEl = document.getElementById("code-input");
+            const verifyBtn = document.getElementById("verify-btn");
+            const statusLine = document.getElementById("status-line");
+
+            const MAX_ATTEMPTS = 3;
+            const CODE_LEN = 4;
+            let attemptsLeft = MAX_ATTEMPTS;
+            let expectedCode = "";
+
+            function randInt(min, maxInclusive) {
+                return Math.floor(Math.random() * (maxInclusive - min + 1)) + min;
             }
+
+            function generatePuzzle() {
+                // Create a simple but non-trivial arithmetic puzzle:
+                // expectedCode = (A × B) + C, formatted as 4 digits.
+                let A, B, C, raw;
+                for (let tries = 0; tries < 200; tries++) {
+                    A = randInt(12, 79);
+                    B = randInt(11, 31);
+                    C = randInt(18, 91);
+                    raw = A * B + C;
+                    if (raw >= 1000 && raw <= 9999) break;
+                }
+
+                const code = String(raw).padStart(CODE_LEN, "0");
+                expectedCode = code;
+
+                equationEl.textContent = "Compute: (" + A + " × " + B + ") + " + C + "  =  ????";
+                statusLine.className = "status-line";
+                statusLine.textContent = "Enter the 4-digit result.";
+                inputEl.value = "";
+                inputEl.focus();
+                verifyBtn.disabled = attemptsLeft <= 0;
+            }
+
+            function setStatus(text, variant) {
+                statusLine.className = "status-line";
+                if (variant === "error") statusLine.classList.add("error");
+                if (variant === "ok") statusLine.classList.add("ok");
+                statusLine.textContent = text;
+            }
+
+            function updateAttempts() {
+                attemptsLeftMeta.textContent = "Attempts left: " + String(attemptsLeft);
+            }
+
+            function verify() {
+                const entered = String(inputEl.value || "").trim();
+                if (attemptsLeft <= 0) return;
+
+                if (entered.length === 0) {
+                    setStatus("Enter the access code first.", "error");
+                    return;
+                }
+
+                const normalized = entered.replace(/\s+/g, "");
+                if (normalized === expectedCode) {
+                    setStatus("Access granted. Welcome aboard.", "ok");
+                    try {
+                        localStorage.setItem("tritonAccessCodeVerified", "1");
+                    } catch (e) {
+                        // ignore
+                    }
+                    verifyBtn.disabled = true;
+                    setTimeout(() => {
+                        window.location.href = "gate.html";
+                    }, 900);
+                } else {
+                    attemptsLeft -= 1;
+                    updateAttempts();
+                    setStatus("Wrong code. Sonar gate remains locked.", "error");
+                    if (attemptsLeft <= 0) {
+                        verifyBtn.disabled = true;
+                        setStatus("Terminal locked for this session.", "error");
+                    } else {
+                        // Keep the same puzzle so it feels like a single run.
+                        inputEl.select();
+                    }
+                }
+            }
+
+            verifyBtn.addEventListener("click", verify);
+            inputEl.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") verify();
+            });
+
+            updateAttempts();
+            generatePuzzle();
         })();
     </script>
 </body>
 </html>
+
