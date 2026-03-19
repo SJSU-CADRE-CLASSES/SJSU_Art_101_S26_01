@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact – Alexandra Hernandez</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <h1 class="site-title"><a href="index.html">Alexandra Hernandez</a></h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="section-title">Contact</h1>
+    <p class="about-intro reveal">Send a message or get in touch. (Form is for layout; hook up to your backend or mailto if needed.)</p>
+
+    <form class="contact-form reveal" id="contact-form" action="#" method="get">
+      <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required placeholder="Your name">
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
+      </div>
+      <div>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required placeholder="Your message..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Send message</button>
+      </div>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <p>Art 101 – Project 1 · Alexandra Hernandez</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
