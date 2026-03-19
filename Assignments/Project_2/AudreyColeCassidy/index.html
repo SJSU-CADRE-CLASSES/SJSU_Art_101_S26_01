@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Terminal - BIOSCAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        .index-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            min-height: calc(100vh - 120px);
+            padding: 20px;
+        }
+        .index-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 0.15em;
+            color: #33ff33;
+            background: transparent;
+            border: 2px solid #33ff33;
+            padding: 14px 32px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .index-btn:hover {
+            background: rgba(51, 255, 51, 0.15);
+            box-shadow: 0 0 12px #33ff33;
+        }
+        .index-btn-disabled {
+            opacity: 0.6;
+            color: #1a331a;
+            border-color: #1a331a;
+            cursor: default;
+            pointer-events: none;
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .loading-popup {
+            font-family: 'VT323', monospace;
+            width: 320px;
+            padding: 20px;
+            background: #0a0f0a;
+            border: 2px solid #33ff33;
+            box-shadow: 0 0 20px rgba(51, 255, 51, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
+            color: #33ff33;
+            font-size: 1.1rem;
+        }
+        .loading-popup .loading-title {
+            text-align: center;
+            letter-spacing: 0.2em;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #33ff33;
+        }
+        .loading-popup .loading-output {
+            min-height: 120px;
+            overflow: hidden;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .loading-popup .loading-output .blink {
+            animation: loading-blink 0.8s step-end infinite;
+        }
+        @keyframes loading-blink {
+            50% { opacity: 0; }
+        }
+        /* Old computer boot sequence - full page on load */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0f0a;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            font-family: 'VT323', monospace;
+            color: #33ff33;
+            padding: 24px 32px;
+            box-sizing: border-box;
+        }
+        .boot-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-out;
+        }
+        .boot-output {
+            flex: 1;
+            overflow: hidden;
+            font-size: 1.15rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .boot-output .cursor {
+            animation: loading-blink 0.8s step-end infinite;
+        }
+        .main-content-wrap {
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
+        }
+        .main-content-wrap.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Boot sequence - runs on page load -->
+    <div class="boot-screen" id="boot-screen">
+        <div class="boot-output" id="boot-output"></div>
+    </div>
+
+    <!-- CRT interlacing overlay - covers entire viewport -->
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container main-content-wrap" id="main-content">
+        <header class="header">MAIN TERMINAL</header>
+        <div class="index-buttons">
+            <a href="personal.html" class="index-btn" id="pilot-btn">PILOT DATA</a>
+            <span class="index-btn index-btn-disabled">ENGINEER</span>
+            <span class="index-btn index-btn-disabled">BLACK BOX</span>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-popup">
+            <div class="loading-title">PILOT TERMINAL ACCESS</div>
+            <div class="loading-output" id="loading-output"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ----- Old computer boot sequence on load -----
+            var bootScreen = document.getElementById('boot-screen');
+            var bootOutput = document.getElementById('boot-output');
+            var mainContent = document.getElementById('main-content');
+            var bootLines = [
+                'BIOSCAN TERMINAL v2.1.4',
+                '',
+                'MEMORY TEST: 64K OK',
+                'MEMORY TEST: 256K OK',
+                'MEMORY TEST: 512K OK',
+                '',
+                'INITIALIZING DISK CONTROLLER...',
+                'LOADING SYSTEM FILES...',
+                'CHECKING PERIPHERALS...',
+                '  - DISPLAY: OK',
+                '  - KEYBOARD: OK',
+                '  - COMM PORT: OK',
+                '',
+                'MOUNTING NETWORK DRIVE...',
+                'AUTHENTICATING SECTOR 7...',
+                '',
+                'SYSTEM READY.',
+                ''
+            ];
+
+            var BOOT_DURATION_MS = 2000;
+
+            function bootTypeLine(text, delay, cb) {
+                setTimeout(function() {
+                    var i = 0;
+                    function tick() {
+                        if (i < text.length) {
+                            bootOutput.textContent += text[i];
+                            i++;
+                            setTimeout(tick, 4 + Math.random() * 6);
+                        } else {
+                            bootOutput.textContent += '\n';
+                            if (cb) cb();
+                        }
+                    }
+                    tick();
+                }, delay);
+            }
+
+            function runBootSequence() {
+                var t = 0;
+                bootOutput.textContent = '';
+                for (var j = 0; j < bootLines.length; j++) {
+                    (function(line, delay) {
+                        bootTypeLine(line, delay, null);
+                    })(bootLines[j], t);
+                    t += (bootLines[j].length * 5) + 25;
+                }
+                setTimeout(function() {
+                    bootOutput.innerHTML = bootOutput.textContent + '<span class="cursor">_</span>';
+                    bootScreen.classList.add('hidden');
+                    mainContent.classList.add('visible');
+                    setTimeout(function() {
+                        bootScreen.style.display = 'none';
+                    }, 800);
+                }, BOOT_DURATION_MS);
+            }
+            runBootSequence();
+
+            // ----- Pilot Data button -> loading popup -> personal.html -----
+            var pilotBtn = document.getElementById('pilot-btn');
+            var overlay = document.getElementById('loading-overlay');
+            var output = document.getElementById('loading-output');
+            var chars = '0123456789ABCDEF<>[]{}|/\\*&%$#@!';
+            var lines = [
+                'INITIATING SECTOR 7 LINK...',
+                'VERIFYING CLEARANCE LEVEL...',
+                'LOADING PILOT PROFILE...',
+                'SYNC BIOSCAN DATA...',
+                'ESTABLISHING SECURE CHANNEL...'
+            ];
+
+            function randChar() {
+                return chars[Math.floor(Math.random() * chars.length)];
+            }
+
+            function typeLine(text, baseDelay, cb) {
+                var i = 0;
+                function tick() {
+                    if (i < text.length) {
+                        output.innerHTML += text[i];
+                        i++;
+                        setTimeout(tick, 30 + Math.random() * 40);
+                    } else {
+                        output.innerHTML += ' [OK]\n';
+                        if (cb) cb();
+                    }
+                }
+                setTimeout(tick, baseDelay);
+            }
+
+            pilotBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                overlay.classList.add('active');
+                output.innerHTML = '';
+
+                typeLine(lines[0], 0, function() {
+                    typeLine(lines[1], 100, function() {
+                        typeLine(lines[2], 100, function() {
+                            typeLine(lines[3], 100, function() {
+                                typeLine(lines[4], 100);
+                            });
+                        });
+                    });
+                });
+
+                var noiseInterval = setInterval(function() {
+                    if (output.textContent.length < 500) {
+                        output.innerHTML += randChar();
+                    }
+                }, 60);
+
+                setTimeout(function() {
+                    clearInterval(noiseInterval);
+                    output.innerHTML += '\n>> REDIRECTING TO PILOT TERMINAL...<span class="blink">█</span>';
+                    setTimeout(function() {
+                        window.location.href = 'personal.html';
+                    }, 400);
+                }, 4000);
+            });
+        })();
+    </script>
+</body>
+</html>
