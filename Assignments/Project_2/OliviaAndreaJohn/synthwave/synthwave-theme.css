@@ -484,10 +484,6 @@ main {
   background: linear-gradient(135deg, #4f46e5, #0f172a);
 }
 
-.section-visual--help {
-  background: linear-gradient(135deg, #0ea5e9, #0f172a);
-}
-
 .section-visual--token {
   background: linear-gradient(135deg, #facc15, #0f172a);
 }
