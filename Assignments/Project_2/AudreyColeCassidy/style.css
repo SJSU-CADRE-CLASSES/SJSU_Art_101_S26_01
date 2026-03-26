@@ -1971,6 +1971,35 @@ button.diagnostic-return-btn {
     border-bottom: 1px solid rgba(51, 255, 51, 0.3);
 }
 
+.bioscan-photo-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bioscan-photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 1px,
+            rgba(0, 0, 0, 0.2) 1px,
+            rgba(0, 0, 0, 0.2) 2px
+        ),
+        rgba(51, 255, 51, 0.25);
+}
+
 .bioscan-photo {
     flex-shrink: 0;
     width: 155px;
@@ -2012,6 +2041,7 @@ button.diagnostic-return-btn {
     left: 0;
     width: 100%;
     height: 3px;
+    z-index: 2;
     background: rgba(51, 255, 51, 0.55);
     box-shadow: 0 0 8px rgba(51, 255, 51, 0.8);
     animation: scanMove 2.8s linear infinite;
@@ -2027,7 +2057,7 @@ button.diagnostic-return-btn {
     color: rgba(51, 255, 51, 0.65);
     text-align: center;
     letter-spacing: 0.1em;
-    z-index: 1;
+    z-index: 2;
 }
 
 .bioscan-stats {

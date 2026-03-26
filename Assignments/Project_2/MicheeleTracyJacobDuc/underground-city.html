@@ -3,16 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StarStruck // Underground City</title>
+    <title>StarStruck // Flat World</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="tourbot.css" />
     <style>
-      .world-page--underground {
-        background:
-          radial-gradient(ellipse at 60% 40%, rgba(255, 204, 0, 0.12) 0%, transparent 35%),
-          radial-gradient(ellipse at 20% 70%, rgba(255, 140, 50, 0.15) 0%, transparent 40%),
-          linear-gradient(180deg, #100808 0%, #020408 100%);
-      }
+      /* Use shared cyberpunk theme background from styles.css */
 
       .inhabitant {
         cursor: pointer;
@@ -173,19 +168,78 @@
         border: 1px dashed var(--border, rgba(255, 255, 255, 0.18));
         border-radius: 16px;
       }
+
+      /* World navigation transition overlay */
+      .nav-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-transition.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .nav-transition-card {
+        width: min(520px, 92vw);
+        border-radius: 20px;
+        background: rgba(10, 14, 22, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+        padding: 22px 18px;
+        text-align: center;
+      }
+
+      .nav-transition-spinner {
+        width: 46px;
+        height: 46px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.22);
+        border-top-color: rgba(64, 255, 216, 0.95);
+        animation: nav-spin 0.9s linear infinite;
+      }
+
+      .nav-transition-text {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+      }
+
+      @keyframes nav-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
     <!-- Floating particles -->
     <div class="particles" id="particles"></div>
 
+    <div class="nav-transition" id="navTransition" aria-hidden="true">
+      <div class="nav-transition-card">
+        <div class="nav-transition-spinner" aria-hidden="true"></div>
+        <div class="nav-transition-text" id="navTransitionText">Warping...</div>
+      </div>
+    </div>
+
     <!-- Fixed HUD -->
     <header class="hud">
       <a href="index.html" class="hud-brand">
         <div class="hud-logo">★</div>
         <div class="hud-title">
-          <span class="hud-label">World 003 · Deep Below</span>
-          <span class="hud-name">Underground City</span>
+          <span class="hud-label">World 003 · The Edge</span>
+          <span class="hud-name">Flat World</span>
         </div>
       </a>
 
@@ -193,7 +247,7 @@
         <a href="index.html">Hub</a>
         <a href="glass-city.html">Glass City</a>
         <a href="lego-world.html">Lego World</a>
-        <a href="underground-city.html" class="active">Underground City</a>
+        <a href="underground-city.html" class="active">Flat World</a>
         <a href="shop.html">Shop</a>
       </nav>
 
@@ -207,27 +261,36 @@
       <div class="portal-ring portal-ring--2"></div>
       <div class="portal-ring portal-ring--3"></div>
 
+      <!-- Reference artwork backdrop (Flat World) -->
+      <img
+        class="flat-world-art"
+        src="assets/flat-world.png"
+        alt="Flat World: a vast planetary plain beneath a starfield"
+        loading="eager"
+        decoding="async"
+      />
+
       <div class="world-content">
-        <p class="world-eyebrow">World 003 · Deep Below</p>
+        <p class="world-eyebrow">World 003 · The Edge</p>
         <h1 class="world-title">
-          <span>Underground City</span>
+          <span>Flat World</span>
         </h1>
         <p class="world-desc">
-          Miles beneath the surface lies the Underground City — a sprawling
-          network of tunnels, bunkers, and forgotten stations. Here, the sun
-          is a myth and resources are scarce. Ratings determine who gets
-          access to the generators, the filtered water, and the safest tunnels.
-          In the dark, your reputation is your only light.
+          A vast, impossible plain under open space — a world that looks like a
+          planet but behaves like a stage. Mountains rise like torn paper, seas
+          pool at the edges, and the sky carries ships that never land. Ratings
+          decide who gets passage, shelter, and coordinates that lead away from
+          the rim.
         </p>
 
         <div class="world-warning">
           <span>⚠</span>
-          <span>Resources flow toward those with stars. The unrated are left in darkness.</span>
+          <span>In Flat World, the map is locked behind stars. No rating, no direction.</span>
         </div>
 
         <div class="inhabitants">
           <div class="inhabitants-title" style="display:flex;align-items:center;gap:12px;">
-            <span>Rate the inhabitants of Underground City</span>
+            <span>Rate the inhabitants of Flat World</span>
             <button class="uc-review-btn" type="button" id="ucOpenReview">
               Interaction Review
             </button>
@@ -296,7 +359,7 @@
     </main>
 
     <footer>
-      <span>Underground City · World 003</span>
+      <span>Flat World · World 003</span>
       <span>In the depths, only stars shine.</span>
     </footer>
 
@@ -680,6 +743,9 @@
         };
 
         const startInteraction = (name) => {
+          // Let the global TourBot know who we're currently interacting with.
+          window.__currentInhabitantForRating = name;
+          window.__lastInhabitantForRating = name;
           const p = personalities[name] || {
             tone: "mixed",
             openers: ["A figure waits in the edge of your light."],
@@ -690,6 +756,23 @@
             },
           };
 
+          // Convert your chosen niceness + inhabitant tone into star gain/loss.
+          // We interpret the inhabitant's tone as their verdict mode, and
+          // your selected line as the niceness factor.
+          const actionToDelta = (userKey, tone) => {
+            const u = String(userKey || "").toLowerCase();
+            const t = String(tone || "").toLowerCase();
+
+            const base = u === "compliment" ? 2 : u === "apologize" ? 1 : 0; // ask => 0
+            const toneAdj =
+              t === "kind" || t === "helpful"
+                ? 1
+                : t === "dismissive" || t === "rude"
+                  ? -1
+                  : 0; // mixed => 0
+            return base + toneAdj;
+          };
+
           const opener = pick(p.openers);
 
           modalTitle.textContent = name;
@@ -697,6 +780,7 @@
           modalBody.innerHTML = "";
 
           renderBubble("npc", opener);
+          renderBubble("npc", "Remember, kindness is currency");
 
           const choices = [
             { key: "compliment", label: "Offer respect (careful compliment)" },
@@ -751,6 +835,14 @@
                             ],
                           });
 
+                          // Apply star balance after the interaction ends.
+                          if (typeof window.adjustBalance === "function") {
+                            window.adjustBalance(
+                              actionToDelta(c.key, p.tone),
+                              `Flat World — ${name} (you: ${c.key}, tone: ${p.tone})`
+                            );
+                          }
+
                           setTimeout(() => {
                             renderReview();
                           }, 250);
@@ -768,7 +860,7 @@
 
         const renderReview = () => {
           modalTitle.textContent = "Interaction Review";
-          modalSubtitle.textContent = "Everything you’ve said in Underground City (this session).";
+          modalSubtitle.textContent = "Everything you’ve said in Flat World (this session).";
           modalBody.innerHTML = "";
 
           const items = loadLog();
@@ -860,6 +952,50 @@
           }
           console.error(err);
         }
+      })();
+    </script>
+
+    <script>
+      // World navigation transitions (HUD links / "Next World" buttons)
+      (() => {
+        const navTransition = document.getElementById("navTransition");
+        const navTransitionText = document.getElementById("navTransitionText");
+        if (!navTransition || !navTransitionText) return;
+
+        const targets = {
+          "glass-city.html": "Glass City",
+          "lego-world.html": "Lego World",
+          "underground-city.html": "Flat World",
+          "index.html": "Portal Hub",
+        };
+
+        const delayMs = 900;
+
+        const normalizeHref = (href) => (href || "").replace(/^\.\/?/, "");
+        const resolveHref = (href) => new URL(href, window.location.href).toString();
+
+        const trigger = (href) => {
+          const normalized = normalizeHref(href);
+          const label = targets[normalized] || "a new world";
+          navTransitionText.textContent = "Warping to " + label + "...";
+          navTransition.classList.add("active");
+          navTransition.setAttribute("aria-hidden", "false");
+
+          setTimeout(() => {
+            window.location.href = resolveHref(href);
+          }, delayMs);
+        };
+
+        const selectors = [".hud-nav a[href]", "a.cta-primary[href]", "a.cta-ghost[href]"];
+        document.querySelectorAll(selectors.join(",")).forEach((link) => {
+          link.addEventListener("click", (e) => {
+            const href = link.getAttribute("href");
+            const normalized = normalizeHref(href);
+            if (!targets[normalized]) return;
+            e.preventDefault();
+            trigger(href);
+          });
+        });
       })();
     </script>
   </body>

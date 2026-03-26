@@ -7,12 +7,23 @@
 
   if (!shell || !log || !choices || !toggleBtn || !resetBtn) return;
 
+  const STORAGE_BALANCE_KEY = "starBalance_v1";
+
   const creditChipValue = document.querySelector("#balanceDisplay") || 
                           document.querySelector(".credit-chip span:last-child") ||
                           document.querySelector(".hud-balance span:last-child");
   const DEFAULT_START_BALANCE = 100;
 
-  const readBalance = () => DEFAULT_START_BALANCE;
+  const readBalance = () => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_BALANCE_KEY);
+      const stored = raw == null ? NaN : Number(raw);
+      if (!Number.isNaN(stored) && Number.isFinite(stored)) return stored;
+    } catch {
+      // ignore
+    }
+    return DEFAULT_START_BALANCE;
+  };
 
   let balance = readBalance();
 
@@ -25,9 +36,82 @@
     if (creditChipValue) {
       creditChipValue.textContent = `${balance.toFixed(2)} ★ balance`;
     }
+    try {
+      sessionStorage.setItem(STORAGE_BALANCE_KEY, String(balance));
+    } catch {
+      // ignore
+    }
     if (typeof window.updateBalance === "function") {
       window.updateBalance(balance);
     }
+  };
+
+  function spawnBalanceDeltaToast(deltaStars) {
+    if (!creditChipValue) return;
+    const delta = Number(deltaStars);
+    if (Number.isNaN(delta) || delta === 0) return;
+
+    const rect = creditChipValue.getBoundingClientRect();
+    const abs = Math.abs(delta);
+    const starCount = abs.toFixed(0);
+
+    const toast = document.createElement("div");
+    toast.className = `balance-delta-toast ${delta > 0 ? "positive" : "negative"}`;
+    toast.textContent =
+      delta > 0
+        ? `Congratulations, you earned ${starCount} stars`
+        : `Sadly, you lost ${starCount} stars`;
+    toast.style.left = rect.left + rect.width / 2 + "px";
+    toast.style.top = rect.top + "px";
+
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 2000);
+  }
+
+  function spawnEliminationToast(inhabitantName) {
+    if (!creditChipValue) return;
+    const name = String(inhabitantName || "").trim() || "Inhabitant";
+
+    const rect = creditChipValue.getBoundingClientRect();
+
+    const toast = document.createElement("div");
+    toast.className = "elimination-toast";
+    toast.textContent = `${name} is being eliminated due to their low star balance`;
+    toast.style.left = rect.left + rect.width / 2 + "px";
+    toast.style.top = rect.top + "px";
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 1600);
+  }
+
+  // Expose a hook so world pages can award or deduct stars after interactions.
+  // World pages call: window.adjustBalance(deltaStars, contextText)
+  window.adjustBalance = (deltaStars, contextText = "Inhabitant reaction") => {
+    const delta = Number(deltaStars);
+    if (Number.isNaN(delta) || delta === 0) {
+      if (typeof deltaStars === "number" && deltaStars === 0) {
+        addMsg(`Inhabitant Verdict: 0★. ${contextText}`, "bot");
+      }
+      // still clamp / update balance (harmless)
+      setBalance(balance + (Number(deltaStars) || 0));
+      return;
+    }
+
+    const nextRaw = balance + delta;
+    const nextRounded = Math.max(0, Math.round(nextRaw * 100) / 100);
+    const actualDelta = nextRounded - balance;
+
+    spawnBalanceDeltaToast(actualDelta);
+    setBalance(nextRaw);
+
+    const abs = Math.abs(actualDelta);
+    const sign = actualDelta > 0 ? "+" : "-";
+    addMsg(
+      `Inhabitant Verdict: ${sign}${abs.toFixed(0)}★. ${contextText}`,
+      "bot"
+    );
   };
 
   const addMsg = (text, who = "bot") => {
@@ -61,11 +145,27 @@
       btn.textContent = `${i}★`;
       btn.addEventListener("click", () => {
         addMsg(`${i}★`, "user");
-        const earned = i * 1;
-        setBalance(balance + earned);
-        addMsg(
-          `Logged. That rating earned ${earned.toFixed(0)}★ of currency. This shapes their reality.`
-        );
+
+        const targetName =
+          window.__currentInhabitantForRating ||
+          window.__lastInhabitantForRating ||
+          "Inhabitant";
+
+        // You do not earn stars from rating.
+        // 1★ still eliminates the inhabitant, but your balance stays unchanged.
+        if (i === 1) {
+          spawnEliminationToast(targetName);
+          addMsg(
+            `Brutal verdict: ${String(targetName).trim() || "Inhabitant"} is eliminated.`,
+            "bot"
+          );
+        } else {
+          addMsg(
+            `Logged. You rated ${i}★, but your balance did not change.`,
+            "bot"
+          );
+        }
+
         addMsg("What do you want to do next?");
         offerMenu();
       });
@@ -110,9 +210,9 @@
         }
 
         if (!isUndergroundCity()) {
-          addChoice("Underground City", () => {
-            addMsg("Underground City", "user");
-            addMsg("Entering World 003. Deep below, where stars are the only light that matters.");
+          addChoice("Flat World", () => {
+            addMsg("Flat World", "user");
+            addMsg("Entering World 003. The Edge — where maps, passage, and coordinates are locked behind stars.");
             goTo("underground-city.html");
           });
         }
@@ -197,9 +297,9 @@
       addMsg("A realm built brick by brick, where creativity meets commerce. The minifigures here judge each other by their constructions.");
       addMsg("Low ratings mean your creations get dismantled. Build your reputation.");
     } else if (isUndergroundCity()) {
-      addMsg("You've descended into Underground City — World 003.");
-      addMsg("Miles beneath the surface, resources are scarce and darkness is eternal. Only those with stars get access to light.");
-      addMsg("In the depths, your reputation is your only beacon.");
+      addMsg("You've entered Flat World — World 003.");
+      addMsg("A vast, impossible plain under open space. The horizon feels edited, the edges feel unfinished.");
+      addMsg("Here, stars buy maps, passage, and coordinates away from the rim. No rating, no direction.");
     } else {
       addMsg("Welcome to StarStruck — the space between worlds.");
       addMsg("You stand in the Portal Hub — click the main portal to reveal three different worlds.");

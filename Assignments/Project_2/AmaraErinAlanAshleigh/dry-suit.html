@@ -41,7 +41,30 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* themed scrollbar (page scroll) */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 224, 200, 0.75) rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar {
+            width: 12px;
+        }
+        html::-webkit-scrollbar-track {
+            background: rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 0.95), rgba(0, 160, 255, 0.65));
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            border-radius: 999px;
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.35);
+        }
+        html::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 1), rgba(0, 160, 255, 0.8));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.55);
         }
         body::before {
             content: "";
@@ -284,7 +307,7 @@
             display: flex;
         }
         .modal-panel {
-            max-width: 640px;
+            max-width: 780px;
             width: 92%;
             border-radius: 14px;
             padding: 22px 24px 20px;
@@ -308,6 +331,94 @@
         .modal-body {
             font-size: 10pt;
             line-height: 1.7;
+            max-height: 60vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-color: rgba(0, 224, 200, 0.75) rgba(0, 12, 14, 0.85);
+            scrollbar-width: thin;
+        }
+        .modal-body::-webkit-scrollbar {
+            width: 10px;
+        }
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(0, 12, 14, 0.85);
+            border-radius: 999px;
+        }
+        .modal-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 0.95), rgba(0, 160, 255, 0.65));
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            border-radius: 999px;
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.35);
+        }
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 1), rgba(0, 160, 255, 0.8));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.55);
+        }
+        .modal-suit-layout {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+        }
+        .modal-suit-text {
+            flex: 1 1 360px;
+            min-width: 260px;
+        }
+        .modal-suit-image {
+            flex: 0 0 280px;
+            max-width: 320px;
+        }
+        .modal-suit-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            box-shadow: 0 0 18px rgba(0, 224, 200, 0.35);
+            background: rgba(0, 0, 0, 0.35);
+        }
+        .modal-inline-image {
+            margin: 14px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .modal-inline-image img {
+            width: min(300px, 100%);
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            box-shadow: 0 0 18px rgba(0, 224, 200, 0.35);
+            background: rgba(0, 0, 0, 0.35);
+        }
+        @media (max-width: 560px) {
+            .modal-suit-layout {
+                flex-direction: column;
+            }
+            .modal-suit-image {
+                max-width: 320px;
+            }
+        }
+        .modal-sfx-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .modal-sfx-button {
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 224, 200, 0.8);
+            background: rgba(0, 12, 14, 0.95);
+            color: #ccfff8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 9.5pt;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .modal-sfx-button:hover {
+            background: rgba(0, 40, 44, 0.98);
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.7);
         }
         .modal-close {
             margin-top: 14px;
@@ -319,6 +430,7 @@
             border: 1px solid rgba(0, 224, 200, 0.8);
             background: rgba(0, 20, 22, 0.95);
             color: #ccfff8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 11.25pt;
             letter-spacing: 0.16em;
             text-transform: uppercase;
@@ -474,7 +586,7 @@
         <nav class="nav-links">
             <a href="index.html">home</a>
             <a href="history.html">history</a>
-            <a href="technology.html">technology</a>
+            <a href="technology.html?gate=1">technology</a>
             <a href="science.html">science</a>
             <a href="products.html">products</a>
         </nav>
@@ -497,12 +609,15 @@
 
                 <div class="detail-panel" style="margin-top: 18px;">
                     <div class="detail-label">Suit overview</div>
-                    The dry suit is split into two main pieces: the pressure adjusting suit and the oxygen converting tail.
+                    The dry suit is split into two main pieces: the pressure adjusting suit and the oxygen converting tail. It also has a HUD monitor installed that displays the user's vitals for safety. 
                 </div>
 
                 <div class="choice-grid">
                     <button class="choice-card" data-modal-target="#modal-suit">
                         <span>Pressure Suit</span>
+                    </button>
+                    <button class="choice-card" data-modal-target="#modal-vitals">
+                        <span>Vitals</span>
                     </button>
                     <button class="choice-card" data-modal-target="#modal-tail">
                         <span>Oxygenated Tail</span>
@@ -514,12 +629,37 @@
 
     <div class="modal-backdrop" id="modal-suit">
         <div class="modal-panel">
-            <h3 class="modal-title">Suit shell</h3>
+            <h3 class="modal-title"></h3>
             <div class="modal-body">
-                <p>
-                    Add notes, diagrams, and close-up renders of the core suit shell here. You can describe panel
-                    materials, seam construction, and how the operator straps into the harness.
-                </p>
+                <div class="modal-suit-layout">
+                    <div class="modal-suit-text">
+                        <ul>
+                            <li>
+                                The shape of the suit mimics merfolk anatomy to help with underwater navigation. The suit
+                                allows humans to swim at higher speeds. Webbed fingers and flippers allow them to reach
+                                these speeds, and the dorsal fin allows humans to stay upright.
+                            </li>
+                            <li>
+                                Due to vocal differences between humans and merfolk, an AI translator is needed for
+                                communication. Humans can speak into their translator, and through the quick translator can
+                                be turned into sonar clicks and whistles that are played through the speaker on their chest.
+                                The "eyes" of the suit act like a receptor for merfolk talking, able to "hear" the clicks
+                                and whistles and be translated into a human spoken language.
+                            </li>
+                        </ul>
+                        <p style="margin-top: 14px;">
+                            examples of quick translations from human language to merfolk:
+                        </p>
+                        <div class="modal-sfx-row">
+                            <button class="modal-sfx-button" data-sfx="suit-beep-1">Hello</button>
+                            <button class="modal-sfx-button" data-sfx="suit-beep-2">How are you</button>
+                            <button class="modal-sfx-button" data-sfx="suit-beep-3">Goodbye</button>
+                        </div>
+                    </div>
+                    <div class="modal-suit-image">
+                        <img src="dry suit images/front suit.png" alt="Front view of the dry suit" />
+                    </div>
+                </div>
             </div>
             <button class="modal-close" data-modal-close>close window</button>
         </div>
@@ -527,21 +667,83 @@
 
     <div class="modal-backdrop" id="modal-tail">
         <div class="modal-panel">
-            <h3 class="modal-title">Tail module</h3>
+            <h3 class="modal-title"></h3>
             <div class="modal-body">
-                <p>
-                    Use this space for imagery and text about the tail section – thruster layout, ballast pods,
-                    cabling runs, and how the module docks to the main suit.
-                </p>
+                <ul>
+                    <li>
+                        The tail exists as a separate piece to the suit as an attachment. Tubes run from the front
+                        of the suit to the back, all the way to the bottom of the tail. The tail extends all the way
+                        to the top of the back with a mock spine, and the dorsal fin sticking out. A metal
+                        endoskeleton starts at the top of the tail for movement. The tail is programmed to move
+                        constantly, not only for oxygen conversion but to keep the wearer upright and moving.
+                    </li>
+                    <li class="modal-inline-image" aria-hidden="true">
+                        <img src="dry suit images/side suit.png" alt="Side view of the dry suit" />
+                    </li>
+                    <li>
+                        New technology developments and collaboration have introduced a system that pulls water in
+                        through the bottom of the tail, pulls the oxygen out of it and pushes it through the length
+                        of the tail to the head. An emergency air tank is inside the tail in case of blockage.
+                        Bubbles of carbon dioxide push out through the tail fins.
+                    </li>
+                </ul>
             </div>
             <button class="modal-close" data-modal-close>close window</button>
         </div>
     </div>
+
+    <div class="modal-backdrop" id="modal-vitals">
+        <div class="modal-panel">
+            <h3 class="modal-title"></h3>
+            <div class="modal-body">
+                <p style="margin-bottom: 14px;">
+                    Vital signals are displayed on the wrist cuff of the dry suit. When vitals are in danger,
+                    the numbers will appear at the side of the visor with an estimated time to return to surface.
+                </p>
+                <div class="modal-inline-image" aria-hidden="true">
+                    <img src="MerfolkSuitHUD.webp" alt="MerfolkSuitHUD" style="width: min(450px, 100%); height: auto; display: block;" />
+                </div>
+            </div>
+            <button class="modal-close" data-modal-close>close window</button>
+        </div>
+    </div>
+
+    <audio id="ui-beep" src="sound assets/beep sfx.mp3" preload="auto"></audio>
+    <audio id="sfx-hello" src="sound assets/comm sfx 1.mp3" preload="auto"></audio>
+    <audio id="sfx-how-are-you" src="sound assets/comm sfx 2.mp3" preload="auto"></audio>
+    <audio id="sfx-goodbye" src="sound assets/comm sfx 3.mp3" preload="auto"></audio>
+    <a href="index.html" aria-label="Go back to home" style="position: fixed; right: 16px; bottom: 16px; z-index: 20; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(0,224,200,0.7); background: rgba(0,0,0,0.78); color: #00e0c8; text-decoration: none; font-family: 'ArcadeFont', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 9pt; letter-spacing: 0.1em; text-transform: uppercase; box-shadow: 0 0 10px rgba(0,224,200,0.35);">go back</a>
 </body>
 <script>
     (function () {
         const triggers = document.querySelectorAll('[data-modal-target]');
         const closeButtons = document.querySelectorAll('[data-modal-close]');
+        const uiBeep = document.getElementById('ui-beep');
+        const sfxHello = document.getElementById('sfx-hello');
+        const sfxHowAreYou = document.getElementById('sfx-how-are-you');
+        const sfxGoodbye = document.getElementById('sfx-goodbye');
+
+        function playBeep() {
+            if (!uiBeep) return;
+            try {
+                uiBeep.volume = 0.5;
+                uiBeep.currentTime = 0;
+                uiBeep.play();
+            } catch (e) {
+                // ignore if the browser blocks autoplay
+            }
+        }
+
+        function playSfx(audioEl, volume = 0.5) {
+            if (!audioEl) return;
+            try {
+                audioEl.volume = volume;
+                audioEl.currentTime = 0;
+                audioEl.play();
+            } catch (e) {
+                // ignore if the browser blocks autoplay
+            }
+        }
 
         function openModal(id) {
             const modal = document.querySelector(id);
@@ -552,6 +754,17 @@
         function closeModal(modal) {
             modal.classList.remove('modal-backdrop--visible');
         }
+
+        // Play sound on all button clicks
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                const sfx = button.getAttribute('data-sfx');
+                if (sfx === 'suit-beep-1') return playSfx(sfxHello);
+                if (sfx === 'suit-beep-2') return playSfx(sfxHowAreYou);
+                if (sfx === 'suit-beep-3') return playSfx(sfxGoodbye, 0.7);
+                playBeep();
+            });
+        });
 
         triggers.forEach(button => {
             button.addEventListener('click', () => {
@@ -574,4 +787,5 @@
         });
     })();
 </script>
+    <script src="audio.js"></script>
 </html>
