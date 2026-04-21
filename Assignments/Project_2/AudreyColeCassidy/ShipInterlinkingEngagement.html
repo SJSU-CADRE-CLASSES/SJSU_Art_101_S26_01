@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Interlinking Engagement - Personal Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="crt-overlay">
+        <div class="crt-scanlines"></div>
+        <div class="crt-interlace"></div>
+        <div class="crt-noise"></div>
+        <div class="crt-vignette"></div>
+    </div>
+
+    <div class="terminal-container interlinking-page">
+        <header class="header interlinking-load">SHIP INTERLINKING ENGAGEMENT</header>
+
+        <div class="interlinking-load-screen" id="interlinking-load-screen">
+            <div class="interlinking-load-text">INITIALIZING INTERLINK MODULE</div>
+            <div class="interlinking-load-dots">
+                <span>.</span><span>.</span><span>.</span>
+            </div>
+            <div class="interlinking-load-cursor">_</div>
+        </div>
+
+        <div class="main-content subpage-content interlinking-main interlinking-ready" id="interlinking-ready">
+            <div class="interlinking-center">
+                <button type="button" class="interlinking-tower-btn interlinking-tower-center" id="interlinking-tower-btn" title="Open sequence">
+                    <img src="green tower.png" alt="Interlink / Communication" class="interlinking-tower-img">
+                </button>
+                <a href="ship-exterior.html" class="diagnostics-btn back-link back-link-slim interlinking-back">&larr; RETURN TO SHIP EXTERIOR INTERFACE</a>
+            </div>
+        </div>
+
+        <footer class="footer">Q: LOGOUT</footer>
+    </div>
+
+    <div class="arrow-sequence-overlay" id="arrow-sequence-overlay">
+        <button type="button" class="diagnostic-return-btn" id="diagnostic-return-btn" style="display: none;">← RETURN</button>
+        <div class="arrow-sequence-box" id="arrow-sequence-box">
+            <div class="arrow-sequence-inner">
+                <span class="arrow-cell" data-index="0" data-key="ArrowLeft">←</span>
+                <span class="arrow-cell" data-index="1" data-key="ArrowDown">↓</span>
+                <span class="arrow-cell" data-index="2" data-key="ArrowRight">→</span>
+                <span class="arrow-cell" data-index="3" data-key="ArrowUp">↑</span>
+                <span class="arrow-cell" data-index="4" data-key="ArrowLeft">←</span>
+                <span class="arrow-cell" data-index="5" data-key="ArrowDown">↓</span>
+                <span class="arrow-cell" data-index="6" data-key="ArrowUp">↑</span>
+            </div>
+            <div class="arrow-sequence-hint">Press the arrow keys in sequence. ESC to close.</div>
+        </div>
+        <div class="arrow-sequence-success" id="arrow-sequence-success">
+            <div class="arrow-success-tower">
+                <img src="green tower.png" alt="Interlink" class="arrow-success-tower-img">
+            </div>
+            <div class="arrow-success-center">
+                <button type="button" class="arrow-success-btn" id="diagnostic-load-btn">RUN SHIP COMMUNICATION DIAGNOSTIC</button>
+            </div>
+        </div>
+        <div class="diagnostic-load-view" id="diagnostic-load-view">
+            <div class="diagnostic-load-left">
+                <div class="diagnostic-load-label" id="diagnostic-load-label">TRANSMITTING</div>
+                <div class="diagnostic-dashed-lines" id="diagnostic-dashed-lines">
+                    <div class="dashed-line dashed-line-1"></div>
+                    <div class="dashed-line dashed-line-2"></div>
+                    <div class="dashed-line dashed-line-3"></div>
+                    <div class="dashed-line dashed-line-4"></div>
+                </div>
+                <div class="diagnostic-connection-strength" id="diagnostic-connection-strength">Connection Strength: Strong</div>
+            </div>
+            <div class="diagnostic-load-right-wrap">
+                <div class="diagnostic-load-box" id="diagnostic-load-box">
+                    <img src="Markiplier.jpg" alt="Diagnostic result" class="diagnostic-load-image" id="diagnostic-load-image">
+                </div>
+                <div class="diagnostic-connection-details" id="diagnostic-connection-details">
+                    Connected to:<br>
+                    Ryan Cayago - Vessel: Invincible III<br>
+                    Ship model: 54AF7<br>
+                    Outgoing and Incoming Messages: Recieved<br>
+                    Warp VOX connection: Secured
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var loadScreen = document.getElementById('interlinking-load-screen');
+            var ready = document.getElementById('interlinking-ready');
+            setTimeout(function() {
+                if (loadScreen) loadScreen.classList.add('interlinking-load-done');
+                if (ready) ready.classList.add('interlinking-ready-visible');
+            }, 2200);
+        })();
+
+        (function() {
+            var overlay = document.getElementById('arrow-sequence-overlay');
+            var towerBtn = document.getElementById('interlinking-tower-btn');
+            var cells = document.querySelectorAll('.arrow-cell');
+            var sequence = ['ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowUp'];
+            var currentIndex = 0;
+
+            function setAllOpacity(value) {
+                cells.forEach(function(c) { c.style.opacity = value; });
+            }
+
+            function resetSequence() {
+                currentIndex = 0;
+                setAllOpacity('0.4');
+            }
+
+            var arrowBox = document.getElementById('arrow-sequence-box');
+            var successView = document.getElementById('arrow-sequence-success');
+
+            function openOverlay() {
+                resetSequence();
+                if (arrowBox) arrowBox.style.display = '';
+                if (successView) successView.style.display = 'none';
+                var loadView = document.getElementById('diagnostic-load-view');
+                if (loadView) loadView.style.display = 'none';
+                var returnBtn = document.getElementById('diagnostic-return-btn');
+                if (returnBtn) returnBtn.style.display = 'none';
+                overlay.classList.add('arrow-sequence-overlay-open');
+            }
+
+            function closeOverlay() {
+                overlay.classList.remove('arrow-sequence-overlay-open');
+                if (arrowBox) arrowBox.style.display = '';
+                if (successView) successView.style.display = 'none';
+            }
+
+            function showSuccessView() {
+                if (arrowBox) arrowBox.style.display = 'none';
+                if (successView) successView.style.display = 'flex';
+                var loadView = document.getElementById('diagnostic-load-view');
+                if (loadView) loadView.style.display = 'none';
+                var returnBtn = document.getElementById('diagnostic-return-btn');
+                if (returnBtn) returnBtn.style.display = 'none';
+            }
+
+            var diagnosticLoadBtn = document.getElementById('diagnostic-load-btn');
+            var diagnosticLoadView = document.getElementById('diagnostic-load-view');
+            var diagnosticLoadImage = document.getElementById('diagnostic-load-image');
+            var returnBtn = document.getElementById('diagnostic-return-btn');
+
+            function resetToSuccessView() {
+                if (diagnosticLoadView) diagnosticLoadView.style.display = 'none';
+                if (successView) successView.style.display = 'flex';
+                if (returnBtn) returnBtn.style.display = 'none';
+            }
+
+            if (returnBtn) {
+                returnBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    resetToSuccessView();
+                });
+            }
+
+            if (diagnosticLoadBtn) {
+                diagnosticLoadBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (successView) successView.style.display = 'none';
+                    if (returnBtn) returnBtn.style.display = 'none';
+                    var dashedLines = document.getElementById('diagnostic-dashed-lines');
+                    var connectionStrength = document.getElementById('diagnostic-connection-strength');
+                    var connectionDetails = document.getElementById('diagnostic-connection-details');
+                    if (diagnosticLoadView) {
+                        diagnosticLoadView.style.display = 'flex';
+                        diagnosticLoadView.classList.remove('diagnostic-load-complete');
+                        if (diagnosticLoadImage) {
+                            diagnosticLoadImage.style.display = 'none';
+                            diagnosticLoadImage.classList.remove('diagnostic-load-reveal');
+                        }
+                        if (dashedLines) dashedLines.style.display = '';
+                        if (connectionStrength) connectionStrength.style.display = 'none';
+                        if (connectionDetails) connectionDetails.style.display = 'none';
+                    }
+                    setTimeout(function() {
+                        if (dashedLines) dashedLines.style.display = 'none';
+                        if (connectionStrength) connectionStrength.style.display = 'block';
+                        if (diagnosticLoadImage) {
+                            diagnosticLoadImage.style.display = 'block';
+                            diagnosticLoadImage.offsetHeight;
+                            diagnosticLoadImage.classList.add('diagnostic-load-reveal');
+                        }
+                        if (connectionDetails) connectionDetails.style.display = 'block';
+                        diagnosticLoadView.classList.add('diagnostic-load-complete');
+                        if (returnBtn) returnBtn.style.display = 'block';
+                    }, 5000);
+                });
+            }
+
+            if (towerBtn) {
+                towerBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openOverlay();
+                });
+            }
+
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeOverlay();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'q' || e.key === 'Q') {
+                    e.preventDefault();
+                    window.location.href = 'log-in.html#utility';
+                    return;
+                }
+                if (!overlay.classList.contains('arrow-sequence-overlay-open')) return;
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeOverlay();
+                    return;
+                }
+                e.preventDefault();
+                var expected = sequence[currentIndex];
+                if (e.key === expected) {
+                    cells[currentIndex].style.opacity = '1';
+                    currentIndex++;
+                    if (currentIndex >= sequence.length) {
+                        setTimeout(showSuccessView, 400);
+                    }
+                } else {
+                    resetSequence();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

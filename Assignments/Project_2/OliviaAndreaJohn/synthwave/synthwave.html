@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Waves ™ – Synthwave Sector</title>
     <link rel="stylesheet" href="synthwave-theme.css" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   </head>
   <body>
     <div class="starfield"></div>
@@ -14,19 +15,21 @@
     <div class="overlay-vignette"></div>
     <div class="glow-layer"></div>
     <div class="crt-overlay"></div>
+    <div class="pixel-crush"></div>
 
     <header>
       <div class="header-inner">
         <div class="brand">
-          <div class="brand-title">The Waves ™</div>
+          <a href="synthwave.html" aria-label="Back to Synthwave hub">
+            <div class="brand-title">The Waves ™</div>
+          </a>
         </div>
         <nav>
-          <a href="#about">About</a>
+          <a href="../index.html">Home</a>
           <a href="#lifestyle">Lifestyle</a>
           <a href="#shopping">Shopping</a>
           <a href="#food">Food</a>
           <a href="#new">New</a>
-          <a href="#help">Help / FAQ</a>
           <a href="#token">Token Top‑Up</a>
         </nav>
       </div>
@@ -35,36 +38,15 @@
     <main>
       <section class="hero">
         <div class="hero-copy reveal-on-scroll">
-          <h1 class="hero-title hero-title-3d">The Waves ™</h1>
-        </div>
-      </section>
-
-      <section id="about" class="section">
-        <div class="section-card section-card--about reveal-on-scroll">
-          <div class="section-visual section-visual--about"></div>
-          <div class="section-copy">
-            <div class="section-header">
-              <h2 class="section-title">About</h2>
-              <span class="section-tag">Orientation · Worldbuilding</span>
-            </div>
-            <div class="section-body">
-              In the Synthwave wave, time folds into a permanent twilight.
-              Here you define the lore, rules, and mood of this neon horizon –
-              the core story that every other sector plugs into.
-            </div>
-            <div class="section-action">
-              <a href="about.html" class="section-button">
-                <span>Enter About Sector</span>
-                <span>↻</span>
-              </a>
-            </div>
-          </div>
+          <h1 class="hero-title hero-title-3d hero-title--rgb">The Waves ™</h1>
         </div>
       </section>
 
       <section id="lifestyle" class="section">
         <div class="section-card section-card--lifestyle reveal-on-scroll">
-          <div class="section-visual section-visual--lifestyle"></div>
+          <div class="section-visual section-visual--lifestyle" data-wire="lifestyle">
+            <div class="wire-caption">Lifestyle</div>
+          </div>
           <div class="section-copy">
             <div class="section-header">
               <h2 class="section-title">Lifestyle</h2>
@@ -88,7 +70,9 @@
 
       <section id="shopping" class="section">
         <div class="section-card section-card--shopping reveal-on-scroll">
-          <div class="section-visual section-visual--shopping"></div>
+          <div class="section-visual section-visual--shopping" data-wire="shopping">
+            <div class="wire-caption">Shopping</div>
+          </div>
           <div class="section-copy">
             <div class="section-header">
               <h2 class="section-title">Shopping</h2>
@@ -113,7 +97,9 @@
 
       <section id="food" class="section">
         <div class="section-card section-card--food reveal-on-scroll">
-          <div class="section-visual section-visual--food"></div>
+          <div class="section-visual section-visual--food" data-wire="food">
+            <div class="wire-caption">Food</div>
+          </div>
           <div class="section-copy">
             <div class="section-header">
               <h2 class="section-title">Food</h2>
@@ -138,7 +124,9 @@
 
       <section id="new" class="section">
         <div class="section-card section-card--new reveal-on-scroll">
-          <div class="section-visual section-visual--new"></div>
+          <div class="section-visual section-visual--new" data-wire="news">
+            <div class="wire-caption">New</div>
+          </div>
           <div class="section-copy">
             <div class="section-header">
               <h2 class="section-title">New</h2>
@@ -159,33 +147,11 @@
         </div>
       </section>
 
-      <section id="help" class="section">
-        <div class="section-card section-card--help reveal-on-scroll">
-          <div class="section-visual section-visual--help"></div>
-          <div class="section-copy">
-            <div class="section-header">
-              <h2 class="section-title">Help / FAQ</h2>
-              <span class="section-tag">Guides · Safety · Support</span>
-            </div>
-            <div class="section-body">
-              First‑time visitors can tap into a holographic console that explains
-              how to navigate the Waves, adjust sensory intensity, and manage
-              tokens. Friendly support avatars appear as wireframe silhouettes,
-              ready to reroute you if you drift too far off the main grid.
-            </div>
-            <div class="section-action">
-              <a href="help.html" class="section-button">
-                <span>Open Help Desk</span>
-                <span>?</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="token" class="section">
         <div class="section-card section-card--token reveal-on-scroll">
-          <div class="section-visual section-visual--token"></div>
+          <div class="section-visual section-visual--token" data-wire="token">
+            <div class="wire-caption">Tokens</div>
+          </div>
           <div class="section-copy">
             <div class="section-header">
               <h2 class="section-title">Token Top‑Up</h2>

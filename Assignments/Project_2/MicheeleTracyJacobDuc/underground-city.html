@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarStruck // Flat World</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tourbot.css" />
+    <style>
+      /* Use shared cyberpunk theme background from styles.css */
+
+      .inhabitant {
+        cursor: pointer;
+      }
+
+      .inhabitant:focus-visible {
+        outline: 2px solid rgba(255, 204, 0, 0.85);
+        outline-offset: 4px;
+      }
+
+      .uc-review-btn {
+        margin-left: auto;
+        border: 1px solid var(--border);
+        background: rgba(18, 26, 42, 0.65);
+        color: var(--text, #eaf3ff);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+      }
+
+      .uc-review-btn:hover {
+        border-color: rgba(255, 204, 0, 0.55);
+      }
+
+      .uc-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10050;
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      .uc-modal[aria-hidden="false"] {
+        display: flex;
+      }
+
+      .uc-modal-panel {
+        width: min(720px, calc(100vw - 28px));
+        max-height: min(78vh, 720px);
+        overflow: auto;
+        background: var(--panel, rgba(10, 14, 22, 0.85));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 18px;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(14px);
+      }
+
+      .uc-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+      }
+
+      .uc-modal-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .uc-modal-title strong {
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+      }
+
+      .uc-modal-title span {
+        opacity: 0.8;
+        font-size: 0.9rem;
+      }
+
+      .uc-modal-close {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        background: transparent;
+        color: var(--text, #eaf3ff);
+        border-radius: 12px;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
+      .uc-modal-body {
+        padding: 16px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .uc-bubble {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 12px 14px;
+        line-height: 1.4;
+      }
+
+      .uc-bubble.npc {
+        background: rgba(255, 204, 0, 0.08);
+      }
+
+      .uc-bubble.user {
+        background: rgba(255, 140, 50, 0.08);
+        align-self: flex-end;
+      }
+
+      .uc-choices {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 6px;
+      }
+
+      .uc-choice {
+        text-align: left;
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        background: rgba(18, 26, 42, 0.55);
+        color: var(--text, #eaf3ff);
+        border-radius: 14px;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+
+      .uc-choice:hover {
+        border-color: rgba(255, 204, 0, 0.55);
+      }
+
+      .uc-review-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .uc-review-item {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .uc-review-item strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .uc-review-meta {
+        opacity: 0.8;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+
+      .uc-review-empty {
+        opacity: 0.85;
+        padding: 14px;
+        border: 1px dashed var(--border, rgba(255, 255, 255, 0.18));
+        border-radius: 16px;
+      }
+
+      /* World navigation transition overlay */
+      .nav-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-transition.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .nav-transition-card {
+        width: min(520px, 92vw);
+        border-radius: 20px;
+        background: rgba(10, 14, 22, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+        padding: 22px 18px;
+        text-align: center;
+      }
+
+      .nav-transition-spinner {
+        width: 46px;
+        height: 46px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.22);
+        border-top-color: rgba(64, 255, 216, 0.95);
+        animation: nav-spin 0.9s linear infinite;
+      }
+
+      .nav-transition-text {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+      }
+
+      @keyframes nav-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="nav-transition" id="navTransition" aria-hidden="true">
+      <div class="nav-transition-card">
+        <div class="nav-transition-spinner" aria-hidden="true"></div>
+        <div class="nav-transition-text" id="navTransitionText">Warping...</div>
+      </div>
+    </div>
+
+    <!-- Fixed HUD -->
+    <header class="hud">
+      <a href="index.html" class="hud-brand">
+        <div class="hud-logo">★</div>
+        <div class="hud-title">
+          <span class="hud-label">World 003 · The Edge</span>
+          <span class="hud-name">Flat World</span>
+        </div>
+      </a>
+
+      <nav class="hud-nav">
+        <a href="index.html">Hub</a>
+        <a href="glass-city.html">Glass City</a>
+        <a href="lego-world.html">Lego World</a>
+        <a href="underground-city.html" class="active">Flat World</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+
+      <div class="hud-balance">
+        <span class="balance-dot"></span>
+        <span id="balanceDisplay">100.00 ★ balance</span>
+      </div>
+    </header>
+
+    <main class="world-page world-page--underground">
+      <div class="portal-ring portal-ring--2"></div>
+      <div class="portal-ring portal-ring--3"></div>
+
+      <!-- Reference artwork backdrop (Flat World) -->
+      <img
+        class="flat-world-art"
+        src="assets/flat-world.png"
+        alt="Flat World: a vast planetary plain beneath a starfield"
+        loading="eager"
+        decoding="async"
+      />
+
+      <div class="world-content">
+        <p class="world-eyebrow">World 003 · The Edge</p>
+        <h1 class="world-title">
+          <span>Flat World</span>
+        </h1>
+        <p class="world-desc">
+          A vast, impossible plain under open space — a world that looks like a
+          planet but behaves like a stage. Mountains rise like torn paper, seas
+          pool at the edges, and the sky carries ships that never land. Ratings
+          decide who gets passage, shelter, and coordinates that lead away from
+          the rim.
+        </p>
+
+        <div class="world-warning">
+          <span>⚠</span>
+          <span>In Flat World, the map is locked behind stars. No rating, no direction.</span>
+        </div>
+
+        <div class="inhabitants">
+          <div class="inhabitants-title" style="display:flex;align-items:center;gap:12px;">
+            <span>Rate the inhabitants of Flat World</span>
+            <button class="uc-review-btn" type="button" id="ucOpenReview">
+              Interaction Review
+            </button>
+          </div>
+          <div class="inhabitant-grid">
+            <div class="inhabitant" data-name="Tunnel Maven">
+              <div class="inhabitant-avatar">🔦</div>
+              <div class="inhabitant-name">Tunnel Maven</div>
+              <div class="inhabitant-role">Path Finder</div>
+              <div class="inhabitant-stars" data-inhabitant="maven">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Generator Chief">
+              <div class="inhabitant-avatar">⚡</div>
+              <div class="inhabitant-name">Generator Chief</div>
+              <div class="inhabitant-role">Power Keeper</div>
+              <div class="inhabitant-stars" data-inhabitant="chief">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Echo">
+              <div class="inhabitant-avatar">👂</div>
+              <div class="inhabitant-name">Echo</div>
+              <div class="inhabitant-role">Sound Scout</div>
+              <div class="inhabitant-stars" data-inhabitant="echo">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Digger">
+              <div class="inhabitant-avatar">⛏️</div>
+              <div class="inhabitant-name">Digger</div>
+              <div class="inhabitant-role">Expansion Lead</div>
+              <div class="inhabitant-stars" data-inhabitant="digger">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-row">
+          <a href="shop.html" class="cta-primary">Enter the Shop ⇢</a>
+          <a href="lego-world.html" class="cta-ghost">⇠ Previous World</a>
+          <a href="index.html" class="cta-ghost">Return to Hub</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>Flat World · World 003</span>
+      <span>In the depths, only stars shine.</span>
+    </footer>
+
+    <!-- Interaction modal (kept outside world-page to avoid clipping) -->
+    <div class="uc-modal" id="ucModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="uc-modal-panel" role="document">
+        <div class="uc-modal-head">
+          <div class="uc-modal-title">
+            <strong id="ucModalTitle">Interaction</strong>
+            <span id="ucModalSubtitle">Choose how you respond.</span>
+          </div>
+          <button class="uc-modal-close" type="button" id="ucModalClose" aria-label="Close">Close</button>
+        </div>
+        <div class="uc-modal-body" id="ucModalBody"></div>
+      </div>
+    </div>
+
+    <!-- TourBot -->
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">Underground guide</div>
+            </div>
+          </div>
+
+          <div class="tourbot-actions">
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle" aria-label="Collapse">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset" aria-label="Restart">↺</button>
+          </div>
+        </div>
+
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="world-common.js"></script>
+    <script src="tourbot.js" defer></script>
+    <script>
+      (() => {
+        try {
+        const STORAGE_KEY = "undergroundCityInteractionLog_v1";
+
+        const safeParse = (raw, fallback) => {
+          try {
+            const parsed = JSON.parse(raw);
+            return parsed ?? fallback;
+          } catch {
+            return fallback;
+          }
+        };
+
+        let memoryLog = [];
+        const canUseSessionStorage = (() => {
+          try {
+            const testKey = "__uc_storage_test__";
+            sessionStorage.setItem(testKey, "1");
+            sessionStorage.removeItem(testKey);
+            return true;
+          } catch {
+            return false;
+          }
+        })();
+
+        const loadLog = () => {
+          if (!canUseSessionStorage) return memoryLog;
+          return safeParse(sessionStorage.getItem(STORAGE_KEY), []);
+        };
+
+        const saveLog = (items) => {
+          memoryLog = items;
+          if (!canUseSessionStorage) return;
+          try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+          } catch {
+            // ignore storage failures (private mode / blocked storage)
+          }
+        };
+
+        const nowStamp = () => {
+          const d = new Date();
+          return d.toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        };
+
+        const personalities = {
+          "Tunnel Maven": {
+            tone: "helpful",
+            openers: [
+              "Light down. Footsteps quiet. You trying to get us noticed?",
+              "Hold still—your shadow is loud. Need a safer route?",
+              "If you’re lost, say so. Pride gets people swallowed down here.",
+            ],
+            replies: {
+              compliment: [
+                "Save it. Compliments don’t keep the ceiling up. But… thanks.",
+                "Heh. If you mean it, remember my name when the ratings hit.",
+                "Appreciated. Now listen: the tunnels reward attention.",
+              ],
+              ask: [
+                "Good. Tip one: never walk under fresh supports. Tip two: never walk alone.",
+                "Yeah. Follow the cool air. It means ventilation. Warm air means trouble.",
+                "Sure. Pay attention to echoes. Silence is safer than promise.",
+              ],
+              apologize: [
+                "Apology accepted. Next time, announce yourself before you move.",
+                "Fine. Don’t repeat it.",
+                "Okay. You’re learning. Keep learning fast.",
+              ],
+            },
+          },
+          "Generator Chief": {
+            tone: "dismissive",
+            openers: [
+              "If you’re not here to work, don’t breathe my oxygen.",
+              "Power stays on because I don’t waste words. Speak.",
+              "Stars keep the lights running. Your feelings don’t.",
+            ],
+            replies: {
+              compliment: [
+                "Flattery doesn’t fix broken coils.",
+                "Good. Respect the engine room. Now move.",
+                "Noted. Keep it short.",
+              ],
+              ask: [
+                "No handouts. Earn access.",
+                "You want help? Bring parts. Or bring stars.",
+                "Ask the Maven. I keep us alive; I don’t babysit.",
+              ],
+              apologize: [
+                "Apology doesn’t generate power.",
+                "Fine. Don’t do it again.",
+                "Accepted. Keep moving.",
+              ],
+            },
+          },
+          "Echo": {
+            tone: "kind",
+            openers: [
+              "Shh—listen. The city tells you where it hurts if you’re gentle enough.",
+              "I heard your hesitation two tunnels away. You okay?",
+              "It’s loud down here, even when it’s quiet. Want a calm path?",
+            ],
+            replies: {
+              compliment: [
+                "Thank you. Kind words carry further than screams down here.",
+                "That means more than you think. Most people only talk at me, not to me.",
+                "I’ll keep that sound with me. It’s warm.",
+              ],
+              ask: [
+                "Yes. If you’re scared, match your breath to your footsteps. It keeps panic from echoing.",
+                "Of course. If you hear dripping that stops when you stop—turn around. Something’s listening.",
+                "Sure. Find someone worth trusting and stay within their light. Solo gets you swallowed.",
+              ],
+              apologize: [
+                "It’s okay. Down here, everyone bumps into each other in the dark.",
+                "Apology accepted. You’re trying. That’s rare.",
+                "Thank you for repairing it. Not everyone does.",
+              ],
+            },
+          },
+          "Digger": {
+            tone: "rude",
+            openers: [
+              "Move. I’m making space. You’re taking it.",
+              "If you’re not holding a tool, you’re in the way.",
+              "Careful. Down here, softness gets buried.",
+            ],
+            replies: {
+              compliment: [
+                "Don’t praise me. Praise the tunnel when it doesn’t collapse.",
+                "Yeah? Save it for the foreman. I’ve got work.",
+                "Hmph. Words are light. I need weight.",
+              ],
+              ask: [
+                "Help yourself: keep your hands clean and your promises cleaner.",
+                "No. I don’t carry anyone.",
+                "Ask Echo if you want comfort. I do clearance.",
+              ],
+              apologize: [
+                "Don’t apologize. Adjust.",
+                "Fine. Fix it by staying alert.",
+                "Accepted. Now stop hovering.",
+              ],
+            },
+          },
+        };
+
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        const modal = document.getElementById("ucModal");
+        const modalTitle = document.getElementById("ucModalTitle");
+        const modalSubtitle = document.getElementById("ucModalSubtitle");
+        const modalBody = document.getElementById("ucModalBody");
+        const modalClose = document.getElementById("ucModalClose");
+        const openReviewBtn = document.getElementById("ucOpenReview");
+
+        if (!modal || !modalTitle || !modalSubtitle || !modalBody || !modalClose || !openReviewBtn) return;
+
+        let lastActiveEl = null;
+
+        const openModal = () => {
+          lastActiveEl = document.activeElement;
+          modal.setAttribute("aria-hidden", "false");
+          modalClose.focus();
+        };
+
+        const closeModal = () => {
+          modal.setAttribute("aria-hidden", "true");
+          modalBody.innerHTML = "";
+          if (lastActiveEl && typeof lastActiveEl.focus === "function") lastActiveEl.focus();
+        };
+
+        modalClose.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
+        });
+
+        const renderBubble = (who, text) => {
+          const div = document.createElement("div");
+          div.className = `uc-bubble ${who}`;
+          div.textContent = text;
+          modalBody.appendChild(div);
+        };
+
+        const renderChoices = (items) => {
+          const wrap = document.createElement("div");
+          wrap.className = "uc-choices";
+          items.forEach((item) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "uc-choice";
+            btn.textContent = item.label;
+            btn.addEventListener("click", item.onClick);
+            wrap.appendChild(btn);
+          });
+          modalBody.appendChild(wrap);
+        };
+
+        const logInteraction = (entry) => {
+          const items = loadLog();
+          items.push(entry);
+          saveLog(items);
+        };
+
+        const followupsByTone = {
+          kind: {
+            prompt: "Their voice stays low and careful. What do you do?",
+            options: [
+              {
+                label: "Share what you’re scared of",
+                userLine: "You: “I’m scared I’ll run out of light.”",
+                npcReplies: [
+                  "Then share it before you need it. Light multiplies when people trust each other.",
+                  "Hold onto rhythms: breath, steps, heartbeat. They’re little lanterns when the power dips.",
+                  "If you’re honest about fear, it stops echoing. That’s how you keep moving.",
+                ],
+              },
+              {
+                label: "Ask for a calm route",
+                userLine: "You: “Show me the calmest way through.”",
+                npcReplies: [
+                  "Follow the steady hum. It means generators nearby. Safer, warmer.",
+                  "Avoid the tunnels that smell metallic. That’s panic and old blood.",
+                  "Take the long way. The rush routes are where people vanish.",
+                ],
+              },
+            ],
+          },
+          helpful: {
+            prompt: "They scan the dark like a map. What’s your move?",
+            options: [
+              {
+                label: "Ask for one survival rule",
+                userLine: "You: “Give me one rule I can’t forget.”",
+                npcReplies: [
+                  "Never go quiet when you’re lost. Speak. Let someone triangulate your voice.",
+                  "Mark your turns. The city looks the same when you’re tired.",
+                  "If your gut says stop—stop. Pride kills faster than hunger.",
+                ],
+              },
+              {
+                label: "Offer to help them scout",
+                userLine: "You: “I can help. Tell me what to watch for.”",
+                npcReplies: [
+                  "Watch the dust. If it lifts with no wind, something moved.",
+                  "Listen for patterns. Random noise is usually alive.",
+                  "Keep your light low and your head higher. Panic makes you look down.",
+                ],
+              },
+            ],
+          },
+          rude: {
+            prompt: "They don’t soften. How do you answer?",
+            options: [
+              {
+                label: "Push back (firm, not loud)",
+                userLine: "You: “I’m not your enemy. I’m just trying to survive.”",
+                npcReplies: [
+                  "Then survive without slowing me down.",
+                  "Fine. Keep up. Don’t whine.",
+                  "Good. Survival respects clarity.",
+                ],
+              },
+              {
+                label: "Step away (keep your energy)",
+                userLine: "You: “Understood. I’ll give you space.”",
+                npcReplies: [
+                  "Finally.",
+                  "Good. Space keeps tunnels stable.",
+                  "Yeah. Don’t crowd the work.",
+                ],
+              },
+            ],
+          },
+          dismissive: {
+            prompt: "They’re all function, no warmth. What now?",
+            options: [
+              {
+                label: "Ask what they need",
+                userLine: "You: “What do you need to keep the lights on?”",
+                npcReplies: [
+                  "Parts. Time. Stars. And fewer interruptions.",
+                  "Copper, coolant, competent hands.",
+                  "Silence. Then supplies.",
+                ],
+              },
+              {
+                label: "Offer something concrete",
+                userLine: "You: “I can carry supplies. Point me.”",
+                npcReplies: [
+                  "Good. Don’t drop anything.",
+                  "Fine. Follow instructions exactly.",
+                  "Acceptable. Work talks.",
+                ],
+              },
+            ],
+          },
+          mixed: {
+            prompt: "The tunnel breathes around you. What do you do next?",
+            options: [
+              {
+                label: "Ask what the stars mean down here",
+                userLine: "You: “What do stars buy in the dark?”",
+                npcReplies: [
+                  "Minutes of light. Sips of clean water. A door that opens once.",
+                  "Safety. Or the illusion of it.",
+                  "Time. Down here, stars are time.",
+                ],
+              },
+              {
+                label: "Leave before it gets worse",
+                userLine: "You: “I’m going to step back and choose my next move.”",
+                npcReplies: ["Smart.", "Good.", "Don’t rush. The dark rewards patience."],
+              },
+            ],
+          },
+        };
+
+        const startInteraction = (name) => {
+          // Let the global TourBot know who we're currently interacting with.
+          window.__currentInhabitantForRating = name;
+          window.__lastInhabitantForRating = name;
+          const p = personalities[name] || {
+            tone: "mixed",
+            openers: ["A figure waits in the edge of your light."],
+            replies: {
+              compliment: ["They acknowledge you with a small nod."],
+              ask: ["They point to a chalk mark on the wall."],
+              apologize: ["They accept, eyes still scanning the dark."],
+            },
+          };
+
+          // Convert your chosen niceness + inhabitant tone into star gain/loss.
+          // We interpret the inhabitant's tone as their verdict mode, and
+          // your selected line as the niceness factor.
+          const actionToDelta = (userKey, tone) => {
+            const u = String(userKey || "").toLowerCase();
+            const t = String(tone || "").toLowerCase();
+
+            const base = u === "compliment" ? 2 : u === "apologize" ? 1 : 0; // ask => 0
+            const toneAdj =
+              t === "kind" || t === "helpful"
+                ? 1
+                : t === "dismissive" || t === "rude"
+                  ? -1
+                  : 0; // mixed => 0
+            return base + toneAdj;
+          };
+
+          const opener = pick(p.openers);
+
+          modalTitle.textContent = name;
+          modalSubtitle.textContent = "Pick one response. This will be saved to your review.";
+          modalBody.innerHTML = "";
+
+          renderBubble("npc", opener);
+          renderBubble("npc", "Remember, kindness is currency");
+
+          const choices = [
+            { key: "compliment", label: "Offer respect (careful compliment)" },
+            { key: "ask", label: "Ask for help (risk trust)" },
+            { key: "apologize", label: "Apologize (repair quickly)" },
+          ];
+
+          renderChoices(
+            choices.map((c) => ({
+              label: c.label,
+              onClick: () => {
+                const existing = modalBody.querySelector(".uc-choices");
+                if (existing) existing.remove();
+
+                const userLine =
+                  c.key === "compliment"
+                    ? "You: “You know these tunnels like they’re part of you.”"
+                    : c.key === "ask"
+                      ? "You: “Can you help me find a safer way through?”"
+                      : "You: “Sorry. I didn’t mean to get in your way.”";
+
+                const npcReply = pick(p.replies[c.key] || ["..."]);
+                renderBubble("user", userLine);
+                setTimeout(() => {
+                  renderBubble("npc", npcReply);
+
+                  const followup = followupsByTone[p.tone] || followupsByTone.mixed;
+                  modalSubtitle.textContent = followup.prompt;
+                  renderChoices(
+                    followup.options.map((o) => ({
+                      label: o.label,
+                      onClick: () => {
+                        const existing2 = modalBody.querySelector(".uc-choices");
+                        if (existing2) existing2.remove();
+
+                        const userLine2 = o.userLine;
+                        const npcReply2 = pick(o.npcReplies || ["..."]);
+                        renderBubble("user", userLine2);
+                        setTimeout(() => {
+                          renderBubble("npc", npcReply2);
+
+                          logInteraction({
+                            at: nowStamp(),
+                            inhabitant: name,
+                            tone: p.tone,
+                            transcript: [
+                              { who: "npc", text: opener },
+                              { who: "user", text: userLine },
+                              { who: "npc", text: npcReply },
+                              { who: "user", text: userLine2 },
+                              { who: "npc", text: npcReply2 },
+                            ],
+                          });
+
+                          // Apply star balance after the interaction ends.
+                          if (typeof window.adjustBalance === "function") {
+                            window.adjustBalance(
+                              actionToDelta(c.key, p.tone),
+                              `Flat World — ${name} (you: ${c.key}, tone: ${p.tone})`
+                            );
+                          }
+
+                          setTimeout(() => {
+                            renderReview();
+                          }, 250);
+                        }, 250);
+                      },
+                    }))
+                  );
+                }, 250);
+              },
+            }))
+          );
+
+          openModal();
+        };
+
+        const renderReview = () => {
+          modalTitle.textContent = "Interaction Review";
+          modalSubtitle.textContent = "Everything you’ve said in Flat World (this session).";
+          modalBody.innerHTML = "";
+
+          const items = loadLog();
+          if (!items.length) {
+            const empty = document.createElement("div");
+            empty.className = "uc-review-empty";
+            empty.textContent = "No interactions yet. Click an inhabitant card to trigger one.";
+            modalBody.appendChild(empty);
+            openModal();
+            return;
+          }
+
+          const list = document.createElement("div");
+          list.className = "uc-review-list";
+          items
+            .slice()
+            .reverse()
+            .forEach((it) => {
+              const row = document.createElement("div");
+              row.className = "uc-review-item";
+              const transcriptHtml = (it.transcript || [])
+                .map((t) => {
+                  const label = t.who === "user" ? "You" : "Them";
+                  const content = t.who === "user" ? (t.text || "").replace(/^You:\s*/, "") : t.text || "";
+                  return `<div style="margin-bottom:8px;"><em>${label}:</em> ${content}</div>`;
+                })
+                .join("");
+
+              row.innerHTML = `
+                <strong>${it.inhabitant}</strong>
+                <div class="uc-review-meta">${it.at} · tone: ${it.tone}</div>
+                ${transcriptHtml}
+              `;
+              list.appendChild(row);
+            });
+
+          modalBody.appendChild(list);
+          renderChoices([
+            {
+              label: "Clear review (this session)",
+              onClick: () => {
+                saveLog([]);
+                renderReview();
+              },
+            },
+            { label: "Close", onClick: closeModal },
+          ]);
+          openModal();
+        };
+
+        openReviewBtn.addEventListener("click", () => {
+          renderReview();
+        });
+
+        // Visible confirmation the interaction system initialized.
+        openReviewBtn.dataset.ready = "true";
+        if (!openReviewBtn.textContent.includes("Ready")) {
+          openReviewBtn.textContent = "Interaction Review (Ready)";
+        }
+
+        document.querySelectorAll(".inhabitant").forEach((card) => {
+          if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "0");
+          const name = card.dataset.name || "Unknown";
+
+          card.addEventListener("click", (e) => {
+            const target = e.target;
+            if (target && target.closest && target.closest(".inhabitant-stars")) return;
+            startInteraction(name);
+          });
+
+          card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              startInteraction(name);
+            }
+          });
+        });
+        } catch (err) {
+          // If anything goes wrong, surface it visibly (helps when running via file://).
+          try {
+            const banner = document.createElement("div");
+            banner.style.cssText =
+              "position:fixed;left:12px;right:12px;bottom:12px;z-index:20000;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.18);color:#fff;font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;";
+            banner.textContent = "Underground interactions failed to load. Refresh or run via a local server.";
+            document.body.appendChild(banner);
+            setTimeout(() => banner.remove(), 5000);
+          } catch {
+            // ignore
+          }
+          console.error(err);
+        }
+      })();
+    </script>
+
+    <script>
+      // World navigation transitions (HUD links / "Next World" buttons)
+      (() => {
+        const navTransition = document.getElementById("navTransition");
+        const navTransitionText = document.getElementById("navTransitionText");
+        if (!navTransition || !navTransitionText) return;
+
+        const targets = {
+          "glass-city.html": "Glass City",
+          "lego-world.html": "Lego World",
+          "underground-city.html": "Flat World",
+          "index.html": "Portal Hub",
+        };
+
+        const delayMs = 900;
+
+        const normalizeHref = (href) => (href || "").replace(/^\.\/?/, "");
+        const resolveHref = (href) => new URL(href, window.location.href).toString();
+
+        const trigger = (href) => {
+          const normalized = normalizeHref(href);
+          const label = targets[normalized] || "a new world";
+          navTransitionText.textContent = "Warping to " + label + "...";
+          navTransition.classList.add("active");
+          navTransition.setAttribute("aria-hidden", "false");
+
+          setTimeout(() => {
+            window.location.href = resolveHref(href);
+          }, delayMs);
+        };
+
+        const selectors = [".hud-nav a[href]", "a.cta-primary[href]", "a.cta-ghost[href]"];
+        document.querySelectorAll(selectors.join(",")).forEach((link) => {
+          link.addEventListener("click", (e) => {
+            const href = link.getAttribute("href");
+            const normalized = normalizeHref(href);
+            if (!targets[normalized]) return;
+            e.preventDefault();
+            trigger(href);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

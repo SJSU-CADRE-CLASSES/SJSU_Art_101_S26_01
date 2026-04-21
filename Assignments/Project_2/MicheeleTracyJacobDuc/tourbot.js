@@ -7,24 +7,25 @@
 
   if (!shell || !log || !choices || !toggleBtn || !resetBtn) return;
 
-  const creditChipValue = document.querySelector(".credit-chip span:last-child");
+  const STORAGE_BALANCE_KEY = "starBalance_v1";
+
+  const creditChipValue = document.querySelector("#balanceDisplay") || 
+                          document.querySelector(".credit-chip span:last-child") ||
+                          document.querySelector(".hud-balance span:last-child");
   const DEFAULT_START_BALANCE = 100;
 
   const readBalance = () => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_BALANCE_KEY);
+      const stored = raw == null ? NaN : Number(raw);
+      if (!Number.isNaN(stored) && Number.isFinite(stored)) return stored;
+    } catch {
+      // ignore
+    }
     return DEFAULT_START_BALANCE;
   };
 
   let balance = readBalance();
-
-  const isIndex = () => location.pathname.toLowerCase().endsWith("index.html") || location.pathname.endsWith("/");
-  const scrollToId = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      return true;
-    }
-    return false;
-  };
 
   const goTo = (href) => {
     location.href = href;
@@ -35,6 +36,82 @@
     if (creditChipValue) {
       creditChipValue.textContent = `${balance.toFixed(2)} ★ balance`;
     }
+    try {
+      sessionStorage.setItem(STORAGE_BALANCE_KEY, String(balance));
+    } catch {
+      // ignore
+    }
+    if (typeof window.updateBalance === "function") {
+      window.updateBalance(balance);
+    }
+  };
+
+  function spawnBalanceDeltaToast(deltaStars) {
+    if (!creditChipValue) return;
+    const delta = Number(deltaStars);
+    if (Number.isNaN(delta) || delta === 0) return;
+
+    const rect = creditChipValue.getBoundingClientRect();
+    const abs = Math.abs(delta);
+    const starCount = abs.toFixed(0);
+
+    const toast = document.createElement("div");
+    toast.className = `balance-delta-toast ${delta > 0 ? "positive" : "negative"}`;
+    toast.textContent =
+      delta > 0
+        ? `Congratulations, you earned ${starCount} stars`
+        : `Sadly, you lost ${starCount} stars`;
+    toast.style.left = rect.left + rect.width / 2 + "px";
+    toast.style.top = rect.top + "px";
+
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 2000);
+  }
+
+  function spawnEliminationToast(inhabitantName) {
+    if (!creditChipValue) return;
+    const name = String(inhabitantName || "").trim() || "Inhabitant";
+
+    const rect = creditChipValue.getBoundingClientRect();
+
+    const toast = document.createElement("div");
+    toast.className = "elimination-toast";
+    toast.textContent = `${name} is being eliminated due to their low star balance`;
+    toast.style.left = rect.left + rect.width / 2 + "px";
+    toast.style.top = rect.top + "px";
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 1600);
+  }
+
+  // Expose a hook so world pages can award or deduct stars after interactions.
+  // World pages call: window.adjustBalance(deltaStars, contextText)
+  window.adjustBalance = (deltaStars, contextText = "Inhabitant reaction") => {
+    const delta = Number(deltaStars);
+    if (Number.isNaN(delta) || delta === 0) {
+      if (typeof deltaStars === "number" && deltaStars === 0) {
+        addMsg(`Inhabitant Verdict: 0★. ${contextText}`, "bot");
+      }
+      // still clamp / update balance (harmless)
+      setBalance(balance + (Number(deltaStars) || 0));
+      return;
+    }
+
+    const nextRaw = balance + delta;
+    const nextRounded = Math.max(0, Math.round(nextRaw * 100) / 100);
+    const actualDelta = nextRounded - balance;
+
+    spawnBalanceDeltaToast(actualDelta);
+    setBalance(nextRaw);
+
+    const abs = Math.abs(actualDelta);
+    const sign = actualDelta > 0 ? "+" : "-";
+    addMsg(
+      `Inhabitant Verdict: ${sign}${abs.toFixed(0)}★. ${contextText}`,
+      "bot"
+    );
   };
 
   const addMsg = (text, who = "bot") => {
@@ -68,14 +145,28 @@
       btn.textContent = `${i}★`;
       btn.addEventListener("click", () => {
         addMsg(`${i}★`, "user");
-        const earned = i * 1;
-        setBalance(balance + earned);
-        addMsg(
-          `Logged. That rating earned ${earned.toFixed(
-            0
-          )}★ of currency for this world.`
-        );
-        addMsg("Where do you want to go next?");
+
+        const targetName =
+          window.__currentInhabitantForRating ||
+          window.__lastInhabitantForRating ||
+          "Inhabitant";
+
+        // You do not earn stars from rating.
+        // 1★ still eliminates the inhabitant, but your balance stays unchanged.
+        if (i === 1) {
+          spawnEliminationToast(targetName);
+          addMsg(
+            `Brutal verdict: ${String(targetName).trim() || "Inhabitant"} is eliminated.`,
+            "bot"
+          );
+        } else {
+          addMsg(
+            `Logged. You rated ${i}★, but your balance did not change.`,
+            "bot"
+          );
+        }
+
+        addMsg("What do you want to do next?");
         offerMenu();
       });
       wrap.appendChild(btn);
@@ -83,64 +174,104 @@
     choices.appendChild(wrap);
   };
 
+  // Page detection
+  const path = location.pathname.toLowerCase();
+  const isShopPage = () => path.endsWith("shop.html");
+  const isHubPage = () => path.endsWith("index.html") || path.endsWith("/");
+  const isGlassCity = () => path.endsWith("glass-city.html");
+  const isLegoWorld = () => path.endsWith("lego-world.html");
+  const isUndergroundCity = () => path.endsWith("underground-city.html");
+  const isWorldPage = () => isGlassCity() || isLegoWorld() || isUndergroundCity();
+
   const offerMenu = () => {
     clearChoices();
 
-    addChoice("Take the tour", () => {
-      addMsg("Take the tour", "user");
-      addMsg("Step 1: scroll to switch realities.");
-      addMsg("Step 2: every interaction becomes a rating.");
-      addMsg("Step 3: ratings are money. Be kind to keep doors open.");
-      addMsg("Choose a destination.");
-      clearChoices();
+    // Portal navigation - available everywhere except shop
+    if (!isShopPage()) {
+      addChoice("Travel to a world", () => {
+        addMsg("Travel to a world", "user");
+        addMsg("Choose your destination. Each world has different rules.");
+        clearChoices();
 
-      addChoice("Origin", () => {
-        addMsg("Origin", "user");
-        if (!scrollToId("intro")) goTo("index.html#intro");
-      });
-      addChoice("Worlds", () => {
-        addMsg("Worlds", "user");
-        if (!scrollToId("worlds")) goTo("index.html#worlds");
-      });
-      addChoice("Currency", () => {
-        addMsg("Currency", "user");
-        if (!scrollToId("economy")) goTo("index.html#economy");
-      });
-      addChoice("Shop", () => {
-        addMsg("Shop", "user");
-        if (location.pathname.toLowerCase().endsWith("shop.html")) {
-          addMsg("You’re already in the shop. Look at the prices. Imagine the people behind them.");
-          offerMenu();
-        } else {
-          goTo("shop.html");
+        if (!isGlassCity()) {
+          addChoice("Glass City", () => {
+            addMsg("Glass City", "user");
+            addMsg("Entering World 001. Remember: in Glass City, anything less than 4 stars is an insult.");
+            goTo("glass-city.html");
+          });
         }
+
+        if (!isLegoWorld()) {
+          addChoice("Lego World", () => {
+            addMsg("Lego World", "user");
+            addMsg("Entering World 002. A realm of bricks and imagination where ratings determine your building rights.");
+            goTo("lego-world.html");
+          });
+        }
+
+        if (!isUndergroundCity()) {
+          addChoice("Flat World", () => {
+            addMsg("Flat World", "user");
+            addMsg("Entering World 003. The Edge — where maps, passage, and coordinates are locked behind stars.");
+            goTo("underground-city.html");
+          });
+        }
+
+        if (!isHubPage()) {
+          addChoice("Return to Hub", () => {
+            addMsg("Return to Hub", "user");
+            addMsg("Returning to the Portal Hub...");
+            goTo("index.html");
+          });
+        }
+
+        addChoice("Back", () => {
+          clearChoices();
+          offerMenu();
+        });
       });
-    });
+    }
 
-    addChoice("Rate an encounter", () => {
-      addMsg("Rate an encounter", "user");
-      addMsg("How many stars did they earn?");
-      clearChoices();
-      showStarRater();
-    });
+    // Rate encounter - only on world pages
+    if (isWorldPage()) {
+      addChoice("Rate an encounter", () => {
+        addMsg("Rate an encounter", "user");
+        addMsg("How many stars did they earn? Remember: your rating determines their rent, rations, and routes home.");
+        clearChoices();
+        showStarRater();
+      });
+    }
 
+    // How stars work - available everywhere
     addChoice("How stars work", () => {
       addMsg("How stars work", "user");
-      addMsg(
-        "Stars equal currency. Your rating affects rent, routes, and rations for the person you met."
-      );
-      addMsg("Recommendation: default to kindness. It's the only exchange rate that doesn't crash.");
+      addMsg("Stars are legal tender across all connected worlds.");
+      addMsg("Give 1★ to someone? They might lose access to safe routes.");
+      addMsg("Give 5★? You've just funded their next meal.");
+      addMsg("Your kindness compounds. Your cruelty echoes.");
       offerMenu();
     });
 
-    if (location.pathname.toLowerCase().endsWith("shop.html")) {
+    // Shop-specific options
+    if (isShopPage()) {
       addChoice("What should I buy?", () => {
         addMsg("What should I buy?", "user");
-        addMsg(
-          "If your goal is survival: start with food (Warm meal signal). If your goal is comfort: Luminous Icewave. If your goal is status: the Reputation reset or AVTR Drift Capsule."
-        );
-        addMsg("But the most powerful purchase is still kindness, upstream, before anyone reaches this counter.");
+        addMsg("If your goal is survival: Warm meal signal (1.8★).");
+        addMsg("If your goal is comfort: Luminous Icewave (4.0★).");
+        addMsg("If your goal is freedom: AVTR Drift Capsule (45.0★).");
+        addMsg("But the most powerful purchase is kindness, given before anyone reaches this counter.");
         offerMenu();
+      });
+
+      addChoice("Return to Portal Hub", () => {
+        addMsg("Return to Portal Hub", "user");
+        goTo("index.html");
+      });
+    } else {
+      addChoice("Visit the Shop", () => {
+        addMsg("Visit the Shop", "user");
+        addMsg("The shop is where stars harden into reality. Prices are built from ratings people live and die by.");
+        goTo("shop.html");
       });
     }
   };
@@ -151,22 +282,29 @@
     balance = readBalance();
     setBalance(balance);
 
-    addMsg("Boot sequence complete.");
-    addMsg(
-      "Welcome to StarStruck — a world where every interaction matters, and every rating has value."
-    );
-    addMsg("Scroll to explore. Rate to influence. Remember: not everyone can afford to lose a star.");
+    addMsg("Portal link established.");
 
-    if (location.pathname.toLowerCase().endsWith("shop.html")) {
-      addMsg("You’re in the Shop. These prices are built from ratings people live and die by.");
-      addMsg(
-        "Here, stars have already turned into rent, food, and a chance to feel safe for one more night."
-      );
-      addMsg(
-        "As you add items to your cart, watch how quickly 100★ vanishes — and imagine who had to earn those stars."
-      );
+    if (isShopPage()) {
+      addMsg("Welcome to the Star Shop.");
+      addMsg("Every price tag is paid for with someone's kindness — or cruelty.");
+      addMsg("Watch how fast 100★ disappears when survival has a cost.");
+    } else if (isGlassCity()) {
+      addMsg("You've entered Glass City — World 001.");
+      addMsg("A realm of perfect surfaces and polished manners. Everyone smiles, but the silence between words hides their true judgement.");
+      addMsg("Below 4 stars, you become invisible. Rate wisely.");
+    } else if (isLegoWorld()) {
+      addMsg("You've entered Lego World — World 002.");
+      addMsg("A realm built brick by brick, where creativity meets commerce. The minifigures here judge each other by their constructions.");
+      addMsg("Low ratings mean your creations get dismantled. Build your reputation.");
+    } else if (isUndergroundCity()) {
+      addMsg("You've entered Flat World — World 003.");
+      addMsg("A vast, impossible plain under open space. The horizon feels edited, the edges feel unfinished.");
+      addMsg("Here, stars buy maps, passage, and coordinates away from the rim. No rating, no direction.");
     } else {
-      addMsg("You’re in the corridor. Scroll through worlds and watch the rules shift.");
+      addMsg("Welcome to StarStruck — the space between worlds.");
+      addMsg("You stand in the Portal Hub — click the main portal to reveal three different worlds.");
+      addMsg("Each world has its own rules, its own inhabitants, and its own consequences for ratings.");
+      addMsg("Your stars are currency. Your kindness is survival.");
     }
 
     addMsg("What do you want to do?");
@@ -179,12 +317,9 @@
   });
 
   resetBtn.addEventListener("click", () => {
-    // keep the stored balance, just restart the conversation
     reset();
   });
 
-  // Initialize visible balance and start dialog
   setBalance(balance);
   reset();
 })();
-

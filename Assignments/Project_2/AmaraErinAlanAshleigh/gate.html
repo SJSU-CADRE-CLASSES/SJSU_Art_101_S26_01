@@ -42,7 +42,30 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* themed scrollbar (page scroll) */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 224, 200, 0.75) rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar {
+            width: 12px;
+        }
+        html::-webkit-scrollbar-track {
+            background: rgba(0, 12, 14, 0.85);
+        }
+        html::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 0.95), rgba(0, 160, 255, 0.65));
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            border-radius: 999px;
+            box-shadow: 0 0 10px rgba(0, 224, 200, 0.35);
+        }
+        html::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(0, 255, 230, 1), rgba(0, 160, 255, 0.8));
+            box-shadow: 0 0 14px rgba(0, 224, 200, 0.55);
         }
 
         /* grid overlay */
@@ -318,6 +341,52 @@
             color: #66ffe6;
         }
 
+        .code-puzzle {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 224, 200, 0.55);
+            background: rgba(0, 18, 20, 0.9);
+            box-shadow:
+                0 0 14px rgba(0, 224, 200, 0.45),
+                inset 0 0 10px rgba(0, 224, 200, 0.25);
+            text-align: left;
+        }
+        .code-puzzle[hidden] {
+            display: none;
+        }
+        .code-title {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #66ffe6;
+            margin-bottom: 6px;
+        }
+        .code-equation {
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 12pt;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+        .code-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .code-input {
+            min-width: 220px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 224, 200, 0.6);
+            background: rgba(0, 0, 0, 0.75);
+            color: #00e0c8;
+            font-family: "ArcadeFont", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 10pt;
+            letter-spacing: 0.08em;
+        }
+
         .camera-shell {
             position: relative;
             justify-self: center;
@@ -351,6 +420,16 @@
             background-size: 100% 18px, 18px 100%;
             mix-blend-mode: screen;
         }
+
+#mesh-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 6px rgba(0, 224, 200, 0.85));
+}
 
         .camera-status-pill {
             position: absolute;
@@ -616,11 +695,27 @@
                     <div id="gate-status" class="status-line">
                         awaiting scan request…
                     </div>
+
+                    <div id="code-puzzle" class="code-puzzle" hidden>
+                        <div class="code-title">Numerical access challenge</div>
+                        <div class="code-equation" id="code-equation">...</div>
+                        <div class="code-controls">
+                            <input
+                                id="code-input"
+                                class="code-input"
+                                inputmode="numeric"
+                                maxlength="4"
+                                placeholder="enter result"
+                                aria-label="Numerical puzzle answer"
+                            />
+                            <button id="code-submit" class="btn" type="button">verify code</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="camera-shell" id="camera-shell">
                     <video id="camera" autoplay playsinline muted></video>
-                    <canvas id="scan-canvas" width="160" height="120" style="display:none;"></canvas>
+                    <canvas id="mesh-canvas"></canvas>
                     <div class="camera-overlay"></div>
                     <div class="face-grid">
                         <div class="face-grid-crosshair"></div>
@@ -637,6 +732,7 @@
             </div>
         </section>
     </main>
+    <script src="audio.js"></script>
 
     <!-- MediaPipe dependencies for face mesh wireframe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
@@ -648,14 +744,24 @@
             const startBtn = document.getElementById("start-btn");
             const statusEl = document.getElementById("gate-status");
             const videoEl = document.getElementById("camera");
-            const canvasEl = document.getElementById("scan-canvas");
-            const ctx = canvasEl.getContext("2d");
+            const meshCanvas = document.getElementById("mesh-canvas");
+            const meshCtx = meshCanvas.getContext("2d");
             const labelEl = document.getElementById("camera-label");
             const countdownEl = document.getElementById("countdown");
+            const shellEl = document.getElementById("camera-shell");
+            const humanBanner = document.getElementById("human-banner");
+            const codePuzzleEl = document.getElementById("code-puzzle");
+            const codeEquationEl = document.getElementById("code-equation");
+            const codeInputEl = document.getElementById("code-input");
+            const codeSubmitBtn = document.getElementById("code-submit");
+            let expectedCode = "";
 
-            let stream = null;
-            let verified = false;
-            let countdownTimer = null;
+            let faceMesh = null;
+            let cameraFeed = null;
+            let sweepStartTime = null;
+            let sweepActive = false;
+            let meshDetectedTime = null;
+            const ENTER_DELAY_MS = 4000;
 
             function setStatus(text, variant) {
                 statusEl.textContent = text;
@@ -708,6 +814,15 @@
                             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                                 const landmarks = results.multiFaceLandmarks[0];
 
+                                // once mesh is detected the first time, stop sweep and schedule enter
+                                if (meshDetectedTime === null) {
+                                    meshDetectedTime = performance.now();
+                                    sweepActive = false;
+                                    setTimeout(() => {
+                                        finishAndEnter();
+                                    }, ENTER_DELAY_MS);
+                                }
+
                                 // tessellated wireframe
                                 if (typeof drawConnectors === "function" && typeof FACEMESH_TESSELATION !== "undefined") {
                                     drawConnectors(meshCtx, landmarks, FACEMESH_TESSELATION, {
@@ -725,8 +840,31 @@
                                 }
                             }
 
+                            // sweeping scan band overlay while mesh is "loading"
+                            if (sweepActive && sweepStartTime !== null && meshCanvas.width && meshCanvas.height) {
+                                const now = performance.now();
+                                const cycle = 2200; // ms for a full sweep cycle
+                                const t = ((now - sweepStartTime) % cycle) / cycle; // 0..1 repeating
+                                const x = meshCanvas.width * t;
+
+                                const bandWidth = 160;
+                                const grad = meshCtx.createLinearGradient(x - bandWidth / 2, 0, x + bandWidth / 2, 0);
+                                grad.addColorStop(0, "rgba(0, 255, 204, 0.0)");
+                                grad.addColorStop(0.5, "rgba(0, 255, 204, 0.55)");
+                                grad.addColorStop(1, "rgba(0, 255, 204, 0.0)");
+
+                                meshCtx.fillStyle = grad;
+                                meshCtx.fillRect(x - bandWidth / 2, 0, bandWidth, meshCanvas.height);
+                            }
+
                             meshCtx.restore();
                         });
+                    }
+
+                    function resizeCanvasToVideo() {
+                        if (!videoEl.videoWidth || !videoEl.videoHeight) return;
+                        meshCanvas.width = videoEl.videoWidth;
+                        meshCanvas.height = videoEl.videoHeight;
                     }
 
                     // tie Mediapipe camera helper to our video element
@@ -744,7 +882,9 @@
                     await cameraFeed.start();
                     labelEl.textContent = "scanning";
                     shellEl.classList.add("scanning");
-                    faceCentered = false;
+                    sweepStartTime = performance.now();
+                    sweepActive = true;
+                    meshDetectedTime = null;
                     beginScanSequence();
                 } catch (err) {
                     console.error(err);
@@ -757,85 +897,58 @@
             function beginScanSequence() {
                 setStatus("scanning facial planes…");
                 countdownEl.textContent = "";
-
-                // sample mid-scan to estimate if face is centered
-                setTimeout(() => {
-                    tryAnalyzeFaceCenter();
-                }, 3500);
-
-                setTimeout(() => {
-                    finishAndEnter();
-                }, 7000);
             }
 
-            function tryAnalyzeFaceCenter() {
-                if (!videoEl.videoWidth || !videoEl.videoHeight) {
-                    return;
-                }
-                const w = canvasEl.width;
-                const h = canvasEl.height;
-                ctx.drawImage(videoEl, 0, 0, w, h);
+            function generateCodePuzzle() {
+                let a, b, c, result;
+                do {
+                    a = Math.floor(Math.random() * 40) + 20; // 20..59
+                    b = Math.floor(Math.random() * 20) + 10; // 10..29
+                    c = Math.floor(Math.random() * 60) + 10; // 10..69
+                    result = a * b + c;
+                } while (result < 1000 || result > 9999);
 
-                const img = ctx.getImageData(0, 0, w, h).data;
+                expectedCode = String(result);
+                codeEquationEl.textContent = "Solve: (" + a + " x " + b + ") + " + c;
+                codeInputEl.value = "";
+            }
 
-                function avgLuminance(x0, y0, x1, y1) {
-                    let sum = 0;
-                    let count = 0;
-                    for (let y = y0; y < y1; y++) {
-                        for (let x = x0; x < x1; x++) {
-                            const idx = (y * w + x) * 4;
-                            const r = img[idx];
-                            const g = img[idx + 1];
-                            const b = img[idx + 2];
-                            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-                            sum += lum;
-                            count++;
-                        }
-                    }
-                    return count ? sum / count : 0;
-                }
-
-                // use a generous center region so centering is forgiving
-                const cx0 = Math.floor(w * 0.25);
-                const cy0 = Math.floor(h * 0.20);
-                const cx1 = Math.floor(w * 0.75);
-                const cy1 = Math.floor(h * 0.80);
-
-                const centerLum = avgLuminance(cx0, cy0, cx1, cy1);
-
-                const borderLum =
-                    (avgLuminance(0, 0, w, Math.floor(h * 0.2)) +
-                        avgLuminance(0, Math.floor(h * 0.8), w, h) +
-                        avgLuminance(0, 0, Math.floor(w * 0.2), h) +
-                        avgLuminance(Math.floor(w * 0.8), 0, w, h)) / 4;
-
-                // very forgiving threshold: just needs to be a bit brighter than the border
-                if (centerLum > borderLum * 1.01) {
-                    faceCentered = true;
+            function verifyCode() {
+                const entered = String(codeInputEl.value || "").trim();
+                if (entered === expectedCode) {
+                    setStatus("code accepted. opening main node…", "ok");
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 700);
+                } else {
+                    setStatus("incorrect result. try again.", "error");
+                    codeInputEl.select();
                 }
             }
 
             function finishAndEnter() {
                 shellEl.classList.remove("scanning");
-                if (!faceCentered) {
-                    labelEl.textContent = "reposition face";
-                    setStatus("face not centered. please center your face in the frame and try again.", "error");
-                    startBtn.disabled = false;
-                    return;
-                }
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
+                if (cameraFeed && typeof cameraFeed.stop === "function") {
+                    cameraFeed.stop();
                 }
 
-                // start fading the page to black as HUMAN DETECTED appears
-                document.body.classList.add("page-fade-out");
+                // Show confirmation, then reveal puzzle gate.
+                humanBanner.classList.add("show");
+                setStatus("human verified. solve numerical code to continue.", "ok");
 
                 setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 1500);
+                    humanBanner.classList.remove("show");
+                    codePuzzleEl.hidden = false;
+                    codeInputEl.focus();
+                }, 1200);
             }
 
             startBtn.addEventListener("click", startScan);
+            codeSubmitBtn.addEventListener("click", verifyCode);
+            codeInputEl.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") verifyCode();
+            });
+            generateCodePuzzle();
         })();
     </script>
 </body>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <style>
+        :root {
+            --paper: #f4f1e6;
+            --ink: #4a5c3a;
+            --ink-soft: #6b7d5a;
+            --shadow: rgba(74, 92, 58, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image:
+                radial-gradient(ellipse 120% 80% at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 55%),
+                linear-gradient(180deg, #ebe6d8 0%, var(--paper) 35%, #e8e4d6 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 50px 3rem;
+        }
+
+        header {
+            text-align: center;
+            max-width: 42rem;
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.35rem, 4vw, 1.85rem);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin: 0 0 0.5rem;
+            color: var(--ink);
+        }
+
+        header p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            line-height: 1.5;
+        }
+
+        .map-stage {
+            align-self: stretch;
+            width: 100%;
+            max-width: none;
+            position: relative;
+        }
+
+        .map-ellipse {
+            border-radius: 50% / 42%;
+            padding: clamp(0.75rem, 3vw, 1.5rem);
+            background: linear-gradient(145deg, #faf8f2 0%, #f0ebe0 50%, #e5dfd2 100%);
+            box-shadow:
+                0 0 0 1px rgba(74, 92, 58, 0.15),
+                0 12px 40px var(--shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+
+        .map-ellipse figure {
+            margin: 0;
+            border-radius: 50% / 42%;
+            overflow: hidden;
+            background: #e8e4dc;
+        }
+
+        .map-viewport {
+            position: relative;
+            overflow: hidden;
+            border-radius: inherit;
+            line-height: 0;
+        }
+
+        #map {
+            display: block;
+            width: 100%;
+            height: min(62vh, 560px);
+            min-height: 380px;
+            background: #e5e1d8;
+            z-index: 0;
+        }
+
+        .map-viewport .leaflet-control-container {
+            font-family: system-ui, sans-serif;
+        }
+
+        .city-marker-label {
+            background: rgba(244, 241, 230, 0.96) !important;
+            border: 1px solid rgba(74, 92, 58, 0.45) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 1px 5px rgba(74, 92, 58, 0.18) !important;
+            color: #3d4d32 !important;
+            font-family: Georgia, "Times New Roman", serif !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            padding: 3px 7px !important;
+        }
+
+        .city-marker-label::before {
+            display: none !important;
+        }
+
+        .leaflet-tooltip.city-marker-label {
+            margin-top: 2px !important;
+        }
+
+        .leaflet-tooltip-top.city-marker-label {
+            margin-bottom: 0 !important;
+        }
+
+        .leaflet-container {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .map-hint {
+            margin-top: 0.65rem;
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            line-height: 1.45;
+        }
+
+        .map-attribution-note {
+            margin-top: 0.85rem;
+            padding: 0.65rem 1rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        figcaption {
+            margin-top: 1.1rem;
+            text-align: center;
+            font-size: 0.82rem;
+            font-style: italic;
+            color: var(--ink-soft);
+            letter-spacing: 0.02em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>World map</h1>
+        <p>Basemap tiles show only land and water, with light country outlines. Nine tattoo studios in California, Padua (Italy), and Paris (France). Hover a pin for a short name; click for the full street address.</p>
+    </header>
+
+    <div class="map-stage">
+        <div class="map-ellipse">
+            <figure>
+                <div class="map-viewport">
+                    <div id="map" title="Map with location pins" role="application" aria-label="Interactive map with nine studio locations"></div>
+                </div>
+            </figure>
+        </div>
+        <p class="map-hint">Drag to move the map; + and − to zoom. Hover a pin for the studio and city; click for the address.</p>
+        <p class="map-attribution-note">Tiles © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors, © <a href="https://carto.com/attributions" rel="noopener noreferrer">CARTO</a>. Border outlines from <a href="https://www.naturalearthdata.com/" rel="noopener noreferrer">Natural Earth</a>. No API key.</p>
+        <figcaption>Elliptical frame around an interactive map.</figcaption>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        (function () {
+            /* Coordinates from OpenStreetMap Nominatim (approx. building entrances). */
+            var places = [
+                {
+                    name: "Black Lantern Tattoo",
+                    city: "Campbell",
+                    state: "CA",
+                    country: "USA",
+                    lat: 37.2661585,
+                    lng: -121.9417284,
+                    lines: ["3155 S Bascom Ave E", "Campbell, CA 95008"]
+                },
+                {
+                    name: "Dark Water Tattoo",
+                    city: "Berkeley",
+                    state: "CA",
+                    country: "USA",
+                    lat: 37.8685394,
+                    lng: -122.2916008,
+                    lines: ["2035 San Pablo Ave", "Berkeley, CA 94702"]
+                },
+                {
+                    name: "Homeroom Tattoo",
+                    city: "San Jose",
+                    state: "CA",
+                    country: "USA",
+                    lat: 37.2279981,
+                    lng: -121.7752443,
+                    lines: ["7034 Santa Teresa Blvd", "San Jose, CA 95139"]
+                },
+                {
+                    name: "Parallax",
+                    city: "Milpitas",
+                    state: "CA",
+                    country: "USA",
+                    lat: 37.4062989,
+                    lng: -121.8967641,
+                    lines: ["1819 Houret Court", "Milpitas, CA 95035"]
+                },
+                {
+                    name: "Blu Estate Studio",
+                    city: "Padua",
+                    country: "Italy",
+                    lat: 45.419564,
+                    lng: 11.876524,
+                    lines: ["Via Annibale da Bassano, 3", "35135 Padua, Italy"]
+                },
+                {
+                    name: "Black Serum Tattoo",
+                    city: "San Francisco",
+                    state: "CA",
+                    country: "USA",
+                    lat: 37.7678066,
+                    lng: -122.422347,
+                    lines: ["310 Valencia St", "San Francisco, CA 94103"]
+                },
+                {
+                    name: "American Body Art",
+                    city: "Paris",
+                    country: "France",
+                    lat: 48.8603867,
+                    lng: 2.3478347,
+                    lines: ["7 rue des Innocents", "75001 Paris, France"]
+                },
+                {
+                    name: "Osmose",
+                    city: "Paris",
+                    country: "France",
+                    lat: 48.8890412,
+                    lng: 2.3235598,
+                    lines: ["3 rue Dautancourt", "Paris, France"]
+                },
+                {
+                    name: "Sticky Fingers",
+                    city: "San Francisco",
+                    state: "CA",
+                    country: "USA",
+                    lat: 37.7754727,
+                    lng: -122.4581811,
+                    lines: ["792 Arguello Blvd", "San Francisco, CA 94118"]
+                }
+            ];
+
+            function placeLabel(p) {
+                if (p.country === "USA") {
+                    return p.name + " · " + p.city + ", " + p.state + " · USA";
+                }
+                if (p.country === "Italy") {
+                    return p.name + " · " + p.city + " · Italy";
+                }
+                return p.name + " · " + p.city + " · France";
+            }
+
+            function escapeHtml(s) {
+                return String(s)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            }
+
+            function placePopupHtml(p) {
+                var body = p.lines.map(function (line) {
+                    return escapeHtml(line);
+                }).join("<br>");
+                return (
+                    "<strong>" +
+                    escapeHtml(p.name) +
+                    "</strong><br>" +
+                    body +
+                    "<br><small style='opacity:.85'>" +
+                    escapeHtml(placeLabel(p)) +
+                    "</small>"
+                );
+            }
+
+            var NE_COUNTRIES =
+                "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_0_countries.geojson";
+
+            var worldBounds = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180));
+            var crsSingleWorld = L.extend({}, L.CRS.EPSG3857, { wrapLng: null });
+
+            var map = L.map("map", {
+                crs: crsSingleWorld,
+                worldCopyJump: false,
+                fadeAnimation: false,
+                zoomAnimation: false,
+                markerZoomAnimation: false,
+                preferCanvas: true,
+                zoomSnap: 0.25,
+                zoomDelta: 0.25,
+                wheelPxPerZoomLevel: 280,
+                maxBounds: worldBounds,
+                maxBoundsViscosity: 1
+            });
+
+            var retina = L.Browser.retina ? "@2x" : "";
+            L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}" + retina + ".png",
+                {
+                    attribution:
+                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
+                        '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: "abcd",
+                    maxZoom: 18,
+                    updateWhenZooming: false,
+                    noWrap: true
+                }
+            ).addTo(map);
+
+            fetch(NE_COUNTRIES)
+                .then(function (r) {
+                    return r.json();
+                })
+                .then(function (data) {
+                    L.geoJSON(data, {
+                        interactive: false,
+                        style: function () {
+                            return {
+                                color: "#8a9b82",
+                                weight: 0.45,
+                                opacity: 0.65,
+                                fillColor: "#c4c9b8",
+                                fillOpacity: 0.035
+                            };
+                        }
+                    }).addTo(map);
+                })
+                .catch(function () {});
+
+            var pinIcon = L.icon({
+                iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+                iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+                iconSize: [18, 29],
+                iconAnchor: [9, 29],
+                popupAnchor: [0, -26],
+                tooltipAnchor: [0, -24]
+            });
+
+            var tipOffsetY = -6;
+
+            var bounds = L.latLngBounds([]);
+            places.forEach(function (p) {
+                var latlng = [p.lat, p.lng];
+                bounds.extend(latlng);
+                var label = placeLabel(p);
+                L.marker(latlng, { icon: pinIcon })
+                    .bindPopup(placePopupHtml(p))
+                    .bindTooltip(label, {
+                        direction: "top",
+                        sticky: true,
+                        opacity: 1,
+                        offset: [0, tipOffsetY],
+                        className: "city-marker-label"
+                    })
+                    .addTo(map);
+            });
+
+            map.fitBounds(bounds, { padding: [52, 52], maxZoom: 6 });
+            map.setMaxBounds(worldBounds);
+            map.panInsideBounds(worldBounds, { animate: false, padding: [0, 0] });
+
+            requestAnimationFrame(function () {
+                map.invalidateSize();
+                map.setMaxBounds(worldBounds);
+                map.panInsideBounds(worldBounds, { animate: false, padding: [0, 0] });
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StarStruck // Glass City</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tourbot.css" />
+    <style>
+      .inhabitant {
+        cursor: pointer;
+      }
+
+      .inhabitant:focus-visible {
+        outline: 2px solid rgba(64, 255, 216, 0.8);
+        outline-offset: 4px;
+      }
+
+      .gc-review-btn {
+        margin-left: auto;
+        border: 1px solid var(--border);
+        background: rgba(18, 26, 42, 0.65);
+        color: var(--text, #eaf3ff);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+      }
+
+      .gc-review-btn:hover {
+        border-color: rgba(64, 255, 216, 0.55);
+      }
+
+      .gc-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10050;
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      .gc-modal[aria-hidden="false"] {
+        display: flex;
+      }
+
+      .gc-modal-panel {
+        width: min(720px, calc(100vw - 28px));
+        max-height: min(78vh, 720px);
+        overflow: auto;
+        background: var(--panel, rgba(10, 14, 22, 0.85));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 18px;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(14px);
+      }
+
+      .gc-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+      }
+
+      .gc-modal-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .gc-modal-title strong {
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+      }
+
+      .gc-modal-title span {
+        opacity: 0.8;
+        font-size: 0.9rem;
+      }
+
+      .gc-modal-close {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        background: transparent;
+        color: var(--text, #eaf3ff);
+        border-radius: 12px;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
+      .gc-modal-body {
+        padding: 16px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .gc-bubble {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 12px 14px;
+        line-height: 1.4;
+      }
+
+      .gc-bubble.npc {
+        background: rgba(120, 170, 255, 0.08);
+      }
+
+      .gc-bubble.user {
+        background: rgba(64, 255, 216, 0.08);
+        align-self: flex-end;
+      }
+
+      .gc-choices {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 6px;
+      }
+
+      .gc-choice {
+        text-align: left;
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        background: rgba(18, 26, 42, 0.55);
+        color: var(--text, #eaf3ff);
+        border-radius: 14px;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+
+      .gc-choice:hover {
+        border-color: rgba(64, 255, 216, 0.55);
+      }
+
+      .gc-review-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .gc-review-item {
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .gc-review-item strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .gc-review-meta {
+        opacity: 0.8;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+
+      .gc-review-empty {
+        opacity: 0.85;
+        padding: 14px;
+        border: 1px dashed var(--border, rgba(255, 255, 255, 0.18));
+        border-radius: 16px;
+      }
+
+      /* World navigation transition overlay */
+      .nav-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .nav-transition.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .nav-transition-card {
+        width: min(520px, 92vw);
+        border-radius: 20px;
+        background: rgba(10, 14, 22, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+        padding: 22px 18px;
+        text-align: center;
+      }
+
+      .nav-transition-spinner {
+        width: 46px;
+        height: 46px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.22);
+        border-top-color: rgba(64, 255, 216, 0.95);
+        animation: nav-spin 0.9s linear infinite;
+      }
+
+      .nav-transition-text {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+      }
+
+      @keyframes nav-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="nav-transition" id="navTransition" aria-hidden="true">
+      <div class="nav-transition-card">
+        <div class="nav-transition-spinner" aria-hidden="true"></div>
+        <div class="nav-transition-text" id="navTransitionText">Warping...</div>
+      </div>
+    </div>
+
+    <!-- Fixed HUD -->
+    <header class="hud">
+      <a href="index.html" class="hud-brand">
+        <div class="hud-logo">★</div>
+        <div class="hud-title">
+          <span class="hud-label">World 001 · Upper Tiers</span>
+          <span class="hud-name">Glass City</span>
+        </div>
+      </a>
+
+      <nav class="hud-nav">
+        <a href="index.html">Hub</a>
+        <a href="glass-city.html" class="active">Glass City</a>
+        <a href="lego-world.html">Lego World</a>
+        <a href="underground-city.html">Flat World</a>
+        <a href="shop.html">Shop</a>
+      </nav>
+
+      <div class="hud-balance">
+        <span class="balance-dot"></span>
+        <span id="balanceDisplay">100.00 ★ balance</span>
+      </div>
+    </header>
+
+    <main class="world-page world-page--glass">
+      <div class="portal-ring portal-ring--1"></div>
+      <div class="portal-ring portal-ring--2"></div>
+
+      <!-- Reference artwork backdrop -->
+      <img
+        class="glass-city-art"
+        src="assets/glass-city-space.png"
+        alt="Glass City: a floating reflective crystal metropolis in space"
+        loading="eager"
+        decoding="async"
+      />
+
+      <!-- Floating Glass City skyline (space metropolis) -->
+      <div class="glass-skyline" aria-hidden="true">
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+        <div class="glass-tower"><div class="glass-spire"></div></div>
+      </div>
+
+      <div class="world-content">
+        <p class="world-eyebrow">World 001 · Upper Tiers</p>
+        <h1 class="world-title">
+          <span>Glass City</span>
+        </h1>
+        <p class="world-desc">
+          A dystopian city floating in space — built from reflective glass,
+          crystal, and translucent prisms. The skyline rises like shards, thin
+          and unnaturally vertical, glowing from within as it refracts blue,
+          purple, cyan, and faint gold light. Your rating decides which doors
+          appear in the reflections. Below four stars, and you become invisible.
+        </p>
+
+        <div class="world-warning">
+          <span>⚠</span>
+          <span>In Glass City, anything less than 4★ is considered an attack.</span>
+        </div>
+
+        <div class="inhabitants">
+          <div class="inhabitants-title" style="display:flex;align-items:center;gap:12px;">
+            <span>Rate the inhabitants of Glass City</span>
+            <button class="gc-review-btn" type="button" id="gcOpenReview">
+              Interaction Review
+            </button>
+          </div>
+          <div class="inhabitant-grid">
+            <div class="inhabitant" data-name="Architect Vex">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Architect Vex</div>
+              <div class="inhabitant-role">Tower Designer</div>
+              <div class="inhabitant-stars" data-inhabitant="vex">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Liaison Mora">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Liaison Mora</div>
+              <div class="inhabitant-role">Social Coordinator</div>
+              <div class="inhabitant-stars" data-inhabitant="mora">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Warden Slate">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Warden Slate</div>
+              <div class="inhabitant-role">Access Controller</div>
+              <div class="inhabitant-stars" data-inhabitant="slate">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+
+            <div class="inhabitant" data-name="Curator Lens">
+              <div class="inhabitant-avatar">👤</div>
+              <div class="inhabitant-name">Curator Lens</div>
+              <div class="inhabitant-role">Memory Archivist</div>
+              <div class="inhabitant-stars" data-inhabitant="lens">
+                <button class="star-btn" data-star="1">1</button>
+                <button class="star-btn" data-star="2">2</button>
+                <button class="star-btn" data-star="3">3</button>
+                <button class="star-btn" data-star="4">4</button>
+                <button class="star-btn" data-star="5">5</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-row">
+          <a href="lego-world.html" class="cta-primary">Next World: Lego World ⇢</a>
+          <a href="index.html" class="cta-ghost">Return to Hub</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>Glass City · World 001</span>
+      <span>Politeness is armor. Silence is judgement.</span>
+    </footer>
+
+    <!-- Interaction modal (kept outside world-page to avoid clipping) -->
+    <div class="gc-modal" id="gcModal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="gc-modal-panel" role="document">
+        <div class="gc-modal-head">
+          <div class="gc-modal-title">
+            <strong id="gcModalTitle">Interaction</strong>
+            <span id="gcModalSubtitle">Choose how you respond.</span>
+          </div>
+          <button class="gc-modal-close" type="button" id="gcModalClose" aria-label="Close">Close</button>
+        </div>
+        <div class="gc-modal-body" id="gcModalBody"></div>
+      </div>
+    </div>
+
+    <!-- TourBot -->
+    <aside class="tourbot" aria-label="StarStruck tour guide">
+      <div class="tourbot-shell" id="tourbotShell">
+        <div class="tourbot-top">
+          <div class="tourbot-title">
+            <div class="bot-avatar" aria-hidden="true">
+              <div class="bot-antenna"></div>
+              <div class="bot-face">
+                <div class="bot-face-inner">
+                  <div class="bot-eye left"></div>
+                  <div class="bot-eye right"></div>
+                  <div class="bot-smile"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tourbot-meta">
+              <div class="tourbot-name">TourBot</div>
+              <div class="tourbot-sub">Glass City guide</div>
+            </div>
+          </div>
+
+          <div class="tourbot-actions">
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle" aria-label="Collapse">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset" aria-label="Restart">↺</button>
+          </div>
+        </div>
+
+        <div class="tourbot-body">
+          <div class="tourbot-log" id="tourbotLog" aria-live="polite"></div>
+          <div class="tourbot-choices" id="tourbotChoices"></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="world-common.js"></script>
+    <script src="tourbot.js" defer></script>
+    <script>
+      (() => {
+        const STORAGE_KEY = "glassCityInteractionLog_v1";
+
+        const safeParse = (raw, fallback) => {
+          try {
+            const parsed = JSON.parse(raw);
+            return parsed ?? fallback;
+          } catch {
+            return fallback;
+          }
+        };
+
+        const loadLog = () => safeParse(sessionStorage.getItem(STORAGE_KEY), []);
+        const saveLog = (items) => sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+
+        const nowStamp = () => {
+          const d = new Date();
+          return d.toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        };
+
+        const personalities = {
+          "Architect Vex": {
+            tone: "rude",
+            openers: [
+              "You’re blocking the light. State your purpose.",
+              "If you’re here to critique, save it. My angles already won.",
+              "Do you always arrive this... unfinished?",
+            ],
+            replies: {
+              compliment: [
+                "Flattery is cheap. Bring data next time.",
+                "Noted. Now move.",
+                "You have taste. Don’t waste it on me.",
+              ],
+              ask: [
+                "Help? In Glass City, help is a luxury.",
+                "No. Learn faster.",
+                "Try the lower tiers. They hand out sympathy there.",
+              ],
+              apologize: [
+                "Apologies don’t improve architecture.",
+                "Fine. Don’t let it happen again.",
+                "Acceptable. Barely.",
+              ],
+            },
+          },
+          "Liaison Mora": {
+            tone: "kind",
+            openers: [
+              "Oh—hi. You look like you’ve been judged already. Want a steadier script?",
+              "Welcome. If you’re new, breathe. Everyone here performs; not everyone survives it.",
+              "You made it this far. That counts for something.",
+            ],
+            replies: {
+              compliment: [
+                "Thank you. Here—take this: smile with your eyes. They can’t rate what they can’t read.",
+                "That’s kind. In return: speak slowly. It makes them listen.",
+                "I appreciate that. Keep your shoulders relaxed; it reads as confidence.",
+              ],
+              ask: [
+                "Yes. Tip: never offer a 3★. It’s worse than 1★ here—like a public pity.",
+                "Of course. If they go quiet, they’re calculating your worth. Change the subject to art.",
+                "Absolutely. If you feel invisible, find reflective surfaces; they’ll ‘see’ you again.",
+              ],
+              apologize: [
+                "You don’t need to apologize for existing. Try: ‘I’m still learning your customs.’",
+                "It’s okay. Everyone missteps. The trick is to recover with grace.",
+                "Accepted. And hey—thank you for caring enough to repair it.",
+              ],
+            },
+          },
+          "Warden Slate": {
+            tone: "dismissive",
+            openers: [
+              "Access is granted to those who don’t ask twice.",
+              "Keep it short. I’m monitoring ten doors and your posture.",
+              "If you’re below 4★, I genuinely cannot see you. Don’t take it personally.",
+            ],
+            replies: {
+              compliment: [
+                "Compliments won’t open gates.",
+                "Acknowledged. Move along.",
+                "You’re trying too hard. That’s a liability.",
+              ],
+              ask: [
+                "Rules are posted. Read them.",
+                "No guidance. Only consequences.",
+                "I can’t escort you. That implies you’re important.",
+              ],
+              apologize: [
+                "Apology logged. Not relevant.",
+                "Save it for the tribunal.",
+                "Accepted. Your file remains unchanged.",
+              ],
+            },
+          },
+          "Curator Lens": {
+            tone: "helpful",
+            openers: [
+              "I archive what people pretend not to feel. Want yours handled gently?",
+              "Careful—this city stores smiles like evidence. I can show you how to edit the record.",
+              "Hello. I keep memories polished so they pass inspection.",
+            ],
+            replies: {
+              compliment: [
+                "That’s lovely. I’ll archive it as a warm thing—rare here.",
+                "Thank you. Beauty matters, even when it’s weaponized.",
+                "I’ll remember that on purpose.",
+              ],
+              ask: [
+                "Yes. If someone is cruel, repeat their words back slowly. They hate hearing themselves.",
+                "Of course. Keep a private ‘true rating’ in your head; only spend stars strategically.",
+                "I can help: pick one person to be kind to sincerely. It anchors you.",
+              ],
+              apologize: [
+                "Apology accepted. Now: choose a better next line and we’ll rewrite the moment.",
+                "No harm. The record is flexible when the intent is honest.",
+                "You’re allowed to be human. I’ll file this as growth.",
+              ],
+            },
+          },
+        };
+
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+        const modal = document.getElementById("gcModal");
+        const modalTitle = document.getElementById("gcModalTitle");
+        const modalSubtitle = document.getElementById("gcModalSubtitle");
+        const modalBody = document.getElementById("gcModalBody");
+        const modalClose = document.getElementById("gcModalClose");
+        const openReviewBtn = document.getElementById("gcOpenReview");
+
+        if (!modal || !modalTitle || !modalSubtitle || !modalBody || !modalClose || !openReviewBtn) return;
+
+        let lastActiveEl = null;
+
+        const openModal = () => {
+          lastActiveEl = document.activeElement;
+          modal.setAttribute("aria-hidden", "false");
+          modalClose.focus();
+        };
+
+        const closeModal = () => {
+          modal.setAttribute("aria-hidden", "true");
+          modalBody.innerHTML = "";
+          if (lastActiveEl && typeof lastActiveEl.focus === "function") lastActiveEl.focus();
+        };
+
+        modalClose.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
+        });
+
+        const renderBubble = (who, text) => {
+          const div = document.createElement("div");
+          div.className = `gc-bubble ${who}`;
+          div.textContent = text;
+          modalBody.appendChild(div);
+        };
+
+        const renderChoices = (items) => {
+          const wrap = document.createElement("div");
+          wrap.className = "gc-choices";
+          items.forEach((item) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "gc-choice";
+            btn.textContent = item.label;
+            btn.addEventListener("click", item.onClick);
+            wrap.appendChild(btn);
+          });
+          modalBody.appendChild(wrap);
+        };
+
+        const logInteraction = (entry) => {
+          const items = loadLog();
+          items.push(entry);
+          saveLog(items);
+        };
+
+        const startInteraction = (name) => {
+          // Let the global TourBot know who we're currently interacting with.
+          window.__currentInhabitantForRating = name;
+          window.__lastInhabitantForRating = name;
+          const p = personalities[name] || {
+            tone: "mixed",
+            openers: ["They glance at you, then at your reflection."],
+            replies: {
+              compliment: ["They nod once, carefully."],
+              ask: ["They offer a vague gesture toward the nearest mirror."],
+              apologize: ["They accept, but their eyes stay guarded."],
+            },
+          };
+
+          // Convert your chosen niceness + inhabitant tone into star gain/loss.
+          // We interpret the inhabitant's response tone as their "verdict mode",
+          // and your selected line as the niceness factor.
+          const actionToDelta = (userKey, tone) => {
+            const u = String(userKey || "").toLowerCase();
+            const t = String(tone || "").toLowerCase();
+
+            const base = u === "compliment" ? 2 : u === "apologize" ? 1 : 0; // ask => 0
+            const toneAdj =
+              t === "kind" || t === "helpful"
+                ? 1
+                : t === "dismissive" || t === "rude"
+                  ? -1
+                  : 0; // mixed => 0
+            return base + toneAdj;
+          };
+
+          const opener = pick(p.openers);
+
+          modalTitle.textContent = name;
+          modalSubtitle.textContent = "Pick one response. This will be saved to your review.";
+          modalBody.innerHTML = "";
+
+          renderBubble("npc", opener);
+          renderBubble("npc", "Remember, kindness is currency");
+
+          const choices = [
+            { key: "compliment", label: "Offer a compliment (play the game)" },
+            { key: "ask", label: "Ask for help (risk vulnerability)" },
+            { key: "apologize", label: "Apologize (repair the vibe)" },
+          ];
+
+          const followupsByTone = {
+            kind: {
+              prompt: "They soften a little. What do you do next?",
+              options: [
+                {
+                  key: "share",
+                  label: "Share something honest (drop the performance)",
+                  userLine: "You: “Honestly? I’m trying not to disappear in here.”",
+                  npcReplies: [
+                    "Then anchor yourself: pick one true thing and repeat it when the room gets sharp. You’ll stay visible to you.",
+                    "You won’t disappear if you keep choosing sincerity—quietly, consistently. That’s how you outlast this place.",
+                    "I see you. And you can learn the script without becoming it. Start with your breath. Slow is strength.",
+                  ],
+                },
+                {
+                  key: "ask-tip",
+                  label: "Ask for one practical tip",
+                  userLine: "You: “Give me one rule I can survive by.”",
+                  npcReplies: [
+                    "Never chase their approval mid-sentence. Finish your thought, then smile. It reads as unshakable.",
+                    "If someone goes cold, offer a question about their craft. People thaw when they feel admired.",
+                    "Treat stars like medicine: small doses at the right time. Not charity. Care.",
+                  ],
+                },
+              ],
+            },
+            helpful: {
+              prompt: "They watch you like a document being revised. Your move?",
+              options: [
+                {
+                  key: "rewrite",
+                  label: "Ask to rewrite the moment (edit the record)",
+                  userLine: "You: “If we could redo that, what would the better line be?”",
+                  npcReplies: [
+                    "Say: ‘I’m still learning your customs.’ Then pause. The pause is the power—let them fill it with respect.",
+                    "Replace defense with curiosity. Ask what they’re proud of. Pride is the easiest thread to pull.",
+                    "Speak as if you belong, even if you’re afraid. Belonging is a posture before it’s a fact.",
+                  ],
+                },
+                {
+                  key: "mirror",
+                  label: "Ask what they really collect here",
+                  userLine: "You: “What do you actually keep—behind the polish?”",
+                  npcReplies: [
+                    "Contradictions. The smile that shakes. The compliment that cuts. The kindness people deny they needed.",
+                    "Proof that everyone here is more fragile than they pretend. I keep it so someone remembers to be gentle.",
+                    "The unspoken. The almost-cry. The almost-apology. Those are the truest artifacts in Glass City.",
+                  ],
+                },
+              ],
+            },
+            rude: {
+              prompt: "They look unimpressed. How do you respond?",
+              options: [
+                {
+                  key: "pushback",
+                  label: "Push back (politely, but firmly)",
+                  userLine: "You: “I’m not here to be diminished. Just talk to me like I’m real.”",
+                  npcReplies: [
+                    "Bold. Risky. I respect the geometry of it. Don’t expect gratitude.",
+                    "Hmph. Fine. Then don’t beg for approval. Stand straight and stop apologizing with your eyes.",
+                    "You’re either brave or careless. Either way, you’ll last longer than most.",
+                  ],
+                },
+                {
+                  key: "exit",
+                  label: "Exit gracefully (deny them the drama)",
+                  userLine: "You: “Understood. I’ll let you get back to it.”",
+                  npcReplies: [
+                    "Finally, someone who understands efficiency.",
+                    "Good. Keep your dignity. It’s the only thing they can’t tax.",
+                    "Acceptable. Try not to scratch any surfaces on your way out.",
+                  ],
+                },
+              ],
+            },
+            dismissive: {
+              prompt: "They treat you like background noise. What do you do?",
+              options: [
+                {
+                  key: "comply",
+                  label: "Comply and keep it short (play it safe)",
+                  userLine: "You: “I’ll be quick. What’s the fastest way not to get locked out?”",
+                  npcReplies: [
+                    "Avoid hesitation. People mistake it for guilt. Move like you’re authorized.",
+                    "Don’t offer explanations. Explanations sound like weakness. State, then act.",
+                    "Keep your rating above 4★ or keep your head down. Those are your options.",
+                  ],
+                },
+                {
+                  key: "observe",
+                  label: "Observe them (turn the gaze back)",
+                  userLine: "You: “You watch everyone. Does it ever get lonely?”",
+                  npcReplies: [
+                    "Irrelevant.",
+                    "Lonely is not a security category.",
+                    "…Move along.",
+                  ],
+                },
+              ],
+            },
+            mixed: {
+              prompt: "The air feels reflective. What do you do next?",
+              options: [
+                {
+                  key: "steady",
+                  label: "Steady yourself (choose your next words carefully)",
+                  userLine: "You: “I’m listening. Tell me what matters here.”",
+                  npcReplies: [
+                    "Control. Presentation. Silence. And the tiny rebellions people call kindness.",
+                    "What matters is what they can measure. What saves you is what they can’t.",
+                    "The city rewards polish, but it’s hungry for truth. Don’t feed it all at once.",
+                  ],
+                },
+                {
+                  key: "leave",
+                  label: "Leave (protect your energy)",
+                  userLine: "You: “I’m going to step away before I say the wrong thing.”",
+                  npcReplies: [
+                    "Wise. The wrong sentence can cost a life here.",
+                    "Good choice. Survival is also an art.",
+                    "Go. Keep your edges intact.",
+                  ],
+                },
+              ],
+            },
+          };
+
+          renderChoices(
+            choices.map((c) => ({
+              label: c.label,
+              onClick: () => {
+                // remove choices
+                const existing = modalBody.querySelector(".gc-choices");
+                if (existing) existing.remove();
+
+                const userLine =
+                  c.key === "compliment"
+                    ? "You: “Your work here is impressive.”"
+                    : c.key === "ask"
+                      ? "You: “Can you help me understand how this place works?”"
+                      : "You: “Sorry. I didn’t mean to offend.”";
+
+                const npcReply = pick(p.replies[c.key] || ["..."]);
+                renderBubble("user", userLine);
+                setTimeout(() => {
+                  renderBubble("npc", npcReply);
+
+                  const followup = followupsByTone[p.tone] || followupsByTone.mixed;
+                  modalSubtitle.textContent = followup.prompt;
+                  renderChoices(
+                    followup.options.map((o) => ({
+                      label: o.label,
+                      onClick: () => {
+                        const existing2 = modalBody.querySelector(".gc-choices");
+                        if (existing2) existing2.remove();
+
+                        const userLine2 = o.userLine;
+                        const npcReply2 = pick(o.npcReplies || ["..."]);
+                        renderBubble("user", userLine2);
+                        setTimeout(() => {
+                          renderBubble("npc", npcReply2);
+
+                          // Auto-save, then auto-open review (as requested).
+                          logInteraction({
+                            at: nowStamp(),
+                            inhabitant: name,
+                            tone: p.tone,
+                            transcript: [
+                              { who: "npc", text: opener },
+                              { who: "user", text: userLine },
+                              { who: "npc", text: npcReply },
+                              { who: "user", text: userLine2 },
+                              { who: "npc", text: npcReply2 },
+                            ],
+                          });
+
+                          // Apply star balance after the interaction ends.
+                          if (typeof window.adjustBalance === "function") {
+                            window.adjustBalance(
+                              actionToDelta(c.key, p.tone),
+                              `Glass City — ${name} (you: ${c.key}, tone: ${p.tone})`
+                            );
+                          }
+
+                          setTimeout(() => {
+                            renderReview();
+                          }, 250);
+                        }, 250);
+                      },
+                    }))
+                  );
+                }, 250);
+              },
+            }))
+          );
+
+          openModal();
+        };
+
+        const renderReview = () => {
+          modalTitle.textContent = "Interaction Review";
+          modalSubtitle.textContent = "Everything you’ve said in Glass City (this session).";
+          modalBody.innerHTML = "";
+
+          const items = loadLog();
+          if (!items.length) {
+            const empty = document.createElement("div");
+            empty.className = "gc-review-empty";
+            empty.textContent = "No interactions yet. Click an inhabitant card to trigger one.";
+            modalBody.appendChild(empty);
+            openModal();
+            return;
+          }
+
+          const list = document.createElement("div");
+          list.className = "gc-review-list";
+          items
+            .slice()
+            .reverse()
+            .forEach((it) => {
+              const row = document.createElement("div");
+              row.className = "gc-review-item";
+              const transcriptHtml = (it.transcript || [])
+                .map((t) => {
+                  const label = t.who === "user" ? "You" : "Them";
+                  const content = t.who === "user" ? (t.text || "").replace(/^You:\s*/, "") : (t.text || "");
+                  return `<div style="margin-bottom:8px;"><em>${label}:</em> ${content}</div>`;
+                })
+                .join("");
+
+              row.innerHTML = `
+                <strong>${it.inhabitant}</strong>
+                <div class="gc-review-meta">${it.at} · tone: ${it.tone}</div>
+                ${transcriptHtml}
+              `;
+              list.appendChild(row);
+            });
+
+          modalBody.appendChild(list);
+          renderChoices([
+            {
+              label: "Clear review (this session)",
+              onClick: () => {
+                saveLog([]);
+                renderReview();
+              },
+            },
+            {
+              label: "Close",
+              onClick: closeModal,
+            },
+          ]);
+          openModal();
+        };
+
+        openReviewBtn.addEventListener("click", () => {
+          renderReview();
+        });
+
+        // Make each inhabitant card clickable, but don't hijack star rating buttons.
+        document.querySelectorAll(".inhabitant").forEach((card) => {
+          if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "0");
+          const name = card.dataset.name || "Unknown";
+
+          card.addEventListener("click", (e) => {
+            const target = e.target;
+            if (target && target.closest && target.closest(".inhabitant-stars")) return;
+            startInteraction(name);
+          });
+
+          card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              startInteraction(name);
+            }
+          });
+        });
+      })();
+    </script>
+
+    <script>
+      // World navigation transitions (HUD links / "Next World" buttons)
+      (() => {
+        const navTransition = document.getElementById("navTransition");
+        const navTransitionText = document.getElementById("navTransitionText");
+        if (!navTransition || !navTransitionText) return;
+
+        const targets = {
+          "glass-city.html": "Glass City",
+          "lego-world.html": "Lego World",
+          "underground-city.html": "Flat World",
+          "index.html": "Portal Hub",
+        };
+
+        const delayMs = 900;
+
+        const normalizeHref = (href) => (href || "").replace(/^\.\/?/, "");
+        const resolveHref = (href) => new URL(href, window.location.href).toString();
+
+        const trigger = (href) => {
+          const normalized = normalizeHref(href);
+          const label = targets[normalized] || "a new world";
+          navTransitionText.textContent = "Warping to " + label + "...";
+          navTransition.classList.add("active");
+          navTransition.setAttribute("aria-hidden", "false");
+
+          setTimeout(() => {
+            window.location.href = resolveHref(href);
+          }, delayMs);
+        };
+
+        const selectors = [".hud-nav a[href]", "a.cta-primary[href]", "a.cta-ghost[href]"];
+        document.querySelectorAll(selectors.join(",")).forEach((link) => {
+          link.addEventListener("click", (e) => {
+            const href = link.getAttribute("href");
+            const normalized = normalizeHref(href);
+            if (!targets[normalized]) return;
+            e.preventDefault();
+            trigger(href);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

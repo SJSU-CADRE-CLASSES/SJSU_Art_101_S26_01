@@ -1,0 +1,153 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    width: 100%;
+    padding: 40px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+}
+
+header h1 {
+    color: #667eea;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.page-indicator {
+    color: #764ba2;
+    font-size: 1.1em;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.story-content {
+    line-height: 1.8;
+}
+
+.story-text h2 {
+    color: #667eea;
+    font-size: 2em;
+    margin-bottom: 20px;
+    border-left: 5px solid #764ba2;
+    padding-left: 15px;
+}
+
+.story-text p {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    text-align: justify;
+    color: #444;
+}
+
+.conclusion {
+    font-style: italic;
+    font-size: 1.2em;
+    color: #764ba2;
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 10px;
+    border-left: 5px solid #667eea;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.navigation a {
+    text-decoration: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1em;
+}
+
+.prev-btn {
+    background: #f0f0f0;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.prev-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateX(-5px);
+}
+
+.next-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 2px solid transparent;
+}
+
+.next-btn:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .story-text h2 {
+        font-size: 1.5em;
+    }
+    
+    .navigation {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .navigation a {
+        text-align: center;
+        width: 100%;
+    }
+}

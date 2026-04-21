@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Waves ™ – Token Top‑Up</title>
     <link rel="stylesheet" href="synthwave-theme.css" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   </head>
   <body>
     <div class="starfield"></div>
@@ -17,15 +18,16 @@
     <header>
       <div class="header-inner">
         <div class="brand">
-          <div class="brand-title">The Waves ™</div>
+          <a href="synthwave.html" aria-label="Back to Synthwave hub">
+            <div class="brand-title">The Waves ™</div>
+          </a>
         </div>
         <nav>
-          <a href="synthwave.html#about">About</a>
+          <a href="../index.html">Home</a>
           <a href="synthwave.html#lifestyle">Lifestyle</a>
           <a href="synthwave.html#shopping">Shopping</a>
           <a href="synthwave.html#food">Food</a>
           <a href="synthwave.html#new">New</a>
-          <a href="synthwave.html#help">Help / FAQ</a>
           <a href="synthwave.html#token">Token Top‑Up</a>
         </nav>
       </div>
@@ -34,16 +36,54 @@
     <main class="page-main">
       <section class="page-shell">
         <h1 class="page-kicker">The Waves ™</h1>
-        <h2 class="page-title">Token Top‑Up · Synthwave</h2>
-        <p>
-          This is a dedicated space for your token or currency system. You might
-          describe how tokens are earned, traded, or spent inside the Synthwave
-          sector.
-        </p>
-        <p>
-          Later you could mock up a fake interface here – sliders, buttons, and
-          readouts that look like an in‑world payment console.
-        </p>
+        <h2 class="page-title">Token Top‑Up · Work Allocation</h2>
+
+        <div class="token-grid">
+          <section class="token-card" aria-label="Current credits">
+            <div class="token-card-title">Current credits</div>
+            <div class="token-balance">
+              <div class="token-balance-num" id="token-balance">—</div>
+              <div class="token-balance-sub">
+                Estimated food coverage:
+                <span class="token-balance-days" id="token-days">—</span>
+              </div>
+            </div>
+            <div class="token-warning">
+              Notice: balances below “comfort threshold” may cause involuntary
+              reassignment. The sector is grateful for your flexibility.
+            </div>
+          </section>
+
+          <section class="token-card" aria-label="Job console">
+            <div class="token-card-title">Job console</div>
+            <div class="job-console">
+              <label class="job-label">
+                <span>Job type</span>
+                <select class="job-select" id="job-type"></select>
+              </label>
+              <label class="job-label">
+                <span>Shift length</span>
+                <select class="job-select" id="job-length">
+                  <option value="2">2 hours</option>
+                  <option value="6">6 hours</option>
+                  <option value="12">12 hours</option>
+                </select>
+              </label>
+
+              <div class="job-details" id="job-details"></div>
+
+              <div class="job-actions">
+                <button class="job-btn" id="job-accept">Accept shift</button>
+                <button class="job-btn job-btn--ghost" id="job-decline">
+                  Decline (request review)
+                </button>
+              </div>
+
+              <div class="job-log" id="job-log" aria-live="polite"></div>
+            </div>
+          </section>
+        </div>
+
         <div class="page-back">
           <a href="synthwave.html">← Back to Synthwave hub</a>
         </div>
@@ -51,6 +91,7 @@
     </main>
 
     <script src="synthwave-theme.js" defer></script>
+    <script src="tokens-console.js" defer></script>
   </body>
 </html>
 

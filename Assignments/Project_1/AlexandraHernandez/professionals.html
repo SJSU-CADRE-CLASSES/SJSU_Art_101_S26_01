@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Champions – Strikes & Data</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .prof-layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; align-items: start; }
+    .viz-box {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      max-height: calc(100vh - 140px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .viz-box h2 { font-size: 0.95rem; margin: 0 0 0.5rem; }
+    .viz-controls { margin-bottom: 0.5rem; }
+    .viz-controls select {
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.8rem;
+    }
+    .chart-scroll { overflow-y: auto; flex: 1; min-height: 0; }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.8rem;
+    }
+    .bar-label { min-width: 100px; }
+    .bar-label .league { font-size: 0.65rem; color: var(--muted); }
+    .bar-track {
+      flex: 1;
+      height: 18px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+    .bar-fill.pba { background: linear-gradient(90deg, #1a5f7a, #2d8ba8); }
+    .bar-fill.pwba { background: linear-gradient(90deg, #8b3a62, #b84d7a); }
+    .bar-value { min-width: 2rem; text-align: right; font-size: 0.75rem; color: var(--muted); }
+    .tooltip {
+      position: fixed;
+      background: #222;
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.15s;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .tooltip.visible { opacity: 1; }
+    @media (max-width: 700px) { .prof-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <h1 class="site-title"><a href="index.html">Strikes & Data</a></h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="professionals.html" class="active">Professionals</a></li>
+          <li><a href="journey.html">Journey</a></li>
+          <li><a href="about.html">Concept</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>The Champions</h1>
+      <p class="tagline">Hover for details. Filter by league.</p>
+    </section>
+
+    <div class="prof-layout reveal">
+      <div class="viz-box">
+        <h2>Titles</h2>
+        <div class="viz-controls">
+          <select id="filter-league">
+            <option value="all">All</option>
+            <option value="pba">PBA</option>
+            <option value="pwba">PWBA</option>
+          </select>
+        </div>
+        <div class="chart-scroll" id="titles-chart"></div>
+      </div>
+      <div class="viz-box">
+        <h2>Majors</h2>
+        <div class="chart-scroll" id="majors-chart"></div>
+      </div>
+      <div class="viz-box">
+        <h2>Earnings ($M)</h2>
+        <div class="chart-scroll" id="earnings-chart"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Art 101 – Project 1 · Strikes & Data · Alexandra Hernandez</p>
+  </footer>
+
+  <div id="tooltip" class="tooltip"></div>
+
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      var pba = [
+        { name: 'Walter Ray Williams Jr.', titles: 47, majors: 7, earnings: 4.9, league: 'pba' },
+        { name: 'Earl Anthony', titles: 43, majors: 10, earnings: 1.6, league: 'pba' },
+        { name: 'Norm Duke', titles: 40, majors: 7, earnings: 3.2, league: 'pba' },
+        { name: 'Pete Weber', titles: 37, majors: 10, earnings: 3.5, league: 'pba' },
+        { name: 'Jason Belmonte', titles: 31, majors: 15, earnings: 2.9, league: 'pba' },
+        { name: 'Parker Bohn III', titles: 35, majors: 2, earnings: 2.8, league: 'pba' },
+        { name: 'Mark Roth', titles: 34, majors: 8, earnings: 1.5, league: 'pba' }
+      ];
+      var pwba = [
+        { name: 'Donna Adamek', titles: 19, majors: 3, earnings: 0.9, league: 'pwba' },
+        { name: 'Liz Johnson', titles: 17, majors: 5, earnings: 1.2, league: 'pwba' },
+        { name: 'Kelly Kulick', titles: 12, majors: 4, earnings: 0.8, league: 'pwba' },
+        { name: 'Shannon Pluhowsky', titles: 10, majors: 2, earnings: 0.6, league: 'pwba' }
+      ];
+      var all = pba.concat(pwba);
+      var filterEl = document.getElementById('filter-league');
+      var tooltipEl = document.getElementById('tooltip');
+
+      function filterData() {
+        var v = filterEl.value;
+        return v === 'all' ? all : (v === 'pba' ? pba : pwba);
+      }
+
+      function renderBarChart(containerId, dataKey, maxVal, formatVal) {
+        var container = document.getElementById(containerId);
+        var data = filterData();
+        data.sort(function (a, b) { return b[dataKey] - a[dataKey]; });
+        container.innerHTML = data.map(function (p) {
+          var pct = maxVal > 0 ? (p[dataKey] / maxVal) * 100 : 0;
+          var val = typeof formatVal === 'function' ? formatVal(p[dataKey]) : p[dataKey];
+          var short = p.name.split(' ');
+          short = (short[short.length-1] === 'Jr.' || short[short.length-1] === 'III') ? short.slice(-2)[0] : short[short.length-1];
+          return '<div class="bar-row" data-name="' + p.name.replace(/"/g, '&quot;') + '" data-titles="' + p.titles + '" data-majors="' + p.majors + '" data-earnings="' + p.earnings + '">' +
+            '<span class="bar-label">' + short + '<br><span class="league">' + (p.league === 'pba' ? 'PBA' : 'PWBA') + '</span></span>' +
+            '<div class="bar-track"><div class="bar-fill ' + p.league + '" style="width:' + pct + '%"></div></div>' +
+            '<span class="bar-value">' + val + '</span></div>';
+        }).join('');
+
+        container.querySelectorAll('.bar-row').forEach(function (row) {
+          row.addEventListener('mouseenter', function () {
+            var n = row.getAttribute('data-name');
+            var t = row.getAttribute('data-titles');
+            var m = row.getAttribute('data-majors');
+            var e = row.getAttribute('data-earnings');
+            tooltipEl.innerHTML = '<strong>' + n + '</strong><br>' + t + ' titles · ' + m + ' majors · $' + parseFloat(e).toFixed(1) + 'M';
+            tooltipEl.classList.add('visible');
+          });
+          row.addEventListener('mouseleave', function () { tooltipEl.classList.remove('visible'); });
+          row.addEventListener('mousemove', function (e) {
+            tooltipEl.style.left = (e.clientX + 12) + 'px';
+            tooltipEl.style.top = (e.clientY + 12) + 'px';
+          });
+        });
+      }
+
+      function redraw() {
+        var data = filterData();
+        var mT = Math.max.apply(null, data.map(function (p) { return p.titles; }));
+        var mM = Math.max.apply(null, data.map(function (p) { return p.majors; }));
+        var mE = Math.max.apply(null, data.map(function (p) { return p.earnings; }));
+        renderBarChart('titles-chart', 'titles', mT, function (v) { return v; });
+        renderBarChart('majors-chart', 'majors', mM, function (v) { return v; });
+        renderBarChart('earnings-chart', 'earnings', mE, function (v) { return v.toFixed(1); });
+      }
+
+      filterEl.addEventListener('change', redraw);
+      redraw();
+    })();
+  </script>
+</body>
+</html>

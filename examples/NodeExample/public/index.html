@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag the number</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a2e;
+      color: #eee;
+    }
+    h1 { font-size: 1.25rem; font-weight: 500; color: #a0a0a0; margin-bottom: 1rem; }
+    #number {
+      font-size: 6rem;
+      font-weight: 700;
+      padding: 1rem 2rem;
+      cursor: grab;
+      user-select: none;
+      border-radius: 12px;
+      background: #16213e;
+      transition: background 0.15s;
+    }
+    #number:hover { background: #1f3460; }
+    #number:active { cursor: grabbing; }
+    .hint { margin-top: 1.5rem; color: #666; font-size: 0.9rem; }
+    .status { position: fixed; top: 1rem; right: 1rem; font-size: 0.75rem; color: #444; }
+    .status.connected { color: #4ade80; }
+  </style>
+</head>
+<body>
+  <span class="status" id="status">Connecting…</span>
+  <h1>Drag the number</h1>
+  <div id="number">0</div>
+  <p class="hint">Click and drag up/right to increase, down/left to decrease. Open /view in another tab to see it update live.</p>
+
+  <script>
+    const el = document.getElementById('number');
+    const statusEl = document.getElementById('status');
+    let value = 0;
+    let dragging = false;
+    let startX, startY, startValue;
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(protocol + '//' + location.host);
+
+    ws.onopen = () => {
+      statusEl.textContent = 'Connected';
+      statusEl.classList.add('connected');
+    };
+    ws.onclose = () => {
+      statusEl.textContent = 'Disconnected';
+      statusEl.classList.remove('connected');
+    };
+
+    function send() {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ value }));
+      }
+    }
+
+    el.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startValue = value;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      value = Math.round(startValue + (dx - dy) * 0.5);
+      el.textContent = value;
+      send();
+    });
+
+    window.addEventListener('mouseup', () => {
+      dragging = false;
+    });
+  </script>
+</body>
+</html>

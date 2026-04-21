@@ -3,944 +3,1618 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StarStruck // Reputation Economy</title>
+    <title>StarStruck // Portal Hub</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="tourbot.css" />
     <style>
-      :root {
-        --bg: #02030a;
-        --bg-alt: #060716;
-        --panel: #080a1a;
-        --accent: #ff6ad5;
-        --accent-soft: rgba(255, 106, 213, 0.18);
-        --accent-2: #5ad8ff;
-        --accent-warn: #ffcc00;
-        --danger: #ff375f;
-        --text: #f7f7ff;
-        --muted: #a3a9d4;
-        --border-subtle: rgba(163, 169, 212, 0.25);
-        --shadow-strong: 0 28px 80px rgba(0, 0, 0, 0.95);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
+      /* Hub-specific styles */
+      .hub-hero {
         min-height: 100vh;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-          "Segoe UI", sans-serif;
-        color: var(--text);
-        background:
-          radial-gradient(circle at 10% 0, #2d1b55 0, transparent 50%),
-          radial-gradient(circle at 90% 100%, #003847 0, transparent 55%),
-          linear-gradient(160deg, #02030a 0, #02030a 40%, #000000 100%);
-        overflow-x: hidden;
-      }
-
-      .scanlines::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background-image: linear-gradient(
-          rgba(255, 255, 255, 0.02) 1px,
-          transparent 1px
-        );
-        background-size: 100% 3px;
-        mix-blend-mode: soft-light;
-        opacity: 0.65;
-        z-index: 0;
-      }
-
-      .noise::after {
-        content: "";
-        position: fixed;
-        inset: -40px;
-        pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
-        opacity: 0.5;
-        mix-blend-mode: soft-light;
-        z-index: 0;
-      }
-
-      .page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 100px 24px 60px;
         position: relative;
-        z-index: 1;
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 20px 20px 60px;
+        text-align: center;
       }
 
-      header {
-        position: sticky;
-        top: 14px;
+      .hub-content {
+        position: relative;
         z-index: 10;
-        margin-bottom: 26px;
-      }
-
-      .nav-shell {
+        max-width: 1200px;
+        width: 100%;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        border-radius: 999px;
-        padding: 10px 18px;
-        background:
-          radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 55%),
-          rgba(3, 7, 27, 0.94);
-        border: 1px solid rgba(163, 169, 212, 0.6);
-        backdrop-filter: blur(22px);
-        box-shadow:
-          0 18px 60px rgba(0, 0, 0, 0.9),
-          0 0 26px rgba(90, 216, 255, 0.45);
       }
 
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .brand-mark {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        background:
-          radial-gradient(circle at 30% 10%, #ffffff 0, #ffccfb 28%, #ff6ad5 45%, #02030a 80%);
-        box-shadow:
-          0 0 18px rgba(255, 106, 213, 0.8),
-          0 0 26px rgba(90, 216, 255, 0.9);
+      .glitch {
         position: relative;
-        overflow: hidden;
+        font-size: clamp(2.8rem, 6vw, 4.5rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+        text-align: center;
+        width: 100%;
       }
 
-      .brand-mark::after {
-        content: "★";
+      .glitch::before,
+      .glitch::after {
+        content: attr(data-text);
         position: absolute;
-        inset: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+      }
+
+      .glitch::before {
+        color: var(--accent-2);
+        animation: glitch-1 3s infinite linear alternate-reverse;
+        clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+      }
+
+      .glitch::after {
+        color: var(--accent);
+        animation: glitch-2 2s infinite linear alternate-reverse;
+        clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+      }
+
+      .hub-tagline {
+        font-size: 1.1rem;
+        color: var(--muted);
+        letter-spacing: 0.15em;
+        margin-bottom: 40px;
+        max-width: 600px;
+        text-align: center;
+        width: 100%;
+      }
+
+      /* Main Portal Container */
+      .main-portal-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Dystopian Portal */
+      .main-portal {
+        position: relative;
+        width: 520px;
+        height: 520px;
+        cursor: pointer;
+        transition: transform 0.5s ease;
+        margin: 60px auto 0;
+      }
+
+      .main-portal:hover {
+        transform: scale(1.02);
+      }
+
+      /* Outer mechanical frame */
+      .portal-frame-outer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 25px solid transparent;
+        background: 
+          linear-gradient(var(--bg), var(--bg)) padding-box,
+          linear-gradient(135deg, #0a1520, #082030, #0a3040, #0a1520) border-box;
+        box-shadow:
+          0 0 60px rgba(0, 229, 255, 0.3),
+          0 0 120px rgba(64, 255, 216, 0.2),
+          inset 0 0 60px rgba(0, 0, 0, 0.8);
+        animation: frame-pulse 4s ease-in-out infinite;
+      }
+
+      @keyframes frame-pulse {
+        0%, 100% { box-shadow: 0 0 60px rgba(0, 229, 255, 0.3), 0 0 120px rgba(64, 255, 216, 0.2), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+        50% { box-shadow: 0 0 80px rgba(0, 229, 255, 0.5), 0 0 150px rgba(64, 255, 216, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+      }
+
+      /* Main glowing ring */
+      .main-ring {
+        position: absolute;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .main-ring--1 {
+        width: 92%;
+        height: 92%;
+        border: 8px solid;
+        border-color: #00e5ff;
+        animation: spin-slow 60s linear infinite;
+        box-shadow: 
+          0 0 40px rgba(0, 229, 255, 0.8),
+          0 0 80px rgba(64, 255, 216, 0.5),
+          inset 0 0 40px rgba(0, 229, 255, 0.4);
+      }
+
+      .main-ring--2 {
+        width: 85%;
+        height: 85%;
+        border: 3px solid rgba(64, 255, 216, 0.5);
+        animation: spin-reverse 45s linear infinite;
+        box-shadow: 0 0 20px rgba(64, 255, 216, 0.4);
+      }
+
+      .main-ring--3 {
+        width: 78%;
+        height: 78%;
+        border: 2px solid rgba(0, 229, 255, 0.3);
+        animation: spin-slow 30s linear infinite;
+      }
+
+      /* Tech segments on outer ring */
+      .tech-segment {
+        position: absolute;
+        width: 40px;
+        height: 60px;
+        background: linear-gradient(180deg, #0a2030 0%, #061520 50%, #030a10 100%);
+        border: 2px solid rgba(0, 229, 255, 0.6);
+        border-radius: 4px;
+        box-shadow: 
+          0 0 15px rgba(0, 229, 255, 0.4),
+          inset 0 0 10px rgba(0, 229, 255, 0.2);
+        animation: segment-glow 3s ease-in-out infinite;
+      }
+
+      .tech-segment::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 40%;
+        background: linear-gradient(180deg, rgba(0, 229, 255, 0.6), transparent);
+        border-radius: 2px;
+      }
+
+      .tech-segment:nth-child(1) { top: -30px; left: 50%; transform: translateX(-50%) rotate(0deg); }
+      .tech-segment:nth-child(2) { top: 50%; right: -30px; transform: translateY(-50%) rotate(90deg); }
+      .tech-segment:nth-child(3) { bottom: -30px; left: 50%; transform: translateX(-50%) rotate(180deg); }
+      .tech-segment:nth-child(4) { top: 50%; left: -30px; transform: translateY(-50%) rotate(-90deg); }
+      .tech-segment:nth-child(5) { top: 12%; right: 8%; transform: rotate(45deg); animation-delay: 0.5s; }
+      .tech-segment:nth-child(6) { bottom: 12%; right: 8%; transform: rotate(135deg); animation-delay: 1s; }
+      .tech-segment:nth-child(7) { bottom: 12%; left: 8%; transform: rotate(-135deg); animation-delay: 1.5s; }
+      .tech-segment:nth-child(8) { top: 12%; left: 8%; transform: rotate(-45deg); animation-delay: 2s; }
+
+      @keyframes segment-glow {
+        0%, 100% { box-shadow: 0 0 15px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.2); }
+        50% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.7), inset 0 0 15px rgba(64, 255, 216, 0.4); }
+      }
+
+      /* Portal core - the glowing center */
+      .main-core {
+        position: absolute;
+        width: 70%;
+        height: 70%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        overflow: hidden;
+        background: radial-gradient(
+          circle at center,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(200, 255, 250, 0.9) 10%,
+          rgba(0, 229, 255, 0.7) 25%,
+          rgba(0, 100, 150, 0.5) 45%,
+          rgba(0, 50, 80, 0.4) 65%,
+          transparent 85%
+        );
+        box-shadow: 
+          0 0 100px rgba(0, 229, 255, 0.8),
+          0 0 200px rgba(64, 255, 216, 0.4),
+          inset 0 0 100px rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+      }
+
+      .main-core::before {
+        content: "";
+        position: absolute;
+        inset: -50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          rgba(0, 229, 255, 0.3) 30deg,
+          transparent 60deg,
+          rgba(64, 255, 216, 0.2) 120deg,
+          transparent 150deg,
+          rgba(0, 229, 255, 0.3) 210deg,
+          transparent 240deg,
+          rgba(64, 255, 216, 0.2) 300deg,
+          transparent 330deg
+        );
+        animation: swirl 20s linear infinite;
+      }
+
+      /* Light rays emanating from center */
+      .light-rays {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .light-ray {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 4px;
+        height: 300px;
+        background: linear-gradient(
+          to top,
+          rgba(0, 229, 255, 0.8) 0%,
+          rgba(64, 255, 216, 0.4) 20%,
+          rgba(0, 180, 220, 0.2) 50%,
+          transparent 100%
+        );
+        transform-origin: bottom center;
+        opacity: 0.6;
+        animation: ray-pulse 3s ease-in-out infinite;
+      }
+
+      .light-ray:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); animation-delay: 0s; }
+      .light-ray:nth-child(2) { transform: translate(-50%, -100%) rotate(30deg); animation-delay: 0.2s; }
+      .light-ray:nth-child(3) { transform: translate(-50%, -100%) rotate(60deg); animation-delay: 0.4s; }
+      .light-ray:nth-child(4) { transform: translate(-50%, -100%) rotate(90deg); animation-delay: 0.6s; }
+      .light-ray:nth-child(5) { transform: translate(-50%, -100%) rotate(120deg); animation-delay: 0.8s; }
+      .light-ray:nth-child(6) { transform: translate(-50%, -100%) rotate(150deg); animation-delay: 1s; }
+      .light-ray:nth-child(7) { transform: translate(-50%, -100%) rotate(180deg); animation-delay: 1.2s; }
+      .light-ray:nth-child(8) { transform: translate(-50%, -100%) rotate(210deg); animation-delay: 1.4s; }
+      .light-ray:nth-child(9) { transform: translate(-50%, -100%) rotate(240deg); animation-delay: 1.6s; }
+      .light-ray:nth-child(10) { transform: translate(-50%, -100%) rotate(270deg); animation-delay: 1.8s; }
+      .light-ray:nth-child(11) { transform: translate(-50%, -100%) rotate(300deg); animation-delay: 2s; }
+      .light-ray:nth-child(12) { transform: translate(-50%, -100%) rotate(330deg); animation-delay: 2.2s; }
+
+      @keyframes ray-pulse {
+        0%, 100% { opacity: 0.4; height: 280px; }
+        50% { opacity: 0.8; height: 320px; }
+      }
+
+      /* Floating debris */
+      .debris {
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .debris-piece {
+        position: absolute;
+        background: linear-gradient(135deg, #1a3040 0%, #0a1520 100%);
+        border: 1px solid rgba(0, 229, 255, 0.4);
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        animation: float-debris 8s ease-in-out infinite;
+      }
+
+      .debris-piece:nth-child(1) { width: 30px; height: 20px; top: -5%; left: 20%; animation-delay: 0s; border-radius: 4px; }
+      .debris-piece:nth-child(2) { width: 25px; height: 35px; top: 10%; right: -8%; animation-delay: 1s; border-radius: 3px; transform: rotate(30deg); }
+      .debris-piece:nth-child(3) { width: 40px; height: 15px; bottom: 15%; right: 5%; animation-delay: 2s; border-radius: 2px; transform: rotate(-20deg); }
+      .debris-piece:nth-child(4) { width: 20px; height: 40px; bottom: -5%; left: 30%; animation-delay: 3s; border-radius: 4px; transform: rotate(45deg); }
+      .debris-piece:nth-child(5) { width: 35px; height: 25px; top: 20%; left: -5%; animation-delay: 4s; border-radius: 3px; transform: rotate(-15deg); }
+      .debris-piece:nth-child(6) { width: 15px; height: 30px; bottom: 30%; left: -8%; animation-delay: 5s; border-radius: 2px; transform: rotate(60deg); }
+
+      @keyframes float-debris {
+        0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+        25% { transform: translateY(-15px) rotate(calc(var(--rot, 0deg) + 5deg)); }
+        50% { transform: translateY(-8px) rotate(calc(var(--rot, 0deg) - 3deg)); }
+        75% { transform: translateY(-20px) rotate(calc(var(--rot, 0deg) + 8deg)); }
+      }
+
+      /* Portal entrance text */
+      .portal-enter-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        text-align: center;
+        pointer-events: none;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      .portal-enter-text h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 
+          0 0 20px rgba(0, 229, 255, 1),
+          0 0 40px rgba(64, 255, 216, 0.8),
+          0 0 60px rgba(0, 180, 220, 0.6);
+        margin-bottom: 8px;
+        animation: float-text 3s ease-in-out infinite;
+      }
+
+      .portal-enter-text p {
+        font-size: 0.8rem;
+        letter-spacing: 0.25em;
+        color: rgba(0, 229, 255, 0.9);
+        text-shadow: 0 0 10px rgba(64, 255, 216, 0.5);
+      }
+
+      @keyframes float-text {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      /* Electric arcs */
+      .electric-arcs {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .arc {
+        position: absolute;
+        width: 2px;
+        height: 40px;
+        background: linear-gradient(to top, rgba(100, 200, 255, 0.8), transparent);
+        box-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+        animation: arc-flicker 0.5s ease-in-out infinite;
+      }
+
+      .arc:nth-child(1) { top: 15%; left: 25%; transform: rotate(-30deg); animation-delay: 0s; }
+      .arc:nth-child(2) { top: 20%; right: 20%; transform: rotate(45deg); animation-delay: 0.15s; }
+      .arc:nth-child(3) { bottom: 25%; right: 15%; transform: rotate(-60deg); animation-delay: 0.3s; }
+      .arc:nth-child(4) { bottom: 15%; left: 20%; transform: rotate(30deg); animation-delay: 0.45s; }
+
+      @keyframes arc-flicker {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+
+      /* Hidden world portals - revealed when main portal opens */
+      .world-portals {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transform: scale(0.3);
+        pointer-events: none;
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .world-portals.visible {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+
+      /* Dystopian World Portal Style */
+      .world-portal {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        transition: transform 0.4s ease;
+        opacity: 0;
+        transform: translateY(40px) scale(0.5);
+      }
+
+      .world-portals.visible .world-portal {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      .world-portals.visible .world-portal:nth-child(1) { transition-delay: 0.2s; }
+      .world-portals.visible .world-portal:nth-child(2) { transition-delay: 0.4s; }
+      .world-portals.visible .world-portal:nth-child(3) { transition-delay: 0.6s; }
+
+      .world-portal {
+        transition: transform 0.4s ease, opacity 0.6s ease;
+      }
+
+      .world-portal:hover {
+        transform: scale(1.15) translateY(-5px);
+      }
+
+      .world-portal-frame {
+        position: relative;
+        width: 150px;
+        height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
-        color: #02030a;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
       }
 
-      .brand-text {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.1;
-      }
-
-      .brand-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .brand-name {
-        font-size: 1.02rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-      }
-
-      nav {
-        display: flex;
-        gap: 8px;
-      }
-
-      nav a {
-        font-size: 0.8rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        padding: 6px 12px;
-        border-radius: 999px;
-        text-decoration: none;
-        color: var(--muted);
-        border: 1px solid transparent;
-        transition:
-          background 0.16s ease,
-          color 0.16s ease,
-          border-color 0.16s ease,
-          transform 0.1s ease;
-      }
-
-      nav a:hover {
-        color: var(--text);
-        border-color: rgba(90, 216, 255, 0.8);
-        background: rgba(3, 9, 38, 0.92);
-        transform: translateY(-1px);
-      }
-
-      nav a.active {
-        color: #02030a;
-        background: linear-gradient(135deg, var(--accent-2), var(--accent));
-        border-color: transparent;
-        box-shadow:
-          0 0 18px rgba(90, 216, 255, 0.9),
-          0 0 26px rgba(255, 106, 213, 0.85);
-      }
-
-      .credit-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 204, 0, 0.75);
-        background: radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.2), transparent 55%);
-        color: #ffe36f;
-      }
-
-      .credit-dot {
-        width: 8px;
-        height: 8px;
+      /* Mechanical outer frame for world portals */
+      .world-frame-outer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         border-radius: 50%;
-        background: #ffe36f;
-        box-shadow: 0 0 12px rgba(255, 204, 0, 0.9);
+        border: 12px solid transparent;
+        background: 
+          linear-gradient(var(--bg), var(--bg)) padding-box,
+          linear-gradient(135deg, #0a1520, #082030, #0a3040, #0a1520) border-box;
+        box-shadow:
+          0 0 30px var(--portal-glow),
+          inset 0 0 30px rgba(0, 0, 0, 0.8);
       }
 
-      main {
-        display: flex;
-        flex-direction: column;
-        gap: 60px;
-      }
-
-      .section {
-        display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-        gap: 32px;
-        align-items: center;
-        padding: 30px 24px 32px;
-        border-radius: 26px;
-        background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 45%),
-          radial-gradient(circle at 100% 0, rgba(90, 216, 255, 0.16), transparent 55%),
-          radial-gradient(circle at 0 100%, rgba(255, 106, 213, 0.16), transparent 55%),
-          rgba(3, 5, 23, 0.95);
-        border: 1px solid rgba(163, 169, 212, 0.45);
-        box-shadow: var(--shadow-strong);
-      }
-
-      .section--alt {
-        background:
-          linear-gradient(145deg, rgba(255, 255, 255, 0.02), transparent 35%),
-          radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.12), transparent 60%),
-          radial-gradient(circle at 100% 100%, rgba(255, 55, 95, 0.22), transparent 60%),
-          #050516;
-      }
-
-      .section--reverse {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-      }
-
-      .eyebrow {
-        font-size: 0.8rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 10px;
-      }
-
-      h1,
-      h2 {
-        margin: 0 0 10px;
-        letter-spacing: 0.04em;
-      }
-
-      h1 {
-        font-size: 2.5rem;
-        line-height: 1.02;
-      }
-
-      h2 {
-        font-size: 1.6rem;
-      }
-
-      h1 span,
-      h2 span {
-        background: linear-gradient(135deg, #ffffff, #ff9ff3);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-
-      .lede {
-        font-size: 1rem;
-        color: var(--muted);
-        max-width: 36rem;
-        line-height: 1.7;
-        margin-bottom: 20px;
-      }
-
-      .warning-banner {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 204, 0, 0.8);
-        background: radial-gradient(circle at 0 0, rgba(255, 204, 0, 0.14), transparent 60%),
-          rgba(12, 10, 3, 0.95);
-        font-size: 0.86rem;
-        color: #ffe36f;
-        margin-bottom: 18px;
-      }
-
-      .warning-symbol {
-        font-size: 0.9rem;
-      }
-
-      .pill-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-
-      .pill {
-        font-size: 0.75rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        padding: 6px 11px;
-        border-radius: 999px;
-        border: 1px dashed var(--border-subtle);
-        color: var(--muted);
-        background: rgba(5, 6, 25, 0.9);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .pill-dot {
-        width: 6px;
-        height: 6px;
+      /* Glowing ring */
+      .world-ring-outer {
+        position: absolute;
+        width: 88%;
+        height: 88%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent-2), var(--accent));
-        box-shadow: 0 0 12px rgba(90, 216, 255, 0.9);
+        border: 4px solid var(--portal-ring);
+        animation: world-spin 30s linear infinite;
+        box-shadow: 
+          0 0 20px var(--portal-glow),
+          inset 0 0 15px var(--portal-glow-inner);
       }
 
-      .cta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
+      .world-ring-inner {
+        position: absolute;
+        width: 75%;
+        height: 75%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid var(--portal-ring-inner);
+        animation: world-spin-reverse 20s linear infinite;
+        opacity: 0.6;
       }
 
-      .btn-primary {
-        border: none;
-        border-radius: 999px;
-        padding: 11px 22px;
-        font-size: 0.9rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        background: linear-gradient(135deg, var(--accent-2), var(--accent));
-        color: #02030a;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        box-shadow:
-          0 18px 52px rgba(0, 0, 0, 0.9),
-          0 0 32px rgba(90, 216, 255, 0.9);
-        transition:
-          transform 0.12s ease,
-          box-shadow 0.12s ease;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow:
-          0 24px 62px rgba(0, 0, 0, 0.95),
-          0 0 40px rgba(255, 106, 213, 0.95);
-      }
-
-      .btn-ghost {
-        border-radius: 999px;
-        padding: 9px 18px;
-        font-size: 0.85rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        border: 1px solid var(--border-subtle);
-        background: rgba(5, 7, 26, 0.85);
-        color: var(--muted);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        backdrop-filter: blur(12px);
-        transition:
-          background 0.16s ease,
-          color 0.16s ease,
-          border-color 0.16s ease,
-          transform 0.1s ease;
-      }
-
-      .btn-ghost:hover {
-        transform: translateY(-1px);
-        background: rgba(10, 12, 40, 0.98);
-        color: var(--text);
-        border-color: rgba(163, 169, 212, 0.8);
-      }
-
-      .btn-icon {
-        font-size: 1.1rem;
-      }
-
-      .panel {
-        border-radius: 22px;
-        padding: 16px 16px 14px;
-        background:
-          radial-gradient(circle at 20% 0, rgba(255, 255, 255, 0.12), transparent 55%),
-          radial-gradient(circle at 100% 100%, rgba(90, 216, 255, 0.18), transparent 60%),
-          var(--panel);
-        border: 1px solid rgba(163, 169, 212, 0.5);
-        box-shadow:
-          0 18px 50px rgba(0, 0, 0, 0.9),
-          0 0 22px rgba(90, 216, 255, 0.6);
-        position: relative;
+      /* Glowing core */
+      .world-core {
+        position: absolute;
+        width: 65%;
+        height: 65%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
         overflow: hidden;
+        background: radial-gradient(
+          circle at center,
+          var(--core-center) 0%,
+          var(--core-mid) 30%,
+          var(--core-outer) 60%,
+          transparent 85%
+        );
+        box-shadow: 
+          0 0 40px var(--portal-glow),
+          inset 0 0 30px var(--core-glow);
       }
 
-      .panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        font-size: 0.78rem;
+      .world-core::before {
+        content: "";
+        position: absolute;
+        inset: -50%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          var(--swirl-color) 60deg,
+          transparent 120deg,
+          var(--swirl-color-2) 180deg,
+          transparent 240deg,
+          var(--swirl-color) 300deg,
+          transparent 360deg
+        );
+        animation: swirl 6s linear infinite;
       }
 
-      .panel-title {
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--muted);
+      /* Mini tech segments on world portals */
+      .world-tech {
+        position: absolute;
+        width: 8px;
+        height: 16px;
+        background: linear-gradient(180deg, #0a2030 0%, #061520 100%);
+        border: 1px solid var(--portal-ring);
+        border-radius: 2px;
+        box-shadow: 0 0 8px var(--portal-glow);
       }
 
-      .panel-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.7rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        padding: 4px 9px;
-        border-radius: 999px;
-        border: 1px solid rgba(90, 216, 255, 0.8);
-        background: rgba(4, 18, 29, 0.95);
-        color: var(--accent-2);
+      .world-tech:nth-child(5) { top: -8px; left: 50%; transform: translateX(-50%); }
+      .world-tech:nth-child(6) { bottom: -8px; left: 50%; transform: translateX(-50%); }
+      .world-tech:nth-child(7) { top: 50%; left: -8px; transform: translateY(-50%) rotate(90deg); }
+      .world-tech:nth-child(8) { top: 50%; right: -8px; transform: translateY(-50%) rotate(90deg); }
+
+      .world-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        z-index: 5;
+        filter: drop-shadow(0 0 15px var(--portal-glow));
+        animation: world-float-icon 2s ease-in-out infinite;
       }
 
-      .panel-status-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--accent-2);
-        box-shadow: 0 0 14px rgba(90, 216, 255, 1);
+      @keyframes world-float-icon {
+        0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+        50% { transform: translate(-50%, -50%) translateY(-6px); }
       }
 
-      .world-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        margin-top: 6px;
+      @keyframes world-spin {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
       }
 
-      .world-card {
-        border-radius: 16px;
-        padding: 10px 10px 9px;
-        position: relative;
-        cursor: pointer;
-        transition:
-          transform 0.12s ease,
-          box-shadow 0.12s ease,
-          border-color 0.12s ease;
-        border: 1px solid rgba(163, 169, 212, 0.45);
-        background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.07), transparent 55%);
+      @keyframes world-spin-reverse {
+        from { transform: translate(-50%, -50%) rotate(360deg); }
+        to { transform: translate(-50%, -50%) rotate(0deg); }
       }
 
-      .world-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.9);
-        border-color: rgba(255, 255, 255, 0.6);
+      /* Glass City - Bright Cyan theme */
+      .world-portal--glass {
+        --portal-glow: rgba(0, 229, 255, 0.6);
+        --portal-glow-inner: rgba(0, 229, 255, 0.4);
+        --portal-ring: #00e5ff;
+        --portal-ring-inner: rgba(0, 229, 255, 0.5);
+        --core-center: rgba(255, 255, 255, 0.95);
+        --core-mid: rgba(150, 240, 255, 0.7);
+        --core-outer: rgba(0, 180, 220, 0.4);
+        --core-glow: rgba(0, 229, 255, 0.6);
+        --swirl-color: rgba(0, 229, 255, 0.4);
+        --swirl-color-2: rgba(200, 255, 250, 0.3);
+      }
+
+      /* Lego World - Teal/Green theme */
+      .world-portal--lego {
+        --portal-glow: rgba(64, 255, 216, 0.6);
+        --portal-glow-inner: rgba(64, 255, 216, 0.4);
+        --portal-ring: #40ffd8;
+        --portal-ring-inner: rgba(64, 255, 216, 0.5);
+        --core-center: rgba(255, 255, 255, 0.95);
+        --core-mid: rgba(180, 255, 240, 0.7);
+        --core-outer: rgba(64, 200, 180, 0.4);
+        --core-glow: rgba(64, 255, 216, 0.6);
+        --swirl-color: rgba(64, 255, 216, 0.4);
+        --swirl-color-2: rgba(0, 255, 170, 0.3);
+      }
+
+      /* Flat World - Electric Blue theme */
+      .world-portal--underground {
+        --portal-glow: rgba(80, 180, 255, 0.6);
+        --portal-glow-inner: rgba(80, 180, 255, 0.4);
+        --portal-ring: #50b4ff;
+        --portal-ring-inner: rgba(80, 180, 255, 0.5);
+        --core-center: rgba(255, 255, 255, 0.95);
+        --core-mid: rgba(180, 220, 255, 0.7);
+        --core-outer: rgba(80, 150, 220, 0.4);
+        --core-glow: rgba(80, 180, 255, 0.6);
+        --swirl-color: rgba(80, 180, 255, 0.4);
+        --swirl-color-2: rgba(120, 200, 255, 0.3);
+      }
+
+      .world-info {
+        margin-top: 18px;
+        text-align: center;
       }
 
       .world-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 2px;
-      }
-
-      .world-name {
-        font-size: 0.86rem;
-        font-weight: 600;
-      }
-
-      .world-stars {
-        margin-top: 4px;
-        font-size: 0.8rem;
-      }
-
-      .world-stars span {
-        color: #ffcc66;
-        text-shadow: 0 0 10px rgba(255, 204, 102, 0.9);
-      }
-
-      .world-meta {
-        margin-top: 4px;
-        font-size: 0.68rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .divider {
-        margin: 12px 0 10px;
-        border-top: 1px dashed rgba(163, 169, 212, 0.5);
-      }
-
-      .rating-panel {
-        display: grid;
-        grid-template-columns: 2.1fr 1.3fr;
-        gap: 14px;
-        font-size: 0.82rem;
-      }
-
-      .rating-copy {
-        color: var(--muted);
-        line-height: 1.6;
-      }
-
-      .rating-field {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .field-label {
-        font-size: 0.68rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .field-input {
-        border-radius: 999px;
-        padding: 6px 9px;
-        border: 1px solid rgba(163, 169, 212, 0.7);
-        background: rgba(3, 6, 25, 0.9);
-        color: var(--text);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-      }
-
-      .field-input span {
-        font-size: 0.78rem;
-      }
-
-      .field-input button {
-        background: transparent;
-        border: none;
-        color: #ffcc66;
-        cursor: pointer;
-        font-size: 0.9rem;
-      }
-
-      .field-hint {
-        font-size: 0.7rem;
-        color: var(--muted);
-      }
-
-      .economy {
-        font-size: 0.82rem;
-        color: var(--muted);
-        line-height: 1.6;
-      }
-
-      .economy-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 12px;
-      }
-
-      .economy-card {
-        border-radius: 16px;
-        padding: 10px 10px 9px;
-        border: 1px dashed rgba(163, 169, 212, 0.55);
-        background: rgba(7, 9, 28, 0.9);
-        font-size: 0.78rem;
-      }
-
-      .economy-title {
-        font-size: 0.72rem;
+        font-size: 0.65rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--muted);
         margin-bottom: 4px;
       }
 
-      .economy-value {
-        font-size: 0.9rem;
+      .world-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-shadow: 0 0 20px var(--portal-glow);
       }
 
-      .highlight {
-        color: #ffcc66;
-      }
+      .world-portal--glass .world-name { color: #00e5ff; }
+      .world-portal--lego .world-name { color: #40ffd8; }
+      .world-portal--underground .world-name { color: #50b4ff; }
 
-      footer {
-        margin-top: 10px;
-        font-size: 0.72rem;
-        color: var(--muted);
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 8px;
-        padding: 10px 2px 0;
-        border-top: 1px dashed rgba(163, 169, 212, 0.45);
-      }
-
-      footer span {
-        letter-spacing: 0.18em;
+      /* Close button when portals are open */
+      .close-portals {
+        display: none;
+        position: absolute;
+        bottom: -70px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 28px;
+        border: 2px solid rgba(0, 229, 255, 0.6);
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(10, 30, 50, 0.95), rgba(5, 15, 30, 0.95));
+        color: #00e5ff;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
       }
 
-      @media (max-width: 880px) {
-        .section,
-        .section--reverse {
-          grid-template-columns: minmax(0, 1fr);
-        }
+      .close-portals:hover {
+        background: linear-gradient(135deg, rgba(15, 40, 60, 0.95), rgba(10, 25, 45, 0.95));
+        border-color: #00e5ff;
+        box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+      }
 
-        .section--reverse {
-          display: flex;
-          flex-direction: column-reverse;
+      .close-portals.visible {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        transition: all 0.5s ease 0.8s;
+      }
+
+      /* ========================================
+         DRAMATIC PORTAL TRANSITION SYSTEM
+         ======================================== */
+
+      /* Screen overlay for darkening and glitch effect */
+      .portal-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.95) 100%);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 50;
+        transition: opacity 0.5s ease;
+      }
+
+      .portal-overlay.active {
+        opacity: 1;
+      }
+
+      /* Glitch lines overlay */
+      .glitch-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 51;
+        opacity: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 2px,
+          rgba(0, 229, 255, 0.03) 2px,
+          rgba(0, 229, 255, 0.03) 4px
+        );
+      }
+
+      .glitch-overlay.active {
+        animation: glitch-flicker 0.15s steps(2) 4;
+      }
+
+      @keyframes glitch-flicker {
+        0% { opacity: 0; transform: translateX(0); }
+        25% { opacity: 1; transform: translateX(-5px); }
+        50% { opacity: 0.5; transform: translateX(5px); }
+        75% { opacity: 1; transform: translateX(-3px); }
+        100% { opacity: 0; transform: translateX(0); }
+      }
+
+      /* Vortex effect inside portal */
+      .vortex-effect {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0;
+        z-index: 15;
+      }
+
+      .vortex-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid rgba(0, 229, 255, 0.6);
+        opacity: 0;
+      }
+
+      .vortex-ring:nth-child(1) { width: 20%; height: 20%; }
+      .vortex-ring:nth-child(2) { width: 35%; height: 35%; }
+      .vortex-ring:nth-child(3) { width: 50%; height: 50%; }
+      .vortex-ring:nth-child(4) { width: 65%; height: 65%; }
+      .vortex-ring:nth-child(5) { width: 80%; height: 80%; }
+
+      .main-portal.activating .vortex-effect {
+        opacity: 1;
+      }
+
+      .main-portal.activating .vortex-ring {
+        animation: vortex-pulse 0.8s ease-out forwards;
+      }
+
+      .main-portal.activating .vortex-ring:nth-child(1) { animation-delay: 0s; }
+      .main-portal.activating .vortex-ring:nth-child(2) { animation-delay: 0.1s; }
+      .main-portal.activating .vortex-ring:nth-child(3) { animation-delay: 0.2s; }
+      .main-portal.activating .vortex-ring:nth-child(4) { animation-delay: 0.3s; }
+      .main-portal.activating .vortex-ring:nth-child(5) { animation-delay: 0.4s; }
+
+      @keyframes vortex-pulse {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(2) rotate(0deg);
+          border-color: rgba(255, 255, 255, 0.8);
+        }
+        50% {
+          opacity: 1;
+          border-color: rgba(0, 229, 255, 0.8);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.5) rotate(180deg);
+          border-color: rgba(64, 255, 216, 0.3);
         }
       }
 
-      @media (max-width: 720px) {
-        header .nav-shell {
+      /* Portal pulse animation on activation */
+      .main-portal.activating {
+        animation: portal-activate 0.8s ease-out;
+      }
+
+      @keyframes portal-activate {
+        0% { transform: scale(1); }
+        30% { transform: scale(1.15); }
+        50% { transform: scale(1.1); }
+        70% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+
+      .main-portal.activating .main-core {
+        animation: core-brighten 0.8s ease-out;
+      }
+
+      @keyframes core-brighten {
+        0% { 
+          filter: brightness(1);
+          box-shadow: 0 0 100px rgba(0, 229, 255, 0.8), 0 0 200px rgba(64, 255, 216, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
+        }
+        50% { 
+          filter: brightness(2);
+          box-shadow: 0 0 150px rgba(255, 255, 255, 1), 0 0 300px rgba(0, 229, 255, 0.8), inset 0 0 150px rgba(255, 255, 255, 0.8);
+        }
+        100% { 
+          filter: brightness(1);
+          box-shadow: 0 0 100px rgba(0, 229, 255, 0.8), 0 0 200px rgba(64, 255, 216, 0.4), inset 0 0 100px rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      /* Speed up ring rotation during activation */
+      .main-portal.activating .main-ring--1 {
+        animation: spin-fast-1 2s linear infinite;
+      }
+
+      .main-portal.activating .main-ring--2 {
+        animation: spin-fast-reverse 1.5s linear infinite;
+      }
+
+      .main-portal.activating .main-ring--3 {
+        animation: spin-fast-1 1s linear infinite;
+      }
+
+      @keyframes spin-fast-1 {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      @keyframes spin-fast-reverse {
+        from { transform: translate(-50%, -50%) rotate(360deg); }
+        to { transform: translate(-50%, -50%) rotate(0deg); }
+      }
+
+      /* Page warp effect - being pulled into portal */
+      .hub-content.warping {
+        animation: page-warp 1s ease-in-out;
+      }
+
+      @keyframes page-warp {
+        0% { 
+          transform: scale(1) translateY(0);
+          filter: blur(0px);
+        }
+        40% {
+          transform: scale(0.98) translateY(10px);
+          filter: blur(1px);
+        }
+        60% {
+          transform: scale(1.02) translateY(-20px);
+          filter: blur(2px);
+        }
+        80% {
+          transform: scale(0.95) translateY(30px);
+          filter: blur(3px);
+        }
+        100% { 
+          transform: scale(1) translateY(0);
+          filter: blur(0px);
+        }
+      }
+
+      /* Shockwave effect from portal center */
+      .shockwave {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 3px solid rgba(0, 229, 255, 0.8);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      .main-portal.activating .shockwave {
+        animation: shockwave-expand 1s ease-out forwards;
+      }
+
+      .main-portal.activating .shockwave:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      @keyframes shockwave-expand {
+        0% {
+          width: 50px;
+          height: 50px;
+          opacity: 1;
+          border-width: 4px;
+          border-color: rgba(255, 255, 255, 1);
+        }
+        100% {
+          width: 800px;
+          height: 800px;
+          opacity: 0;
+          border-width: 1px;
+          border-color: rgba(0, 229, 255, 0);
+        }
+      }
+
+      /* State: Portal opened - dramatic reveal */
+      .main-portal.opened .main-core,
+      .main-portal.opened .main-ring,
+      .main-portal.opened .portal-enter-text,
+      .main-portal.opened .portal-frame-outer,
+      .main-portal.opened .tech-segment,
+      .main-portal.opened .light-rays,
+      .main-portal.opened .electric-arcs,
+      .main-portal.opened .debris,
+      .main-portal.opened .vortex-effect,
+      .main-portal.opened .shockwave {
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .main-portal.opened .main-core {
+        transform: translate(-50%, -50%) scale(3);
+        filter: blur(20px) brightness(2);
+      }
+
+      .main-portal.opened .portal-frame-outer {
+        transform: translate(-50%, -50%) scale(1.5);
+        filter: blur(5px);
+      }
+
+      .main-portal.opened .main-ring {
+        transform: translate(-50%, -50%) scale(1.3);
+        filter: blur(3px);
+      }
+
+      .main-portal.opened {
+        cursor: default;
+      }
+
+      /* World portals dramatic entrance */
+      .world-portals {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transform: scale(0.1);
+        pointer-events: none;
+        transition: none;
+      }
+
+      .world-portals.visible {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+        animation: portals-emerge 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      @keyframes portals-emerge {
+        0% {
+          opacity: 0;
+          transform: scale(0.1) rotate(-180deg);
+          filter: blur(20px) brightness(3);
+        }
+        50% {
+          opacity: 1;
+          filter: blur(5px) brightness(1.5);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+          filter: blur(0px) brightness(1);
+        }
+      }
+
+      /* Individual world portal dramatic entrance */
+      .world-portal {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(100px) scale(0.3);
+        transition: transform 0.4s ease, box-shadow 0.3s ease;
+      }
+
+      .world-portals.visible .world-portal {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        animation: world-materialize 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .world-portals.visible .world-portal:nth-child(1) { animation-delay: 0.3s; }
+      .world-portals.visible .world-portal:nth-child(2) { animation-delay: 0.5s; }
+      .world-portals.visible .world-portal:nth-child(3) { animation-delay: 0.7s; }
+
+      @keyframes world-materialize {
+        0% {
+          opacity: 0;
+          transform: translateY(80px) scale(0.3) rotateX(45deg);
+          filter: blur(10px);
+        }
+        60% {
+          opacity: 1;
+          transform: translateY(-10px) scale(1.1) rotateX(-5deg);
+          filter: blur(2px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1) rotateX(0deg);
+          filter: blur(0px);
+        }
+      }
+
+      .world-portal:hover {
+        transform: scale(1.15) translateY(-10px);
+        z-index: 10;
+      }
+
+      .world-portal:hover .world-frame-outer {
+        box-shadow: 0 0 50px var(--portal-glow), 0 0 100px var(--portal-glow);
+      }
+
+      /* Closing animation - reverse dramatic */
+      .world-portals.closing {
+        animation: portals-collapse 0.6s ease-in forwards;
+      }
+
+      @keyframes portals-collapse {
+        0% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+          filter: blur(0px);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.1) rotate(180deg);
+          filter: blur(20px) brightness(2);
+        }
+      }
+
+      .main-portal.closing .main-core,
+      .main-portal.closing .main-ring,
+      .main-portal.closing .portal-enter-text,
+      .main-portal.closing .portal-frame-outer,
+      .main-portal.closing .tech-segment,
+      .main-portal.closing .light-rays,
+      .main-portal.closing .electric-arcs,
+      .main-portal.closing .debris {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+      }
+
+      .main-portal.closing .main-core {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .main-portal.closing .portal-frame-outer {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      /* Animations */
+      @keyframes spin-slow {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      @keyframes spin-reverse {
+        from { transform: translate(-50%, -50%) rotate(360deg); }
+        to { transform: translate(-50%, -50%) rotate(0deg); }
+      }
+
+      @keyframes swirl {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes pulse-core {
+        0%, 100% { opacity: 0.8; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.15); }
+      }
+
+      @keyframes float-icon {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+
+      /* Hub intro below portal */
+      .hub-intro {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.8;
+        max-width: 650px;
+        width: 100%;
+        margin: 60px 0 30px;
+        padding: 20px;
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+        background: rgba(4, 12, 20, 0.5);
+        backdrop-filter: blur(8px);
+        text-align: center;
+      }
+
+      .hub-cta {
+        margin-top: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .main-portal {
+          width: 340px;
+          height: 340px;
+        }
+
+        .portal-frame-outer {
+          border-width: 15px;
+        }
+
+        .main-ring--1 {
+          border-width: 5px;
+        }
+
+        .tech-segment {
+          width: 25px;
+          height: 40px;
+        }
+
+        .light-ray {
+          height: 200px;
+        }
+
+        .debris-piece {
+          transform: scale(0.7);
+        }
+
+        .world-portals {
+          gap: 20px;
+        }
+
+        .world-portals.visible {
           flex-direction: column;
-          align-items: flex-start;
-          border-radius: 20px;
+          gap: 25px;
         }
 
-        nav {
-          flex-wrap: wrap;
-          width: 100%;
+        .world-portal-frame {
+          width: 120px;
+          height: 120px;
+        }
+
+        .world-frame-outer {
+          border-width: 8px;
+        }
+
+        .world-ring-outer {
+          border-width: 3px;
+        }
+
+        .world-icon {
+          font-size: 1.6rem;
+        }
+
+        .world-tech {
+          width: 6px;
+          height: 12px;
         }
       }
 
-      @media (max-width: 560px) {
-        .page {
-          padding: 16px 14px 40px;
-        }
+      /* ========================================
+         WORLD PORTAL ENTRY TRANSITION
+         ======================================== */
+      
+      /* Full-screen transition overlay */
+      .world-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        pointer-events: none;
+        opacity: 0;
+      }
 
-        .section {
-          padding: 22px 16px 24px;
-          border-radius: 20px;
-        }
+      .world-transition.active {
+        pointer-events: all;
+        opacity: 1;
+      }
 
-        h1 {
-          font-size: 2.05rem;
-        }
+      /* Tunnel effect background */
+      .tunnel-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, transparent 0%, var(--bg) 100%);
+      }
 
-        .world-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+      /* Concentric rings rushing toward viewer */
+      .tunnel-rings {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100vmax;
+        height: 100vmax;
+      }
 
-        .rating-panel {
-          grid-template-columns: minmax(0, 1fr);
+      .tunnel-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid var(--transition-color, var(--accent));
+        opacity: 0;
+      }
+
+      .tunnel-ring:nth-child(1) { width: 10%; height: 10%; }
+      .tunnel-ring:nth-child(2) { width: 20%; height: 20%; }
+      .tunnel-ring:nth-child(3) { width: 30%; height: 30%; }
+      .tunnel-ring:nth-child(4) { width: 40%; height: 40%; }
+      .tunnel-ring:nth-child(5) { width: 50%; height: 50%; }
+      .tunnel-ring:nth-child(6) { width: 60%; height: 60%; }
+      .tunnel-ring:nth-child(7) { width: 70%; height: 70%; }
+      .tunnel-ring:nth-child(8) { width: 80%; height: 80%; }
+      .tunnel-ring:nth-child(9) { width: 90%; height: 90%; }
+      .tunnel-ring:nth-child(10) { width: 100%; height: 100%; }
+
+      .world-transition.active .tunnel-ring {
+        animation: ring-rush 1.5s ease-in forwards;
+      }
+
+      .world-transition.active .tunnel-ring:nth-child(1) { animation-delay: 0s; }
+      .world-transition.active .tunnel-ring:nth-child(2) { animation-delay: 0.05s; }
+      .world-transition.active .tunnel-ring:nth-child(3) { animation-delay: 0.1s; }
+      .world-transition.active .tunnel-ring:nth-child(4) { animation-delay: 0.15s; }
+      .world-transition.active .tunnel-ring:nth-child(5) { animation-delay: 0.2s; }
+      .world-transition.active .tunnel-ring:nth-child(6) { animation-delay: 0.25s; }
+      .world-transition.active .tunnel-ring:nth-child(7) { animation-delay: 0.3s; }
+      .world-transition.active .tunnel-ring:nth-child(8) { animation-delay: 0.35s; }
+      .world-transition.active .tunnel-ring:nth-child(9) { animation-delay: 0.4s; }
+      .world-transition.active .tunnel-ring:nth-child(10) { animation-delay: 0.45s; }
+
+      @keyframes ring-rush {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.1);
+          border-width: 20px;
+        }
+        30% {
+          opacity: 1;
+          border-width: 8px;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(3);
+          border-width: 1px;
+        }
+      }
+
+      /* Central bright flash */
+      .tunnel-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, #fff 0%, var(--transition-color, var(--accent)) 30%, transparent 70%);
+        opacity: 0;
+        box-shadow: 
+          0 0 100px var(--transition-color, var(--accent)),
+          0 0 200px var(--transition-color, var(--accent)),
+          0 0 300px var(--transition-color, var(--accent));
+      }
+
+      .world-transition.active .tunnel-center {
+        animation: center-expand 1.5s ease-in forwards;
+      }
+
+      @keyframes center-expand {
+        0% {
+          width: 10px;
+          height: 10px;
+          opacity: 1;
+        }
+        50% {
+          width: 100px;
+          height: 100px;
+          opacity: 1;
+        }
+        100% {
+          width: 300vmax;
+          height: 300vmax;
+          opacity: 1;
+        }
+      }
+
+      /* World name display during transition */
+      .transition-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        text-align: center;
+        opacity: 0;
+      }
+
+      .world-transition.active .transition-text {
+        animation: text-appear 1.5s ease-out forwards;
+      }
+
+      .transition-text .entering {
+        font-size: 0.8rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 8px;
+      }
+
+      .transition-text .world-destination {
+        font-size: clamp(2rem, 6vw, 4rem);
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 
+          0 0 30px var(--transition-color, var(--accent)),
+          0 0 60px var(--transition-color, var(--accent));
+      }
+
+      @keyframes text-appear {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.5);
+        }
+        20% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+        30% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        70% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(1.5);
+        }
+      }
+
+      /* Speed lines effect */
+      .speed-lines {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .speed-line {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 0;
+        background: linear-gradient(to bottom, transparent, var(--transition-color, var(--accent)), transparent);
+        opacity: 0;
+        transform-origin: top center;
+      }
+
+      .world-transition.active .speed-line {
+        animation: speed-stretch 1s ease-in forwards;
+      }
+
+      @keyframes speed-stretch {
+        0% {
+          height: 0;
+          opacity: 0;
+        }
+        30% {
+          height: 150vh;
+          opacity: 0.8;
+        }
+        100% {
+          height: 200vh;
+          opacity: 0;
+        }
+      }
+
+      /* Clicked portal highlight */
+      .world-portal.entering {
+        z-index: 100;
+        animation: portal-zoom 0.8s ease-in forwards;
+      }
+
+      @keyframes portal-zoom {
+        0% {
+          transform: scale(1);
+          filter: brightness(1);
+        }
+        50% {
+          transform: scale(1.5);
+          filter: brightness(2);
+        }
+        100% {
+          transform: scale(20);
+          filter: brightness(3);
+          opacity: 0;
         }
       }
     </style>
-    <link rel="stylesheet" href="tourbot.css" />
   </head>
-  <body class="scanlines noise">
-    <div class="page">
-      <header>
-        <div class="nav-shell">
-          <div class="brand">
-            <div class="brand-mark"></div>
-            <div class="brand-text">
-              <span class="brand-label">Multi‑World Access Gate</span>
-              <span class="brand-name">StarStruck</span>
-            </div>
-          </div>
+  <body>
+    <!-- Portal transition overlays -->
+    <div class="portal-overlay" id="portalOverlay"></div>
+    <div class="glitch-overlay" id="glitchOverlay"></div>
 
-          <nav>
-            <a href="#intro" class="active">Origin</a>
-            <a href="#worlds">Worlds</a>
-            <a href="#economy">Currency</a>
-            <a href="shop.html">Shop</a>
-          </nav>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
 
-          <div class="credit-chip">
-            <span class="credit-dot"></span>
-            <span>100.00 ★ balance</span>
-          </div>
+    <!-- Fixed HUD -->
+    <header class="hud">
+      <a href="index.html" class="hud-brand">
+        <div class="hud-logo">★</div>
+        <div class="hud-title">
+          <span class="hud-label">Dimensional Transit</span>
+          <span class="hud-name">StarStruck</span>
         </div>
-      </header>
+      </a>
 
-      <main>
-        <section id="intro" class="section">
-          <div>
-            <p class="eyebrow">Dystopian reputation engine</p>
-            <h1>
-              Enter worlds where<br />
-              <span>kindness is currency.</span>
-            </h1>
-            <p class="lede">
-              Welcome to StarStruck — a world where every interaction matters,
-              and every rating has value. Here, stars are more than feedback —
-              they are currency, status, and survival. As you journey through
-              different worlds, you’ll meet their inhabitants, experience their
-              realities, and decide their worth with a simple rating. Be
-              thoughtful. Be observant. Be kind — or don’t. Because in
-              StarStruck, your choices shape more than just your experience…
-              they shape theirs. Scroll to explore. Rate to influence. And
-              remember: not everyone can afford to lose a star.
-            </p>
+      <nav class="hud-nav">
+        <a href="index.html" class="active">Hub</a>
+        <a href="glass-city.html">Glass City</a>
+        <a href="lego-world.html">Lego World</a>
+            <a href="underground-city.html">Flat World</a>
+        <a href="shop.html">Shop</a>
+      </nav>
 
-            <div class="warning-banner">
-              <span class="warning-symbol">⚠︎</span>
-              <span>
-                Star ratings are legal tender across connected worlds. A careless
-                comment can cost more than you can earn back in a cycle. Tread
-                gently.
-              </span>
+      <div class="hud-balance">
+        <span class="balance-dot"></span>
+        <span id="balanceDisplay">100.00 ★ balance</span>
+      </div>
+    </header>
+
+    <main class="hub-hero world-page--hub">
+      <div class="portal-ring portal-ring--1"></div>
+      <div class="portal-ring portal-ring--2"></div>
+      <div class="portal-ring portal-ring--3"></div>
+
+      <div class="hub-content">
+        <h1 class="glitch" data-text="STARSTRUCK">STARSTRUCK</h1>
+        <p class="hub-tagline">The In-Between Dimension · Portal Transit Hub</p>
+
+        <div class="main-portal-container">
+          <!-- Dystopian Portal -->
+          <div class="main-portal" id="mainPortal">
+            <!-- Outer mechanical frame -->
+            <div class="portal-frame-outer"></div>
+            
+            <!-- Glowing rings -->
+            <div class="main-ring main-ring--1"></div>
+            <div class="main-ring main-ring--2"></div>
+            <div class="main-ring main-ring--3"></div>
+            
+            <!-- Tech segments around the ring -->
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            <div class="tech-segment"></div>
+            
+            <!-- Light rays from center -->
+            <div class="light-rays">
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+              <div class="light-ray"></div>
+            </div>
+            
+            <!-- Glowing core -->
+            <div class="main-core"></div>
+            
+            <!-- Electric arcs -->
+            <div class="electric-arcs">
+              <div class="arc"></div>
+              <div class="arc"></div>
+              <div class="arc"></div>
+              <div class="arc"></div>
+            </div>
+            
+            <!-- Floating debris -->
+            <div class="debris">
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+              <div class="debris-piece"></div>
+            </div>
+            
+            <!-- Vortex effect -->
+            <div class="vortex-effect">
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
+              <div class="vortex-ring"></div>
             </div>
 
-            <div class="pill-row">
-              <span class="pill">
-                <span class="pill-dot"></span>
-                Scroll to change realities
-              </span>
-              <span class="pill">
-                <span class="pill-dot"></span>
-                Rate every encounter
-              </span>
-              <span class="pill">
-                <span class="pill-dot"></span>
-                Empathy grows your balance
-              </span>
+            <!-- Shockwave effects -->
+            <div class="shockwave"></div>
+            <div class="shockwave"></div>
+
+            <div class="portal-enter-text">
+              <h2>Enter Portal</h2>
+              <p>Click to reveal worlds</p>
             </div>
 
-            <div class="cta-row">
-              <button class="btn-primary" type="button">
-                Jack in to first world
-                <span>⇣</span>
-              </button>
-              <button class="btn-ghost" type="button">
-                <span class="btn-icon">◎</span>
-                View system rules
-              </button>
+            <!-- Hidden World Portals (revealed on click) -->
+            <div class="world-portals" id="worldPortals">
+              <!-- Glass City -->
+              <a href="glass-city.html" class="world-portal world-portal--glass">
+                <div class="world-portal-frame">
+                  <div class="world-frame-outer"></div>
+                  <div class="world-ring-outer"></div>
+                  <div class="world-ring-inner"></div>
+                  <div class="world-core"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-icon">🏙️</div>
+                </div>
+                <div class="world-info">
+                  <div class="world-label">World 001</div>
+                  <div class="world-name">Glass City</div>
+                </div>
+              </a>
+
+              <!-- Lego World -->
+              <a href="lego-world.html" class="world-portal world-portal--lego">
+                <div class="world-portal-frame">
+                  <div class="world-frame-outer"></div>
+                  <div class="world-ring-outer"></div>
+                  <div class="world-ring-inner"></div>
+                  <div class="world-core"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-icon">🧱</div>
+                </div>
+                <div class="world-info">
+                  <div class="world-label">World 002</div>
+                  <div class="world-name">Lego World</div>
+                </div>
+              </a>
+
+              <!-- Flat World -->
+              <a href="underground-city.html" class="world-portal world-portal--underground">
+                <div class="world-portal-frame">
+                  <div class="world-frame-outer"></div>
+                  <div class="world-ring-outer"></div>
+                  <div class="world-ring-inner"></div>
+                  <div class="world-core"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-tech"></div>
+                  <div class="world-icon">🏚️</div>
+                </div>
+                <div class="world-info">
+                  <div class="world-label">World 003</div>
+                  <div class="world-name">Flat World</div>
+                </div>
+              </a>
             </div>
           </div>
 
-          <div class="panel" aria-label="Portal selector mockup">
-            <div class="panel-header">
-              <span class="panel-title">World index · /scroll to enter</span>
-              <span class="panel-status">
-                <span class="panel-status-dot"></span>
-                online
-              </span>
-            </div>
+          <button class="close-portals" id="closePortals">Close Portal</button>
+        </div>
 
-            <div class="world-grid">
-              <button class="world-card" type="button">
-                <div class="world-label">001 · upper tiers</div>
-                <div class="world-name">Glass City</div>
-                <div class="world-stars">
-                  <span>★★★★★</span> / entry cost: 4.7★
-                </div>
-                <div class="world-meta">low conflict · polite masks</div>
-              </button>
+        <div class="hub-intro">
+          Welcome to StarStruck — a world where every interaction matters, and every
+          rating has value. Here, stars are more than feedback — they are currency,
+          status, and survival. Click the portal above to reveal three different worlds,
+          each with their own rules and inhabitants waiting to be rated.
+        </div>
 
-              <button class="world-card" type="button">
-                <div class="world-label">002 · street level</div>
-                <div class="world-name">Neon Underpass</div>
-                <div class="world-stars">
-                  <span>★★★☆☆</span> / entry cost: 2.3★
-                </div>
-                <div class="world-meta">barter talk · fast judgements</div>
-              </button>
+        <div class="hub-cta">
+          <a href="shop.html" class="cta-ghost">Visit the StarStruck Shop ⇢</a>
+        </div>
+      </div>
+    </main>
 
-              <button class="world-card" type="button">
-                <div class="world-label">003 · fringe</div>
-                <div class="world-name">Signal Market</div>
-                <div class="world-stars">
-                  <span>★★☆☆☆</span> / entry cost: 1.0★
-                </div>
-                <div class="world-meta">unstable trust · sharp smiles</div>
-              </button>
-            </div>
+    <footer>
+      <span>StarStruck Portal Hub · v2.0</span>
+      <span>Not everyone can afford to lose a star.</span>
+    </footer>
 
-            <div class="divider"></div>
-
-            <div class="rating-panel">
-              <p class="rating-copy">
-                When you step through a portal, every conversation becomes a
-                transaction. Listen closely. Offer patience. The person in front
-                of you is also trying to afford tomorrow.
-              </p>
-
-              <div class="rating-field">
-                <span class="field-label">Simulated encounter rating</span>
-                <div class="field-input">
-                  <span>How many stars would you give this interaction?</span>
-                  <button type="button">★ ★ ★ ★ ☆</button>
-                </div>
-                <span class="field-hint">
-                  Remember: your rating determines their rent, rations, and
-                  routes home.
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="worlds" class="section section--reverse section--alt">
-          <div class="panel" aria-label="World interaction log">
-            <div class="panel-header">
-              <span class="panel-title">Live log · recent crossings</span>
-              <span class="panel-status">
-                <span class="panel-status-dot"></span>
-                recording
-              </span>
-            </div>
-
-            <div class="economy">
-              <p>
-                Scroll down this page as if you were gliding across sectors.
-                Each block below represents a new world, each world a different
-                expectation of you. The constant? You always pay in stars.
-              </p>
-            </div>
-
-            <div class="economy-grid">
-              <div class="economy-card">
-                <div class="economy-title">Glass City / 001</div>
-                <div class="economy-value">
-                  Smiles are rehearsed, compliments are compulsory. Failing to
-                  rate someone at least four stars is read as an attack.
-                </div>
-              </div>
-
-              <div class="economy-card">
-                <div class="economy-title">Neon Underpass / 002</div>
-                <div class="economy-value">
-                  Jokes are currency, favors are receipts. Every shared secret
-                  is worth half a star—until someone leaks it.
-                </div>
-              </div>
-
-              <div class="economy-card">
-                <div class="economy-title">Signal Market / 003</div>
-                <div class="economy-value">
-                  Here, people rent borrowed ratings just to cross the street.
-                  If you speak gently, you might be the highest balance they see
-                  all week.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p class="eyebrow">Scrolling as portal travel</p>
-            <h2>
-              Every swipe drops you<br />
-              into a <span>new social law.</span>
-            </h2>
-            <p class="lede">
-              This site is a vertical corridor of realities. As you move down,
-              imagine the rules shifting under your feet. Would you change how
-              you speak if you knew every gesture translated directly into food,
-              shelter, and safety for someone else?
-            </p>
-            <p class="lede">
-              StarStruck invites you to practice a different reflex: assume
-              everyone you meet is quietly trying to survive the rating system
-              too.
-            </p>
-          </div>
-        </section>
-
-        <section id="economy" class="section">
-          <div>
-            <p class="eyebrow">Star economy manifesto</p>
-            <h2>
-              In this universe,<br />
-              <span>kindness accrues interest.</span>
-            </h2>
-            <p class="lede">
-              Stars here are more than icons. They are wages, transit passes,
-              medical access, and music tokens. You cannot see anyone else’s
-              balance, only the light in their eyes when you choose to rate them
-              higher than the world expects.
-            </p>
-            <p class="lede">
-              The only strategy that works in every world you scroll through:
-              be deliberately kind. Generosity multiplies in ways that data
-              cannot fully measure.
-            </p>
-          </div>
-
-          <div class="panel" aria-label="Personal balance breakdown">
-            <div class="panel-header">
-              <span class="panel-title">Account summary · star ledger</span>
-              <span class="panel-status">
-                <span class="panel-status-dot"></span>
-                simulated
-              </span>
-            </div>
-
-            <div class="economy">
-              <p>
-                Imagine this panel updating in real time as you wander between
-                worlds on this site. Every small kindness adds a fraction of a
-                star; every careless dismissal quietly subtracts.
-              </p>
-
-              <div class="economy-grid">
-                <div class="economy-card">
-                  <div class="economy-title">earned today</div>
-                  <div class="economy-value highlight">+1.7★</div>
-                  <p>Listening without interrupting, sharing safe routes.</p>
-                </div>
-
-                <div class="economy-card">
-                  <div class="economy-title">spent today</div>
-                  <div class="economy-value highlight">−0.9★</div>
-                  <p>Cross‑world travel fees, late message penalties.</p>
-                </div>
-
-                <div class="economy-card">
-                  <div class="economy-title">projected impact</div>
-                  <div class="economy-value">
-                    Treat every interaction as a chance to fund someone else’s
-                    future.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </main>
-
-      <footer>
-        <span>StarStruck · scroll through worlds</span>
-        <span>In this future, be kind on purpose.</span>
-      </footer>
-    </div>
-
+    <!-- TourBot -->
     <aside class="tourbot" aria-label="StarStruck tour guide">
       <div class="tourbot-shell" id="tourbotShell">
         <div class="tourbot-top">
@@ -957,29 +1631,13 @@
             </div>
             <div class="tourbot-meta">
               <div class="tourbot-name">TourBot</div>
-              <div class="tourbot-sub">World guide · rating translator</div>
+              <div class="tourbot-sub">Portal guide</div>
             </div>
           </div>
 
           <div class="tourbot-actions">
-            <button
-              class="tourbot-iconbtn"
-              type="button"
-              id="tourbotToggle"
-              aria-label="Collapse or expand chat"
-              title="Collapse / expand"
-            >
-              ▾
-            </button>
-            <button
-              class="tourbot-iconbtn"
-              type="button"
-              id="tourbotReset"
-              aria-label="Restart tour"
-              title="Restart tour"
-            >
-              ↺
-            </button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotToggle" aria-label="Collapse">▾</button>
+            <button class="tourbot-iconbtn" type="button" id="tourbotReset" aria-label="Restart">↺</button>
           </div>
         </div>
 
@@ -990,6 +1648,320 @@
       </div>
     </aside>
 
+    <!-- World Portal Transition Overlay -->
+    <div class="world-transition" id="worldTransition">
+      <div class="tunnel-bg"></div>
+      <div class="tunnel-rings">
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+        <div class="tunnel-ring"></div>
+      </div>
+      <div class="speed-lines" id="speedLines"></div>
+      <div class="tunnel-center"></div>
+      <div class="transition-text">
+        <div class="entering">Entering</div>
+        <div class="world-destination" id="worldDestination">Glass City</div>
+      </div>
+    </div>
+
+    <script src="world-common.js"></script>
     <script src="tourbot.js" defer></script>
+    <script>
+      // Dramatic Portal Transition System
+      const mainPortal = document.getElementById('mainPortal');
+      const worldPortals = document.getElementById('worldPortals');
+      const closeBtn = document.getElementById('closePortals');
+      const portalOverlay = document.getElementById('portalOverlay');
+      const glitchOverlay = document.getElementById('glitchOverlay');
+      const hubContent = document.querySelector('.hub-content');
+      
+      let isAnimating = false;
+
+      // Play dramatic sound effect (optional - creates audio context)
+      function playPortalSound() {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Create oscillator for whoosh effect
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+          oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+          oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.8);
+          
+          gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+          
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.8);
+        } catch (e) {
+          // Audio not supported, continue silently
+        }
+      }
+
+      // Screen shake effect
+      function screenShake() {
+        document.body.style.animation = 'none';
+        document.body.offsetHeight; // Trigger reflow
+        document.body.style.animation = 'screen-shake 0.4s ease-out';
+      }
+
+      // Add screen shake keyframes dynamically
+      const shakeStyle = document.createElement('style');
+      shakeStyle.textContent = `
+        @keyframes screen-shake {
+          0%, 100% { transform: translate(0, 0); }
+          10% { transform: translate(-3px, -2px); }
+          20% { transform: translate(3px, 2px); }
+          30% { transform: translate(-2px, 3px); }
+          40% { transform: translate(2px, -3px); }
+          50% { transform: translate(-3px, 2px); }
+          60% { transform: translate(3px, -2px); }
+          70% { transform: translate(-2px, -3px); }
+          80% { transform: translate(2px, 3px); }
+          90% { transform: translate(-3px, -2px); }
+        }
+      `;
+      document.head.appendChild(shakeStyle);
+
+      // Main portal click - dramatic entrance
+      mainPortal.addEventListener('click', function(e) {
+        if (e.target.closest('.world-portal')) return;
+        if (mainPortal.classList.contains('opened')) return;
+        if (isAnimating) return;
+        
+        isAnimating = true;
+        
+        // Phase 1: Portal activation (0ms - 800ms)
+        mainPortal.classList.add('activating');
+        playPortalSound();
+        
+        // Phase 2: Screen effects (200ms)
+        setTimeout(() => {
+          portalOverlay.classList.add('active');
+          glitchOverlay.classList.add('active');
+          hubContent.classList.add('warping');
+          screenShake();
+        }, 200);
+        
+        // Phase 3: Remove glitch effect (600ms)
+        setTimeout(() => {
+          glitchOverlay.classList.remove('active');
+        }, 600);
+        
+        // Phase 4: Open portal and reveal worlds (800ms)
+        setTimeout(() => {
+          mainPortal.classList.remove('activating');
+          mainPortal.classList.add('opened');
+          worldPortals.classList.add('visible');
+          hubContent.classList.remove('warping');
+        }, 800);
+        
+        // Phase 5: Show close button (1600ms)
+        setTimeout(() => {
+          closeBtn.classList.add('visible');
+          portalOverlay.classList.remove('active');
+          isAnimating = false;
+        }, 1600);
+      });
+
+      // Close button - dramatic exit
+      closeBtn.addEventListener('click', function() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Phase 1: Start closing animation
+        worldPortals.classList.add('closing');
+        closeBtn.classList.remove('visible');
+        portalOverlay.classList.add('active');
+        glitchOverlay.classList.add('active');
+        
+        // Phase 2: Remove glitch
+        setTimeout(() => {
+          glitchOverlay.classList.remove('active');
+        }, 300);
+        
+        // Phase 3: Collapse portals
+        setTimeout(() => {
+          worldPortals.classList.remove('visible');
+          worldPortals.classList.remove('closing');
+          mainPortal.classList.remove('opened');
+          mainPortal.classList.add('closing');
+        }, 600);
+        
+        // Phase 4: Portal reappears
+        setTimeout(() => {
+          mainPortal.classList.remove('closing');
+          portalOverlay.classList.remove('active');
+          isAnimating = false;
+        }, 1400);
+      });
+
+      // Hover effect enhancement for world portals
+      worldPortals.querySelectorAll('.world-portal').forEach(portal => {
+        portal.addEventListener('mouseenter', () => {
+          portal.style.filter = 'brightness(1.2)';
+        });
+        portal.addEventListener('mouseleave', () => {
+          portal.style.filter = '';
+        });
+      });
+
+      // ========================================
+      // WORLD PORTAL ENTRY TRANSITION
+      // ========================================
+      
+      const worldTransition = document.getElementById('worldTransition');
+      const worldDestination = document.getElementById('worldDestination');
+      const speedLinesContainer = document.getElementById('speedLines');
+      
+      // World portal colors
+      const portalColors = {
+        'glass': '#00e5ff',
+        'lego': '#40ffd8',
+        'underground': '#50b4ff'
+      };
+
+      // World names
+      const worldNames = {
+        'glass-city.html': 'Glass City',
+        'lego-world.html': 'Lego World',
+        'underground-city.html': 'Flat World'
+      };
+
+      // Generate speed lines
+      function generateSpeedLines() {
+        speedLinesContainer.innerHTML = '';
+        const lineCount = 40;
+        for (let i = 0; i < lineCount; i++) {
+          const line = document.createElement('div');
+          line.className = 'speed-line';
+          const angle = (360 / lineCount) * i;
+          const distance = 50 + Math.random() * 50;
+          line.style.transform = `rotate(${angle}deg) translateY(-${distance}vh)`;
+          line.style.animationDelay = `${Math.random() * 0.3}s`;
+          speedLinesContainer.appendChild(line);
+        }
+      }
+
+      // Play warp sound
+      function playWarpSound() {
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Rising whoosh
+          const osc1 = audioCtx.createOscillator();
+          const gain1 = audioCtx.createGain();
+          osc1.connect(gain1);
+          gain1.connect(audioCtx.destination);
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(100, audioCtx.currentTime);
+          osc1.frequency.exponentialRampToValueAtTime(2000, audioCtx.currentTime + 1);
+          gain1.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+          osc1.start(audioCtx.currentTime);
+          osc1.stop(audioCtx.currentTime + 1.2);
+
+          // Bass rumble
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(60, audioCtx.currentTime);
+          osc2.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 1);
+          gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+          osc2.start(audioCtx.currentTime);
+          osc2.stop(audioCtx.currentTime + 1);
+        } catch (e) {
+          // Audio not supported
+        }
+      }
+
+      // Handle world portal clicks
+      worldPortals.querySelectorAll('.world-portal').forEach(portal => {
+        portal.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const href = this.getAttribute('href');
+          const worldName = worldNames[href] || 'Unknown World';
+          
+          // Determine portal color based on class
+          let color = portalColors['glass'];
+          if (this.classList.contains('world-portal--lego')) {
+            color = portalColors['lego'];
+          } else if (this.classList.contains('world-portal--underground')) {
+            color = portalColors['underground'];
+          }
+          
+          // Set transition color
+          worldTransition.style.setProperty('--transition-color', color);
+          
+          // Set destination text
+          worldDestination.textContent = worldName;
+          
+          // Generate fresh speed lines
+          generateSpeedLines();
+          
+          // Add entering class to clicked portal
+          this.classList.add('entering');
+          
+          // Play sound
+          playWarpSound();
+          
+          // Activate transition
+          worldTransition.classList.add('active');
+          
+          // Screen shake
+          screenShake();
+          
+          // Navigate after animation
+          setTimeout(() => {
+            window.location.href = href;
+          }, 1400);
+        });
+      });
+
+      // HUD navigation transitions between worlds
+      document.querySelectorAll('.hud-nav a[href]').forEach((link) => {
+        const href = link.getAttribute('href');
+        if (!href || !worldNames[href]) return;
+
+        link.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          if (isAnimating) return;
+          isAnimating = true;
+
+          let color = portalColors['glass'];
+          if (href === 'lego-world.html') color = portalColors['lego'];
+          if (href === 'underground-city.html') color = portalColors['underground'];
+
+          worldTransition.style.setProperty('--transition-color', color);
+          worldDestination.textContent = worldNames[href] || 'Unknown World';
+          generateSpeedLines();
+          worldTransition.classList.add('active');
+
+          screenShake();
+          playWarpSound();
+
+          setTimeout(() => {
+            window.location.href = href;
+          }, 1400);
+        });
+      });
+    </script>
   </body>
 </html>

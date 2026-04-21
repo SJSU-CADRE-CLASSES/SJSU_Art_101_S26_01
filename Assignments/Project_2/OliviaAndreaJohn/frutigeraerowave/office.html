@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frutiger-Aero Office 3D</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --sky-top: #bdf4ff;
+      --sky-mid: #6fddff;
+      --sky-bottom: #0094ff;
+      --accent-lime: #caff6c;
+      --accent-aqua: #3ff0ff;
+      --accent-deep: #005aa3;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      color: #023059;
+      background:
+        radial-gradient(circle at top left, #ffffff 0, transparent 36%),
+        radial-gradient(circle at 12% 82%, rgba(186, 255, 214, 0.95) 0, transparent 45%),
+        radial-gradient(circle at 86% 18%, rgba(143, 234, 255, 0.95) 0, transparent 42%),
+        linear-gradient(to bottom, var(--sky-top), var(--sky-mid), var(--sky-bottom));
+      background-attachment: fixed;
+      overflow: hidden;
+    }
+
+    #scene {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    .hud {
+      position: fixed;
+      left: 24px;
+      top: 20px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(220, 242, 255, 0.96));
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 12px 26px rgba(0, 64, 110, 0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      z-index: 5;
+    }
+
+    .hud-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #f8fff7, #00ffb8);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 14px rgba(0, 255, 184, 0.9);
+    }
+
+    .hud-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(2, 48, 89, 0.86);
+    }
+
+    .hud-sub {
+      font-size: 10px;
+      color: rgba(2, 48, 89, 0.7);
+    }
+
+    .controls {
+      position: fixed;
+      right: 24px;
+      top: 20px;
+      padding: 9px 12px;
+      border-radius: 16px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(214, 239, 255, 0.96));
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 10px 22px rgba(0, 64, 110, 0.6);
+      font-size: 11px;
+      color: rgba(2, 48, 89, 0.85);
+      z-index: 5;
+    }
+
+    .controls strong {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 10px;
+    }
+
+    .watermark {
+      position: fixed;
+      left: 24px;
+      bottom: 18px;
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(233, 249, 255, 0.96);
+      text-shadow:
+        0 0 7px rgba(0, 56, 96, 0.8),
+        0 1px 0 rgba(0, 24, 48, 0.6);
+      pointer-events: none;
+      mix-blend-mode: screen;
+      z-index: 5;
+    }
+
+    .monitor-video {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      transform: translate(-50%, -50%);
+      border-radius: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 18px 30px rgba(0, 54, 102, 0.8);
+      overflow: hidden;
+      z-index: 4;
+      pointer-events: auto;
+    }
+
+    .monitor-video iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .ipod {
+      position: fixed;
+      right: 40px;
+      top: 56px;
+      width: 150px;
+      height: 260px;
+      border-radius: 28px;
+      padding: 14px 12px;
+      background:
+        radial-gradient(circle at 20% 0%, #ffffff, #e8f5ff 55%, #c7e6ff 100%);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 16px 32px rgba(0, 64, 105, 0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 8;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .ipod--dragging {
+      cursor: grabbing;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.95),
+        0 20px 36px rgba(0, 64, 105, 0.9);
+    }
+
+    .ipod-screen {
+      width: 100%;
+      height: 130px;
+      border-radius: 14px;
+      padding: 6px 8px;
+      background:
+        linear-gradient(145deg, #b4e5ff, #ffffff);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+        inset 0 0 12px rgba(0, 96, 164, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .ipod-screen-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .ipod-screen-title {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(0, 52, 96, 0.9);
+    }
+
+    .ipod-tabs {
+      display: inline-flex;
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1px;
+      border-radius: 999px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.8),
+        0 1px 2px rgba(0, 60, 110, 0.35);
+    }
+
+    .ipod-tab {
+      border: none;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: transparent;
+      color: rgba(0, 60, 110, 0.8);
+      cursor: pointer;
+    }
+
+    .ipod-tab.ipod-tab--active {
+      background: linear-gradient(135deg, #3ac8ff, #1a7bff);
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 8px rgba(0, 108, 214, 0.9);
+    }
+
+    .ipod-screen-body {
+      flex: 1;
+      position: relative;
+    }
+
+    .ipod-tab-panel {
+      position: absolute;
+      inset: 0;
+    }
+
+    .ipod-tab-panel--hidden {
+      display: none;
+    }
+
+    .ipod-screen-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      max-height: 90px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .ipod-screen-menu::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
+    .ipod-screen-menu a {
+      display: block;
+      padding: 4px 6px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: rgba(0, 45, 82, 0.95);
+      background: rgba(255, 255, 255, 0.46);
+    }
+
+    .ipod-screen-menu a:hover {
+      background: linear-gradient(135deg, #3ac8ff, #1a7bff);
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 12px rgba(0, 108, 214, 0.9);
+    }
+
+    .ipod-screen-menu a.ipod-active {
+      background: linear-gradient(135deg, #3ac8ff, #1a7bff);
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 0 12px rgba(0, 108, 214, 0.9);
+    }
+
+    .ipod-wheel {
+      width: 100px;
+      height: 100px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, #ffffff, #e8edf5);
+      box-shadow:
+        inset 0 0 0 1px rgba(200, 210, 225, 0.9),
+        0 8px 16px rgba(0, 32, 64, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(80, 96, 120, 0.9);
+    }
+
+    .ipod-wheel-center {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, #ffffff, #e4edf7);
+      box-shadow:
+        inset 0 0 0 1px rgba(210, 220, 235, 0.95),
+        0 2px 4px rgba(0, 40, 80, 0.45);
+    }
+
+    .ipod-wheel-label {
+      position: absolute;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .ipod-wheel-label--menu {
+      top: 8px;
+    }
+
+    .ipod-wheel-label--play {
+      bottom: 8px;
+    }
+
+    .ipod-wheel-label--prev {
+      left: 10px;
+    }
+
+    .ipod-wheel-label--next {
+      right: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .ipod {
+        transform: scale(0.9);
+        transform-origin: top left;
+      }
+    }
+  </style>
+
+  <!-- Three.js CDN -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+</head>
+
+<body>
+  <canvas id="scene"></canvas>
+
+  <div class="hud">
+    <div class="hud-dot" aria-hidden="true"></div>
+    <div>
+      <div class="hud-label">Frutiger-Aero Office</div>
+      <div class="hud-sub">Walk with WASD / arrows • Mouse to look</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div><strong>Move</strong> WASD / ↑↓←→</div>
+    <div><strong>Look</strong> Click + drag</div>
+  </div>
+
+  <div class="watermark">FRUTIGER AERO • OFFICE WALKTHROUGH</div>
+
+  <div class="monitor-video" aria-label="Office computer screen video">
+    <iframe
+      src="https://www.youtube.com/embed/J3mHzTQmC7w?rel=0"
+      title="YouTube video player"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <aside class="ipod" aria-label="Frutiger-Aero navigation iPod">
+    <div class="ipod-screen">
+      <div class="ipod-screen-header">
+        <div class="ipod-screen-title">frutiger-aero</div>
+        <div class="ipod-tabs">
+          <button class="ipod-tab ipod-tab--active" data-ipod-tab="nav">Scenes</button>
+          <button class="ipod-tab" data-ipod-tab="music">Music</button>
+        </div>
+      </div>
+      <div class="ipod-screen-body">
+        <ul class="ipod-screen-menu ipod-tab-panel ipod-tab-panel-nav">
+          <li><a class="ipod-link" href="../index.html">▶ Home screen</a></li>
+          <li><a class="ipod-link" href="./frutigerwave.html">▶ Frutiger-Aero Wave</a></li>
+          <li><a class="ipod-link" href="./office.html">▶ Frutiger-Aero Office</a></li>
+          <li><a class="ipod-link" href="../vaporwave/vaporwave.html">▶ Vaporwave scene</a></li>
+          <li><a class="ipod-link" href="../synthwave/about.html">▶ Synthwave scene</a></li>
+        </ul>
+
+        <div class="ipod-screen-music ipod-tab-panel ipod-tab-panel-music ipod-tab-panel--hidden">
+          <iframe
+            title="Symphony on Spotify"
+            src="https://open.spotify.com/embed/track/1x5sYLZiu9r5E43kMlt9f8?utm_source=generator"
+            width="100%"
+            height="80"
+            frameborder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="ipod-wheel" aria-hidden="true">
+      <div class="ipod-wheel-center"></div>
+      <div class="ipod-wheel-label ipod-wheel-label--menu" role="button" tabindex="0">MENU</div>
+      <div class="ipod-wheel-label ipod-wheel-label--play" role="button" tabindex="0">▶▮▮</div>
+      <div class="ipod-wheel-label ipod-wheel-label--prev" role="button" tabindex="0">◀◀</div>
+      <div class="ipod-wheel-label ipod-wheel-label--next" role="button" tabindex="0">▶▶</div>
+    </div>
+  </aside>
+
+  <script>
+    window.addEventListener("load", function () {
+      (function () {
+        const ipod = document.querySelector(".ipod");
+        if (!ipod) return;
+
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+
+        function onPointerDown(ev) {
+          // Don't start drag when clicking on an actual control/link
+          const target = ev.target;
+          if (target && (target.closest("a") || target.closest("button") || target.tagName === "IFRAME")) return;
+
+          isDragging = true;
+          ipod.classList.add("ipod--dragging");
+
+          const rect = ipod.getBoundingClientRect();
+          startX = ev.clientX;
+          startY = ev.clientY;
+          startLeft = rect.left;
+          startTop = rect.top;
+
+          // Convert from right/top positioning to left/top during drag
+          ipod.style.right = "auto";
+          ipod.style.left = rect.left + "px";
+          ipod.style.top = rect.top + "px";
+
+          window.addEventListener("pointermove", onPointerMove);
+          window.addEventListener("pointerup", onPointerUp);
+        }
+
+        function onPointerMove(ev) {
+          if (!isDragging) return;
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
+
+          const newLeft = startLeft + dx;
+          const newTop = startTop + dy;
+
+          const maxLeft = window.innerWidth - ipod.offsetWidth;
+          const maxTop = window.innerHeight - ipod.offsetHeight;
+
+          ipod.style.left = Math.min(Math.max(0, newLeft), Math.max(0, maxLeft)) + "px";
+          ipod.style.top = Math.min(Math.max(0, newTop), Math.max(0, maxTop)) + "px";
+        }
+
+        function onPointerUp() {
+          if (!isDragging) return;
+          isDragging = false;
+          ipod.classList.remove("ipod--dragging");
+          window.removeEventListener("pointermove", onPointerMove);
+          window.removeEventListener("pointerup", onPointerUp);
+        }
+
+        ipod.addEventListener("pointerdown", onPointerDown);
+      })();
+
+      const links = Array.from(document.querySelectorAll(".ipod-link"));
+      const menu = document.querySelector(".ipod-screen-menu");
+      const prevBtn = document.querySelector(".ipod-wheel-label--prev");
+      const nextBtn = document.querySelector(".ipod-wheel-label--next");
+      const playBtn = document.querySelector(".ipod-wheel-label--play");
+      const tabs = Array.from(document.querySelectorAll(".ipod-tab"));
+      const navPanel = document.querySelector(".ipod-tab-panel-nav");
+      const musicPanel = document.querySelector(".ipod-tab-panel-music");
+
+      if (
+        !links.length ||
+        !menu ||
+        !prevBtn ||
+        !nextBtn ||
+        !playBtn ||
+        !tabs.length ||
+        !navPanel ||
+        !musicPanel
+      ) {
+        return;
+      }
+
+      let index = 0;
+      let activeTab = "nav";
+
+      function updateActive() {
+        links.forEach((link, i) => {
+          link.classList.toggle("ipod-active", activeTab === "nav" && i === index);
+        });
+
+        if (activeTab !== "nav") return;
+
+        const active = links[index];
+        if (active) {
+          const itemTop = active.offsetTop;
+          const itemBottom = itemTop + active.offsetHeight;
+          const viewTop = menu.scrollTop;
+          const viewBottom = viewTop + menu.clientHeight;
+
+          if (itemTop < viewTop) {
+            menu.scrollTop = itemTop;
+          } else if (itemBottom > viewBottom) {
+            menu.scrollTop = itemBottom - menu.clientHeight;
+          }
+        }
+      }
+
+      function move(delta) {
+        if (activeTab !== "nav") return;
+        index = (index + delta + links.length) % links.length;
+        updateActive();
+      }
+
+      function activate() {
+        if (activeTab === "nav") {
+          const current = links[index];
+          if (current) current.click();
+        }
+      }
+
+      function setTab(tab) {
+        activeTab = tab;
+        tabs.forEach((btn) => {
+          btn.classList.toggle("ipod-tab--active", btn.dataset.ipodTab === tab);
+        });
+
+        if (tab === "nav") {
+          navPanel.classList.remove("ipod-tab-panel--hidden");
+          musicPanel.classList.add("ipod-tab-panel--hidden");
+        } else {
+          navPanel.classList.add("ipod-tab-panel--hidden");
+          musicPanel.classList.remove("ipod-tab-panel--hidden");
+        }
+
+        updateActive();
+      }
+
+      prevBtn.addEventListener("click", function () {
+        move(-1);
+      });
+      nextBtn.addEventListener("click", function () {
+        move(1);
+      });
+      playBtn.addEventListener("click", activate);
+
+      [prevBtn, nextBtn, playBtn].forEach((btn) => {
+        btn.addEventListener("keydown", function (ev) {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            btn.click();
+          }
+        });
+      });
+
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          setTab(btn.dataset.ipodTab);
+        });
+      });
+
+      setTab("nav");
+    });
+  </script>
+
+  <script>
+    const canvas = document.getElementById("scene");
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+
+    // Soft gradient "skybox"
+    const skyGeo = new THREE.SphereGeometry(80, 32, 32);
+    const skyMat = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      uniforms: {
+        topColor: { value: new THREE.Color(0xbdf4ff) },
+        bottomColor: { value: new THREE.Color(0x0057b2) },
+      },
+      vertexShader: `
+        varying vec3 vWorldPosition;
+        void main() {
+          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPosition.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vWorldPosition;
+        uniform vec3 topColor;
+        uniform vec3 bottomColor;
+        void main() {
+          float h = normalize(vWorldPosition).y * 0.5 + 0.5;
+          gl_FragColor = vec4(mix(bottomColor, topColor, h), 1.0);
+        }
+      `,
+    });
+    scene.add(new THREE.Mesh(skyGeo, skyMat));
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      200
+    );
+    camera.position.set(0, 1.6, 6.5);
+
+    // Lights
+    const hemi = new THREE.HemisphereLight(0xe8faff, 0x2070a8, 1.1);
+    scene.add(hemi);
+
+    const sun = new THREE.DirectionalLight(0xffffff, 1.25);
+    sun.position.set(8, 16, 8);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    scene.add(sun);
+
+    const rim = new THREE.DirectionalLight(0x62d9ff, 0.6);
+    rim.position.set(-6, 5, -7);
+    scene.add(rim);
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // Materials
+    const waterMatDeep = new THREE.MeshPhysicalMaterial({
+      color: 0x00a6ff,
+      metalness: 0.35,
+      roughness: 0.05,
+      clearcoat: 1,
+      clearcoatRoughness: 0.08,
+      transmission: 0.9,
+      transparent: true,
+      opacity: 0.98,
+      envMapIntensity: 2.0,
+    });
+
+    const waterMatSoft = new THREE.MeshPhysicalMaterial({
+      color: 0x8ee9ff,
+      metalness: 0.2,
+      roughness: 0.08,
+      clearcoat: 1,
+      clearcoatRoughness: 0.1,
+      transmission: 0.92,
+      transparent: true,
+      opacity: 0.97,
+      envMapIntensity: 1.9,
+    });
+
+    const waterMatFrosted = new THREE.MeshPhysicalMaterial({
+      color: 0xd8f9ff,
+      metalness: 0.12,
+      roughness: 0.22,
+      clearcoat: 1,
+      clearcoatRoughness: 0.18,
+      transmission: 0.85,
+      transparent: true,
+      opacity: 0.96,
+      envMapIntensity: 1.5,
+    });
+
+    const floorMat = waterMatDeep;
+    const wallMat = waterMatFrosted;
+    const glassWallMat = waterMatSoft;
+    const deskMat = waterMatSoft;
+
+    const screenMat = new THREE.MeshStandardMaterial({
+      color: 0x4fe2ff,
+      emissive: 0x26c5ff,
+      emissiveIntensity: 2.0,
+      metalness: 0.2,
+      roughness: 0.25,
+    });
+
+    const chairMat = waterMatFrosted.clone();
+
+    const plantMat = new THREE.MeshStandardMaterial({
+      color: 0xcaff6c,
+      emissive: 0x60ffc6,
+      emissiveIntensity: 0.7,
+      roughness: 0.4,
+      metalness: 0.1,
+    });
+
+    const coralMatPink = new THREE.MeshStandardMaterial({
+      color: 0xff7ad9,
+      emissive: 0xff4fb1,
+      emissiveIntensity: 0.5,
+      roughness: 0.5,
+      metalness: 0.15,
+    });
+
+    const coralMatBlue = new THREE.MeshStandardMaterial({
+      color: 0x6fe4ff,
+      emissive: 0x43cfff,
+      emissiveIntensity: 0.6,
+      roughness: 0.45,
+      metalness: 0.2,
+    });
+
+    const causticMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.18,
+      depthWrite: false,
+    });
+
+    // Room: floor + walls
+    const floorGeo = new THREE.CircleGeometry(6.8, 80);
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 4), wallMat);
+    backWall.position.set(0, 2, -5);
+    backWall.receiveShadow = true;
+    backWall.castShadow = true;
+    scene.add(backWall);
+
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 4), glassWallMat);
+    leftWall.position.set(-5, 2, 0);
+    leftWall.rotation.y = Math.PI / 2;
+    scene.add(leftWall);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 4), wallMat);
+    rightWall.position.set(5, 2, 0);
+    rightWall.rotation.y = -Math.PI / 2;
+    scene.add(rightWall);
+
+    const ceiling = new THREE.Mesh(new THREE.CircleGeometry(6.8, 80), wallMat);
+    ceiling.position.set(0, 4, 0);
+    ceiling.rotation.x = Math.PI / 2;
+    scene.add(ceiling);
+
+    // Window band on back wall
+    const windowBand = new THREE.Mesh(
+      new THREE.PlaneGeometry(6, 1.6),
+      glassWallMat.clone()
+    );
+    windowBand.material.color = new THREE.Color(0x7ee5ff);
+    windowBand.position.set(0, 2.6, -4.99);
+    scene.add(windowBand);
+
+    // Soft animated caustics on the floor near the window
+    const causticGeo = new THREE.PlaneGeometry(6, 3, 32, 16);
+    const caustics = new THREE.Mesh(causticGeo, causticMat);
+    caustics.rotation.x = -Math.PI / 2;
+    caustics.position.set(0, 0.01, -3.4);
+    caustics.renderOrder = 1;
+    scene.add(caustics);
+
+    // Desk
+    const deskTop = new THREE.Mesh(
+      new THREE.BoxGeometry(3, 0.12, 1.4),
+      deskMat
+    );
+    deskTop.position.set(0, 1.1, -2.1);
+    deskTop.castShadow = true;
+    deskTop.receiveShadow = true;
+    scene.add(deskTop);
+
+    const legGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.9, 16);
+    const legMat = new THREE.MeshStandardMaterial({
+      color: 0xc9d4e6,
+      metalness: 0.6,
+      roughness: 0.25,
+    });
+
+    const legOffsets = [
+      [-1.3, -0.55],
+      [1.3, -0.55],
+      [-1.3, 0.55],
+      [1.3, 0.55],
+    ];
+    legOffsets.forEach(([x, z]) => {
+      const leg = new THREE.Mesh(legGeo, legMat);
+      leg.position.set(x, 0.6, -2.1 + z);
+      leg.castShadow = true;
+      scene.add(leg);
+    });
+
+    // Monitor
+    const monitorBase = new THREE.Mesh(
+      new THREE.BoxGeometry(0.5, 0.04, 0.25),
+      deskMat
+    );
+    monitorBase.position.set(0, 1.22, -1.9);
+    monitorBase.castShadow = true;
+    scene.add(monitorBase);
+
+    const monitorStem = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.3, 0.08),
+      legMat
+    );
+    monitorStem.position.set(0, 1.4, -1.9);
+    monitorStem.castShadow = true;
+    scene.add(monitorStem);
+
+    const monitorBody = new THREE.Mesh(
+      new THREE.BoxGeometry(1.5, 1.0, 0.08),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x1d3c63,
+        metalness: 0.6,
+        roughness: 0.3,
+        clearcoat: 1,
+        clearcoatRoughness: 0.08,
+      })
+    );
+    monitorBody.position.set(0, 1.9, -1.9);
+    monitorBody.castShadow = true;
+    scene.add(monitorBody);
+
+    const monitorScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.32, 0.78),
+      screenMat
+    );
+    monitorScreen.position.set(0, 1.9, -1.86);
+    scene.add(monitorScreen);
+
+    // Chair
+    const seat = new THREE.Mesh(
+      new THREE.BoxGeometry(0.9, 0.12, 0.9),
+      chairMat
+    );
+    seat.position.set(-1.4, 0.7, -1.4);
+    seat.castShadow = true;
+    seat.receiveShadow = true;
+    scene.add(seat);
+
+    const backrest = new THREE.Mesh(
+      new THREE.BoxGeometry(0.9, 1.1, 0.12),
+      chairMat
+    );
+    backrest.position.set(-1.4, 1.3, -1.0);
+    scene.add(backrest);
+
+    const chairBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 0.6, 16),
+      legMat
+    );
+    chairBase.position.set(-1.4, 0.35, -1.4);
+    scene.add(chairBase);
+
+    // Plant
+    const pot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18, 0.24, 0.24, 24),
+      new THREE.MeshStandardMaterial({
+        color: 0xf6fbff,
+        roughness: 0.25,
+        metalness: 0.1,
+      })
+    );
+    pot.position.set(1.6, 0.32, -1.8);
+    pot.castShadow = true;
+    scene.add(pot);
+
+    const stemGeo = new THREE.CylinderGeometry(0.03, 0.05, 0.5, 16);
+    const stem = new THREE.Mesh(stemGeo, plantMat);
+    stem.position.set(1.6, 0.7, -1.8);
+    scene.add(stem);
+
+    const leafGeo = new THREE.SphereGeometry(0.28, 20, 20);
+    const leaf1 = new THREE.Mesh(leafGeo, plantMat);
+    leaf1.position.set(1.6, 1.1, -1.7);
+    scene.add(leaf1);
+
+    const leaf2 = new THREE.Mesh(leafGeo, plantMat);
+    leaf2.scale.set(0.7, 1.2, 0.7);
+    leaf2.position.set(1.35, 1.05, -1.9);
+    scene.add(leaf2);
+
+    const leaf3 = new THREE.Mesh(leafGeo, plantMat);
+    leaf3.scale.set(0.9, 1.4, 0.9);
+    leaf3.position.set(1.85, 1.15, -1.85);
+    scene.add(leaf3);
+
+    // Simple "coral reef" shapes visible through the window
+    const coralGroup = new THREE.Group();
+
+    const coral1 = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.22, 1.1, 12, 18),
+      coralMatPink
+    );
+    coral1.position.set(-1.4, 0.2, -3.6);
+    coralGroup.add(coral1);
+
+    const coral2 = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.2, 0.9, 12, 18),
+      coralMatBlue
+    );
+    coral2.position.set(-0.6, 0.1, -3.4);
+    coralGroup.add(coral2);
+
+    const coral3 = new THREE.Mesh(
+      new THREE.SphereGeometry(0.6, 24, 24),
+      coralMatPink
+    );
+    coral3.position.set(1.2, 0.3, -3.7);
+    coralGroup.add(coral3);
+
+    const coral4 = new THREE.Mesh(
+      new THREE.ConeGeometry(0.34, 1.2, 20),
+      coralMatBlue
+    );
+    coral4.position.set(2.0, 0.35, -3.3);
+    coralGroup.add(coral4);
+
+    coralGroup.traverse((m) => {
+      if (m.isMesh) {
+        m.castShadow = false;
+        m.receiveShadow = false;
+      }
+    });
+    scene.add(coralGroup);
+
+    // Floating organic "bubble" lights near the window
+    const bubbleMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      metalness: 0.0,
+      roughness: 0.05,
+      transmission: 0.95,
+      transparent: true,
+      opacity: 0.98,
+      envMapIntensity: 2.0,
+      clearcoat: 1,
+      clearcoatRoughness: 0.1,
+    });
+
+    const bubbles = [];
+    const bubbleGeo = new THREE.SphereGeometry(0.32, 24, 24);
+    const bubblePositions = [
+      [-1.6, 2.0, -2.8],
+      [0.0, 2.4, -3.1],
+      [1.8, 2.1, -2.9],
+      [-0.7, 2.8, -3.3],
+      [0.9, 2.9, -3.4],
+    ];
+
+    bubblePositions.forEach(([x, y, z], i) => {
+      const b = new THREE.Mesh(bubbleGeo, bubbleMat);
+      b.position.set(x, y, z);
+      b.castShadow = false;
+      b.receiveShadow = false;
+      b.userData = {
+        baseY: y,
+        speed: 0.4 + 0.2 * Math.random(),
+        offset: Math.random() * Math.PI * 2 + i,
+      };
+      bubbles.push(b);
+      scene.add(b);
+    });
+
+    // Curved glowing arc above desk
+    const arcGeo = new THREE.TorusGeometry(2.1, 0.04, 16, 80, Math.PI);
+    const arcMat = new THREE.MeshStandardMaterial({
+      color: 0x3ff0ff,
+      emissive: 0x1bd7ff,
+      emissiveIntensity: 1.1,
+      metalness: 0.6,
+      roughness: 0.25,
+    });
+    const arc = new THREE.Mesh(arcGeo, arcMat);
+    arc.rotation.set(Math.PI / 2.3, 0, 0);
+    arc.position.set(0, 2.6, -2.2);
+    arc.castShadow = false;
+    scene.add(arc);
+
+    // Simple movement controls (WASD + arrows, mouse drag to look)
+    const keys = {};
+    window.addEventListener("keydown", (e) => (keys[e.key.toLowerCase()] = true));
+    window.addEventListener("keyup", (e) => (keys[e.key.toLowerCase()] = false));
+
+    let isMouseDown = false;
+    let lastX = 0;
+    let lastY = 0;
+    // Start by looking into the room (-Z)
+    let yaw = Math.PI;
+    let pitch = 0;
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    window.addEventListener("mousedown", (e) => {
+      isMouseDown = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+    window.addEventListener("mouseup", () => {
+      isMouseDown = false;
+    });
+    window.addEventListener("mousemove", (e) => {
+      if (!isMouseDown) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      const sensitivity = 0.003;
+      yaw -= dx * sensitivity;
+      pitch -= dy * sensitivity;
+      pitch = clamp(pitch, -Math.PI / 3, Math.PI / 3);
+    });
+
+    const clock = new THREE.Clock();
+    const monitorVideoEl = document.querySelector(".monitor-video");
+    const monitorWorldPos = new THREE.Vector3();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = clock.getDelta();
+
+      // Update camera orientation from yaw / pitch
+      const dir = new THREE.Vector3(
+        Math.sin(yaw) * Math.cos(pitch),
+        Math.sin(pitch),
+        Math.cos(yaw) * Math.cos(pitch)
+      );
+      const target = new THREE.Vector3().copy(camera.position).add(dir);
+      camera.lookAt(target);
+
+      // Movement
+      const speed = 3.0;
+      const forward = new THREE.Vector3(
+        Math.sin(yaw),
+        0,
+        Math.cos(yaw)
+      );
+      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+
+      let moveDir = new THREE.Vector3();
+
+      if (keys["w"] || keys["arrowup"]) moveDir.add(forward);
+      if (keys["s"] || keys["arrowdown"]) moveDir.sub(forward);
+      if (keys["a"] || keys["arrowleft"]) moveDir.sub(right);
+      if (keys["d"] || keys["arrowright"]) moveDir.add(right);
+
+      if (moveDir.lengthSq() > 0) {
+        moveDir.normalize().multiplyScalar(speed * dt);
+        const newPos = camera.position.clone().add(moveDir);
+
+        // Simple bounds inside the office
+        newPos.x = clamp(newPos.x, -4.2, 4.2);
+        newPos.z = clamp(newPos.z, -4.5, 4.5);
+        newPos.y = clamp(newPos.y, 1.4, 2.2);
+
+        camera.position.copy(newPos);
+      }
+
+      // Animate bubbles, caustics and coral sway
+      const t = clock.getElapsedTime();
+      bubbles.forEach((b, idx) => {
+        const d = b.userData;
+        b.position.y = d.baseY + Math.sin(t * d.speed + d.offset) * 0.18;
+        b.position.x += Math.sin(t * 0.4 + idx) * 0.0006;
+      });
+
+      caustics.material.opacity = 0.22 + Math.sin(t * 1.1) * 0.06;
+      caustics.rotation.z = Math.sin(t * 0.25) * 0.3;
+
+      coralGroup.rotation.y = Math.sin(t * 0.18) * 0.08;
+
+      // Project 3D monitor into 2D and align video overlay
+      if (monitorVideoEl) {
+        monitorScreen.getWorldPosition(monitorWorldPos);
+        const projected = monitorWorldPos.clone().project(camera);
+
+        // Only show when in front of camera
+        if (projected.z > -1 && projected.z < 1) {
+          const sx = (projected.x * 0.5 + 0.5) * window.innerWidth;
+          const sy = (-projected.y * 0.5 + 0.5) * window.innerHeight;
+
+          // Size scales with distance
+          const dist = camera.position.distanceTo(monitorWorldPos);
+          const baseWidth = 420;
+          const width = Math.max(140, baseWidth / dist);
+          const height = (width * 9) / 16;
+
+          monitorVideoEl.style.opacity = "1";
+          monitorVideoEl.style.width = `${width}px`;
+          monitorVideoEl.style.height = `${height}px`;
+          monitorVideoEl.style.left = `${sx}px`;
+          monitorVideoEl.style.top = `${sy}px`;
+        } else {
+          monitorVideoEl.style.opacity = "0";
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener("resize", onResize);
+    onResize();
+    animate();
+  </script>
+</body>
+
+</html>
