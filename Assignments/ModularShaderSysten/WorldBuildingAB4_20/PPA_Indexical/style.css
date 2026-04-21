@@ -1,0 +1,587 @@
+body {
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+    margin: 0;
+    overflow: hidden;
+    /* Prevent scrollbars */
+    color: #00aaff;
+    background-color: #02060a;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* Behind UI */
+}
+
+.right-panel-stack {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    transform: scale(0.5);
+    transform-origin: top right;
+}
+
+.container,
+.trail-container {
+    background-color: rgba(7, 12, 22, 0.9);
+    /* Semi-transparent */
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 290px;
+    color: #00aaff;
+}
+
+h1 {
+    text-align: center;
+    color: #00aaff;
+    margin-bottom: 0.85rem;
+    font-size: 1.22rem;
+    margin-top: 0;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.left-panel-stack {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    transform: scale(0.5);
+    transform-origin: top left;
+}
+
+.lfo-container,
+.env-container {
+    background-color: rgba(7, 12, 22, 0.9);
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 290px;
+    color: #00aaff;
+}
+
+.control-group {
+    margin-bottom: 0.52rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    color: #00aaff;
+}
+
+/* ── Custom Range Slider: squared track + triangle thumb ─────────────── */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    cursor: pointer;
+    height: 20px;
+    background: transparent;
+    padding: 0;
+    margin: 2px 0;
+}
+
+/* Track — webkit */
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 3px;
+    background: rgba(0, 170, 255, 0.15);
+    border: 1px solid rgba(0, 170, 255, 0.4);
+    border-radius: 0;
+}
+
+/* Track — firefox */
+input[type="range"]::-moz-range-track {
+    height: 3px;
+    background: rgba(0, 170, 255, 0.15);
+    border: 1px solid rgba(0, 170, 255, 0.4);
+    border-radius: 0;
+}
+
+/*
+ * Thumb — downward-pointing triangle, slightly convex curved sides.
+ * path origin: (0,0) = top-left of the 18×20 thumb bounding box.
+ *   apex  = bottom-centre  (9, 20)
+ *   base  = top edge       0..18
+ *   sides curve gently outward via quadratic bezier control points
+ *
+ * M  2  0  — top-left corner
+ * L 16  0  — top-right corner  (flat square top, no rounding)
+ * Q 18 11   9 20  — right side: ctrl (18,11), end at apex
+ * Q  0 11   2  0  — left  side: ctrl ( 0,11), back to start
+ */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 20px;
+    margin-top: -9px;
+    background: #00aaff;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    clip-path: path('M 2 0 L 16 0 Q 18 11 9 20 Q 0 11 2 0 Z');
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 20px;
+    background: #00aaff;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    clip-path: path('M 2 0 L 16 0 Q 18 11 9 20 Q 0 11 2 0 Z');
+}
+
+input[type="range"]:focus {
+    outline: none;
+}
+
+
+.slider-stack {
+    position: relative;
+}
+
+.slider-stack input[type="range"] {
+    margin: 0;
+}
+
+.lfo-overlay-shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.lfo-overlay-slider {
+    display: block;
+    width: 100%;
+    opacity: 0.25;
+    margin: 0;
+}
+
+.base-slider {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+select {
+    width: 100%;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.35rem;
+    outline: none;
+}
+
+input[type="text"] {
+    width: 100%;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.35rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input[type="checkbox"] {
+    accent-color: #00aaff;
+    transform: scale(1.1);
+}
+
+.toggle-group label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.value-display {
+    float: right;
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #00aaff;
+}
+
+.inline-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.inline-row select {
+    flex: 1;
+}
+
+.inline-row button {
+    width: auto;
+    margin-top: 0;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.8rem;
+}
+
+button {
+    width: 100%;
+    padding: 0.55rem;
+    background-color: #021324;
+    color: #00aaff;
+    border: 1px solid #00aaff;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 0.86rem;
+    margin-top: 0.7rem;
+    transition: background-color 0.2s, color 0.2s;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+button:hover {
+    background-color: #00aaff;
+    color: #021324;
+}
+
+.telemetry {
+    margin-top: 1rem;
+    background-color: rgba(3, 8, 15, 0.85);
+    padding: 0.7rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 0.82rem;
+    text-align: center;
+    color: #00aaff;
+}
+
+#telemetry {
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.lfo-active-block {
+    margin-top: 0.7rem;
+}
+
+.hidden-control {
+    display: none;
+}
+
+.lfo-active-title {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.45rem;
+}
+
+.lfo-active-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 1.2rem;
+}
+
+.lfo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid #00aaff;
+    padding: 0.2rem 0.35rem;
+    font-size: 0.76rem;
+    background-color: rgba(2, 19, 36, 0.85);
+}
+
+.lfo-chip-amount {
+    width: 70px;
+    height: 0.45rem;
+}
+
+.lfo-chip-amount-value {
+    min-width: 2.3rem;
+    text-align: right;
+    font-size: 0.72rem;
+}
+
+.env-chip-amount {
+    width: 70px;
+    height: 0.45rem;
+}
+
+.lfo-chip button {
+    border: 1px solid #00aaff;
+    background-color: transparent;
+    color: #00aaff;
+    border-radius: 0;
+    width: auto;
+    margin-top: 0;
+    padding: 0.05rem 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lfo-empty {
+    opacity: 0.75;
+}
+
+.sound-engine-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    background-color: rgba(7, 12, 22, 0.9);
+    padding: 1.25rem;
+    border-radius: 0;
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    width: 480px;
+    color: #00aaff;
+    transform: translateX(-50%) scale(0.5);
+    transform-origin: bottom center;
+}
+
+.sound-engine-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.sound-toggles {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 0.3rem;
+}
+
+.sound-toggles .control-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.mini-mix-slider {
+    width: 96px;
+}
+
+.ott-toggle label {
+    color: #66ccff;
+    letter-spacing: 0.04em;
+}
+
+.ott-toggle .value-display {
+    color: #66ccff;
+}
+
+/* ── Progressive Disclosure ──────────────────────────────────────────── */
+.ui-hidden { display: none !important; }
+
+.advanced-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: auto;
+    margin-top: 0;
+    padding: 0.55rem 1.2rem;
+    z-index: 100;
+    letter-spacing: 0.08em;
+    background-color: rgba(2, 19, 36, 0.92);
+    box-shadow: 0 0 12px rgba(0, 170, 255, 0.40);
+}
+
+/* ── HUD Default UI Container ────────────────────────────────────────── */
+.hud-default-ui {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.hud-logo {
+    overflow: hidden;
+    line-height: 0;
+}
+
+.hud-logo-pre {
+    margin: 0;
+    padding: 0;
+    font-family: 'Share Tech Mono', 'Consolas', monospace;
+    font-size: 3.5px;
+    line-height: 1.25;
+    white-space: pre;
+    color: rgba(0, 170, 255, 0.65);
+    letter-spacing: 0;
+    overflow: hidden;
+    max-width: 85vw;
+}
+
+/* ── HUD Toolbar (reset + telemetry) ─────────────────────────────────── */
+.hud-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hud-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+
+.hud-telemetry-display {
+    font-family: 'Share Tech Mono', 'Consolas', monospace;
+    font-size: 0.65rem;
+    color: rgba(0, 170, 255, 0.75);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    white-space: pre;
+}
+
+/* ── HUD Sound Engine Panel ──────────────────────────────────────────── */
+.hud-sound-engine {
+    padding: 0.6rem 0.85rem;
+    background-color: rgba(7, 12, 22, 0.92);
+    border: 1px solid #00aaff;
+    box-shadow: 0 0 14px rgba(0, 170, 255, 0.22);
+    font-family: 'Share Tech Mono', 'Consolas', monospace;
+    color: #00aaff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 240px;
+}
+
+.hud-header {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.1rem;
+}
+
+.hud-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.hud-toggles-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.inline-switch {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.hud-item--wide {
+    flex: 1;
+}
+
+.hud-item-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    opacity: 0.75;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.hud-divider {
+    width: 1px;
+    height: 22px;
+    background-color: rgba(0, 170, 255, 0.25);
+    flex-shrink: 0;
+}
+
+.hud-val {
+    font-size: 0.65rem;
+    min-width: 2.2rem;
+    text-align: right;
+    opacity: 0.85;
+}
+
+/* Squared physical-style toggle switch */
+.hud-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 20px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.hud-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.hud-toggle-track {
+    position: absolute;
+    inset: 0;
+    background-color: #021324;
+    border: 1px solid #00aaff;
+    transition: background-color 0.2s;
+}
+
+.hud-toggle input:checked ~ .hud-toggle-track {
+    background-color: rgba(0, 170, 255, 0.12);
+}
+
+.hud-toggle-thumb {
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 12px;
+    background-color: rgba(0, 170, 255, 0.45);
+    transition: left 0.2s, background-color 0.2s;
+}
+
+.hud-toggle input:checked ~ .hud-toggle-track .hud-toggle-thumb {
+    left: calc(100% - 20px);
+    background-color: #00aaff;
+}
+
+.hud-slider {
+    flex: 1;
+    height: 0.45rem;
+    cursor: pointer;
+    min-width: 80px;
+}

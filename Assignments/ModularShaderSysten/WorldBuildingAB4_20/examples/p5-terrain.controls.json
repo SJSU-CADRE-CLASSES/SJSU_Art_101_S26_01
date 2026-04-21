@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "controls": [
+    { "id": "speed",         "type": "range", "label": "Flight Speed",          "uniform": "uSpeed",                  "min": 0.0,  "max": 30.0, "step": 0.1,  "default": 10.0 },
+    { "id": "terrain",       "type": "range", "label": "Terrain Height",        "uniform": "uTerrainHeight",          "min": 0.0,  "max": 2.0,  "step": 0.01, "default": 1.0  },
+    { "id": "vaporwave",     "type": "range", "label": "Vaporwave Mix",         "uniform": "uVaporwaveMix",           "min": 0.0,  "max": 1.0,  "step": 0.01, "default": 0.0  },
+    { "id": "sun-y",         "type": "range", "label": "Sun Height",            "uniform": "uSunY",                   "min": -1.0, "max": 1.0,  "step": 0.01, "default": 0.15 },
+    { "id": "sun-stripe",    "type": "range", "label": "Sun Stripe Speed",      "uniform": "uSunStripeSpeed",         "min": 0.0,  "max": 20.0, "step": 0.1,  "default": 6.0  },
+    { "id": "grid-glow",     "type": "range", "label": "Grid Glow Threshold",   "uniform": "uGridGlow",               "min": 0.01, "max": 0.2,  "step": 0.01, "default": 0.05 },
+    { "id": "c-density",     "type": "range", "label": "Constellation Density", "uniform": "uConstellationDensity",   "min": 10.0, "max": 60.0, "step": 1.0,  "default": 40.0 },
+    { "id": "c-scale",       "type": "range", "label": "Constellation Scale",   "uniform": "uConstellationScale",     "min": 0.1,  "max": 5.0,  "step": 0.1,  "default": 5.0  },
+    { "id": "c-speed",       "type": "range", "label": "Star Movement Speed",   "uniform": "uConstellationSpeed",     "min": 0.0,  "max": 10.0, "step": 0.1,  "default": 0.1  },
+    { "id": "c-thick",       "type": "range", "label": "Connection Thickness",  "uniform": "uConstellationThickness", "min": 0.0,  "max": 5.0,  "step": 0.1,  "default": 1.0  },
+    { "id": "noise-control", "type": "range", "label": "Noise Control",         "uniform": "uNoiseControl",           "min": 0.0,  "max": 1.0,  "step": 0.01, "default": 0.65 }
+  ]
+}

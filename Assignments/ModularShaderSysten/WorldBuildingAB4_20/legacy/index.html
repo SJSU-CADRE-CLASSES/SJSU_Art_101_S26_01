@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oscilloscope User Interface (legacy)</title>
+    <link rel="stylesheet" href="../style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+  <div id="landing-overlay">
+    <div id="landing-app"></div>
+    <div class="landing-console">
+      <span class="log-message">&gt; click to enter cyberspace_</span>
+    </div>
+  </div>
+
+  <div class="scroll-container"></div>
+
+    <div id="p1-controls" class="controls-panel"></div>
+    <div id="p2-controls" class="controls-panel"></div>
+    <div id="p3-controls" class="controls-panel"></div>
+    <div id="p4-controls" class="controls-panel"></div>
+    <div id="p5-controls" class="controls-panel"></div>
+    <div id="p6-controls" class="controls-panel"></div>
+
+    <div id="project-next"></div>
+    <div id="app"></div>
+    <script type="module" src="../src/main.js"></script>
+  </body>
+</html>

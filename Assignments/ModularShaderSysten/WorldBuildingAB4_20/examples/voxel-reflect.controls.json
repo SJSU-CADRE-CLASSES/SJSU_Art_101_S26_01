@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "controls": [
+    {
+      "id": "sweep-speed",
+      "type": "range",
+      "label": "Sweep Speed",
+      "uniform": "uSweepSpeed",
+      "min": 0.0,
+      "max": 0.3,
+      "step": 0.001,
+      "default": 0.05
+    },
+    {
+      "id": "axis-x",
+      "type": "range",
+      "label": "Axis Phase X",
+      "uniform": "uAxisX",
+      "min": 0.0,
+      "max": 6.28,
+      "step": 0.01,
+      "default": 3.0
+    },
+    {
+      "id": "axis-y",
+      "type": "range",
+      "label": "Axis Phase Y",
+      "uniform": "uAxisY",
+      "min": 0.0,
+      "max": 6.28,
+      "step": 0.01,
+      "default": 2.0
+    },
+    {
+      "id": "axis-z",
+      "type": "range",
+      "label": "Axis Phase Z",
+      "uniform": "uAxisZ",
+      "min": 0.0,
+      "max": 6.28,
+      "step": 0.01,
+      "default": 0.0
+    },
+    {
+      "id": "color-speed",
+      "type": "range",
+      "label": "Color Cycle Speed",
+      "uniform": "uColorSpeed",
+      "min": 0.0,
+      "max": 5.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "z-freq",
+      "type": "range",
+      "label": "Color Z-Frequency",
+      "uniform": "uZFreq",
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.01,
+      "default": 0.5
+    },
+    {
+      "id": "phase-g",
+      "type": "range",
+      "label": "Green Phase Offset",
+      "uniform": "uColorPhaseG",
+      "min": 0.0,
+      "max": 3.14,
+      "step": 0.01,
+      "default": 0.2
+    },
+    {
+      "id": "phase-b",
+      "type": "range",
+      "label": "Blue Phase Offset",
+      "uniform": "uColorPhaseB",
+      "min": 0.0,
+      "max": 3.14,
+      "step": 0.01,
+      "default": 0.4
+    },
+    {
+      "id": "voxel-density",
+      "type": "range",
+      "label": "Voxel Density",
+      "uniform": "uVoxelDensity",
+      "min": 4.0,
+      "max": 48.0,
+      "step": 1.0,
+      "default": 24.0
+    },
+    {
+      "id": "cyl-radius",
+      "type": "range",
+      "label": "Structure Thickness",
+      "uniform": "uCylRadius",
+      "min": 0.05,
+      "max": 0.8,
+      "step": 0.01,
+      "default": 0.2
+    },
+    {
+      "id": "exposure",
+      "type": "range",
+      "label": "Exposure",
+      "uniform": "uExposure",
+      "min": 100.0,
+      "max": 8000.0,
+      "step": 50.0,
+      "default": 2000.0
+    }
+  ]
+}
