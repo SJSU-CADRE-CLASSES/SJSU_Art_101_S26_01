@@ -1,0 +1,16 @@
+{
+  "name": "thomas-attractor-ws",
+  "version": "1.0.0",
+  "description": "Shared modular shader system based on Thomas cyclically symmetric attractor with WebSockets and audio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
