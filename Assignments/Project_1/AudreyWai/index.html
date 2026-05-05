@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive map</title>
+    <title>TATTOO MAP</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <style>
         :root {
@@ -52,6 +52,35 @@
             font-size: 0.95rem;
             color: var(--ink-soft);
             line-height: 1.5;
+        }
+
+        .site-nav {
+            margin: 0.85rem 0 0;
+            font-size: 0.88rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .site-nav a {
+            color: var(--ink);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-color: rgba(74, 92, 58, 0.35);
+        }
+
+        .site-nav a:hover {
+            text-decoration-color: var(--ink-soft);
+        }
+
+        .site-nav a[aria-current="page"] {
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .site-nav span {
+            color: var(--ink-soft);
+            margin: 0 0.35rem;
         }
 
         .map-stage {
@@ -122,6 +151,16 @@
             margin-bottom: 0 !important;
         }
 
+        .pastel-pin-marker {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .pastel-pin-marker svg {
+            display: block;
+            filter: drop-shadow(0 1px 2px rgba(74, 92, 58, 0.22));
+        }
+
         .leaflet-container {
             font-family: Georgia, "Times New Roman", serif;
         }
@@ -154,12 +193,122 @@
             color: var(--ink-soft);
             letter-spacing: 0.02em;
         }
+
+        .map-photo-trigger {
+            margin-top: 0.55rem;
+            padding: 0.35rem 0.65rem;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 0.78rem;
+            color: var(--paper);
+            background: var(--ink);
+            border: 1px solid rgba(74, 92, 58, 0.35);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .map-photo-trigger:hover {
+            opacity: 0.92;
+        }
+
+        .leaflet-popup-content .map-photo-trigger {
+            margin-top: 0.65rem;
+        }
+
+        .photo-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 11000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+
+        .photo-modal[hidden] {
+            display: none !important;
+        }
+
+        .photo-modal__backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(45, 52, 38, 0.45);
+            cursor: pointer;
+        }
+
+        .photo-modal__panel {
+            position: relative;
+            z-index: 1;
+            max-width: min(92vw, 520px);
+            max-height: min(88vh, 720px);
+            overflow: auto;
+            padding: 1rem 1.15rem 1.15rem;
+            background: linear-gradient(165deg, #faf8f2 0%, #ebe6d8 100%);
+            border-radius: 12px;
+            box-shadow:
+                0 0 0 1px rgba(74, 92, 58, 0.18),
+                0 18px 48px rgba(74, 92, 58, 0.2);
+        }
+
+        .photo-modal__close {
+            position: absolute;
+            top: 0.45rem;
+            right: 0.45rem;
+            width: 2rem;
+            height: 2rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(74, 92, 58, 0.12);
+            color: var(--ink);
+            font-size: 1.35rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .photo-modal__close:hover {
+            background: rgba(74, 92, 58, 0.22);
+        }
+
+        .photo-modal__title {
+            margin: 0 2rem 0.75rem 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--ink);
+            padding-right: 0.25rem;
+        }
+
+        .photo-modal__gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .photo-modal__gallery figure {
+            margin: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(74, 92, 58, 0.2);
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        .photo-modal__gallery img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>World map</h1>
-        <p>Basemap tiles show only land and water, with light country outlines. Nine tattoo studios in California, Padua (Italy), and Paris (France). Hover a pin for a short name; click for the full street address.</p>
+        <nav class="site-nav" aria-label="Site pages">
+            <a href="index.html" aria-current="page">Map</a>
+            <span aria-hidden="true">·</span>
+            <a href="timeline.html">Timeline</a>
+            <span aria-hidden="true">·</span>
+            <a href="gallery.html">Gallery</a>
+        </nav>
+        <h1>AUDREY'S TATTOO MAP</h1>
+        <p> 12 tattoos, 9 artists, and counting...</p>
+        <p> See where I've been and what I got! </p>
     </header>
 
     <div class="map-stage">
@@ -170,9 +319,18 @@
                 </div>
             </figure>
         </div>
-        <p class="map-hint">Drag to move the map; + and − to zoom. Hover a pin for the studio and city; click for the address.</p>
+        <!-- <p class="map-hint">Drag to move the map; + and − to zoom. Hover a pin for the studio and city; click for the address. If a pin has photos, use <strong>Photos</strong> for a gallery pop-up.</p>
         <p class="map-attribution-note">Tiles © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors, © <a href="https://carto.com/attributions" rel="noopener noreferrer">CARTO</a>. Border outlines from <a href="https://www.naturalearthdata.com/" rel="noopener noreferrer">Natural Earth</a>. No API key.</p>
-        <figcaption>Elliptical frame around an interactive map.</figcaption>
+        <figcaption>Elliptical frame around an interactive map.</figcaption> -->
+    </div>
+
+    <div id="photo-modal" class="photo-modal" hidden aria-hidden="true">
+        <div class="photo-modal__backdrop" tabindex="-1" aria-label="Close gallery"></div>
+        <div class="photo-modal__panel" role="dialog" aria-modal="true" aria-labelledby="photo-modal-title">
+            <button type="button" class="photo-modal__close" aria-label="Close">&times;</button>
+            <h2 id="photo-modal-title" class="photo-modal__title"></h2>
+            <div class="photo-modal__gallery"></div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -187,7 +345,8 @@
                     country: "USA",
                     lat: 37.2661585,
                     lng: -121.9417284,
-                    lines: ["3155 S Bascom Ave E", "Campbell, CA 95008"]
+                    lines: ["3155 S Bascom Ave E", "Campbell, CA 95008"],
+                    images: ["black-lantern.jpg", "black-lantern2.jpg"]
                 },
                 {
                     name: "Dark Water Tattoo",
@@ -196,7 +355,8 @@
                     country: "USA",
                     lat: 37.8685394,
                     lng: -122.2916008,
-                    lines: ["2035 San Pablo Ave", "Berkeley, CA 94702"]
+                    lines: ["2035 San Pablo Ave", "Berkeley, CA 94702"],
+                    images: ["dark-water.jpg"]
                 },
                 {
                     name: "Homeroom Tattoo",
@@ -205,7 +365,8 @@
                     country: "USA",
                     lat: 37.2279981,
                     lng: -121.7752443,
-                    lines: ["7034 Santa Teresa Blvd", "San Jose, CA 95139"]
+                    lines: ["7034 Santa Teresa Blvd", "San Jose, CA 95139"],
+                    images: ["homeroom.jpg", "homeroom-sketch.jpg"]
                 },
                 {
                     name: "Parallax",
@@ -214,7 +375,8 @@
                     country: "USA",
                     lat: 37.4062989,
                     lng: -121.8967641,
-                    lines: ["1819 Houret Court", "Milpitas, CA 95035"]
+                    lines: ["1819 Houret Court", "Milpitas, CA 95035"],
+                    images: ["parallax.jpg", "parallax-sketch.jpg"]
                 },
                 {
                     name: "Blu Estate Studio",
@@ -222,7 +384,8 @@
                     country: "Italy",
                     lat: 45.419564,
                     lng: 11.876524,
-                    lines: ["Via Annibale da Bassano, 3", "35135 Padua, Italy"]
+                    lines: ["Via Annibale da Bassano, 3", "35135 Padua, Italy"],
+                    images: ["blu-estate.jpg"]
                 },
                 {
                     name: "Black Serum Tattoo",
@@ -231,15 +394,21 @@
                     country: "USA",
                     lat: 37.7678066,
                     lng: -122.422347,
-                    lines: ["310 Valencia St", "San Francisco, CA 94103"]
+                    lines: ["310 Valencia St", "San Francisco, CA 94103"],
+                    images: [
+                        "black-serum-miffy.jpg",
+                        "black-serum-spiderweb.jpg",
+                        "black-serum-cherry-sketch.jpg"
+                    ]
                 },
                 {
                     name: "American Body Art",
                     city: "Paris",
                     country: "France",
-                    lat: 48.8603867,
-                    lng: 2.3478347,
-                    lines: ["7 rue des Innocents", "75001 Paris, France"]
+                    lat: 48.8603722,
+                    lng: 2.3477272,
+                    lines: ["7 rue des Innocents", "75001 Paris, France"],
+                    images: ["american-body-art.jpg", "american-body-art-sketch.jpg"]
                 },
                 {
                     name: "Osmose",
@@ -247,7 +416,8 @@
                     country: "France",
                     lat: 48.8890412,
                     lng: 2.3235598,
-                    lines: ["3 rue Dautancourt", "Paris, France"]
+                    lines: ["3 rue Dautancourt", "Paris, France"],
+                    images: ["osmose.jpg", "osmose-sketch.jpg"]
                 },
                 {
                     name: "Sticky Fingers",
@@ -256,7 +426,8 @@
                     country: "USA",
                     lat: 37.7754727,
                     lng: -122.4581811,
-                    lines: ["792 Arguello Blvd", "San Francisco, CA 94118"]
+                    lines: ["792 Arguello Blvd", "San Francisco, CA 94118"],
+                    images: ["sticky-fingers.jpg", "sticky-fingers-sketch.jpg", "sticky-fingers-sketch2.jpg"]
                 }
             ];
 
@@ -278,10 +449,16 @@
                     .replace(/"/g, "&quot;");
             }
 
-            function placePopupHtml(p) {
+            function placePopupHtml(p, placeIndex) {
                 var body = p.lines.map(function (line) {
                     return escapeHtml(line);
                 }).join("<br>");
+                var imgs = p.images && p.images.length;
+                var photoBtn = imgs
+                    ? '<br><button type="button" class="map-photo-trigger" data-place-index="' +
+                      placeIndex +
+                      '">Photos</button>'
+                    : "";
                 return (
                     "<strong>" +
                     escapeHtml(p.name) +
@@ -289,9 +466,69 @@
                     body +
                     "<br><small style='opacity:.85'>" +
                     escapeHtml(placeLabel(p)) +
-                    "</small>"
+                    "</small>" +
+                    photoBtn
                 );
             }
+
+            function openPhotoModal(place) {
+                var modal = document.getElementById("photo-modal");
+                var titleEl = modal.querySelector(".photo-modal__title");
+                var gallery = modal.querySelector(".photo-modal__gallery");
+                titleEl.textContent = place.name;
+                gallery.innerHTML = (place.images || [])
+                    .map(function (src) {
+                        return (
+                            "<figure><img src=\"" +
+                            escapeHtml(src) +
+                            "\" alt=\"" +
+                            escapeHtml(place.name) +
+                            "\" loading=\"lazy\"></figure>"
+                        );
+                    })
+                    .join("");
+                modal.hidden = false;
+                modal.setAttribute("aria-hidden", "false");
+            }
+
+            function closePhotoModal() {
+                var modal = document.getElementById("photo-modal");
+                modal.hidden = true;
+                modal.setAttribute("aria-hidden", "true");
+            }
+
+            document.addEventListener("click", function (ev) {
+                var btn = ev.target.closest(".map-photo-trigger");
+                if (!btn) {
+                    return;
+                }
+                ev.preventDefault();
+                ev.stopPropagation();
+                var i = parseInt(btn.getAttribute("data-place-index"), 10);
+                if (!places[i] || !places[i].images || !places[i].images.length) {
+                    return;
+                }
+                openPhotoModal(places[i]);
+            });
+
+            document.getElementById("photo-modal").addEventListener("click", function (ev) {
+                if (
+                    ev.target.classList.contains("photo-modal__backdrop") ||
+                    ev.target.closest(".photo-modal__close")
+                ) {
+                    closePhotoModal();
+                }
+            });
+
+            document.addEventListener("keydown", function (ev) {
+                if (ev.key !== "Escape") {
+                    return;
+                }
+                var modalEl = document.getElementById("photo-modal");
+                if (!modalEl.hidden) {
+                    closePhotoModal();
+                }
+            });
 
             var NE_COUNTRIES =
                 "https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_110m_admin_0_countries.geojson";
@@ -347,24 +584,48 @@
                 })
                 .catch(function () {});
 
-            var pinIcon = L.icon({
-                iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-                iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-                iconSize: [18, 29],
-                iconAnchor: [9, 29],
-                popupAnchor: [0, -26],
-                tooltipAnchor: [0, -24]
-            });
+            var pastelPinPalette = [
+                { fill: "#8fd4b8", stroke: "#3d8f6a" },
+                { fill: "#ffb3d4", stroke: "#c24d7a" },
+                { fill: "#ffd699", stroke: "#c99430" },
+                { fill: "#a8c4f5", stroke: "#4a6ec4" },
+                { fill: "#d4be98", stroke: "#8a6638" },
+                { fill: "#c4b3ea", stroke: "#6a4aa6" },
+                { fill: "#ffc0a8", stroke: "#c86048" },
+                { fill: "#9ee8d8", stroke: "#2a9f88" },
+                { fill: "#f0b8d8", stroke: "#b04878" }
+            ];
+
+            function pastelPinIcon(fill, stroke) {
+                var svg =
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="34" viewBox="0 0 22 34" aria-hidden="true">' +
+                    '<path fill="' +
+                    fill +
+                    '" stroke="' +
+                    stroke +
+                    '" stroke-width="1.35" stroke-linejoin="round" ' +
+                    'd="M11 1.75c-4.05 0-7.35 3.15-7.35 7.03 0 5.28 7.35 13.72 7.35 13.72S18.35 14.06 18.35 8.78c0-3.88-3.3-7.03-7.35-7.03z"/>' +
+                    '<circle cx="11" cy="9.25" r="3.25" fill="rgba(255,255,255,.88)"/></svg>';
+                return L.divIcon({
+                    className: "pastel-pin-marker",
+                    html: svg,
+                    iconSize: [22, 34],
+                    iconAnchor: [11, 34],
+                    popupAnchor: [0, -30],
+                    tooltipAnchor: [0, -32]
+                });
+            }
 
             var tipOffsetY = -6;
 
             var bounds = L.latLngBounds([]);
-            places.forEach(function (p) {
+            places.forEach(function (p, placeIndex) {
                 var latlng = [p.lat, p.lng];
                 bounds.extend(latlng);
                 var label = placeLabel(p);
-                L.marker(latlng, { icon: pinIcon })
-                    .bindPopup(placePopupHtml(p))
+                var hue = pastelPinPalette[placeIndex % pastelPinPalette.length];
+                L.marker(latlng, { icon: pastelPinIcon(hue.fill, hue.stroke) })
+                    .bindPopup(placePopupHtml(p, placeIndex))
                     .bindTooltip(label, {
                         direction: "top",
                         sticky: true,

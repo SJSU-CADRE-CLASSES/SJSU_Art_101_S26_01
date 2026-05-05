@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline — Audrey's tattoo map</title>
+    <style>
+        :root {
+            --paper: #f4f1e6;
+            --ink: #4a5c3a;
+            --ink-soft: #6b7d5a;
+            --shadow: rgba(74, 92, 58, 0.12);
+            --line: rgba(74, 92, 58, 0.22);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image:
+                radial-gradient(ellipse 120% 80% at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 55%),
+                linear-gradient(180deg, #ebe6d8 0%, var(--paper) 35%, #e8e4d6 100%);
+            padding: 2rem 50px 3.5rem;
+        }
+
+        header {
+            text-align: center;
+            max-width: 40rem;
+            margin: 0 auto 2.25rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.35rem, 4vw, 1.85rem);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin: 0 0 0.5rem;
+            color: var(--ink);
+        }
+
+        header > p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+        }
+
+        .site-nav {
+            margin: 0 0 1rem;
+            font-size: 0.88rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .site-nav a {
+            color: var(--ink);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-color: rgba(74, 92, 58, 0.35);
+        }
+
+        .site-nav a:hover {
+            text-decoration-color: var(--ink-soft);
+        }
+
+        .site-nav a[aria-current="page"] {
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .site-nav span {
+            color: var(--ink-soft);
+            margin: 0 0.35rem;
+        }
+
+        .timeline-wrap {
+            max-width: 38rem;
+            margin: 0 auto;
+        }
+
+        .timeline-intro {
+            margin: 0 0 1.75rem;
+            padding: 1rem 1.15rem;
+            background: rgba(255, 255, 255, 0.42);
+            border: 1px dashed rgba(74, 92, 58, 0.28);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+        }
+
+        .timeline {
+            list-style: none;
+            margin: 0;
+            padding: 0 0 0 1.25rem;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, var(--line), rgba(74, 92, 58, 0.08));
+        }
+
+        .timeline li {
+            position: relative;
+            padding: 0 0 1.65rem 1.65rem;
+            margin: 0;
+        }
+
+        .timeline li:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline li::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--marker, var(--ink-soft));
+            border: 3px solid var(--paper);
+            box-shadow: 0 0 0 1px rgba(74, 92, 58, 0.18);
+        }
+
+        .timeline-card {
+            padding: 0.85rem 1rem 1rem;
+            background: linear-gradient(155deg, #faf8f2 0%, #f0ebe3 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(74, 92, 58, 0.14);
+            box-shadow: 0 8px 28px var(--shadow);
+        }
+
+        .timeline-card .when {
+            margin: 0 0 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        .timeline-card .when time {
+            color: var(--ink);
+        }
+
+        .timeline-card h2 {
+            margin: 0 0 0.25rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+        }
+
+        .timeline-card .where {
+            margin: 0;
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+            font-style: italic;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.78rem;
+            font-style: italic;
+            color: var(--ink-soft);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="site-nav" aria-label="Site pages">
+            <a href="index.html">Map</a>
+            <span aria-hidden="true">·</span>
+            <a href="timeline.html" aria-current="page">Timeline</a>
+            <span aria-hidden="true">·</span>
+            <a href="gallery.html">Gallery</a>
+        </nav>
+        <h1>AUDREY'S TIMELINE OF EVENTS</h1>
+        <p> Follow my tattoo progression in chronological order.</p>
+    </header>
+
+    <div class="timeline-wrap">
+        <!-- <p class="timeline-intro">
+            Black Serum splits across February 2024 (spiderweb) and December 2024 (Miffy, cherry, and star). Paris shops share January 2026.
+        </p> -->
+
+        <ol class="timeline">
+            <li style="--marker: #8fd4b8">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2022-08">August 2022</time></p>
+                    <h2>Black Lantern Tattoo</h2>
+                    <p class="where">Campbell, California</p>
+                </div>
+            </li>
+            <li style="--marker: #c4b3ea">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2024-02">February 2024</time></p>
+                    <h2>Black Serum Tattoo — spiderweb</h2>
+                    <p class="where">San Francisco, California · Valencia Street</p>
+                </div>
+            </li>
+            <li style="--marker: #a8c4f5">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2024-08">August 2024</time></p>
+                    <h2>Parallax</h2>
+                    <p class="where">Milpitas, California</p>
+                </div>
+            </li>
+            <li style="--marker: #ffd699">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2024-11">November 2024</time></p>
+                    <h2>Homeroom Tattoo</h2>
+                    <p class="where">San Jose, California · Santa Teresa Blvd</p>
+                </div>
+            </li>
+            <li style="--marker: #c4b3ea">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2024-12">December 2024</time></p>
+                    <h2>Black Serum Tattoo — Miffy, star &amp; cherry</h2>
+                    <p class="where">San Francisco, California · Valencia Street</p>
+                </div>
+            </li>
+            <li style="--marker: #ffb3d4">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2025-05">May 2025</time></p>
+                    <h2>Dark Water Tattoo</h2>
+                    <p class="where">Berkeley, California</p>
+                </div>
+            </li>
+            <li style="--marker: #d4be98">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2025-06">June 2025</time></p>
+                    <h2>Blu Estate Studio</h2>
+                    <p class="where">Padua, Italy</p>
+                </div>
+            </li>
+            <li style="--marker: #ffc0a8">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2026-01">January 2026</time></p>
+                    <h2>American Body Art</h2>
+                    <p class="where">Paris, France · rue des Innocents</p>
+                </div>
+            </li>
+            <li style="--marker: #9ee8d8">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2026-01">January 2026</time></p>
+                    <h2>Osmose</h2>
+                    <p class="where">Paris, France · rue Dautancourt</p>
+                </div>
+            </li>
+            <li style="--marker: #f0b8d8">
+                <div class="timeline-card">
+                    <p class="when"><time datetime="2026-03">March 2026</time></p>
+                    <h2>Sticky Fingers</h2>
+                    <p class="where">San Francisco, California · Arguello Blvd</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer>Gallery page uses the same chronological order · pin colors unchanged</footer>
+</body>
+</html>

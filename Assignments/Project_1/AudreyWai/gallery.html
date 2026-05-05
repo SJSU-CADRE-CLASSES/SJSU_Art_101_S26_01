@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery — Audrey's tattoo map</title>
+    <style>
+        :root {
+            --paper: #f4f1e6;
+            --ink: #4a5c3a;
+            --ink-soft: #6b7d5a;
+            --shadow: rgba(74, 92, 58, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image:
+                radial-gradient(ellipse 120% 80% at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 55%),
+                linear-gradient(180deg, #ebe6d8 0%, var(--paper) 35%, #e8e4d6 100%);
+            padding: 2rem clamp(24px, 5vw, 50px) 3.5rem;
+        }
+
+        header {
+            text-align: center;
+            max-width: 42rem;
+            margin: 0 auto 2rem;
+        }
+
+        header h1 {
+            font-size: clamp(1.35rem, 4vw, 1.85rem);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin: 0 0 0.5rem;
+            color: var(--ink);
+        }
+
+        header > p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+        }
+
+        .site-nav {
+            margin: 0 0 1rem;
+            font-size: 0.88rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .site-nav a {
+            color: var(--ink);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-color: rgba(74, 92, 58, 0.35);
+        }
+
+        .site-nav a:hover {
+            text-decoration-color: var(--ink-soft);
+        }
+
+        .site-nav a[aria-current="page"] {
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .site-nav span {
+            color: var(--ink-soft);
+            margin: 0 0.35rem;
+        }
+
+        .gallery-wrap {
+            max-width: 52rem;
+            margin: 0 auto;
+        }
+
+        .gallery-intro {
+            margin: 0 0 2rem;
+            padding: 1rem 1.15rem;
+            background: rgba(255, 255, 255, 0.42);
+            border: 1px dashed rgba(74, 92, 58, 0.28);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+        }
+
+        .era-block {
+            margin-bottom: 2.75rem;
+        }
+
+        .era-block:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .era-block .studio-section + .studio-section {
+            margin-top: 2rem;
+            padding-top: 1.65rem;
+            border-top: 1px solid rgba(74, 92, 58, 0.12);
+        }
+
+        .era-heading {
+            margin: 0 0 1.1rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            padding-bottom: 0.45rem;
+            border-bottom: 2px solid rgba(74, 92, 58, 0.16);
+        }
+
+        .era-heading time {
+            color: var(--ink);
+        }
+
+        .studio-section h3 {
+            margin: 0 0 0.15rem;
+            font-size: 1.12rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            padding-left: 0.65rem;
+            border-left: 4px solid var(--accent, var(--ink-soft));
+        }
+
+        .studio-section .where {
+            margin: 0 0 1.1rem;
+            padding-left: calc(0.65rem + 4px);
+            font-size: 0.88rem;
+            color: var(--ink-soft);
+            font-style: italic;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+            gap: 1rem 1.15rem;
+            align-items: start;
+        }
+
+        .photo-grid--stack {
+            grid-template-columns: 1fr;
+            max-width: min(100%, 560px);
+        }
+
+        .photo-grid figure {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .photo-grid img {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 6px;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.78rem;
+            font-style: italic;
+            color: var(--ink-soft);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="site-nav" aria-label="Site pages">
+            <a href="index.html">Map</a>
+            <span aria-hidden="true">·</span>
+            <a href="timeline.html">Timeline</a>
+            <span aria-hidden="true">·</span>
+            <a href="gallery.html" aria-current="page">Gallery</a>
+        </nav>
+        <h1>AUDREY'S TATTOO GALLERY</h1>
+        <p>Shown in chronological order</p>
+    </header>
+
+    <!-- <main class="gallery-wrap">
+        <p class="gallery-intro">
+            Black Serum is split by visit: February 2024 (spiderweb) and December 2024 (Miffy and cherry; star piece isn’t a separate file here). January 2026 lists both Paris shops.
+        </p> -->
+
+        <section class="era-block" aria-labelledby="era-2022-08">
+            <h2 id="era-2022-08" class="era-heading"><time datetime="2022-08">August 2022</time></h2>
+            <section class="studio-section" style="--accent: #8fd4b8">
+                <h3>Black Lantern Tattoo</h3>
+                <p class="where">Campbell, California</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="black-lantern.jpg" alt="Black Lantern Tattoo piece 1" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="black-lantern2.jpg" alt="Black Lantern Tattoo piece 2" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2024-02">
+            <h2 id="era-2024-02" class="era-heading"><time datetime="2024-02">February 2024</time></h2>
+            <section class="studio-section" style="--accent: #c4b3ea">
+                <h3>Black Serum Tattoo · spiderweb</h3>
+                <p class="where">San Francisco, California</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="black-serum-spiderweb.jpg" alt="Black Serum — spiderweb" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2024-08">
+            <h2 id="era-2024-08" class="era-heading"><time datetime="2024-08">August 2024</time></h2>
+            <section class="studio-section" style="--accent: #a8c4f5">
+                <h3>Parallax</h3>
+                <p class="where">Milpitas, California</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="parallax.jpg" alt="Parallax tattoo" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="parallax-sketch.jpg" alt="Parallax sketch" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2024-11">
+            <h2 id="era-2024-11" class="era-heading"><time datetime="2024-11">November 2024</time></h2>
+            <section class="studio-section" style="--accent: #ffd699">
+                <h3>Homeroom Tattoo</h3>
+                <p class="where">San Jose, California</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="homeroom.jpg" alt="Homeroom Tattoo healed" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="homeroom-sketch.jpg" alt="Homeroom Tattoo sketch" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2024-12">
+            <h2 id="era-2024-12" class="era-heading"><time datetime="2024-12">December 2024</time></h2>
+            <section class="studio-section" style="--accent: #c4b3ea">
+                <h3>Black Serum Tattoo · Miffy &amp; cherry</h3>
+                <p class="where">San Francisco, California · star piece from this session</p>
+                <div class="photo-grid photo-grid--stack">
+                    <figure>
+                        <img src="black-serum-miffy.jpg" alt="Black Serum — Miffy piece" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="black-serum-cherry-sketch.jpg" alt="Black Serum — cherry sketch" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2025-05">
+            <h2 id="era-2025-05" class="era-heading"><time datetime="2025-05">May 2025</time></h2>
+            <section class="studio-section" style="--accent: #ffb3d4">
+                <h3>Dark Water Tattoo</h3>
+                <p class="where">Berkeley, California</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="dark-water.jpg" alt="Dark Water Tattoo" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2025-06">
+            <h2 id="era-2025-06" class="era-heading"><time datetime="2025-06">June 2025</time></h2>
+            <section class="studio-section" style="--accent: #d4be98">
+                <h3>Blu Estate Studio</h3>
+                <p class="where">Padua, Italy</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="blu-estate.jpg" alt="Blu Estate Studio" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2026-01">
+            <h2 id="era-2026-01" class="era-heading"><time datetime="2026-01">January 2026</time></h2>
+            <section class="studio-section" style="--accent: #ffc0a8">
+                <h3>American Body Art</h3>
+                <p class="where">Paris, France</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="american-body-art.jpg" alt="American Body Art" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="american-body-art-sketch.jpg" alt="American Body Art sketch" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+            <section class="studio-section" style="--accent: #9ee8d8">
+                <h3>Osmose</h3>
+                <p class="where">Paris, France</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="osmose.jpg" alt="Osmose tattoo" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="osmose-sketch.jpg" alt="Osmose sketch" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+
+        <section class="era-block" aria-labelledby="era-2026-03">
+            <h2 id="era-2026-03" class="era-heading"><time datetime="2026-03">March 2026</time></h2>
+            <section class="studio-section" style="--accent: #f0b8d8">
+                <h3>Sticky Fingers</h3>
+                <p class="where">San Francisco, California</p>
+                <div class="photo-grid">
+                    <figure>
+                        <img src="sticky-fingers.jpg" alt="Sticky Fingers tattoo" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="sticky-fingers-sketch.jpg" alt="Sticky Fingers sketch" loading="lazy">
+                    </figure>
+                    <figure>
+                        <img src="sticky-fingers-sketch2.jpg" alt="Sticky Fingers sketch 2" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+        </section>
+    </main>
+</body>
+</html>
