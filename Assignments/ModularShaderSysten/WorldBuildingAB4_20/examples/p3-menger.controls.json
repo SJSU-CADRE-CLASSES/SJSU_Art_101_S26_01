@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "controls": [
+    { "id": "iterations",    "type": "range", "label": "Iterations",    "uniform": "uIterations",   "min": 0.0, "max": 5.0,  "step": 1.0,  "default": 3.0  },
+    { "id": "fractal-scale", "type": "range", "label": "Cross Shape",   "uniform": "uFractalScale", "min": 1.0, "max": 5.0,  "step": 0.1,  "default": 3.0  },
+    { "id": "glow",          "type": "range", "label": "Core Glow",     "uniform": "uGlowIntensity","min": 0.0, "max": 10.0, "step": 0.1,  "default": 2.5  },
+    { "id": "decay",         "type": "range", "label": "Radial Decay",  "uniform": "uDecay",        "min": 0.5, "max": 1.0,  "step": 0.01, "default": 0.9  },
+    { "id": "density",       "type": "range", "label": "Radial Density","uniform": "uDensity",      "min": 0.0, "max": 1.0,  "step": 0.01, "default": 0.25 },
+    { "id": "weight",        "type": "range", "label": "Radial Weight", "uniform": "uWeight",       "min": 0.0, "max": 1.0,  "step": 0.01, "default": 0.12 }
+  ]
+}

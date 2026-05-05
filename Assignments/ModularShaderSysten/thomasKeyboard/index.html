@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>THOMAS — Shared Chaos Instrument</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400;700&family=Bebas+Neue&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #03030a;
+  --fg: #ddd8cc;
+  --accent: #00ffe0;
+  --accent2: #ff3cac;
+  --dim: rgba(221,216,204,0.15);
+  --mono: 'Azeret Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+}
+
+html, body { width:100%; height:100%; background:var(--bg); overflow:hidden; cursor:none; }
+
+#glcanvas {
+  position:fixed; inset:0; width:100%; height:100%;
+  display:block;
+}
+
+#thomasCanvas {
+  position:fixed; inset:0; width:100%; height:100%;
+  display:block;
+  pointer-events:none;
+  mix-blend-mode: screen;
+  z-index: 5;
+}
+
+
+
+
+#fxCanvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 8;
+  mix-blend-mode: screen;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position:fixed; pointer-events:none; z-index:9999;
+  width:20px; height:20px;
+  transform:translate(-50%,-50%);
+}
+#cursor::before, #cursor::after {
+  content:''; position:absolute; inset:0;
+  border:1px solid var(--accent);
+  border-radius:50%;
+  transition:transform 0.15s, opacity 0.15s;
+}
+#cursor::after {
+  transform:scale(0.3);
+  background:var(--accent);
+  opacity:0.6;
+}
+body.clicking #cursor::before { transform:scale(1.8); opacity:0.3; }
+body.clicking #cursor::after  { transform:scale(0.6); }
+
+/* ── HEADER ── */
+#header {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:16px 28px 40px;
+  background:linear-gradient(to bottom, rgba(3,3,10,0.97) 40%, transparent);
+  display:flex; align-items:flex-start; justify-content:space-between;
+  pointer-events:none;
+}
+#header h1 {
+  font-family:var(--display);
+  font-size:clamp(2.2rem,5vw,3.8rem);
+  letter-spacing:0.12em;
+  color:var(--accent);
+  line-height:1;
+  text-shadow: 0 0 40px rgba(0,255,224,0.4);
+}
+#header .sub {
+  font-family:var(--mono);
+  font-size:0.58rem;
+  letter-spacing:0.22em;
+  color:var(--dim);
+  margin-top:5px;
+  text-transform:uppercase;
+}
+#userinfo {
+  text-align:right;
+  font-family:var(--mono);
+  font-size:0.6rem;
+  letter-spacing:0.12em;
+  color:var(--dim);
+  line-height:1.9;
+}
+#userinfo .big { font-size:1.6rem; font-family:var(--display); color:var(--accent); line-height:1; }
+
+/* ── CONCEPT TEXT ── */
+#concept {
+  position:fixed; left:28px; top:50%;
+  transform:translateY(-50%);
+  max-width:170px;
+  font-family:var(--mono);
+  font-size:0.53rem;
+  line-height:1.85;
+  letter-spacing:0.07em;
+  color:rgba(221,216,204,0.18);
+  pointer-events:none; z-index:100;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  transform:translateY(-50%) rotate(180deg);
+}
+
+/* ── BOTTOM PANEL ── */
+#panel {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  padding:0 28px 22px;
+  background:linear-gradient(to top, rgba(3,3,10,0.97) 55%, transparent);
+}
+
+/* Piano keyboard — scrollable, 3 octaves */
+#keyboard-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 14px;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,255,224,0.2) transparent;
+}
+#keyboard-scroll::-webkit-scrollbar { height: 3px; }
+#keyboard-scroll::-webkit-scrollbar-thumb { background: rgba(0,255,224,0.25); border-radius: 2px; }
+#keyboard-wrap {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  height: 110px;
+  padding: 0 16px;
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+  gap: 0;
+  touch-action: pan-x;
+}
+.key {
+  border-radius: 0 0 5px 5px;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+  flex-shrink: 0;
+}
+.key.white {
+  width: 38px; height: 104px;
+  background: rgba(221,216,204,0.07);
+  border: 1px solid rgba(221,216,204,0.14);
+  border-top: none;
+  margin: 0 1px;
+  transition: background 0.05s;
+}
+.key.black {
+  width: 24px; height: 64px;
+  background: rgba(8,8,18,0.96);
+  border: 1px solid rgba(0,255,224,0.18);
+  border-top: none;
+  margin: 0 -12px;
+  z-index: 2;
+  transition: background 0.05s;
+}
+.key.white:hover, .key.white.active {
+  background: rgba(0,255,224,0.22);
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(0,255,224,0.18) inset;
+}
+.key.black:hover, .key.black.active {
+  background: rgba(0,255,224,0.28);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(0,255,224,0.25) inset;
+}
+.key.remote-active {
+  background: var(--accent2) !important;
+  border-color: var(--accent2) !important;
+  box-shadow: 0 0 16px var(--accent2);
+}
+.key .note-label {
+  position: absolute; bottom: 5px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono); font-size: 0.45rem;
+  letter-spacing: 0.04em;
+  color: var(--dim); pointer-events: none;
+}
+
+/* Controls row */
+#controls-row {
+  display:flex; gap:24px; flex-wrap:wrap; align-items:flex-end;
+  padding-top:10px;
+  border-top:1px solid var(--dim);
+}
+.ctrl {
+  display:flex; flex-direction:column; gap:5px;
+  min-width:90px;
+}
+.ctrl-label {
+  font-family:var(--mono); font-size:0.52rem;
+  letter-spacing:0.2em; color:var(--dim);
+  text-transform:uppercase;
+}
+.ctrl-val {
+  font-family:var(--display); font-size:1.1rem;
+  color:var(--accent); letter-spacing:0.08em;
+}
+input[type=range] {
+  -webkit-appearance:none; width:100%; height:1px;
+  background:rgba(0,255,224,0.2); outline:none; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:9px; height:9px;
+  background:var(--accent); border-radius:50%;
+}
+input[type=range]:hover { background:rgba(0,255,224,0.4); }
+
+/* Audio toggle + status */
+#audio-btn {
+  margin-left:auto;
+  background:none; border:1px solid var(--dim);
+  color:var(--dim); font-family:var(--mono);
+  font-size:0.58rem; letter-spacing:0.15em;
+  padding:6px 16px; cursor:pointer;
+  transition:all 0.2s; align-self:center;
+}
+#audio-btn:hover, #audio-btn.on { color:var(--accent); border-color:var(--accent); box-shadow:0 0 12px rgba(0,255,224,0.2); }
+
+#status {
+  position:fixed; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--mono); font-size:0.65rem;
+  letter-spacing:0.2em; color:var(--accent);
+  pointer-events:none; opacity:0;
+  transition:opacity 0.3s; z-index:200;
+  text-shadow:0 0 20px var(--accent);
+}
+#status.show { opacity:1; }
+
+/* Keyboard hint overlay */
+#kb-hint {
+  position: fixed; right: 28px; top: 50%;
+  transform: translateY(-50%);
+  background: rgba(3,3,10,0.82);
+  border: 1px solid rgba(0,255,224,0.15);
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  z-index: 300;
+  transition: opacity 1s;
+  pointer-events: none;
+}
+.kh-row { display:flex; justify-content:space-between; gap:18px; margin-bottom:6px; }
+.kh-key { color: var(--accent); }
+.kh-fade { margin-top:10px; font-size:0.5rem; opacity:0.4; text-align:center; }
+
+/* Remote cursors */
+.rcursor {
+  position:fixed; pointer-events:none; z-index:200;
+  width:10px; height:10px; border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:left 0.06s linear, top 0.06s linear;
+  mix-blend-mode:screen;
+}
+
+/* Pulse rings */
+.pring {
+  position:fixed; pointer-events:none; z-index:150;
+  border-radius:50%;
+  transform:translate(-50%,-50%) scale(0);
+  mix-blend-mode:screen;
+  animation:pringAnim 1s cubic-bezier(0.15,0.8,0.3,1) forwards;
+}
+@keyframes pringAnim {
+  0%   { transform:translate(-50%,-50%) scale(0); opacity:1; }
+  100% { transform:translate(-50%,-50%) scale(5); opacity:0; }
+}
+
+@media (max-width:680px) {
+  #concept { display:none; }
+  .key.white { width:26px; height:70px; }
+  .key.black { width:16px; height:44px; margin:0 -8px; }
+}
+
+/* ── TEXT COMPOSER ── */
+#composer-wrap {
+  position: fixed;
+  left: 50%; bottom: 44vh;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(600px, 90vw);
+}
+#composer-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+#composer-input {
+  width: 100%;
+  background: rgba(3,3,10,0.75);
+  border: 1px solid rgba(0,255,224,0.25);
+  border-radius: 2px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  letter-spacing: 0.18em;
+  padding: 12px 18px;
+  outline: none;
+  caret-color: var(--accent);
+  text-shadow: 0 0 12px rgba(0,255,224,0.5);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+#composer-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(0,255,224,0.15), inset 0 0 10px rgba(0,255,224,0.05);
+}
+#composer-input::placeholder {
+  color: rgba(0,255,224,0.18);
+  letter-spacing: 0.12em;
+}
+#composer-chars {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-height: 48px;
+  overflow: hidden;
+}
+.composer-char {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 3px 7px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  color: var(--dim);
+  transition: all 0.08s;
+  letter-spacing: 0.05em;
+}
+.composer-char.active {
+  color: #fff;
+  border-color: var(--accent);
+  background: rgba(0,255,224,0.18);
+  text-shadow: 0 0 16px var(--accent), 0 0 32px var(--accent);
+  transform: translateY(-6px) scale(1.35);
+  box-shadow: 0 0 20px rgba(0,255,224,0.4);
+}
+</style>
+</head>
+<body>
+
+<canvas id="glcanvas"></canvas>
+<canvas id="thomasCanvas"></canvas>
+<canvas id="fxCanvas"></canvas>
+<div id="cursor"></div>
+
+<div id="header">
+  <div>
+    <h1>THOMAS</h1>
+    <div class="sub">Cyclically Symmetric Attractor · Shared Chaos Instrument</div>
+  </div>
+  <div id="userinfo">
+    OBSERVERS<br>
+    <span class="big" id="ucnum">1</span>
+  </div>
+</div>
+
+<div id="concept">
+  A shared chaos instrument — Thomas attractor as living field. Each observer warps the same phase space simultaneously.
+</div>
+
+<div id="status"></div>
+<div id="kb-hint">
+  <div class="kh-row"><span class="kh-key">Q–U</span> C5 octave</div>
+  <div class="kh-row"><span class="kh-key">A–J</span> C4 octave</div>
+  <div class="kh-row"><span class="kh-key">Z–M</span> C3 octave</div>
+  <div class="kh-row"><span class="kh-key">1–0</span> black keys</div>
+  <div class="kh-row"><span class="kh-key">SPACE</span> chaos burst</div>
+  <div class="kh-row"><span class="kh-key">↑↓←→</span> speed / hue</div>
+  <div class="kh-fade">press any key to dismiss</div>
+</div>
+
+
+<div id="composer-wrap">
+  <div id="composer-label">Type to compose — every character plays a note</div>
+  <input id="composer-input" type="text" placeholder="start typing..." autocomplete="off" spellcheck="false"/>
+  <div id="composer-chars"></div>
+</div>
+
+<div id="panel">
+  <div id="keyboard-scroll">
+    <div id="keyboard-wrap"></div>
+  </div>
+
+  <div id="controls-row">
+    <div class="ctrl">
+      <div class="ctrl-label">Damping b</div>
+      <div class="ctrl-val" id="v-b">0.208</div>
+      <input type="range" id="sl-b" min="0.1" max="0.35" step="0.001" value="0.208"/>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Speed</div>
+      <div class="ctrl-val" id="v-speed">1.00</div>
+      <input type="range" id="sl-speed" min="0.1" max="3.0" step="0.01" value="1.0"/>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Hue</div>
+      <div class="ctrl-val" id="v-colorShift">0</div>
+      <input type="range" id="sl-colorShift" min="0" max="360" step="1" value="0"/>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Glow</div>
+      <div class="ctrl-val" id="v-glowIntensity">1.20</div>
+      <input type="range" id="sl-glowIntensity" min="0.1" max="3.0" step="0.05" value="1.2"/>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Noise</div>
+      <div class="ctrl-val" id="v-noiseAmt">0.18</div>
+      <input type="range" id="sl-noiseAmt" min="0.0" max="0.6" step="0.01" value="0.18"/>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Audio</div>
+      <div class="ctrl-val" id="v-audioGain">0.50</div>
+      <input type="range" id="sl-audioGain" min="0" max="1" step="0.01" value="0.5"/>
+    </div>
+    <button id="audio-btn">[ AUDIO OFF — click keys to start ]</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  GLOBAL STATE — declared first so nothing is used before defined
+// ═══════════════════════════════════════════════════════════════
+// Audio
+let audioCtx  = null;
+let audioOn   = false;
+let droneOscs = [];
+
+// Attractor energy (driven by notes/typing)
+let noteEnergy  = 0;
+let noteHue     = 180;
+let burstForce  = 0;
+let speedBoost  = 0;
+let colorTarget = 180;
+
+// WebSocket / user identity
+let ws, myId = null, myHue = 160;
+
+// Master audio gain
+let masterGain = null;
+
+// ═══════════════════════════════════════════════════════════════
+//  WEBGL SETUP
+// ═══════════════════════════════════════════════════════════════
+const canvas = document.getElementById('glcanvas');
+const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+if (!gl) { document.body.innerHTML = '<p style="color:#fff;padding:2rem">WebGL not supported.</p>'; }
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  if (prog) {
+    gl.useProgram(prog);
+    gl.uniform2f(gl.getUniformLocation(prog,'iResolution'), canvas.width, canvas.height);
+  }
+}
+window.addEventListener('resize', resize);
+
+// ── SHADERS ─────────────────────────────────────────────────────
+const VERT = `
+attribute vec2 aPos;
+varying vec2 vUv;
+void main(){
+  vUv = aPos * 0.5 + 0.5;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}`;
+
+const FRAG = `
+precision highp float;
+varying vec2 vUv;
+
+uniform float iTime;
+uniform vec2  iResolution;
+uniform vec2  uRot;
+uniform float uB;
+uniform float uSpeed;
+uniform float uColorShift;
+uniform float uGlow;
+uniform float uNoise;
+uniform float uTrail;
+uniform float uEnergy;    // 0..1 audio/typing energy
+uniform float uNoteHue;   // 0..1 hue of last note
+
+vec3 rotY(vec3 v,float t){float c=cos(t),s=sin(t);return vec3(v.x*c+v.z*s,v.y,-v.x*s+v.z*c);}
+vec3 rotX(vec3 v,float t){float c=cos(t),s=sin(t);return vec3(v.x,v.y*c-v.z*s,v.y*s+v.z*c);}
+
+vec3 hsl2rgb(vec3 c){
+  vec3 rgb=clamp(abs(mod(c.x*6.+vec3(0.,4.,2.),6.)-3.)-1.,0.,1.);
+  return c.z+c.y*(rgb-.5)*(1.-abs(2.*c.z-1.));
+}
+
+float hash(float n){return fract(sin(n)*43758.5453);}
+float noise3(vec3 p){
+  vec3 i=floor(p),f=fract(p);
+  f=f*f*(3.-2.*f);
+  float n=i.x+i.y*57.+113.*i.z;
+  return mix(mix(mix(hash(n),hash(n+1.),f.x),mix(hash(n+57.),hash(n+58.),f.x),f.y),
+             mix(mix(hash(n+113.),hash(n+114.),f.x),mix(hash(n+170.),hash(n+171.),f.x),f.y),f.z);
+}
+
+// FBM — fractal Brownian motion for rich background texture
+float fbm(vec3 p){
+  float v=0.,a=.5;
+  for(int i=0;i<5;i++){v+=a*noise3(p);p=p*2.1+vec3(1.7,9.2,3.4);a*=.5;}
+  return v;
+}
+
+float thomasDensity(vec3 p, float b){
+  vec3 q=p; float dist=1e6;
+  for(int i=0;i<10;i++){
+    vec3 dq=vec3(sin(q.y)-b*q.x, sin(q.z)-b*q.y, sin(q.x)-b*q.z);
+    q+=dq*0.13;
+    dist=min(dist, length(q-p)*0.55);
+  }
+  float n=noise3(p*3.2+iTime*0.15)*uNoise*(1.+uEnergy*2.);
+  return dist+n;
+}
+
+float fieldDensity(vec3 p,float b){
+  float d=thomasDensity(p,b);
+  return exp(-d*(2.8-uEnergy*1.2))*uGlow*(1.+uEnergy*3.5);
+}
+
+void main(){
+  vec2 fc=vUv*iResolution;
+  vec2 uv=(fc-iResolution*.5)/iResolution.y;
+
+  float e=uEnergy;
+  float e2=e*e;
+
+  // Camera zoom in on energy
+  vec3 ro=vec3(0.,0.,-4.5+e*1.8);
+  vec3 rd=normalize(vec3(uv*(1.-e*.15),1.2));
+
+  float rx=(uRot.y-.5)*3.14159;
+  float ry=(uRot.x-.5)*6.28318+iTime*(0.08+e*.4);
+
+  ro=rotX(rotY(ro,ry),rx);
+  rd=rotX(rotY(rd,ry),rx);
+
+  // ── Volumetric march ──────────────────────────────────────────
+  vec3 col=vec3(0.);
+  float alpha=0., t=0.3;
+
+  for(int i=0;i<120;i++){
+    vec3 p=ro+rd*t;
+    float dens=fieldDensity(p,uB);
+
+    float angle=atan(p.y,p.x)/6.28318+.5;
+    // On energy: hue snaps toward noteHue
+    float baseHue=mod(angle+uColorShift+t*.035,1.);
+    float hue=mix(baseHue, uNoteHue, e*.7);
+    float sat=.85+e*.15;
+    float lum=.42+.22*sin(t*1.8+iTime*uSpeed)+e*.18;
+    vec3 pc=hsl2rgb(vec3(hue,sat,lum));
+
+    // Extra brightness near origin (Thomas attractor center)
+    float centerBoost=exp(-length(p)*.4)*e2*4.;
+    pc+=hsl2rgb(vec3(uNoteHue,1.,.8))*centerBoost;
+
+    float contrib=dens*(1.-alpha)*(0.5+e*.4);
+    col  +=pc*contrib;
+    alpha+=contrib*.75;
+    if(alpha>.99) break;
+
+    t+=max(0.02, 0.05*(1.-dens)-e*.01);
+    if(t>14.) break;
+  }
+
+  // ── Background nebula (FBM) ───────────────────────────────────
+  vec3 nebDir=normalize(vec3(uv,1.));
+  nebDir=rotX(rotY(nebDir,ry),rx);
+  float neb=fbm(nebDir*2.5+iTime*.04)*(.15+e2*.5);
+  float nebHue=mod(uColorShift+fbm(nebDir+iTime*.02)*.4,1.);
+  col+=hsl2rgb(vec3(nebHue,.8,.45))*neb*(1.-alpha*.8)*0.6;
+
+  // ── Energy radial flash ───────────────────────────────────────
+  float dist2=length(uv);
+  float flash=e2*exp(-dist2*dist2*(4.-e*2.));
+  col+=hsl2rgb(vec3(uNoteHue,1.,.7))*flash*1.2;
+
+  // ── Shockwave rings ───────────────────────────────────────────
+  float ring1=abs(dist2-.35*(1.-e)-.05);
+  float ring2=abs(dist2-.55*(1.-e*.7)-.03);
+  col+=hsl2rgb(vec3(uNoteHue,1.,.8))*e*smoothstep(.02,0.,ring1)*1.8;
+  col+=hsl2rgb(vec3(mod(uNoteHue+.3,1.),1.,.7))*e*.7*smoothstep(.015,0.,ring2);
+
+  // ── Chromatic aberration on energy ───────────────────────────
+  if(e>.05){
+    vec2 ab=uv*e*.012;
+    vec2 uvR=uv+ab, uvB=uv-ab;
+    vec3 rdR=rotX(rotY(normalize(vec3(uvR*(1.-e*.15),1.2)),ry),rx);
+    vec3 rdB=rotX(rotY(normalize(vec3(uvB*(1.-e*.15),1.2)),ry),rx);
+    vec3 cR=vec3(0.),cB=vec3(0.); float aR=0.,aB=0.,tR=.3,tB=.3;
+    for(int i=0;i<40;i++){
+      vec3 pR=ro+rdR*tR; float dR=fieldDensity(pR,uB);
+      cR+=vec3(1.,.2,.1)*dR*(1.-aR)*.5; aR+=dR*(1.-aR)*.4;
+      tR+=.08; if(aR>.9||tR>14.) break;
+    }
+    for(int i=0;i<40;i++){
+      vec3 pB=ro+rdB*tB; float dB=fieldDensity(pB,uB);
+      cB+=vec3(.1,.3,1.)*dB*(1.-aB)*.5; aB+=dB*(1.-aB)*.4;
+      tB+=.08; if(aB>.9||tB>14.) break;
+    }
+    col=mix(col, col+cR*e*.6+cB*e*.6, e*.5);
+  }
+
+  // ── Vignette ─────────────────────────────────────────────────
+  float vig=smoothstep(1.0,0.15,length(uv)*.85);
+  col*=vig;
+
+  // ── Film grain ───────────────────────────────────────────────
+  float grain=noise3(vec3(fc,iTime*60.))*(.03+e*.02);
+  col+=grain;
+
+  // ── Reinhard tonemap — prevents white blowout ─────────────────
+  col = col / (col + vec3(1.0));
+  // Gamma correct
+  col = pow(col, vec3(0.4545));
+
+  gl_FragColor=vec4(col,1.);
+}
+`;
+
+// ── COMPILE & LINK ───────────────────────────────────────────────
+function compileShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+
+const prog = gl.createProgram();
+gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, VERT));
+gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, FRAG));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+// Full-screen quad
+const vbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const aPos = gl.getAttribLocation(prog, 'aPos');
+gl.enableVertexAttribArray(aPos);
+gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+// Uniform locations
+const uLoc = {};
+['iTime','iResolution','uRot','uB','uSpeed','uColorShift','uGlow','uNoise','uTrail','uEnergy','uNoteHue'].forEach(n => {
+  uLoc[n] = gl.getUniformLocation(prog, n);
+});
+
+resize();
+
+// Shared params
+const params = {
+  b: 0.208, speed: 1.0, colorShift: 0.0,
+  audioGain: 0.5, trail: 0.94, glowIntensity: 1.2, noiseAmt: 0.18
+};
+
+let rotX_cur = 0.5, rotY_cur = 0.5;
+let rotX_tgt = 0.5, rotY_tgt = 0.5;
+
+// ── RENDER LOOP ──────────────────────────────────────────────────
+function render(ts) {
+  rotX_cur += (rotX_tgt - rotX_cur) * 0.04;
+  rotY_cur += (rotY_tgt - rotY_cur) * 0.04;
+
+  gl.useProgram(prog);
+  gl.uniform1f(uLoc.iTime,        ts * 0.001 * params.speed);
+  gl.uniform2f(uLoc.iResolution,  canvas.width, canvas.height);
+  gl.uniform2f(uLoc.uRot,         rotY_cur, rotX_cur);
+  gl.uniform1f(uLoc.uB,           params.b);
+  gl.uniform1f(uLoc.uSpeed,       params.speed);
+  gl.uniform1f(uLoc.uColorShift,  params.colorShift / 360.0);
+  gl.uniform1f(uLoc.uGlow,        params.glowIntensity);
+  gl.uniform1f(uLoc.uNoise,       params.noiseAmt);
+  gl.uniform1f(uLoc.uTrail,       params.trail);
+  gl.uniform1f(uLoc.uEnergy,      typeof noteEnergy!=='undefined' ? noteEnergy : 0.0);
+  gl.uniform1f(uLoc.uNoteHue,     typeof noteHue!=='undefined' ? noteHue/360.0 : 0.5);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// ═══════════════════════════════════════════════════════════════
+//  MUSIC SYSTEM
+// ═══════════════════════════════════════════════════════════════
+
+// Scale: Thomas uses 3-axis symmetry → we use a tritonic / whole-tone flavour
+// C D E F# G# A# = whole-tone scale, MIDI 48..
+const WHOLE_TONE = [48,50,52,54,56,58, 60,62,64,66,68,70, 72,74,76];
+// Keyboard layout: 15 keys (white + black in two octaves)
+// Build 3 octaves C3–B5 (MIDI 48–83) dynamically
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const BLACK_NOTES = new Set([1,3,6,8,10]); // semitone positions that are black keys
+const KEY_NOTES = [];
+for (let oct = 3; oct <= 5; oct++) {
+  for (let semi = 0; semi < 12; semi++) {
+    const midi = (oct + 1) * 12 + semi; // middle C = 60 = C4
+    const name = NOTE_NAMES[semi];
+    KEY_NOTES.push({
+      note: midi,
+      type: BLACK_NOTES.has(semi) ? 'black' : 'white',
+      label: semi === 0 ? name + oct : name,
+    });
+  }
+}
+
+function midiToFreq(m){ return 440 * Math.pow(2, (m-69)/12); }
+
+// ═══════════════════════════════════════════════════════════════
+//  AUDIO — dead-simple, no global routing, guaranteed to work
+// ═══════════════════════════════════════════════════════════════
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.9;
+    masterGain.connect(audioCtx.destination);
+    // Build drone (3 sawtooth osc, start silent)
+    const freqs = [65.41, 98.0, 82.41];
+    droneOscs = freqs.map((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const g   = audioCtx.createGain();
+      osc.type = i === 2 ? 'triangle' : 'sawtooth';
+      osc.frequency.value = f;
+      g.gain.value = 0;
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+      osc.start();
+      return { osc, gain: g };
+    });
+  }
+  return audioCtx;
+}
+
+function enableAudio() {
+  const ctx = getAudioCtx();
+  ctx.resume().then(() => {
+    audioOn = true;
+    droneOscs.forEach((d, i) => {
+      d.gain.gain.setTargetAtTime(0.04 - i*0.01, ctx.currentTime, 0.5);
+    });
+    document.getElementById('audio-btn').textContent = '[ AUDIO ON ]';
+    document.getElementById('audio-btn').classList.add('on');
+  });
+}
+
+function disableAudio() {
+  audioOn = false;
+  if (audioCtx) droneOscs.forEach(d => d.gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.4));
+  document.getElementById('audio-btn').textContent = '[ AUDIO OFF ]';
+  document.getElementById('audio-btn').classList.remove('on');
+}
+
+// Each note creates its own isolated graph — no shared nodes that can break
+function playNote(note, vel=0.75) {
+  if (!audioCtx || !audioOn) return;
+  const ctx  = audioCtx;
+  const freq = midiToFreq(note);
+  const now  = ctx.currentTime;
+  const vol  = Math.max(0.1, params.audioGain);
+
+  const osc  = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type  = 'sine';     osc.frequency.value  = freq;
+  osc2.type = 'triangle'; osc2.frequency.value = freq * 2.0;
+
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(vel * vol * 0.8, now + 0.012);
+  gain.gain.exponentialRampToValueAtTime(vel * vol * 0.2, now + 0.35);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+
+  osc.connect(gain);
+  osc2.connect(gain);
+  gain.connect(masterGain || ctx.destination);
+
+  osc.start(now);  osc2.start(now);
+  osc.stop(now+1.7); osc2.stop(now+1.7);
+}
+
+function triggerKey(note, vel=0.75) {
+  if (!note) return;
+  const ctx = getAudioCtx();
+  const go = () => {
+    if (!audioOn) {
+      audioOn = true;
+      droneOscs.forEach((d, i) => {
+        d.gain.gain.setTargetAtTime(0.04 - i*0.01, ctx.currentTime, 0.4);
+      });
+      document.getElementById('audio-btn').textContent = '[ AUDIO ON ]';
+      document.getElementById('audio-btn').classList.add('on');
+    }
+    playNote(note, vel);
+    flashKey(note, false);
+    sendNote(note, vel);
+    if (typeof onNoteTriggered === 'function')
+      onNoteTriggered(note, vel, (note * 15 + params.colorShift) % 360);
+  };
+
+  if (ctx.state === 'suspended') {
+    ctx.resume().then(go);
+  } else {
+    go();
+  }
+}
+
+function pulseSFX(x, y) {
+  if (!audioCtx || !audioOn) return;
+  const ctx = audioCtx;
+  const now = ctx.currentTime;
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate);
+  const d   = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++)
+    d[i] = (Math.random()*2-1) * Math.exp(-i/(ctx.sampleRate*0.02));
+  const src = ctx.createBufferSource();
+  const g   = ctx.createGain();
+  src.buffer = buf;
+  g.gain.value = params.audioGain * 0.3;
+  src.connect(g); g.connect(ctx.destination);
+  src.start(now);
+}
+
+// ── Build piano keyboard UI ─────────────────────────────────────
+const kbWrap = document.getElementById('keyboard-wrap');
+const keyEls = {};
+
+KEY_NOTES.forEach(({note, type, label}) => {
+  const el = document.createElement('div');
+  el.className = `key ${type}`;
+  el.dataset.note = note;
+  el.innerHTML = `<span class="note-label">${label}</span>`;
+  kbWrap.appendChild(el);
+  keyEls[note] = el;
+});
+
+function flashKey(note, remote=false){
+  const el = keyEls[note]; if(!el) return;
+  const cls = remote ? 'remote-active' : 'active';
+  el.classList.add(cls);
+  setTimeout(()=>el.classList.remove(cls), remote ? 500 : 160);
+}
+
+function triggerKey(note, vel=0.75){
+  if(!note) return;
+  // Resume context then play — handles browser autoplay policy correctly
+  const doPlay = () => {
+    if(!audioOn) {
+      audioOn = true;
+      document.getElementById('audio-btn').textContent = '[ AUDIO ON ]';
+      document.getElementById('audio-btn').classList.add('on');
+    }
+    playNote(note, vel);
+    flashKey(note, false);
+    sendNote(note, vel);
+    if(typeof onNoteTriggered === 'function')
+      onNoteTriggered(note, vel, (note * 15 + params.colorShift) % 360);
+  };
+
+  if(!audioCtx) initAudio();
+
+  if(audioCtx.state === 'suspended') {
+    audioCtx.resume().then(doPlay);  // wait for resume THEN play
+  } else {
+    doPlay();
+  }
+}
+
+// Helper: get note from element under a point
+function noteAtPoint(x, y) {
+  // Use elementFromPoint — prioritise black keys (higher z-index)
+  const el = document.elementFromPoint(x, y);
+  if (!el) return null;
+  const key = el.closest('.key');
+  return key ? parseInt(key.dataset.note) : null;
+}
+
+// ── Mouse: click + drag to glide ────────────────────────────────
+let mouseDown = false;
+let lastMouseNote = null;
+
+kbWrap.addEventListener('mousedown', e => {
+  mouseDown = true;
+  const n = noteAtPoint(e.clientX, e.clientY);
+  if (n !== null) { lastMouseNote = n; triggerKey(n); }
+});
+window.addEventListener('mousemove', e => {
+  if (!mouseDown) return;
+  const n = noteAtPoint(e.clientX, e.clientY);
+  if (n !== null && n !== lastMouseNote) { lastMouseNote = n; triggerKey(n, 0.6); }
+});
+window.addEventListener('mouseup', () => { mouseDown = false; lastMouseNote = null; });
+
+// ── Touch: multi-touch + slide-to-play ──────────────────────────
+const activeTouchNotes = new Map(); // touchId → note
+
+kbWrap.addEventListener('touchstart', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    const n = noteAtPoint(t.clientX, t.clientY);
+    if (n !== null) { activeTouchNotes.set(t.identifier, n); triggerKey(n); }
+  }
+}, { passive: false });
+
+kbWrap.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    const n = noteAtPoint(t.clientX, t.clientY);
+    if (n !== null && n !== activeTouchNotes.get(t.identifier)) {
+      activeTouchNotes.set(t.identifier, n);
+      triggerKey(n, 0.65);
+    }
+  }
+}, { passive: false });
+
+kbWrap.addEventListener('touchend', e => {
+  for (const t of e.changedTouches) activeTouchNotes.delete(t.identifier);
+});
+
+// ── JS KEYBOARD CONTROLLER ───────────────────────────────────────
+// Every key on the keyboard does something — no dead keys
+// Layout: home row + QWERTY rows mapped to 3 octaves
+// Each key also triggers a visual+param mutation on the attractor
+
+const KB_MAP = {
+  // Bottom row — C3 octave (notes 48-59)
+  'z':48,'x':50,'c':52,'v':53,'b':55,'n':57,'m':59,
+  // Home row — C4 octave (notes 60-71)
+  'a':60,'s':62,'d':64,'f':65,'g':67,'h':69,'j':71,
+  // QWERTY row — C5 octave (notes 72-83)
+  'q':72,'w':74,'e':76,'r':77,'t':79,'y':81,'u':83,
+  // Black keys — semitones
+  '1':61,'2':63,'3':66,'4':68,'5':70,
+  '6':73,'7':75,'8':78,'9':80,'0':82,
+  // Special keys — dramatic attractor mutations
+  ' ':null,        // spacebar — CHAOS BURST
+  'arrowup':null,  // speed up
+  'arrowdown':null,// slow down
+  'arrowleft':null,// hue shift -
+  'arrowright':null,// hue shift +
+};
+
+// Track held keys for visual sustain
+const heldKeys = new Set();
+
+window.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const k = e.key.toLowerCase();
+
+  // ── Special mutation keys ──────────────────────────────────
+  if (k === ' ') {
+    e.preventDefault();
+    // CHAOS BURST — spike all visual params massively
+    noteEnergy  = 1.0;
+    burstForce  = 1.0;
+    speedBoost  = 8.0;
+    noteHue     = Math.random() * 360;
+    // Also scatter strands
+    for (let s = 0; s < STRAND_COUNT; s++) {
+      const h = sHead[s];
+      const prev = (h - 1 + TRAIL_LEN) % TRAIL_LEN;
+      sX[s][prev] += (Math.random()-0.5)*1.5;
+      sY[s][prev] += (Math.random()-0.5)*1.5;
+      sZ[s][prev] += (Math.random()-0.5)*1.5;
+    }
+    if(typeof getAudioCtx==='function') {
+      triggerKey(60 + Math.floor(Math.random()*12), 1.0);
+      triggerKey(64 + Math.floor(Math.random()*12), 0.9);
+      triggerKey(67 + Math.floor(Math.random()*12), 0.8);
+    }
+    return;
+  }
+  if (k === 'arrowup')    { e.preventDefault(); params.speed = Math.min(3, params.speed + 0.3); updateSlider('speed', params.speed); return; }
+  if (k === 'arrowdown')  { e.preventDefault(); params.speed = Math.max(0.1, params.speed - 0.3); updateSlider('speed', params.speed); return; }
+  if (k === 'arrowleft')  { e.preventDefault(); params.colorShift = (params.colorShift + 350) % 360; updateSlider('colorShift', params.colorShift); return; }
+  if (k === 'arrowright') { e.preventDefault(); params.colorShift = (params.colorShift + 10) % 360; updateSlider('colorShift', params.colorShift); return; }
+
+  // ── Note keys ─────────────────────────────────────────────
+  const note = KB_MAP[k];
+  if (note !== undefined && note !== null && !heldKeys.has(k)) {
+    heldKeys.add(k);
+    triggerKey(note, 0.8);
+
+    // Each key also mutates attractor params slightly — more expressive
+    const row = 'zxcvbnm'.includes(k) ? 0 : 'asdfghj'.includes(k) ? 1 : 2;
+    const pitchT = (note - 60) / 36; // -0.67 to +0.67
+
+    // Low notes → increase damping (more order)
+    // High notes → decrease damping (more chaos)
+    const bDelta = -pitchT * 0.015;
+    params.b = Math.max(0.1, Math.min(0.35, params.b + bDelta));
+    updateSlider('b', params.b);
+
+    // Row affects glow intensity
+    params.glowIntensity = Math.max(0.5, Math.min(3.0, params.glowIntensity + (row - 1) * 0.08));
+    updateSlider('glowIntensity', params.glowIntensity);
+  }
+});
+
+window.addEventListener('keyup', e => {
+  heldKeys.delete(e.key.toLowerCase());
+});
+
+// Show keyboard hint overlay
+const kbHint = document.getElementById('kb-hint');
+document.addEventListener('keydown', () => { if(kbHint) kbHint.style.opacity='0'; }, {once:true});
+
+
+// ═══════════════════════════════════════════════════════════════
+//  INTERACTION
+// ═══════════════════════════════════════════════════════════════
+let mouseX = 0.5, mouseY = 0.5;
+const cursorEl = document.getElementById('cursor');
+
+window.addEventListener('mousemove', e => {
+  mouseX = e.clientX / window.innerWidth;
+  mouseY = e.clientY / window.innerHeight;
+  cursorEl.style.left = e.clientX + 'px';
+  cursorEl.style.top  = e.clientY + 'px';
+  rotY_tgt = mouseX;
+  rotX_tgt = mouseY;
+  sendCursor(mouseX, mouseY);
+  // Modulate drone gain with cursor Y
+  if(droneOscs.length && audioOn){
+    droneOscs.forEach((d,i)=>{
+      d.gain.gain.setTargetAtTime(0.04 + mouseY*0.07 + i*0.01, audioCtx.currentTime, 0.2);
+    });
+  }
+});
+
+window.addEventListener('mousedown', () => document.body.classList.add('clicking'));
+window.addEventListener('mouseup',   () => document.body.classList.remove('clicking'));
+
+window.addEventListener('click', e => {
+  // Don't trigger pulse when clicking on UI panel (keyboard, sliders, buttons)
+  if(e.target.closest('#panel') || e.target.closest('#audio-btn')) return;
+  const x = e.clientX/window.innerWidth, y = e.clientY/window.innerHeight;
+  spawnRing(x, y, myHue);
+  pulseSFX(x, y);
+  sendPulse(x, y);
+});
+
+window.addEventListener('touchmove', e=>{
+  e.preventDefault();
+  const t0=e.touches[0];
+  mouseX=t0.clientX/window.innerWidth; mouseY=t0.clientY/window.innerHeight;
+  cursorEl.style.left=t0.clientX+'px'; cursorEl.style.top=t0.clientY+'px';
+  rotY_tgt=mouseX; rotX_tgt=mouseY;
+  sendCursor(mouseX,mouseY);
+},{passive:false});
+
+window.addEventListener('touchstart',e=>{
+  const t0=e.touches[0];
+  spawnRing(t0.clientX/window.innerWidth,t0.clientY/window.innerHeight,myHue);
+  pulseSFX(t0.clientX/window.innerWidth,t0.clientY/window.innerHeight);
+  sendPulse(t0.clientX/window.innerWidth,t0.clientY/window.innerHeight);
+});
+
+function spawnRing(x,y,hue){
+  const r=document.createElement('div');
+  r.className='pring';
+  const sz=50;
+  r.style.cssText=`left:${x*100}%;top:${y*100}%;width:${sz}px;height:${sz}px;border:1.5px solid hsl(${hue},100%,65%);`;
+  document.body.appendChild(r);
+  setTimeout(()=>r.remove(),1050);
+}
+
+// ── SLIDERS ──────────────────────────────────────────────────────
+const sliderDefs = {
+  b:            {min:0.1,  max:0.35, fmt:v=>v.toFixed(3)},
+  speed:        {min:0.1,  max:3.0,  fmt:v=>v.toFixed(2)},
+  colorShift:   {min:0,    max:360,  fmt:v=>Math.round(v)},
+  glowIntensity:{min:0.1,  max:3.0,  fmt:v=>v.toFixed(2)},
+  noiseAmt:     {min:0.0,  max:0.6,  fmt:v=>v.toFixed(2)},
+  audioGain:    {min:0,    max:1,    fmt:v=>v.toFixed(2)},
+};
+
+Object.keys(sliderDefs).forEach(key => {
+  const sl = document.getElementById(`sl-${key}`);
+  const vd = document.getElementById(`v-${key}`);
+  if(!sl) return;
+  sl.addEventListener('input', ()=>{
+    const v = parseFloat(sl.value);
+    params[key] = v;
+    vd.textContent = sliderDefs[key].fmt(v);
+    if(key==='audioGain' && audioCtx && audioOn)
+      droneOscs.forEach((d,i)=>d.gain.gain.setTargetAtTime((v*0.06)*(1-i*0.25), audioCtx.currentTime, 0.1));
+    sendParam(key, v, sliderDefs[key]);
+  });
+});
+
+function updateSlider(key, value){
+  const sl = document.getElementById(`sl-${key}`);
+  const vd = document.getElementById(`v-${key}`);
+  if(!sl||!sliderDefs[key]) return;
+  sl.value = value;
+  params[key] = value;
+  vd.textContent = sliderDefs[key].fmt(value);
+}
+
+document.getElementById('audio-btn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  audioOn ? disableAudio() : enableAudio();
+});
+
+
+// ═══════════════════════════════════════════════════════════════
+//  THOMAS ATTRACTOR PARTICLE SYSTEM (Canvas 2D overlay)
+// ═══════════════════════════════════════════════════════════════
+const tCanvas = document.getElementById('thomasCanvas');
+const tCtx    = tCanvas.getContext('2d');
+
+function resizeThomas() {
+  tCanvas.width  = window.innerWidth;
+  tCanvas.height = window.innerHeight;
+}
+resizeThomas();
+window.addEventListener('resize', resizeThomas);
+
+// ── Point cloud — exactly like the reference image ────────────
+// Many independent particles, each following Thomas equations,
+// rendered as bright colored dots with trails
+const N_PTS = 4000;
+const px = new Float32Array(N_PTS);
+const py = new Float32Array(N_PTS);
+const pz = new Float32Array(N_PTS);
+const ph = new Float32Array(N_PTS); // hue per particle
+
+// Warm-up: seed particles on attractor
+function initPoints() {
+  // Start from a few different seeds and warm up
+  const seeds = [
+    [0.1, 0.0, 0.0], [-0.1, 0.2, 0.1],
+    [0.2, -0.1, 0.3], [0.0, 0.3, -0.2],
+  ];
+  let si = 0;
+  for (let i = 0; i < N_PTS; i++) {
+    const s = seeds[i % seeds.length];
+    px[i] = s[0] + (Math.random()-0.5)*0.05;
+    py[i] = s[1] + (Math.random()-0.5)*0.05;
+    pz[i] = s[2] + (Math.random()-0.5)*0.05;
+    ph[i] = Math.random() * 360;
+    // Warm up each particle individually
+    const bw = 0.208;
+    for (let w = 0; w < 800 + Math.floor(Math.random()*400); w++) {
+      const dx = Math.sin(py[i]) - bw*px[i];
+      const dy = Math.sin(pz[i]) - bw*py[i];
+      const dz = Math.sin(px[i]) - bw*pz[i];
+      px[i] += dx*0.015; py[i] += dy*0.015; pz[i] += dz*0.015;
+    }
+  }
+}
+initPoints();
+
+// Rotation
+let tRotY = 0.3, tRotX = 0.5;
+
+function projPt(x, y, z) {
+  const W = tCanvas.width, H = tCanvas.height;
+  const scl = Math.min(W,H) * 0.28;
+  const cy = Math.cos(tRotY), sy = Math.sin(tRotY);
+  const x1 =  x*cy + z*sy, z1 = -x*sy + z*cy;
+  const cx2 = Math.cos(tRotX), sx2 = Math.sin(tRotX);
+  const y1 =  y*cx2 - z1*sx2, z2 = y*sx2 + z1*cx2;
+  const fov = 2.5 + z2*0.06;
+  return { sx: W*0.5 + x1*scl*fov, sy: H*0.5 - y1*scl*fov, z: z2 };
+}
+
+let tTime = 0;
+
+function stepPoints() {
+  const b   = params.b;
+  const spd = params.speed * (1.0 + speedBoost * 0.5);
+  const dt  = 0.016 * spd;
+
+  noteEnergy = Math.max(0, noteEnergy - 0.008);
+  burstForce = Math.max(0, burstForce  - 0.04);
+  speedBoost = Math.max(0, speedBoost  - 0.08);
+
+  tRotY += (rotY_cur * Math.PI*1.8 - tRotY)*0.022 + 0.003*params.speed;
+  tRotX += ((rotX_cur-0.5)*Math.PI*0.7 - tRotX)*0.022;
+
+  for (let i = 0; i < N_PTS; i++) {
+    let x=px[i], y=py[i], z=pz[i];
+    let dx = Math.sin(y) - b*x;
+    let dy = Math.sin(z) - b*y;
+    let dz = Math.sin(x) - b*z;
+
+    // On note: brief radial kick
+    if (noteEnergy > 0.01 && burstForce > 0.01) {
+      const r = Math.sqrt(x*x+y*y+z*z)+0.001;
+      const k = noteEnergy * burstForce * 0.04;
+      dx += (x/r)*k; dy += (y/r)*k; dz += (z/r)*k;
+    }
+
+    px[i] += dx*dt; py[i] += dy*dt; pz[i] += dz*dt;
+    ph[i]  = (ph[i] + 0.05*spd + noteEnergy*0.3) % 360;
+  }
+  tTime += dt;
+}
+
+function drawPoints() {
+  const W = tCanvas.width, H = tCanvas.height;
+
+  // Trail — faster fade = sharper point cloud look
+  const fade = 0.22 + noteEnergy * 0.12;
+  tCtx.fillStyle = `rgba(3,3,10,${fade})`;
+  tCtx.fillRect(0, 0, W, H);
+
+  const baseHue = (params.colorShift + tTime*4) % 360;
+  const e2 = noteEnergy * noteEnergy;
+
+  for (let i = 0; i < N_PTS; i++) {
+    const { sx, sy, z } = projPt(px[i], py[i], pz[i]);
+    if (sx < -10 || sx > W+10 || sy < -10 || sy > H+10) continue;
+
+    // Depth-based size and alpha
+    const depth  = (z + 2.0) / 4.0; // 0..1
+    const hue    = (ph[i] + baseHue) % 360;
+    const sat    = 80 + noteEnergy*18;
+    const bright = 55 + depth*30 + noteEnergy*20;
+    const alpha  = 0.55 + depth*0.35 + noteEnergy*0.1;
+    const size   = 0.9 + depth*0.8 + e2*2.5;
+
+    tCtx.beginPath();
+    tCtx.arc(sx, sy, size, 0, Math.PI*2);
+    tCtx.fillStyle = `hsla(${hue},${sat}%,${bright}%,${alpha})`;
+    tCtx.fill();
+  }
+
+  // Energy bloom at center
+  if (noteEnergy > 0.05) {
+    const cx = W*0.5, cy = H*0.5;
+    const r1 = Math.min(W,H) * (0.06 + noteEnergy*0.12);
+    const g1 = tCtx.createRadialGradient(cx,cy,0,cx,cy,r1);
+    g1.addColorStop(0, `hsla(${noteHue},100%,90%,${noteEnergy*0.6})`);
+    g1.addColorStop(1, `hsla(${noteHue},100%,60%,0)`);
+    tCtx.beginPath(); tCtx.arc(cx,cy,r1,0,Math.PI*2);
+    tCtx.fillStyle=g1; tCtx.fill();
+
+    const r2 = Math.min(W,H) * (0.18 + noteEnergy*0.22);
+    const g2 = tCtx.createRadialGradient(cx,cy,r1,cx,cy,r2);
+    g2.addColorStop(0, `hsla(${noteHue},100%,70%,${noteEnergy*0.2})`);
+    g2.addColorStop(1, `hsla(${noteHue},100%,50%,0)`);
+    tCtx.beginPath(); tCtx.arc(cx,cy,r2,0,Math.PI*2);
+    tCtx.fillStyle=g2; tCtx.fill();
+
+    // Shockwave ring
+    const ringR = Math.min(W,H) * (0.10 + (1-noteEnergy)*0.35);
+    tCtx.beginPath(); tCtx.arc(cx,cy,ringR,0,Math.PI*2);
+    tCtx.strokeStyle=`hsla(${noteHue},100%,80%,${noteEnergy*0.5})`;
+    tCtx.lineWidth = 1.5 + noteEnergy*3;
+    tCtx.stroke();
+  }
+
+  // Screen flash — only at very high energy, colored not white
+  if (noteEnergy > 0.88) {
+    tCtx.fillStyle = `hsla(${noteHue},90%,50%,${(noteEnergy-0.88)*0.3})`;
+    tCtx.fillRect(0, 0, W, H);
+  }
+}
+
+function onNoteTriggered(midiNote, velocity, hue) {
+  noteEnergy  = Math.min(1.0, noteEnergy + velocity * 0.9);
+  noteHue     = hue;
+  burstForce  = velocity;
+  speedBoost  = velocity * 6.0;
+  colorTarget = hue;
+}
+
+function animateThomas() {
+  stepPoints();
+  drawPoints();
+  requestAnimationFrame(animateThomas);
+}
+animateThomas();
+
+
+
+
+// ═══════════════════════════════════════════════════════════════
+//  TEXT COMPOSER — typing plays music
+// ═══════════════════════════════════════════════════════════════
+const composerInput = document.getElementById('composer-input');
+const composerChars = document.getElementById('composer-chars');
+
+// Map every printable character to a note
+// a-z → scale degrees across 3 octaves
+// 0-9 → pentatonic bass
+// space → rest (pause)
+// punctuation → accents
+
+const CHAR_NOTE_MAP = (() => {
+  const map = {};
+  // a–z mapped to C major scale across 2.5 octaves (C3–E5)
+  const scale = [48,50,52,53,55,57,59, 60,62,64,65,67,69,71, 72,74,76,77,79,81,83, 84,86,88,89,91];
+  'abcdefghijklmnopqrstuvwxyz'.split('').forEach((c,i) => { map[c] = scale[i % scale.length]; });
+  // 0–9 → bass pentatonic
+  '0123456789'.split('').forEach((c,i) => { map[c] = [36,38,41,43,45,48,50,53,55,57][i]; });
+  // punctuation → higher accent notes
+  map['.'] = 84; map['!'] = 88; map['?'] = 86; map[','] = 79;
+  map[';'] = 81; map[':'] = 83; map['-'] = 72; map['_'] = 74;
+  map["'"] = 76; map['"'] = 77;
+  return map;
+})();
+
+// Velocity mapping — common letters softer, rare/punctuation louder
+const CHAR_VEL_MAP = {
+  'e':0.55,'t':0.55,'a':0.55,'o':0.55,'i':0.55,'n':0.55,'s':0.55,'r':0.55,
+  'h':0.60,'l':0.60,'d':0.60,'c':0.60,'u':0.60,'m':0.60,
+  '.':0.90,'!':1.00,'?':0.95,',':0.75,';':0.80,':':0.80,
+};
+
+// Char display bubble tracking
+let charBubbles = [];
+const MAX_BUBBLES = 28;
+
+function addCharBubble(ch, note, hue) {
+  // Create bubble element
+  const el = document.createElement('span');
+  el.className = 'composer-char active';
+  el.textContent = ch === ' ' ? '·' : ch;
+  el.style.color = `hsl(${hue},90%,70%)`;
+  el.style.borderColor = `hsl(${hue},90%,60%)`;
+  el.style.background = `hsla(${hue},90%,50%,0.1)`;
+  composerChars.appendChild(el);
+  charBubbles.push(el);
+
+  // Fade out after 1.2s
+  setTimeout(() => el.classList.remove('active'), 300);
+  setTimeout(() => { el.remove(); charBubbles = charBubbles.filter(b=>b!==el); }, 1200);
+
+  // Keep max bubbles
+  if (charBubbles.length > MAX_BUBBLES) {
+    charBubbles[0].remove();
+    charBubbles.shift();
+  }
+}
+
+// Typing queue — slight humanization delay between notes
+let typeQueue = [];
+let typeTimer  = null;
+const TYPE_INTERVAL = 80; // ms between notes when playing back text
+
+function scheduleNote(ch) {
+  typeQueue.push(ch);
+  if (!typeTimer) processTypeQueue();
+}
+
+function processTypeQueue() {
+  if (typeQueue.length === 0) { typeTimer = null; return; }
+  const ch = typeQueue.shift();
+  playChar(ch);
+  typeTimer = setTimeout(processTypeQueue, TYPE_INTERVAL);
+}
+
+function playChar(ch) {
+  const lower = ch.toLowerCase();
+  if (lower === ' ') {
+    // Space = dramatic pause + chaos burst
+    if (typeof noteEnergy !== 'undefined') {
+      noteEnergy  = Math.min(1.0, noteEnergy + 0.4);
+      speedBoost  = 3.0;
+      noteHue     = Math.random() * 360;
+    }
+    return;
+  }
+
+  const note = CHAR_NOTE_MAP[lower];
+  if (!note) return;
+
+  // Uppercase = louder + more energetic
+  const isUpper = ch !== lower && /[A-Z]/.test(ch);
+  const vel = Math.min(1.0, (CHAR_VEL_MAP[lower] || 0.68) * (isUpper ? 1.4 : 1.0));
+
+  // Hue from note position
+  const hue = ((note - 36) / 55 * 300 + params.colorShift) % 360;
+
+  triggerKey(note, vel);
+  addCharBubble(ch, note, hue);
+}
+
+// Listen to input events
+composerInput.addEventListener('input', e => {
+  const val = e.target.value;
+  if (!val) return;
+  // Play only the last typed character
+  const lastChar = val[val.length - 1];
+  scheduleNote(lastChar);
+});
+
+// Prevent space from scrolling page when input focused
+composerInput.addEventListener('keydown', e => {
+  e.stopPropagation(); // don't fire KB_MAP handlers while typing
+});
+
+// Click on canvas area defocuses input
+document.getElementById('glcanvas').addEventListener('click', () => composerInput.blur());
+
+
+// ═══════════════════════════════════════════════════════════════
+//  FX LAYER — WebGL2 post-process: bloom + CA + distortion
+// ═══════════════════════════════════════════════════════════════
+const fxCanvas = document.getElementById('fxCanvas');
+const fxgl     = fxCanvas.getContext('webgl2') || fxCanvas.getContext('webgl');
+
+function resizeFX() {
+  fxCanvas.width  = window.innerWidth;
+  fxCanvas.height = window.innerHeight;
+  if (fxgl) fxgl.viewport(0, 0, fxCanvas.width, fxCanvas.height);
+}
+resizeFX();
+window.addEventListener('resize', resizeFX);
+
+if (fxgl) {
+  const FX_VERT = `
+  attribute vec2 aPos;
+  varying vec2 vUv;
+  void main(){ vUv=aPos*.5+.5; gl_Position=vec4(aPos,0.,1.); }`;
+
+  const FX_FRAG = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D uTex;   // thomasCanvas texture
+  uniform vec2  uRes;
+  uniform float uEnergy;
+  uniform float uNoteHue;
+  uniform float uTime;
+
+  vec3 hsl2rgb(vec3 c){
+    vec3 rgb=clamp(abs(mod(c.x*6.+vec3(0.,4.,2.),6.)-3.)-1.,0.,1.);
+    return c.z+c.y*(rgb-.5)*(1.-abs(2.*c.z-1.));
+  }
+
+  // Sample with chromatic aberration
+  vec3 sampleCA(vec2 uv, float amt){
+    vec2 dir = uv - vec2(0.5);
+    vec3 c;
+    c.r = texture2D(uTex, uv + dir*amt*1.0).r;
+    c.g = texture2D(uTex, uv + dir*amt*0.4).g;
+    c.b = texture2D(uTex, uv - dir*amt*0.6).b;
+    return c;
+  }
+
+  // Kawase blur sample (4 taps offset by half-pixel)
+  vec3 kawase(vec2 uv, float radius){
+    vec2 p = radius / uRes;
+    vec3 c  = texture2D(uTex, uv + vec2( p.x,  p.y)).rgb;
+    c      += texture2D(uTex, uv + vec2(-p.x,  p.y)).rgb;
+    c      += texture2D(uTex, uv + vec2( p.x, -p.y)).rgb;
+    c      += texture2D(uTex, uv + vec2(-p.x, -p.y)).rgb;
+    return c * 0.25;
+  }
+
+  void main(){
+    vec2 uv  = vUv;
+    float e  = uEnergy;
+    float e2 = e * e;
+    vec2  center = vec2(0.5);
+    vec2  dir    = uv - center;
+    float dist   = length(dir);
+
+    // Radial distortion on energy (fish-eye push)
+    float distort = 1.0 + e2 * 0.08 * dist;
+    vec2 uvD = center + dir * distort;
+
+    // Chromatic aberration — stronger at edges, spikes on energy
+    float caAmt = 0.004 + e * 0.018 + e2 * 0.02;
+    vec3 col = sampleCA(uvD, caAmt);
+
+    // Bloom — 3 radius kawase layers
+    vec3 bloom  = kawase(uvD, 1.5);
+        bloom  += kawase(uvD, 3.5);
+        bloom  += kawase(uvD, 7.0);
+        bloom  *= 0.33;
+
+    // Threshold bloom (only bright pixels bleed)
+    vec3 lumW = vec3(0.2126, 0.7152, 0.0722);
+    float lum = dot(bloom, lumW);
+    float threshold = 0.25 - e * 0.1;
+    float bloomStrength = 0.55 + e * 1.2;
+    col += bloom * smoothstep(threshold, threshold + 0.2, lum) * bloomStrength;
+
+    // Energy color pulse — tint toward note hue
+    vec3 pulseCol = hsl2rgb(vec3(uNoteHue, 1.0, 0.6));
+    float radialPulse = exp(-dist * dist * (5.0 - e2 * 3.0)) * e2 * 0.7;
+    col += pulseCol * radialPulse;
+
+    // Scanlines — subtle always, stronger on energy
+    float scan = sin(uv.y * uRes.y * 3.14159) * 0.5 + 0.5;
+    float scanStr = 0.04 + e2 * 0.06;
+    col *= 1.0 - scan * scanStr;
+
+    // Vignette
+    float vig = 1.0 - smoothstep(0.4, 1.1, dist * 1.6);
+    col *= vig;
+
+    // Film grain
+    float t = uTime * 0.1;
+    float grain = fract(sin(dot(uv + t, vec2(127.1, 311.7))) * 43758.5) * 0.06;
+    col += (grain - 0.03) * (0.6 + e * 0.4);
+
+    gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+  }`;
+
+  // Compile FX shaders
+  function compFX(type, src) {
+    const s = fxgl.createShader(type);
+    fxgl.shaderSource(s, src);
+    fxgl.compileShader(s);
+    if (!fxgl.getShaderParameter(s, fxgl.COMPILE_STATUS))
+      console.warn('FX shader err:', fxgl.getShaderInfoLog(s));
+    return s;
+  }
+  const fxProg = fxgl.createProgram();
+  fxgl.attachShader(fxProg, compFX(fxgl.VERTEX_SHADER, FX_VERT));
+  fxgl.attachShader(fxProg, compFX(fxgl.FRAGMENT_SHADER, FX_FRAG));
+  fxgl.linkProgram(fxProg);
+  fxgl.useProgram(fxProg);
+
+  // Quad
+  const fxVbo = fxgl.createBuffer();
+  fxgl.bindBuffer(fxgl.ARRAY_BUFFER, fxVbo);
+  fxgl.bufferData(fxgl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), fxgl.STATIC_DRAW);
+  const fxAPos = fxgl.getAttribLocation(fxProg, 'aPos');
+  fxgl.enableVertexAttribArray(fxAPos);
+  fxgl.vertexAttribPointer(fxAPos, 2, fxgl.FLOAT, false, 0, 0);
+
+  // Texture (will be updated from thomasCanvas each frame)
+  const fxTex = fxgl.createTexture();
+  fxgl.bindTexture(fxgl.TEXTURE_2D, fxTex);
+  fxgl.texParameteri(fxgl.TEXTURE_2D, fxgl.TEXTURE_MIN_FILTER, fxgl.LINEAR);
+  fxgl.texParameteri(fxgl.TEXTURE_2D, fxgl.TEXTURE_WRAP_S, fxgl.CLAMP_TO_EDGE);
+  fxgl.texParameteri(fxgl.TEXTURE_2D, fxgl.TEXTURE_WRAP_T, fxgl.CLAMP_TO_EDGE);
+
+  // Uniform locs
+  const fxU = {};
+  ['uTex','uRes','uEnergy','uNoteHue','uTime'].forEach(n => {
+    fxU[n] = fxgl.getUniformLocation(fxProg, n);
+  });
+  fxgl.uniform1i(fxU.uTex, 0);
+
+  let fxTime = 0;
+  function renderFX() {
+    fxTime += 0.016;
+    fxgl.viewport(0, 0, fxCanvas.width, fxCanvas.height);
+    fxgl.useProgram(fxProg);
+
+    // Upload thomasCanvas as texture
+    fxgl.bindTexture(fxgl.TEXTURE_2D, fxTex);
+    fxgl.texImage2D(fxgl.TEXTURE_2D, 0, fxgl.RGBA, fxgl.RGBA, fxgl.UNSIGNED_BYTE, tCanvas);
+
+    fxgl.uniform2f(fxU.uRes,      fxCanvas.width, fxCanvas.height);
+    fxgl.uniform1f(fxU.uEnergy,   noteEnergy);
+    fxgl.uniform1f(fxU.uNoteHue,  noteHue / 360.0);
+    fxgl.uniform1f(fxU.uTime,     fxTime);
+
+    fxgl.drawArrays(fxgl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(renderFX);
+  }
+  renderFX();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  WEBSOCKET
+// ═══════════════════════════════════════════════════════════════
+const proto = location.protocol==='https:'?'wss:':'ws:';
+const remotes = {};
+
+function showStatus(msg, dur=2000){
+  const el=document.getElementById('status');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+function connectWS(){
+  ws = new WebSocket(`${proto}//${location.host}`);
+
+  ws.onopen = ()=> showStatus('CONNECTED TO SHARED FIELD');
+
+  ws.onmessage = e => {
+    let msg; try{msg=JSON.parse(e.data);}catch{return;}
+    switch(msg.type){
+      case 'init':
+        myId=msg.id; myHue=msg.hue;
+        Object.assign(params, {
+          b:msg.state.b, speed:msg.state.speed,
+          colorShift:msg.state.colorShift, audioGain:msg.state.audioGain,
+          trail:msg.state.trail, glowIntensity:msg.state.glowIntensity,
+          noiseAmt:msg.state.noiseAmt
+        });
+        Object.keys(sliderDefs).forEach(k=>updateSlider(k,params[k]));
+        document.getElementById('ucnum').textContent=msg.count;
+        cursorEl.style.setProperty('--accent', `hsl(${myHue},100%,65%)`);
+        // Existing remote users
+        Object.entries(msg.state.users).forEach(([id,u])=>{
+          if(id!==myId) addRemote(id,u.hue);
+        });
+        break;
+      case 'user_join':
+        if(msg.id!==myId) addRemote(msg.id,msg.hue);
+        document.getElementById('ucnum').textContent=msg.count;
+        showStatus(`+ OBSERVER  [${msg.count}]`);
+        break;
+      case 'user_leave':
+        removeRemote(msg.id);
+        document.getElementById('ucnum').textContent=msg.count;
+        showStatus(`- OBSERVER  [${msg.count}]`);
+        break;
+      case 'cursor':
+        if(remotes[msg.id]){
+          remotes[msg.id].style.left=(msg.x*100)+'%';
+          remotes[msg.id].style.top=(msg.y*100)+'%';
+        }
+        break;
+      case 'param':
+        if(msg.by!==myId){
+          updateSlider(msg.key,msg.value);
+          if(msg.key==='audioGain'&&audioCtx&&audioOn)
+            droneOscs.forEach((d,i)=>d.gain.gain.setTargetAtTime((msg.value*0.06)*(1-i*0.25),audioCtx.currentTime,0.1));
+        }
+        break;
+      case 'pulse':
+        spawnRing(msg.x,msg.y,msg.hue);
+        pulseSFX(msg.x,msg.y);
+        break;
+      case 'note':
+        if(msg.id!==myId){
+          playNote(msg.note,msg.vel,msg.hue);
+          flashKey(msg.note,true);
+          onNoteTriggered(msg.note, msg.vel, msg.hue);
+        }
+        break;
+    }
+  };
+
+  ws.onclose = ()=>{
+    showStatus('RECONNECTING…',3000);
+    Object.keys(remotes).forEach(removeRemote);
+    setTimeout(connectWS,2500);
+  };
+  ws.onerror = ()=>ws.close();
+}
+
+function addRemote(id,hue){
+  if(remotes[id]) return;
+  const el=document.createElement('div');
+  el.className='rcursor';
+  el.style.cssText=`left:50%;top:50%;background:hsl(${hue},100%,65%);box-shadow:0 0 8px hsl(${hue},100%,60%);`;
+  document.body.appendChild(el);
+  remotes[id]=el;
+}
+function removeRemote(id){
+  if(remotes[id]){remotes[id].remove();delete remotes[id];}
+}
+
+// Throttled sends
+let _cursorT=0;
+function sendCursor(x,y){
+  if(!ws||ws.readyState!==1) return;
+  const n=Date.now(); if(n-_cursorT<40) return; _cursorT=n;
+  ws.send(JSON.stringify({type:'cursor',x,y}));
+}
+const _paramT={};
+function sendParam(key,value,def){
+  if(!ws||ws.readyState!==1) return;
+  const n=Date.now(); if(_paramT[key]&&n-_paramT[key]<50) return; _paramT[key]=n;
+  ws.send(JSON.stringify({type:'param',key,value,min:def.min,max:def.max}));
+}
+function sendPulse(x,y){
+  if(!ws||ws.readyState!==1) return;
+  ws.send(JSON.stringify({type:'pulse',x,y}));
+}
+function sendNote(note,vel){
+  if(!ws||ws.readyState!==1) return;
+  ws.send(JSON.stringify({type:'note',note,vel}));
+}
+
+connectWS();
+</script>
+</body>
+</html>

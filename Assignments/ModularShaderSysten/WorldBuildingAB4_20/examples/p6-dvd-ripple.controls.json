@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "controls": [
+    { "id": "monochrome",  "type": "checkbox", "label": "Monochrome",       "uniform": "uMonochrome",       "default": false },
+    { "id": "num-logos",   "type": "range",    "label": "Active Logo Count","uniform": "uNumLogos",         "min": 1.0,  "max": 5.0,  "step": 1.0,  "default": 1.0  },
+    { "id": "spread",      "type": "range",    "label": "Ripple Spread",    "uniform": "uRippleSpread",     "min": 0.1,  "max": 5.0,  "step": 0.1,  "default": 1.5  },
+    { "id": "freq",        "type": "range",    "label": "Ripple Frequency", "uniform": "uRippleFreq",       "min": 0.1,  "max": 10.0, "step": 0.1,  "default": 2.0  },
+    { "id": "speed",       "type": "range",    "label": "Logo Base Speed",  "uniform": "uBaseSpeed",        "min": 0.1,  "max": 5.0,  "step": 0.1,  "default": 1.0  },
+    { "id": "scale",       "type": "range",    "label": "Logo Scale",       "uniform": "uLogoScale",        "min": 0.01, "max": 0.3,  "step": 0.01, "default": 0.1  },
+    { "id": "bump",        "type": "range",    "label": "Bump Factor",      "uniform": "uBumpFactor",       "min": 0.01, "max": 0.5,  "step": 0.01, "default": 0.1  },
+    { "id": "offset",      "type": "range",    "label": "Offset Distance",  "uniform": "uOffsetDistance",   "min": 0.1,  "max": 2.0,  "step": 0.1,  "default": 0.8  },
+    { "id": "spec-int",    "type": "range",    "label": "Specular Intensity","uniform": "uSpecularIntensity","min": 0.0,  "max": 15.0, "step": 0.1,  "default": 5.0  },
+    { "id": "spec-shine",  "type": "range",    "label": "Specular Shininess","uniform": "uSpecularShininess","min": 1.0,  "max": 128.0,"step": 1.0,  "default": 16.0 }
+  ]
+}

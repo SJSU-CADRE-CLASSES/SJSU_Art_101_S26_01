@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "controls": [
+    {
+      "id": "rot-speed",
+      "type": "range",
+      "label": "Rotation Speed",
+      "uniform": "uRotSpeed",
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "deform",
+      "type": "range",
+      "label": "Deformation",
+      "uniform": "uDeform",
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "noise-str",
+      "type": "range",
+      "label": "Surface Noise",
+      "uniform": "uNoiseStr",
+      "min": 0.0,
+      "max": 2.2,
+      "step": 0.01,
+      "default": 1.5
+    },
+    {
+      "id": "glow",
+      "type": "range",
+      "label": "Glow Intensity",
+      "uniform": "uGlow",
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "fog",
+      "type": "range",
+      "label": "Depth Fog",
+      "uniform": "uFog",
+      "min": 0.0,
+      "max": 4.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "mono",
+      "type": "checkbox",
+      "label": "Monochrome",
+      "uniform": "uMono",
+      "default": false
+    }
+  ]
+}

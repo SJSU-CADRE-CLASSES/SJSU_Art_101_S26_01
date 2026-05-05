@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Attractor - Projector</title>
+    <style>
+        body, html { margin: 0; padding: 0; overflow: hidden; background: #000; }
+        canvas { display: block; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const maxPoints = 2000;
+        const positions = new Float32Array(maxPoints * 3);
+        const trailGeometry = new THREE.BufferGeometry();
+        trailGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const trailMaterial = new THREE.LineBasicMaterial({
+            color: 0x00aaff,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.8
+        });
+        const trail = new THREE.Line(trailGeometry, trailMaterial);
+        scene.add(trail);
+
+        const uiMaterial = new THREE.LineBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.4 });
+        const uiGroup = new THREE.Group();
+        scene.add(camera);
+        camera.add(uiGroup);
+
+        const ringMat  = uiMaterial.clone();
+        const ringMesh = new THREE.LineSegments(
+            new THREE.EdgesGeometry(new THREE.TorusGeometry(5.4, 0.21, 5, 9)),
+            ringMat
+        );
+        ringMesh.position.set(0, 0, -8);
+        uiGroup.add(ringMesh);
+
+        const chaosMat  = uiMaterial.clone();
+        const chaosMesh = new THREE.LineSegments(
+            new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(0.45, 0)),
+            chaosMat
+        );
+        chaosMesh.position.set(4.5, 0, -8);
+        uiGroup.add(chaosMesh);
+
+        const syncChannel = new BroadcastChannel('thomas-sync');
+        syncChannel.onmessage = (e) => {
+            if (e.data.type === 'frame') {
+                camera.position.fromArray(e.data.cameraPosition);
+                camera.rotation.fromArray(e.data.cameraRotation);
+                positions.set(e.data.positions);
+                trail.geometry.attributes.position.needsUpdate = true;
+                trail.geometry.setDrawRange(maxPoints - e.data.trailLength, e.data.trailLength);
+                
+                if (e.data.uiVisible !== undefined) {
+                    ringMesh.rotation.z = e.data.ringRotZ;
+                    chaosMesh.position.y = e.data.chaosPosY;
+                    chaosMesh.rotation.x = e.data.chaosRotX;
+                    chaosMesh.rotation.y = e.data.chaosRotY;
+                }
+                
+                renderer.render(scene, camera);
+            }
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "controls": [
+    {
+      "id": "speed",
+      "type": "range",
+      "label": "Animation Speed",
+      "uniform": "uSpeed",
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "scale",
+      "type": "range",
+      "label": "Pattern Scale",
+      "uniform": "uScale",
+      "min": 1.0,
+      "max": 12.0,
+      "step": 0.1,
+      "default": 4.0
+    },
+    {
+      "id": "light-hue",
+      "type": "range",
+      "label": "Light Color (Hue)",
+      "uniform": "uLightHue",
+      "min": 0.0,
+      "max": 360.0,
+      "step": 1.0,
+      "default": 300.0
+    },
+    {
+      "id": "brightness",
+      "type": "range",
+      "label": "Brightness",
+      "uniform": "uBrightness",
+      "min": 0.1,
+      "max": 5.0,
+      "step": 0.05,
+      "default": 2.0
+    },
+    {
+      "id": "warmth",
+      "type": "range",
+      "label": "Color Warmth",
+      "uniform": "uWarmth",
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.01,
+      "default": 1.0
+    },
+    {
+      "id": "color-mix",
+      "type": "range",
+      "label": "Grade Inversion Mix",
+      "uniform": "uColorMix",
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "default": 0.2
+    }
+  ]
+}
